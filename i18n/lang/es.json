@@ -1,0 +1,9 @@
+{
+  "smart_money_tips": "Dinero inteligente compró {b} veces, vendió {s} veces en 24 horas.",
+  "kol_sell_tips": "KOLs vendieron recientemente",
+  "connectWallet": "Conectado",
+  "noData": "Sin datos",
+  "kol_buy_tips": "KOLs compraron recientemente",
+  "smarter_buy_tips": "Dinero inteligente compró recientemente",
+  "smarter_sell_tips": "Dinero inteligente vendió recientemente"
+}

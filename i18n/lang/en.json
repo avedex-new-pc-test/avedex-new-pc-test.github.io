@@ -1,0 +1,9 @@
+{
+  "connectWallet": "Connect",
+  "smart_money_tips": "Smart money bought {b} times, sold {s} times in 24 hours.",
+  "kol_sell_tips": "KOLs sold recently",
+  "noData": "No Data",
+  "kol_buy_tips": "KOLs bought recently",
+  "smarter_buy_tips": "Smart money bought recently",
+  "smarter_sell_tips": "Smart money sold recently"
+}

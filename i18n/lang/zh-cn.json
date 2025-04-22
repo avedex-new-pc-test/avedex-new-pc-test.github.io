@@ -1,0 +1,11 @@
+{
+  "connectWallet": "连接钱包",
+  "copySuccess": "复制成功!",
+  "copyTip": "当前地址{address}是合约地址，请勿转账，否则资产将无法找回。",
+  "smart_money_tips": "24h内聪明钱买入{b}次,卖出{s}次",
+  "kol_sell_tips": "最近有KOL卖出",
+  "noData": "无复制内容",
+  "kol_buy_tips": "最近有KOL买入",
+  "smarter_buy_tips": "最近有聪明钱买入",
+  "smarter_sell_tips": "最近有聪明钱卖出"
+}

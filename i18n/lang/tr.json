@@ -1,0 +1,9 @@
+{
+  "connectWallet": "Cüzdanı Bağla",
+  "smart_money_tips": "Akıllı para 24 saatte {b} defa satın alındı, {s} defa sattıldı.",
+  "kol_sell_tips": "KOLlerin yakın zamanda sattığı",
+  "noData": "Veri Yok",
+  "kol_buy_tips": "KOLlerin yakın zamanda aldığı",
+  "smarter_buy_tips": "Akıllı para yakın zamanda satın alındı",
+  "smarter_sell_tips": "Akıllı para yakın zamanda satıldı"
+}

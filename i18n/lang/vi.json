@@ -1,0 +1,9 @@
+{
+  "connectWallet": "Kết nối",
+  "smart_money_tips": "Умные деньги купили {b} раз продали {s} раз за 24ч",
+  "kol_sell_tips": "KOL vừa bán",
+  "noData": "Không có dữ liệu",
+  "kol_buy_tips": "KOL vừa mua",
+  "smarter_buy_tips": "Tiền thông minh vừa mua",
+  "smarter_sell_tips": "Tiền thông minh vừa bán"
+}
