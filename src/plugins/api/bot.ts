@@ -1,31 +1,26 @@
 import type { MyFetchContext } from './type'
 import { isJSON } from '@/utils/index'
 
-type FetchHeaders = Headers & {
-  Authorization?: string
-  'ave-udid'?: string
-  signature?: string
-  'X-Auth'?: string
-  'Ave-Platform'?: string
-  lang?: string
-}
-
 export function botOnRequest({ options, request }: MyFetchContext){
   const botStore = useBotStore()
   const lang = localStorage.language || 'en'
-  const headers = options.headers as FetchHeaders
+  options.headers = new Headers(options.headers)
   const url = request as string
-  headers.lang = (lang == 'zh-cn' || lang == 'zh-tw') ? 'cn' : 'en'
+  const lang1 = (lang == 'zh-cn' || lang == 'zh-tw') ? 'cn' : 'en'
+  options.headers.set('lang', lang1)
   if (url?.includes('refreshNewToken') && botStore.refreshToken) {
-    headers.Authorization = `Bearer ${botStore.refreshToken}`
+    options.headers.set('Authorization', `Bearer ${botStore.refreshToken}`)
   } else if (!url?.includes('login') && botStore.accessToken) {
-    headers.Authorization = `Bearer ${botStore.accessToken}`
+    options.headers.set('Authorization', `Bearer ${botStore.accessToken}`)
   }
 }
 
-export function botOnResponse({ response }: MyFetchContext) {
+export function botOnResponse({ response, request, options }: MyFetchContext) {
   if (!response) {
     return
+  }
+  if (response.status >= 400) {
+    return botOnResponseError({ response, request, options })
   }
   const data = response._data
   if (data?.status === 0) {
@@ -41,7 +36,7 @@ export function botOnResponse({ response }: MyFetchContext) {
   }
 }
 
-export function botOnResponseError({ response, request }: MyFetchContext) {
+export async function botOnResponseError({ response, request }: MyFetchContext) {
   if (!response) {
     return
   }
@@ -49,15 +44,18 @@ export function botOnResponseError({ response, request }: MyFetchContext) {
   if (status === 401) {
     const botStore = useBotStore()
     const url = request as string
-    if (!botStore.refreshing) {
-      const type: 'ref' | 'acc' = url?.includes('refreshNewToken') ? 'ref' : 'acc'
-      botStore.botReqCount++
-      if (botStore.botReqCount < 6) {
-        botStore.refreshAccessToken(type)
-      } else {
+    const type: 'ref' | 'acc' = url?.includes('refreshNewToken') ? 'ref' : 'acc'
+    return botStore.refreshAccessToken(type).then(async () => {
+      return true
+    }).catch(async err => {
+      console.log(err)
+      if (type === 'ref') {
         botStore.logout()
       }
-    }
+      return false
+    })
+  } else {
+    return false
   }
 }
 

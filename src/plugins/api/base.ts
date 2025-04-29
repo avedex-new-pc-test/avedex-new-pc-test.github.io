@@ -3,60 +3,53 @@ import isBase64 from 'is-base64'
 
 import type { MyFetchContext } from './type'
 
-type FetchHeaders = Headers & {
-  Authorization?: string
-  'ave-udid'?: string
-  signature?: string
-  'X-Auth'?: string
-  'Ave-Platform'?: string
-  lang?: string
-}
-
 
 let loading = false
 let requestCount = 0
 
 export function onRequest({ options, request }: MyFetchContext) {
    // 非 bot 基础请求
-  const headers = options.headers as FetchHeaders
+  options.headers = new Headers(options.headers)
+
   // 请求头 语言
   let language: string = localStorage.getItem('language') || 'en'
   if (language?.includes('zh')) {
     language = 'cn'
   }
-  headers.lang = language
+  // headers.lang = language
+  options.headers.set('lang', language)
 
   const url = request as string
   // 请求头 authorization
   if (url?.includes('/v1api/v1')) {
     const date = Date.now()
     const authorization = sha1(date + url.replace('/v1api', '') + '7vPoX2G.8LYVQfnt').toString()
-    headers.Authorization = authorization + date
+    options.headers.set('Authorization', authorization + date)
   }
 
   if (url?.includes('/v1api/') || url.startsWith('/v2api/')) {
     const analogDeviceId = localStorage.getItem('analogDeviceId')
     if (analogDeviceId) {
-      headers['ave-udid'] = analogDeviceId
+      options.headers.set('ave-udid', analogDeviceId)
     }
     const currentAccount = localStorage.getItem('currentAccount')
     if (currentAccount) {
       const signature = useConfigStore().walletSignature?.[currentAccount] || ''
       if (signature) {
-        headers.signature = signature
+        options.headers.set('signature', signature)
       }
     }
     const ave_token = localStorage.ave_token
     if (ave_token) {
-      headers['X-Auth'] = ave_token
+      options.headers.set('X-Auth', ave_token)
     }
-    headers['Ave-Platform'] = 'web'
+    options.headers.set('Ave-Platform', 'web')
   }
 
   if (url?.includes('/v2api/fav_users/')) {
     const accessToken = useBotStore().accessToken
     if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`
+      options.headers.set('Authorization', `Bearer ${accessToken}`)
     }
   }
 }

@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
+import { refreshAccessToken as _refAcc } from '@/api/bot'
+import { createCacheRequest } from '@/utils/cacheRequest'
+
+const _refreshAccessToken = createCacheRequest(_refAcc, 3000)
 
 export const useBotStore = defineStore('bot', () => {
   const accessToken = useLocalStorage('bot_accessToken', '')
@@ -8,11 +12,22 @@ export const useBotStore = defineStore('bot', () => {
   const refreshing = ref(false)
 
   function refreshAccessToken(type: 'acc' | 'ref') {
-    console.log('refreshAccessToken', type)
+    if (!refreshToken.value) {
+      return Promise.reject('no refreshToken')
+    }
+    return _refreshAccessToken(type).then(res => {
+      if (res?.accessToken) {
+        accessToken.value = res.accessToken
+      }
+      if (res?.refreshToken) {
+        refreshToken.value = res.refreshToken
+      }
+    })
   }
 
   function logout() {
-
+    accessToken.value = ''
+    refreshToken.value = ''
   }
 
   return {

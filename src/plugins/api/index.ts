@@ -2,20 +2,21 @@
 import { getApiDomainAndSave, getBestApiDomain } from './getApiDomain'
 import { onRequest, onResponse, onResponseError } from './base'
 import { botOnRequest, botOnResponse, botOnResponseError } from './bot'
+import type { MyFetchContext } from './type'
 
 
 function getApi() {
   getApiDomainAndSave()
   const baseURL = getBestApiDomain()
-  const $api = $fetch.create({
-    baseURL: baseURL,
+  const api = $fetch.create({
+    baseURL,
     headers: {
       'Content-Type': 'application/json',
     },
     onRequest({ options, request }) {
-      const baseURL = getBestApiDomain()
-      if (baseURL && options.baseURL !== baseURL) {
-        options.baseURL = baseURL
+      const newBase = getBestApiDomain()
+      if (newBase && options.baseURL !== newBase) {
+        options.baseURL = newBase
       }
       const url = request as string
       if (url?.includes('botapi')) {
@@ -25,7 +26,6 @@ function getApi() {
       }
     },
     onResponse({ response, request, options }) {
-      // 全局响应处理
       const url = request as string
       if (url?.includes('botapi')) {
         botOnResponse({ options, request, response })
@@ -33,19 +33,28 @@ function getApi() {
         onResponse({ options, request, response })
       }
     },
-    onResponseError({ response, options, request }) {
-      // 全局错误处理
-      const url = request as string
-      if (url?.includes('botapi')) {
-        botOnResponseError({ options, response, request })
-      } else {
-        onResponseError({ options, response, request })
-      }
-    },
   })
-  return $api
-}
 
+  type Par = Parameters<typeof api>
+  type Res = Promise<any>
+  const newApi: (...arg: Par) => Res = async (request: RequestInfo, options = {}) => {
+    return api(request, options).catch(async err => {
+      if (err?.response?.status === 401) {
+        const response = err?.response
+        const isRefToken = await botOnResponseError({ options, response, request })
+        if (isRefToken) {
+          return api(request, options)
+        }
+      } else if (err?.response?.status === 403) {
+        onResponseError({response: err?.response} as MyFetchContext)
+      } else {
+        return Promise.reject(err)
+      }
+    })
+  }
+  // 将新的 API 方法与原始方法合并，确保可以使用原始功能
+  return newApi
+}
 
 export default defineNuxtPlugin(() => {
   const $api = getApi()
