@@ -1,5 +1,5 @@
 export default {
   legacy: false,
-  fallbackLocale: 'zh-cn',
+  fallbackLocale: 'en',
   // messages 是可选的，因为启用了 lazy
 }

@@ -158,7 +158,7 @@ function formatNumShort(n: string | number, l = 4) {
 }
 
 
-export function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0) {
+function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0) {
   const n1 = Number(n)
   if (
     !isNaN(n1) &&
