@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type {RowEventHandlers} from 'element-plus'
+import type {AveTable} from "#components"
 
 const columns = [
   {key: 'name', dataKey: 'name', title: '姓名', width: 100},
@@ -22,9 +23,11 @@ const data = ref([
   {name: '李强', age: 26, address: '上海'},
   {name: '王磊', age: 29, address: '广州'},
 ])
-const aveTable = ref(null)
+const tableRef = useTemplateRef<InstanceType<typeof AveTable>>('tableRef')
 onMounted(() => {
-  console.log("=>(demo.vue:26) aveTable", aveTable)
+  setTimeout(() => {
+    tableRef.value?.scrollTo?.({scrollTop: 100})
+  }, 100)
 })
 
 const rowEventHandlers: RowEventHandlers = {
@@ -33,7 +36,7 @@ const rowEventHandlers: RowEventHandlers = {
   }
 }
 
-function onLoad(remainDistance: number) {
+function onLoad() {
   setTimeout(() => {
     data.value.push(...data.value)
   }, 1000)
@@ -42,7 +45,7 @@ function onLoad(remainDistance: number) {
 
 <template>
   <AveTable
-    ref="aveTable"
+    ref="tableRef"
     show-empty-text
     :columns="columns"
     :data="data"
