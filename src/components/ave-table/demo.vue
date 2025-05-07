@@ -21,23 +21,11 @@ const data = ref([
   {name: '张丽', age: 31, address: '北京'},
   {name: '李强', age: 26, address: '上海'},
   {name: '王磊', age: 29, address: '广州'},
-  {name: '赵军', age: 35, address: '深圳'},
-  {name: '刘伟', age: 22, address: '杭州'},
-  {name: '陈芳', age: 38, address: '成都'},
-  {name: '杨娜', age: 21, address: '武汉'},
-  {name: '黄秀英', age: 40, address: '南京'},
-  {name: '周敏', age: 19, address: '西安'},
-  {name: '吴静', age: 33, address: '重庆'},
-  {name: '张丽', age: 27, address: '北京'},
-  {name: '李强', age: 24, address: '上海'},
-  {name: '王磊', age: 31, address: '广州'},
-  {name: '赵军', age: 22, address: '深圳'},
-  {name: '刘伟', age: 29, address: '杭州'},
-  {name: '陈芳', age: 36, address: '成都'},
-  {name: '杨娜', age: 23, address: '武汉'},
-  {name: '黄秀英', age: 28, address: '南京'},
 ])
-// onMounted(() => data.value = [])
+const aveTable = ref(null)
+onMounted(() => {
+  console.log("=>(demo.vue:26) aveTable", aveTable)
+})
 
 const rowEventHandlers: RowEventHandlers = {
   onClick: e => {
@@ -54,6 +42,7 @@ function onLoad(remainDistance: number) {
 
 <template>
   <AveTable
+    ref="aveTable"
     show-empty-text
     :columns="columns"
     :data="data"

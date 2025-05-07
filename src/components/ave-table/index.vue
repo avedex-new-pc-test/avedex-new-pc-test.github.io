@@ -5,7 +5,7 @@ import type {Column} from "element-plus";
 const {t} = useI18n()
 const props = defineProps({
   columns: {
-    type: Array<Column>,
+    type: Array<Partial<Column>>,
     required: true
   },
   data: {
@@ -90,7 +90,6 @@ function getAvgWidth() {
       <!-- 透传所有 $attrs，支持 el-table-v2 的其它属性 -->
       <ElTableV2
         ref="elTableV2"
-        v-slots="defaultSlots"
         v-bind="attrs"
         :columns="computedColumns"
         :data="data"
