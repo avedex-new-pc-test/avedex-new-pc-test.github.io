@@ -1,12 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
+const isProd = process.env.NODE_ENV === 'production'
 export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2025-04-24',
   srcDir: 'src/',
   devtools: {
-    enabled: false
+    enabled: !isProd
   },
   modules: [
     '@nuxt/eslint',
@@ -111,7 +112,7 @@ export default defineNuxtConfig({
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: process.env.NODE_ENV === 'production', // 移除所有 console.log
+          drop_console: isProd, // 移除所有 console.log
         },
       },
     },
@@ -161,7 +162,7 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}']
+      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}'],
     },
   },
 
