@@ -66,6 +66,7 @@ export default defineNuxtPlugin(() => {
   // 执行跳转/安全逻辑
   redirectIfMobile()
   antiClickjack()
+  // addTvScriptJs()
 })
 
 function redirectIfMobile() {

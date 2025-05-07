@@ -1,6 +1,7 @@
 <template>
-   <div>
-    {{ $t('connectWallet') }}
+   <div class="a">
+    <button class="b"> {{ $t('connectWallet') }}</button>
+
    </div>
 </template>
 
@@ -13,6 +14,10 @@
   // }, 5000);
 </script>
 
-<style>
-
+<style scoped lang="scss">
+  .a {
+    .b {
+      background-color: red;
+    }
+  }
 </style>
