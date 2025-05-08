@@ -64,13 +64,14 @@ export default defineNuxtConfig({
     '@/plugins/theme-init.client.ts',
     '@/plugins/api/index.ts',
     '@/plugins/vemachine-init.client.ts',
+    '@/plugins/tradingview.client.ts',
   ],
   // unocss: {
   //   nuxtLayers: true,
   // },
   elementPlus: {
     importStyle: 'scss',
-    // themes: ['dark'],
+    themes: ['dark'],
   },
 
   vite: {
@@ -101,7 +102,7 @@ export default defineNuxtConfig({
       preprocessorOptions: {
         scss: {
           // 修改主题色
-          additionalData: '@use "@/assets/css/element-plus/index.scss";',
+          additionalData: '@use "~/assets/css/element-plus/index.scss";',
           api: 'modern-compiler',
         },
       }
@@ -111,6 +112,7 @@ export default defineNuxtConfig({
     },
     build: {
       minify: 'terser',
+      sourcemap: !isProd,
       terserOptions: {
         compress: {
           drop_console: isProd, // 移除所有 console.log
@@ -163,7 +165,7 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}'],
+      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}']
     },
   },
 

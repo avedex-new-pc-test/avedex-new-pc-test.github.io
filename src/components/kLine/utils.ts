@@ -1,0 +1,232 @@
+// import { getGlobalT } from '@/utils/i18nBridge'
+import type { Mark, ChartingLibraryWidgetConstructor } from '~/types/tradingview/charting_library'
+import { formatNumber } from '@/utils/formatNumber'
+import type { WSTx, KLineBar  } from './types'
+
+export const supportSecChains = ['solana', 'bsc', 'eth', 'base', 'tron']
+
+export function switchResolution(resolution: string) {
+  const obj: Record<string, string> = {
+    '1D': '1440',
+    '1W': '10080'
+  }
+  let t = obj[resolution] || resolution
+  if (t?.endsWith?.('S')) {
+    t = t?.slice?.(0, -1)
+  } else {
+    t = String(Number(t) * 60)
+  }
+  return t
+}
+
+
+export function formatLang(lang: string) {
+  return {
+    en: 'en',
+    'zh-cn': 'zh',
+    'zh-tw': 'zh_TW'
+  }?.[lang] || 'en'
+}
+
+export function filterLanguage(lang: string)  {
+  return ({
+    'zh-cn': 'cn',
+    'zh-tw': 'tw',
+  }?.[lang] || 'en') as 'cn' | 'en' | 'pt' | 'tw' | 'es'
+}
+
+
+type TradeSide = {
+  amount: number
+  txns: number
+  volume: number
+}
+
+type TradeData = {
+  time: number
+  buy?: TradeSide
+  sell?: TradeSide
+}
+
+export function formatToMarks(
+  data: TradeData[],
+  interval: number | string
+): Mark[] {
+  // const t = getGlobalT()
+  const result: Mark[] = []
+  const bucketMap: Record<string, { time: number; side: 'buy' | 'sell'; amount: number; txns: number; volume: number }> = {}
+  const urlPrefix = useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
+  // First pass: Aggregate data into buckets
+  const interval1 = Number(interval)
+  for (const item of data) {
+    const bucketTime = Math.floor(item.time / interval1) * interval1
+
+    // Aggregating buy data
+    if (item.buy) {
+      const key = `${bucketTime}-buy`
+      const entry = bucketMap[key] ??= { time: bucketTime, side: 'buy', amount: 0, txns: 0, volume: 0 }
+      entry.amount += item.buy.amount
+      entry.txns += item.buy.txns
+      entry.volume += item.buy.volume
+    }
+
+    // Aggregating sell data
+    if (item.sell) {
+      const key = `${bucketTime}-sell`
+      const entry = bucketMap[key] ??= { time: bucketTime, side: 'sell', amount: 0, txns: 0, volume: 0 }
+      entry.amount += item.sell.amount
+      entry.txns += item.sell.txns
+      entry.volume += item.sell.volume
+    }
+  }
+
+  // Second pass: Convert aggregated data into mark format
+  for (const entry of Object.values(bucketMap)) {
+    const isBuy = entry.side === 'buy'
+    result.push({
+      id: `${entry.time}-${entry.side}`,
+      time: entry.time,
+      // type: 'trade',
+      color: { background: 'transparent', border: 'transparent' },
+      imageUrl:
+      isBuy
+        ? `${urlPrefix}signals/marks/mark-buy-trade.png`
+        : `${urlPrefix}signals/marks/mark-sell-trade.png`,
+      label: isBuy ? 'B' : 'S',
+      labelFontColor: '#fff',
+      minSize: 20,
+      hoveredBorderWidth: 0,
+      // position: isBuy ? 'below' : 'above',
+      borderWidth: 0,
+      text: `${isBuy ? '买' : '卖'} $${formatNumber(entry.volume)} ${formatDate(entry.time, 'HH:mm')}`,
+      showLabelWhenImageLoaded: false
+    })
+  }
+
+  // Sorting only at the end
+  return result.sort((a, b) => a.time - b.time)
+}
+
+
+export function initTradingViewIntervals(currentResolution: string, isSupportSecChains: boolean): string {
+  const QUICK_KEY = 'tradingview.IntervalWidget.quicks'
+  const RESOLUTION_KEY = 'tv_resolution'
+  const DEFAULT_LIST = ['1', '5', '15', '60', '240', '1D', '1W']
+  const SEC_LIST = ['1S', ...DEFAULT_LIST]
+
+  let list: string[]
+
+  const stored = localStorage.getItem(QUICK_KEY)
+  if (!stored) {
+    list = isSupportSecChains ? SEC_LIST : DEFAULT_LIST
+    localStorage.setItem(QUICK_KEY, JSON.stringify(list))
+    localStorage.setItem('tradingViewIntervalSet', 'true')
+  } else {
+    list = JSON.parse(stored)
+
+    const has1S = list.includes('1S')
+    const shouldHave1S = isSupportSecChains
+
+    if (shouldHave1S && !has1S) {
+      list.unshift('1S')
+      localStorage.setItem(QUICK_KEY, JSON.stringify(list))
+    } else if (!shouldHave1S && has1S) {
+      list = list.filter(i => i !== '1S')
+      localStorage.setItem(QUICK_KEY, JSON.stringify(list))
+    }
+  }
+
+  if (!list.includes(currentResolution)) {
+    const fallback = '15'
+    localStorage.setItem(RESOLUTION_KEY, fallback)
+    return fallback
+  }
+
+  return currentResolution
+}
+
+export function updateChartBackground(): void {
+  const key = 'tradingview.chartproperties'
+  const stored = localStorage.getItem(key)
+
+  if (!stored) return
+
+  try {
+    const properties = JSON.parse(stored)
+    const background = useThemeStore().theme === 'light' ? '#fff' : '#0A0B0D'
+
+    const changed =
+      properties.paneProperties?.background !== background ||
+      properties.paneProperties?.backgroundType !== 'solid'
+
+    if (changed) {
+      properties.paneProperties = {
+        ...properties.paneProperties,
+        background,
+        backgroundType: 'solid',
+      }
+      localStorage.setItem(key, JSON.stringify(properties))
+    }
+  } catch (e) {
+    console.warn(`[updateChartBackground] Invalid JSON in ${key}:`, e)
+  }
+}
+
+
+export function buildOrUpdateLastBarFromTx(
+  tx: WSTx,
+  tokenAddress: string,
+  lastBar: KLineBar | null,
+  intervalInSeconds: number | string
+): KLineBar | null {
+  const address = tokenAddress.toLowerCase()
+  const txTimeMs = tx.time * 1000
+
+  let price: number, volume: number
+  if (tx.from_address.toLowerCase() === address) {
+    price = parseFloat(tx.from_price_usd)
+    volume = parseFloat(tx.amount_usd)
+  } else if (tx.to_address.toLowerCase() === address) {
+    price = parseFloat(tx.to_price_usd)
+    volume = parseFloat(tx.amount_usd)
+  } else {
+    return null // 与该 token 无关
+  }
+  const interval = typeof intervalInSeconds === 'number' ? intervalInSeconds : Number(intervalInSeconds)
+
+  const barStartTime = Math.floor(txTimeMs / (interval * 1000)) * interval * 1000
+
+  // ✅ 时间过滤：必须 >= 当前 bar 的时间段起始时间
+  if (lastBar && txTimeMs < lastBar.time) return null
+
+  if (!lastBar || lastBar.time !== barStartTime) {
+    return {
+      time: barStartTime,
+      open: price,
+      high: price,
+      low: price,
+      close: price,
+      volume
+    }
+  }
+
+  return {
+    ...lastBar,
+    high: Math.max(lastBar.high, price),
+    low: Math.min(lastBar.low, price),
+    close: price,
+    volume: lastBar.volume + volume
+  }
+}
+
+export function waitForTradingView (): Promise<ChartingLibraryWidgetConstructor> {
+  return new Promise((resolve) => {
+    if (window?.TradingView?.widget) return resolve(window.TradingView.widget)
+    // 监听插件派发的事件
+    window.addEventListener('tradingview:ready', () => {
+      resolve(window.TradingView.widget)
+    })
+  })
+}
+
+

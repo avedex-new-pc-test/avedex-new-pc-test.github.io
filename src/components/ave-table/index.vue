@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {useElementSize} from "@vueuse/core";
-import type {Column} from "element-plus";
+import type {Column, TableV2Instance} from 'element-plus'
+import {useElementSize} from '@vueuse/core'
 
 const {t} = useI18n()
 const props = defineProps({
@@ -27,8 +27,22 @@ const props = defineProps({
 const slots = useSlots()
 const attrs = useAttrs()
 const {theme} = useThemeStore()
-const elTableV2 = ref(null)
-const {width: elTableWidth} = useElementSize(elTableV2)
+const tableRef = useTemplateRef<TableV2Instance>('tableRef')
+defineExpose({
+  scrollTo: (...args: Parameters<TableV2Instance['scrollTo']>) => {
+    tableRef.value?.scrollTo?.(...args)
+  },
+  scrollToLeft: (...args: Parameters<TableV2Instance['scrollToLeft']>) => {
+    tableRef.value?.scrollToLeft?.(...args)
+  },
+  scrollToTop: (...args: Parameters<TableV2Instance['scrollToTop']>) => {
+    tableRef.value?.scrollToTop?.(...args)
+  },
+  scrollToRow: (...args: Parameters<TableV2Instance['scrollToRow']>) => {
+    tableRef.value?.scrollToRow?.(...args)
+  }
+})
+const {width: elTableWidth} = useElementSize(tableRef)
 
 // 只收集 el-table-v2 的官方默认插槽
 const TABLE_V2_DEFAULT_SLOTS = [
@@ -89,7 +103,7 @@ function getAvgWidth() {
     <template #default="{ height, width }">
       <!-- 透传所有 $attrs，支持 el-table-v2 的其它属性 -->
       <ElTableV2
-        ref="elTableV2"
+        ref="tableRef"
         v-bind="attrs"
         :columns="computedColumns"
         :data="data"

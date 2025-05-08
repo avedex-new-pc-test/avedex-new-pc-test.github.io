@@ -231,7 +231,7 @@ export function bindEmailAccount(data: {
 }) {
   const { $api } = useNuxtApp()
   return $api('/botapi/user/bindEmailAccount', {
-    method: 'get',
+    method: 'post',
     body: data
   })
 }
