@@ -17,6 +17,7 @@ export const useThemeStore = defineStore('theme', () => {
 
   const updateDomClass = () => {
     document.documentElement.classList.toggle('dark', theme.value === 'dark')
+    document.documentElement.classList.toggle('light', theme.value === 'light')
   }
 
   // 初始化时调用

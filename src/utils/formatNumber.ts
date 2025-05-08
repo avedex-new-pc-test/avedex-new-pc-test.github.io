@@ -171,17 +171,16 @@ function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0
   return formatNumShort(formatNumUnit(n, decimals, unit), l)
 }
 
-export function formatNumber(n: string | number, config: { decimals?: number; l?: number; limit?: number } = {}) {
-  let config1 = config
+export function formatNumber(n: string | number, config: { decimals?: number; l?: number; limit?: number } | number = {}) {
+  let config1: { decimals?: number; l?: number; limit?: number }  = {}
   if (typeof config === 'number') {
     config1 = {
       decimals: config,
     }
   }
-  // eslint-disable-next-line prefer-const
-  let { decimals, l, limit } = config1
-  decimals = decimals ?? 1
-  l = l || 4
+  const decimals = config1?.decimals ?? 1
+  const l = config1?.l || 4
+  const limit = config1?.limit
   const unit = limit ? 10 ** limit : 10000
   return formatNumber2(n, decimals, l, unit)
 }
