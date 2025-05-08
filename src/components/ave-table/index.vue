@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type {Column, TableV2Instance} from "element-plus"
-import {useElementSize} from "@vueuse/core"
+import type {Column, TableV2Instance} from 'element-plus'
+import {useElementSize} from '@vueuse/core'
 
 const {t} = useI18n()
 const props = defineProps({

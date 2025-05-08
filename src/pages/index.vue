@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang='ts'>
-import Demo from "~/components/ave-table/demo.vue";
+import Demo from '~/components/ave-table/demo.vue'
 </script>
 <style>
 

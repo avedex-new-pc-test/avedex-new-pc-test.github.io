@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {RowEventHandlers} from 'element-plus'
-import type {AveTable} from "#components"
+import type {AveTable} from '#components'
 
 const columns = [
   {key: 'name', dataKey: 'name', title: '姓名', width: 100},
