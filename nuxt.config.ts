@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-04-24',
   srcDir: 'src/',
   devtools: {
-    enabled: !isProd
+    enabled: false
   },
   modules: [
     '@nuxt/eslint',
@@ -53,6 +53,7 @@ export default defineNuxtConfig({
     // 'uno.css',
     '@/assets/css/reset.css',
     '@/assets/css/var.scss',
+    '@/assets/css/style.scss',
     '@/assets/css/element-plus/reset.scss'
   ],
   plugins: [
