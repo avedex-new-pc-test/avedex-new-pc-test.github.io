@@ -32,7 +32,16 @@ export default defineNuxtConfig({
     // 可根据情况配置：
     // mode: 'auto' | 'local' | 'cdn'
     // 推荐用 'auto' 或 'cdn' 来避免本地构建限制
-    mode: 'auto'
+    mode: 'auto',
+    // 配置自定义图标集合
+    // 自定义icon 放在 ./src/assets/icons 文件夹下 svg, 单色图标 需要将 svg 里 fill 改成 currentColor 这样可以修改颜色
+    // 使用方式  <Icon name="custom:dark" class="text-20px color-green" />
+    customCollections: [
+      {
+        prefix: 'custom',
+        dir: './src/assets/icons'
+      },
+    ]
   },
   generate: {
     // routes: [
@@ -164,7 +173,8 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}']
+      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}'],
+      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 设置为 3 MiB
     },
   },
 
