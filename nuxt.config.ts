@@ -62,6 +62,7 @@ export default defineNuxtConfig({
     // 'uno.css',
     '@/assets/css/reset.css',
     '@/assets/css/var.scss',
+    '@/assets/css/style.scss',
     '@/assets/css/element-plus/reset.scss'
   ],
   plugins: [
