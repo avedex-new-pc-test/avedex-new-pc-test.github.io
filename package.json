@@ -9,7 +9,9 @@
     "preview": "nuxt preview --dotenv .env.production",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "addvars": "node ./scripts/addVars",
+    "addlang": "node ./scripts/migrate.cjs"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.2",

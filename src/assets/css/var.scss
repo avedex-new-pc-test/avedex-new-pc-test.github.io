@@ -1,11 +1,13 @@
 :root {
   &.dark{
-    // 规范：颜色相同省略为 3 位，所有都用小写
-    --d-333-l-ececec: #333;
+    // 规范：颜色相同省略为 3 位，所有都用大写
+    --d-333-l-ECECEC: #333;
+    --d-333-l-F5F5F5: #333;
   }
 
   &.light{
-    --d-333-l-ececec: #ececec;
+    --d-333-l-ECECEC: #ECECEC;
+    --d-333-l-F5F5F5: #F5F5F5;
   }
 }
 

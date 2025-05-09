@@ -3,5 +3,15 @@
   "connectWallet": "連接錢包",
   "kol_buy_tips": "最近有KOL買入",
   "smarter_buy_tips": "最近有聰明錢買入",
-  "smarter_sell_tips": "最近有聰明錢賣出"
+  "smarter_sell_tips": "最近有聰明錢賣出",
+  "favorites": "自選",
+  "attention1": "關注",
+  "holding": "持倉",
+  "hideRiskTokenShort": "隱藏高風險",
+  "hideSmallAssets1": "隱藏小額",
+  "defaultGroup": "默認分組",
+  "token": "幣種",
+  "balance1": "餘額",
+  "price": "價格",
+  "hotList": "熱門榜"
 }

@@ -5,5 +5,13 @@
   "noData": "Không có dữ liệu",
   "kol_buy_tips": "KOL vừa mua",
   "smarter_buy_tips": "Tiền thông minh vừa mua",
-  "smarter_sell_tips": "Tiền thông minh vừa bán"
+  "smarter_sell_tips": "Tiền thông minh vừa bán",
+  "favorites": "Yêu thích",
+  "attention1": "Đang theo dõi",
+  "hideRiskTokenShort": "Ẩn rủi ro cao",
+  "hideSmallAssets1": "Ẩn nhỏ",
+  "defaultGroup": "Mặc định",
+  "token": "Token",
+  "balance1": "Số dư",
+  "price": "Giá"
 }
