@@ -22,7 +22,7 @@
   /* min-width:1200px; */
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
-  font-family: 'DINPro-Medium', 'IBMPlexSans-Medium', 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  font-family: 'DINPro-Medium', sans-serif;
   /* background: #fff; */
 }
 /**

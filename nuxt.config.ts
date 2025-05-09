@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/eslint',
-    // '@nuxt/fonts',
+    '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
@@ -26,6 +26,23 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE,
       ga: process.env.NUXT_PUBLIC_GA
+    }
+  },
+  fonts: {
+    families: [
+      {
+        name: 'DINPro-Medium',
+        src: '/fonts/DINPro-Medium.woff2',
+        global: true,
+        weight: 'normal',
+        style: 'normal',
+        // unicodeRange: 'U+0030-0039',
+        preload: true
+      }
+    ],
+    providers: {
+      google: false,
+      googleicons: false
     }
   },
   icon: {
