@@ -5,5 +5,13 @@
   "noData": "Нет данных",
   "kol_buy_tips": "Недавние покупки KOL",
   "smarter_buy_tips": "Недавние покупки умных денег",
-  "smarter_sell_tips": "Недавние продажи умных денег"
+  "smarter_sell_tips": "Недавние продажи умных денег",
+  "favorites": "Избранное",
+  "attention1": "Подписки",
+  "hideRiskTokenShort": "Скрыть высокий риск",
+  "hideSmallAssets1": "Скрыть малые",
+  "defaultGroup": "По умолчанию",
+  "token": "Токен",
+  "balance1": "Баланс",
+  "price": "Цена"
 }

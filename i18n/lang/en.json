@@ -5,5 +5,15 @@
   "noData": "No Data",
   "kol_buy_tips": "KOLs bought recently",
   "smarter_buy_tips": "Smart money bought recently",
-  "smarter_sell_tips": "Smart money sold recently"
+  "smarter_sell_tips": "Smart money sold recently",
+  "favorites": "Fav",
+  "attention1": "Following",
+  "holding": "Holding",
+  "hideRiskTokenShort": "Hide high-risk ",
+  "hideSmallAssets1": "Hide Small",
+  "defaultGroup": "Default",
+  "token": "Token",
+  "balance1": "Balance",
+  "price": "Price",
+  "hotList": "Hot List"
 }

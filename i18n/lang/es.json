@@ -5,5 +5,10 @@
   "noData": "Sin datos",
   "kol_buy_tips": "KOLs compraron recientemente",
   "smarter_buy_tips": "Dinero inteligente compró recientemente",
-  "smarter_sell_tips": "Dinero inteligente vendió recientemente"
+  "smarter_sell_tips": "Dinero inteligente vendió recientemente",
+  "favorites": "Favorito",
+  "attention1": "Siguiendo",
+  "defaultGroup": "Predeterminado",
+  "token": "Token",
+  "price": "Precio"
 }

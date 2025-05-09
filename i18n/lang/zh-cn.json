@@ -7,5 +7,15 @@
   "noData": "无复制内容",
   "kol_buy_tips": "最近有KOL买入",
   "smarter_buy_tips": "最近有聪明钱买入",
-  "smarter_sell_tips": "最近有聪明钱卖出"
+  "smarter_sell_tips": "最近有聪明钱卖出",
+  "favorites": "自选",
+  "attention1": "关注",
+  "holding": "持仓",
+  "hideRiskTokenShort": "隐藏高风险",
+  "hideSmallAssets1": "隐藏小额",
+  "defaultGroup": "默认分组",
+  "token": "币种",
+  "balance1": "余额",
+  "price": "价格",
+  "hotList": "热门榜"
 }

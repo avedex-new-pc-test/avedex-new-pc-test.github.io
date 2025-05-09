@@ -5,5 +5,10 @@
   "noData": "Veri Yok",
   "kol_buy_tips": "KOLlerin yakın zamanda aldığı",
   "smarter_buy_tips": "Akıllı para yakın zamanda satın alındı",
-  "smarter_sell_tips": "Akıllı para yakın zamanda satıldı"
+  "smarter_sell_tips": "Akıllı para yakın zamanda satıldı",
+  "favorites": "Favoriler",
+  "attention1": "Favori",
+  "defaultGroup": "Varsayılan Grup",
+  "token": "Token",
+  "price": "Fiyat"
 }

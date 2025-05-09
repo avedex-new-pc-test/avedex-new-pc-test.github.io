@@ -5,5 +5,10 @@
   "noData": "Sem dados",
   "kol_buy_tips": "KOLs comprados recentemente",
   "smarter_buy_tips": "Dinheiro inteligente comprado recentemente",
-  "smarter_sell_tips": "Dinheiro inteligente vendido recentemente"
+  "smarter_sell_tips": "Dinheiro inteligente vendido recentemente",
+  "favorites": "Favorito",
+  "attention1": "Seguindo",
+  "defaultGroup": "Inadimplência ",
+  "token": "Símbolo",
+  "price": "Preço"
 }
