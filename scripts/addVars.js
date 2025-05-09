@@ -90,7 +90,7 @@ function updateCssVars(cssFile, varName) {
 }
 
 // 用法示例
-const cssFile = path.resolve('../src/assets/css/var.scss') // 你的 CSS 文件路径
+const cssFile = path.resolve('./src/assets/css/var.scss') // 你的 CSS 文件路径
 const args = process.argv.slice(2)
 args.forEach(varName=>{
   updateCssVars(cssFile, varName)
