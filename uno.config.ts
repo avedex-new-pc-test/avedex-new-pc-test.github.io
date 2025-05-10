@@ -3,7 +3,8 @@ import {
   presetAttributify,
   presetIcons,
   // presetWebFonts,
-  presetWind3
+  presetWind3,
+  transformerDirectives
 } from 'unocss'
 
 export default defineConfig({
@@ -25,5 +26,6 @@ export default defineConfig({
     //     mono: 'DM Mono',
     //   },
     // }),
-  ]
+  ],
+  transformers: [transformerDirectives()]
 })
