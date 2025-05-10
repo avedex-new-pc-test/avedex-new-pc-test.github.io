@@ -216,5 +216,20 @@ export default defineNuxtConfig({
     bundle: {
       optimizeTranslationDirective: false
     }
+  },
+  hooks: {
+    'pages:extend'(pages) {
+      // 过滤 pages下 _ 开头 和 components 不进入路由
+      const ignoredDirs = ['components']
+      const isIgnored = (path: string) =>
+        ignoredDirs.some(dir => path.includes(dir)) ||
+        path.split('/').some(segment => segment.startsWith('_'))
+
+      for (let i = pages.length - 1; i >= 0; i--) {
+        if (isIgnored(pages[i].path)) {
+          pages.splice(i, 1)
+        }
+      }
+    }
   }
 })
