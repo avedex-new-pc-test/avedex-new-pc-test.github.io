@@ -4,7 +4,6 @@ import sha1 from 'crypto-js/sha1'
 import { PublicKey } from '@solana/web3.js'
 import { TronWeb } from 'tronweb'
 import TonWeb from 'tonweb'
-import langs from './botLang.json'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 
 export function isJSON (str: string) {
@@ -88,18 +87,23 @@ export function getTimezone() {
   }
 }
 
-export function getAddressAndChainFromId(id: string, type: 0 | 1) {
-  if (!id || !id?.includes?.('-')) {
+export function getAddressAndChainFromId(id: string, type: 1): [string, string]
+export function getAddressAndChainFromId(id: string, type?: number): { address: string; chain: string }
+export function getAddressAndChainFromId(id: string, type: number = 0) {
+  if (!id || !id.includes('-')) {
     if (type === 1) {
-      return ['', '']
+      return ['', ''] as [string, string]
     }
     return { address: '', chain: '' }
   }
-  const address = id?.replace(/-[^-]+$/g, '')
-  const chain = id?.replace?.(new RegExp(`^${address}-`), '')
+
+  const address = id.replace(/-[^-]+$/, '')
+  const chain = id.slice(address.length + 1) // 更安全、性能更好
+
   if (type === 1) {
-    return [address, chain]
+    return [address, chain] as [string, string]
   }
+
   return { address, chain }
 }
 
@@ -362,54 +366,6 @@ export function openBrowser(url: string, type: 'token' | 'address' | 'tx', chain
 }
 
 
-export function formatBotError(msg: string) {
-  const locale = localStorage.language
-  if (locale?.includes('zh')) {
-    const msgsTimeout = [
-      'transaction confirmation on chain timeout',
-      'transaction confirmation on chain timeout, please check on solscan',
-      'bundle confirmation on chain timeout, please check on solscan',
-      'transaction already sent but confirmation on chain timeout',
-      'transaction confirmation on chain timeout, please check message hash in tonviewer',
-    ]
-    if (msgsTimeout?.some?.((i) => msg?.includes?.(i))) {
-      return '链上交易确认超时, 自行查看交易状态'
-    }
-    const timeoutMsgs = ['Limit Swap Time Out', 'auto cancelled due to timeout']
-    if (timeoutMsgs?.some?.((i) => new RegExp(i, 'gi').test(msg))) {
-      return '限价单时间到期'
-    }
-    if (new RegExp('auto cancelled due to no token', 'gi').test(msg)) {
-      return '在其他订单中, 已卖空该token'
-    }
-    if (new RegExp('auto cancel when limit sell token out', 'gi').test(msg)) {
-      return '在其他订单中, 已卖空该token'
-    }
-    if (
-      new RegExp(
-        'Please avoid placing orders with the same amount at similar prices. You can either use a different trade amount, or more than 40% of the price difference from other orders for the same token',
-        'gi'
-      ).test(msg)
-    ) {
-      return '请避免以相似的价格下相同数量的订单。您可以使用不同的交易金额，也可以使用相同代币与其他订单差价的40%以上。'
-    }
-    return (langs as Record<string, string>)?.[msg] || msg
-  } else if (locale?.includes('en')) {
-    if (msg === 'insufficient balance') {
-      return 'Insufficient balance. Keep at least 0.006 SOL after the transaction.'
-    }
-  }
-  return msg
-}
-
-export function handleBotError(err: any) {
-  const msg =
-    typeof err === 'string'
-      ? err
-      : err?.data?.message || err?.message || err?.msg
-  ElNotification({ title: 'Error', type: 'error', message: formatBotError(msg) })
-}
-
 
 export function getChainDefaultIconColor(chain: string) {
   const theme = useThemeStore().theme
@@ -456,3 +412,4 @@ export function formatIconTag(src: string) {
     ? `${urlPrefix}signals/${src}.png`
     : IconUnknown
 }
+

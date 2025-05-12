@@ -1,10 +1,10 @@
 export function login(data: {
-  username: string
-  firstName: string
+  username?: string
+  firstName?: string
   tgUid: string
-  loginAt: number
+  loginAt?: number
   signature: string
-  evmAddress: string
+  evmAddress?: string
 }): Promise<{
   tgUsername: string
   tgFirstName: string
@@ -264,7 +264,15 @@ export function getBotWallets(chain: string) {
 // getWalletsAllChain
 export function bot_getWalletsAllChain(params: {
   chain?: string
-}={}) {
+}={}): Promise<Array<{
+  tgUid: string
+  evmAddress: string
+  name: string
+  addresses: Array<{
+    chain: string
+    address: string
+  }>
+}>> {
   const { $api } = useNuxtApp()
 
   return $api('/botapi/user/getWalletsAllChain', {

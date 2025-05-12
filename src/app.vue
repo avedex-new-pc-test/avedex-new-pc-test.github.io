@@ -10,6 +10,7 @@
   function init() {
     useConfigStore().getChainConfig()
     useConfigStore().getGlobalConfig()
+    useBotStore().getUserInfo()
   }
 
   onBeforeMount(() => {

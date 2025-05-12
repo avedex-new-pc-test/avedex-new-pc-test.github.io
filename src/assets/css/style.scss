@@ -1,3 +1,10 @@
 html, body {
     background: var(--d-0A0B0C-l-fff)
 }
+
+.clickable {
+  cursor: pointer;
+  &:active {
+    opacity: 0.5;
+  }
+}

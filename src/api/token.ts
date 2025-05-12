@@ -1,3 +1,34 @@
+import type { TokenInfo, TokenInfoExtra } from './types/token'
+
+export function getTokenInfo(id: string): Promise<null | TokenInfo> {
+  let { address, chain } = getAddressAndChainFromId(id)
+  if (!address || !chain) {
+    return Promise.resolve(null)
+  }
+  let id1 = id
+  if (address === NATIVE_TOKEN) {
+    let address1 = getChainInfo(chain)?.wmain_wrapper
+    id1 = address1 + '-' + chain
+  }
+  const { $api } = useNuxtApp()
+  return $api(`/v1api/v3/tokens/${id1}`)
+}
+
+export function getTokenInfoExtra(id: string): Promise<null | TokenInfoExtra> {
+  let { address, chain } = getAddressAndChainFromId(id)
+  if (!address || !chain) {
+    return Promise.resolve(null)
+  }
+  let id1 = id
+  if (address === NATIVE_TOKEN) {
+    let address1 = getChainInfo(chain)?.wmain_wrapper
+    id1 = address1 + '-' + chain
+  }
+  const { $api } = useNuxtApp()
+  return $api(`/v1api/v2/tokens/${id1}/extraDetail`)
+}
+
+
 // 获取 K 线历史数据
 export function getKlineHistoryData(data: {
   interval: string
