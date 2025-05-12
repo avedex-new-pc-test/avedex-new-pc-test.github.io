@@ -5,6 +5,8 @@ import { useLocalStorage } from '@vueuse/core'
 export const useThemeStore = defineStore('theme', () => {
   const theme = useLocalStorage<'light' | 'dark'>('app-theme', 'dark')
 
+  const isDark = computed(() => theme.value === 'dark')
+
   const toggleTheme = () => {
     theme.value = theme.value === 'light' ? 'dark' : 'light'
     updateDomClass()
@@ -23,5 +25,5 @@ export const useThemeStore = defineStore('theme', () => {
   // 初始化时调用
   updateDomClass()
 
-  return { theme, toggleTheme, setTheme }
+  return { theme, isDark, toggleTheme, setTheme }
 })

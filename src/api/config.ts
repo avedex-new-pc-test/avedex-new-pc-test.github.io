@@ -1,5 +1,5 @@
-import type Configs from '@/utils/config.json'
-import type Chains from '@/utils/chains.json'
+import type Configs from '@/utils/json/config.json'
+import type Chains from '@/utils/json/chains.json'
 
 // 获取 chain 全局一些配置
 export function getChainConfig(): Promise<typeof Chains> {

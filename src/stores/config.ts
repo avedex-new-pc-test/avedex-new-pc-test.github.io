@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 import { getGlobalConfig as _getGlobalConfig,  getChainConfig as _getChainConfig } from '@/api/config'
-import chains from '@/utils/chains.json'
-import configs from '@/utils/config.json'
+import chains from '@/utils/json/chains.json'
+import configs from '@/utils/json/config.json'
 
 type GlobalConfig = Awaited<ReturnType<typeof _getGlobalConfig>>
 type ChainConfig = Awaited<ReturnType<typeof _getChainConfig>>

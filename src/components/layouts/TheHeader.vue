@@ -1,6 +1,6 @@
 <template>
-  <header>
-    <div class="flex">
+  <header class="min-w-100vw">
+    <div class="flex items-center">
       <NuxtLink to="/"><img src="~/assets/images/logo.svg" /></NuxtLink>
       <ul class="menu ml-20px">
         <li v-for="(item, $index) in list" :key="$index">
@@ -9,12 +9,20 @@
           </NuxtLink>
         </li>
       </ul>
+      <Icon class="clickable ml-auto text-20px" :name="themeStore.isDark ? 'custom:dark' : 'custom:light'" @click.stop="themeStore.toggleTheme()" />
+      <el-button v-if="!botStore.evmAddress" class="ml-10px" @click="botStore.tgLogin">tg登录</el-button>
+      <el-popover v-else placement="bottom" trigger="click">
+        <template #reference>
+          <el-button class="ml-10px">{{ botStore.userInfo?.name || '' }}</el-button>
+        </template>
+        <div class="text-center clickable" @click.stop="botStore.logout">退出登录</div>
+      </el-popover>
     </div>
-    <button @click="themeStore.toggleTheme()"> 切换主题</button>
   </header>
 </template>
 <script lang="ts" setup>
 const themeStore= useThemeStore()
+const botStore = useBotStore()
 const route = useRoute()
 const list = shallowRef([
   { id: 'index', name: 'Home', src: '/' },
