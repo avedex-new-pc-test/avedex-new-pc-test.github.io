@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({
+const {row} = defineProps({
   row: {
     type: Object,
     default: () => ({})
@@ -14,6 +14,12 @@ defineProps({
   }
 })
 const {token_logo_url} = useConfigStore()
+const shouldAddPrefix = computed(() => {
+  if (row.logo_url) {
+    return row.logo_url.indexOf(token_logo_url) === -1
+  }
+  return false
+})
 </script>
 
 <template>
@@ -21,9 +27,11 @@ const {token_logo_url} = useConfigStore()
     <el-image
       :class="`mr-3px rounded-full  block ${tokenClass}`"
       :style="{
-                  display:'block'
+         display:'block'
        }"
-      :src="`${token_logo_url}${row.logo_url}`"
+      :src="shouldAddPrefix
+      ?`${token_logo_url}${row.logo_url}`
+      : row.logo_url"
     >
       <template #error>
         <img class="w-full block" src="@/assets/images/icon-default.png" alt="">
