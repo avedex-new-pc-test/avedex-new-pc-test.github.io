@@ -134,7 +134,7 @@ export default defineNuxtConfig({
       }
     },
     optimizeDeps: {
-      // include: ['dayjs', 'lodash-unified']
+      include: ['lodash-unified'],
     },
     build: {
       minify: 'terser',

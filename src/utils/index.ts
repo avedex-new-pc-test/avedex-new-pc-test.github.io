@@ -1,4 +1,4 @@
-import timezoneObj from './timezone.json'
+import timezoneObj from './json/timezone.json'
 import dayjs from './day'
 import sha1 from 'crypto-js/sha1'
 import { PublicKey } from '@solana/web3.js'
