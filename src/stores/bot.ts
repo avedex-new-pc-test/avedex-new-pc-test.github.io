@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import { refreshAccessToken as _refAcc, login, bot_getWalletsAllChain } from '@/api/bot'
+import { refreshAccessToken as _refAcc, login, bot_getWalletsAllChain, bot_getWebConfig, bot_updateWebConfig } from '@/api/bot'
 import { createCacheRequest } from '@/utils/cacheRequest'
 import { tgLogin } from '@/utils/bot'
+import { useBotSettingStore } from './botSetting'
+import { deepMerge } from '@/utils'
 
 const _refreshAccessToken = createCacheRequest(_refAcc, 3000)
 
@@ -33,8 +35,6 @@ export const useBotStore = defineStore('bot', () => {
     })
   }
 
-
-
   function getUserInfo(evmAddress1 = '') {
     if (accessToken.value) {
       bot_getWalletsAllChain({chain: isSupportChains?.join(',')}).then(res => {
@@ -52,9 +52,42 @@ export const useBotStore = defineStore('bot', () => {
             evmAddress.value = walletList.value?.[0]?.evmAddress || ''
           }
         }
-        // 获取其他用户信息
+        // 获取用户交易配置信息
+        getWebConfig()
+        // 获取用户其他信息
       })
     }
+  }
+
+  function getWebConfig(chain = '') {
+    if (accessToken.value) {
+      return bot_getWebConfig(chain).then(res => {
+        const botSettings = useBotSettingStore().botSettings
+        if (chain) {
+          botSettings[chain] = deepMerge(botSettings[chain], res)
+        } else {
+          botSettings.value = deepMerge(botSettings.value, res)
+        }
+        return botSettings.value
+      })
+    }
+  }
+
+  let Timer: ReturnType<typeof setTimeout> | null = null
+  function updateWebConfig(data: { chain?: string, webConfig?: string } = {}) {
+    if (!accessToken.value) {
+      return
+    }
+
+    // 添加防抖
+    if (Timer) {
+      clearTimeout(Timer)
+      Timer = null
+    }
+    Timer = setTimeout(() => {
+      bot_updateWebConfig(data)
+    }, 1500)
+
   }
 
   function _login(data: Parameters<typeof login>[0]) {
@@ -83,6 +116,8 @@ export const useBotStore = defineStore('bot', () => {
     logout,
     login: _login,
     tgLogin,
-    getUserInfo
+    getUserInfo,
+    getWebConfig,
+    updateWebConfig
   }
 })

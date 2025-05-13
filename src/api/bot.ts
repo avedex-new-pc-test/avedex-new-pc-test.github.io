@@ -332,3 +332,12 @@ export function bot_getWebConfig(chain = ''): Promise<{
     return {}
   })
 }
+
+
+export function bot_updateWebConfig(data: { chain?: string, webConfig?: string } = {}) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/user/updateWebConfig', {
+    method: 'post',
+    body: data
+  })
+}
