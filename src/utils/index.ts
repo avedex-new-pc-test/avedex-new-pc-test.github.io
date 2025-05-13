@@ -413,3 +413,27 @@ export function formatIconTag(src: string) {
     : IconUnknown
 }
 
+export function deepMerge(target: any, source: any) {
+  if (Array.isArray(target) && Array.isArray(source)) {
+    // 如果是数组，直接覆盖
+    return source
+  } else if (typeof target === 'object' && typeof source === 'object') {
+    // 对象的合并逻辑
+    const result = { ...target }
+    for (const key in source) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (target.hasOwnProperty(key)) {
+        // 如果目标对象中已有该键，递归合并
+        result[key] = deepMerge(target[key], source[key])
+      } else {
+        // 如果目标对象中没有该键，直接添加
+        result[key] = source[key]
+      }
+    }
+    return result
+  } else {
+    // 基本类型覆盖
+    return source
+  }
+}
+

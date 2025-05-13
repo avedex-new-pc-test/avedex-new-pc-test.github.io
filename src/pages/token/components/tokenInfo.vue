@@ -1,6 +1,6 @@
 <template>
   <van-notice-bar
-    v-if="(tokenStore?.tokenInfo?.token?.risk_level || 0) < 0"
+    v-if="(tokenStore?.token?.risk_level || 0) < 0"
     left-icon="volume-o"
     color="#f00"
     :background="!themeStore.isDark ? '#ffa94d0d' : '#36131C'"
