@@ -40,14 +40,14 @@ export const useBotStore = defineStore('bot', () => {
       bot_getWalletsAllChain({chain: isSupportChains?.join(',')}).then(res => {
         walletList.value = res || []
         if (evmAddress1) {
-          let item = walletList.value?.find?.(i => i.evmAddress === evmAddress1)
+          const item = walletList.value?.find?.(i => i.evmAddress === evmAddress1)
           if (item) {
             evmAddress.value = evmAddress1
           } else {
             evmAddress.value = walletList.value?.[0]?.evmAddress || ''
           }
         } else {
-          let isWallet = walletList.value?.find?.(i => evmAddress.value === i?.evmAddress && userInfo.value?.addresses?.length === i?.addresses?.length)
+          const isWallet = walletList.value?.find?.(i => evmAddress.value === i?.evmAddress && userInfo.value?.addresses?.length === i?.addresses?.length)
           if (!isWallet) {
             evmAddress.value = walletList.value?.[0]?.evmAddress || ''
           }
@@ -71,8 +71,6 @@ export const useBotStore = defineStore('bot', () => {
     refreshToken.value = ''
     evmAddress.value = ''
   }
-
-
 
   return {
     accessToken,
