@@ -39,6 +39,7 @@ export const useConfigStore = defineStore('config', () => {
     chainConfig,
     globalConfig,
     getGlobalConfig,
-    getChainConfig
+    getChainConfig,
+    token_logo_url: globalConfig.value.token_logo_url || 'https://www.iconaves.com/'
   }
 })
