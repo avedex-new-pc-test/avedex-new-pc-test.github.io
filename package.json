@@ -31,6 +31,7 @@
     "tonweb": "^0.0.66",
     "tronweb": "^6.0.3",
     "unocss": "66.1.0-beta.12",
+    "unocss-preset-scrollbar-hide": "^1.0.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },

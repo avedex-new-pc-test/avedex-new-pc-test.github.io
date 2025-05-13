@@ -4,8 +4,9 @@ import {
   presetIcons,
   // presetWebFonts,
   presetWind3,
-  transformerDirectives
+  transformerDirectives,
 } from 'unocss'
+import {presetScrollbarHide} from 'unocss-preset-scrollbar-hide'
 
 export default defineConfig({
   shortcuts: [
@@ -19,6 +20,7 @@ export default defineConfig({
       scale: 1.2,
       warn: true,
     }),
+    presetScrollbarHide()
     // presetWebFonts({
     //   fonts: {
     //     sans: 'DM Sans',
