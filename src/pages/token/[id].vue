@@ -5,7 +5,7 @@
 <script setup lang='ts'>
 import { getTokenInfo, getTokenInfoExtra } from '~/api/token'
 import { useTokenStore } from '~/stores/token'
-let route = useRoute()
+const route = useRoute()
 const tokenStore = useTokenStore()
 
 function _getTokenInfo() {

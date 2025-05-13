@@ -1,11 +1,8 @@
 <template>
-  <div class="flex items-center">
-    <div>
-      <TheHeader />
-      <slot />
-      <TheFooter />
-    </div>
-
+  <div>
+    <TheHeader />
+    <slot />
+    <TheFooter />
   </div>
 </template>
 
