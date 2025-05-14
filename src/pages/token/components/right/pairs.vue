@@ -33,7 +33,7 @@
             </el-progress>
           </div>
           <NuxtLink class="main" :to="'/token/' + (item.target_token === item.token0_address ? item.token1_address : item.token0_address) + '-' + item.chain " > {{ item.target_token === item.token0_address ? item.token1_symbol : item.token0_symbol }}</NuxtLink>
-          <Icon v-if="item.is_fake" v-tooltip="$t('phoneyPool')" name="ri:error-warning-line"   class="ml-3px color-#ffbb19 relative top-2px"  />
+          <Icon v-if="item.is_fake" v-tooltip="$t('phoneyPool')" name="ri:error-warning-line" class="ml-3px color-#ffbb19 relative top-2px"  />
         </td>
         <td>
           <span class="main">{{ formatNumber((item.target_token === item.token0_address ? item.reserve0 : item.reserve1) || 0, 2) }}</span>
@@ -47,8 +47,8 @@
             </span>
           <br >
           <!-- 冲土狗的时候，这个流动性sol是个最容易判断涨跌的指标，需要醒目一点 -->
-          <span v-if="item.target_token === item.token0_address" :class="['main',new BigNumber(item.reserve1).gt(item.init_reserve1) ? 'green':'red']">{{ formatNumber(item.reserve1|| 0, 2) }}</span>
-          <span v-else class="main" :class="['main',new BigNumber(item.reserve0).gt(item.init_reserve0) ? 'green':'red']">{{ formatNumber(item.reserve0|| 0, 2) }}</span>
+          <span v-if="item.target_token === item.token0_address" :class="['main', item.isUp ? 'green':'red']">{{ formatNumber(item.reserve1|| 0, 2) }}</span>
+          <span v-else class="main" :class="['main', item.isUp ? 'green':'red']">{{ formatNumber(item.reserve0|| 0, 2) }}</span>
           <span class="minor">/
             <template v-if="item.init_reserve0 || item.init_reserve1">
               {{ formatNumber((item.target_token === item.token0_address ? item.init_reserve1 : item.init_reserve0 )|| 0, 2) }}
@@ -62,7 +62,7 @@
           <div class="text-right">
             <div class="flex items-center justify-end">
               <Icon v-if="item.amm === 'unknown'" v-tooltip="item.amm" name="tdesign:help-circle-filled" class="mr-5px color-#848E9C text-20px" />
-              <a v-else v-tooltip="item.amm" :href="item.swap_url + item.target_token" target="_blank" class="inline-flex">
+              <a v-else v-tooltip="item.ammName" :href="item.swap_url + item.target_token" target="_blank" class="inline-flex">
                 <img
                   class="rounded-50% mr-5px h-16px w-16px"
                   :src="formatIconSwap(item.amm)"
@@ -84,20 +84,26 @@
   </table>
   <div v-if="(pairs?.length || 0) > 1" class="collapse-button">
     <button @click.stop.prevent="show = !show">
-      <Icon name="solar:alt-arrow-down-line-duotone" :class="show ? 'collapse' : 'expand'" class="text-20px font-bold" />
+      <Icon name="solar:alt-arrow-down-line-duotone" :class="show ? 'collapse' : 'expand'" class="text-20px font-bold color-[--d-666-l-999]" />
     </button>
   </div>
 </template>
 
 <script setup lang='ts'>
 import { formatNumber } from '@/utils/formatNumber'
-import { formatIconSwap } from '@/utils/index'
+import { formatIconSwap, getSwapInfo } from '@/utils/index'
 import BigNumber from 'bignumber.js'
 const tokenStore = useTokenStore()
-const pairs = computed(() => tokenStore.pairs)
 const show = shallowRef(false)
 const percent = computed(() => (tokenStore?.tokenInfoExtra?.pair_lock_percent || 0) * 100 || 0)
 const visible = shallowRef(false)
+const pairs = computed(() => {
+  return tokenStore.pairs?.map(i => ({
+    ...i,
+    ammName: i.amm === 'unknown' ? i.amm : getSwapInfo(i.chain, i.amm)?.show_name || i.amm,
+    isUp: new BigNumber(i.reserve1).gt(i.init_reserve1)
+  }))
+})
 
 </script>
 

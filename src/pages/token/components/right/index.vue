@@ -18,7 +18,7 @@
         <div class="text-12px color-[--d-666-l-999]">DEV</div>
       </div>
     </div> -->
-    <div class="p-15px bg-[--d-111-l-FFF]">
+    <div class="p-15px bg-[--d-111-l-FFF] mt-4px">
       <Pairs />
     </div>
 
