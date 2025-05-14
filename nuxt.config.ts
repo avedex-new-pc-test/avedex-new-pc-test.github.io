@@ -209,7 +209,7 @@ export default defineNuxtConfig({
     ],
     defaultLocale: 'en',
     detectBrowserLanguage: false,
-    lazy: true, // 懒加载语言文件
+    lazy: false, // 懒加载语言文件
     strategy: 'no_prefix',
     langDir: './lang',
     vueI18n: './i18n.config.ts',
