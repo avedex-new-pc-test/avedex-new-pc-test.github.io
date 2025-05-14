@@ -1,8 +1,8 @@
 <template>
-  <div class="flex" style="min-height: calc(100vh - 100px);">
+  <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px" style="min-height: calc(100vh - 100px);">
     <div class="flex-1">
       <div class="h-64px bg-green">图表上方</div>
-      <div class="flex">
+      <div class="flex gap-4px">
         <div class="w-292px bg-red">左侧</div>
         <div class="flex-1">
           <div class="h-400px bg-yellow">图表</div>
@@ -10,13 +10,14 @@
         </div>
       </div>
     </div>
-    <div class="w-334px bg-blue">右侧</div>
+    <TokenRight class="w-334px" />
   </div>
 </template>
 
 <script setup lang='ts'>
 import { getTokenInfo, getTokenInfoExtra } from '~/api/token'
 import { useTokenStore } from '~/stores/token'
+import TokenRight from './components/right/index.vue'
 const route = useRoute()
 const tokenStore = useTokenStore()
 
@@ -24,6 +25,7 @@ function _getTokenInfo() {
   const id = route.params.id as string
   getTokenInfo(id).then(res => {
     tokenStore.tokenInfo = res
+    tokenStore.pairAddress = res?.pairs?.[0].pair || ''
   })
 }
 

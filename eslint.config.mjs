@@ -10,6 +10,10 @@ export default withNuxt({
   rules: {
     quotes: ['warn', 'single'],
     semi: ['error', 'never'],
-    '@typescript-eslint/no-explicit-any': 'off'
+    '@typescript-eslint/no-explicit-any': 'off',
+    'vue/no-multiple-template-root': 'off',
+    'vue/attribute-hyphenation': 'off',
+    'vue/no-v-html': 'off'
   }
 })
+

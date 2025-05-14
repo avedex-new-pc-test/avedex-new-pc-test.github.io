@@ -437,3 +437,9 @@ export function deepMerge(target: any, source: any) {
   }
 }
 
+export function formatIconSwap(src: string) {
+  return src && src !== 'unknown'
+    ? `${useConfigStore().token_logo_url}swap/${src}.jpeg`
+    : IconUnknown
+}
+
