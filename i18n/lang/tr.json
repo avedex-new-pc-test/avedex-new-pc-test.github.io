@@ -17,5 +17,17 @@
   "amount": "Miktar",
   "initial": "İlk",
   "poolCirculatingSupply": "Likidite",
-  "phoneyPool": "Şüpheli sahte havuz"
+  "phoneyPool": "Şüpheli sahte havuz",
+  "tokenInfo": "Token Bilgisi",
+  "name": "Ad",
+  "createdTime": "Oluşturulma Zamanı",
+  "totalSupply": "Toplam Arz",
+  "circulation": "Dolaşımdaki Arz",
+  "mcap": "Piyasa değeri",
+  "contractOwner": "Sahip",
+  "pair": "Çift",
+  "more": "Daha Fazla",
+  "expand": "Genişlet",
+  "website": "Web Sitesi",
+  "whitepaper": "Whitepaper"
 }

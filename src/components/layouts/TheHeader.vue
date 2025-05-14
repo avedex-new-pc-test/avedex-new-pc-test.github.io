@@ -1,6 +1,6 @@
 <template>
   <header class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px">
-    <NuxtLink to="/"><img src="~/assets/images/logo.svg" /></NuxtLink>
+    <NuxtLink to="/"><img src="~/assets/images/logo.svg" ></NuxtLink>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
         <NuxtLink :to="item.src" :class="{ active: item.id == route?.name }">
@@ -39,7 +39,7 @@
       trigger="click"
       placement="bottom"
       popper-class="dropdown-lang"
-      @command="handleSetLanguage"
+      @command="langStore.setLanguage"
     >
       <a class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center" href="" popper-class="dropdown-lang" @click.stop.prevent>
         <Icon class="text-20px text-[--d-999-l-666]" name="material-symbols:language" />
@@ -70,17 +70,12 @@
   </header>
 </template>
 <script lang="ts" setup>
-const { locales, locale } = useI18n()
+const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()
 const route = useRoute()
 const langStore = useLocaleStore()
-type LocaleType = ReturnType<typeof useI18n>['locale']['value']
-function handleSetLanguage(lang: LocaleType) {
-  console.log('lang: ', lang)
-  langStore.setLanguage(lang)
-  locale.value = lang
-}
+
 const list = shallowRef([
   { id: 'index', name: 'Market', src: '/' },
   { id: 'pump', name: 'PUMP', src: '/' },

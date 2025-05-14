@@ -20,5 +20,18 @@
   "amount": "Количество",
   "initial": "Начальный",
   "poolCirculatingSupply": "Ликвидность",
-  "phoneyPool": "Подозрительный пул"
+  "phoneyPool": "Подозрительный пул",
+  "tokenInfo": "Инфо о токене",
+  "name": "Название",
+  "createdTime": "Время создания",
+  "totalSupply": "Общая эмиссия",
+  "circulation": "В обращении",
+  "mcap": "Капитализация",
+  "FDV": "Полностью разводненная стоимость",
+  "contractOwner": "Владелец",
+  "pair": "Пара",
+  "more": "Больше",
+  "expand": "Развернуть",
+  "website": "Сайт",
+  "whitepaper": "Белая книга"
 }

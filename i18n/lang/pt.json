@@ -17,5 +17,17 @@
   "amount": "Quantidade ",
   "initial": "Inicial",
   "poolCirculatingSupply": "Liquidez ",
-  "phoneyPool": "Pool suspeito de ser falso"
+  "phoneyPool": "Pool suspeito de ser falso",
+  "tokenInfo": "Informações do token",
+  "name": "Nome",
+  "createdTime": "Criação",
+  "totalSupply": "Fornecimento total ",
+  "circulation": "Circulação",
+  "mcap": "M.Cap",
+  "contractOwner": "Proprietário",
+  "pair": "Par",
+  "more": "Mais",
+  "expand": "Expandir",
+  "website": "Local na rede Internet ",
+  "whitepaper": "Artigo técnico "
 }
