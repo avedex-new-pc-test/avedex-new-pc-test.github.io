@@ -20,5 +20,18 @@
   "amount": "數量",
   "initial": "初始",
   "poolCirculatingSupply": "池子大小",
-  "phoneyPool": "疑似假池子"
+  "phoneyPool": "疑似假池子",
+  "tokenInfo": "幣種信息",
+  "name": "名稱",
+  "createdTime": "創建時間",
+  "totalSupply": "有效總量",
+  "circulation": "流通供應量",
+  "mcap": "流通市值",
+  "FDV": "總市值",
+  "contractOwner": "擁有者",
+  "pair": "池子",
+  "more": "更多",
+  "expand": "收起",
+  "website": "官網",
+  "whitepaper": "白皮書"
 }

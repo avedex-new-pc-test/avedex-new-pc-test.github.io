@@ -20,5 +20,18 @@
   "amount": "Số lượng",
   "initial": "Ban đầu",
   "poolCirculatingSupply": "Thanh khoản",
-  "phoneyPool": "Nghi ngờ pool giả"
+  "phoneyPool": "Nghi ngờ pool giả",
+  "tokenInfo": "Thông tin token",
+  "name": "Tên",
+  "createdTime": "Thời gian tạo",
+  "totalSupply": "Tổng cung",
+  "circulation": "Lưu thông",
+  "mcap": "Vốn hóa",
+  "FDV": "Giá trị pha loãng hoàn toàn",
+  "contractOwner": "Chủ sở hữu",
+  "pair": "Cặp",
+  "more": "Thêm",
+  "expand": "Mở rộng",
+  "website": "Website",
+  "whitepaper": "Whitepaper"
 }

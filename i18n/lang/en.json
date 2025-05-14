@@ -22,5 +22,18 @@
   "amount": "Amount",
   "initial": "Initial",
   "poolCirculatingSupply": "Liquidity",
-  "phoneyPool": "Suspected fake pool"
+  "phoneyPool": "Suspected fake pool",
+  "tokenInfo": "Token Info",
+  "name": "Name",
+  "createdTime": "Created time",
+  "totalSupply": "Total Supply",
+  "circulation": "Circulation",
+  "mcap": "M.Cap",
+  "FDV": "FDV",
+  "contractOwner": "Owner",
+  "pair": "Pair",
+  "more": "More",
+  "expand": "Expand",
+  "website": "Website",
+  "whitepaper": "Whitepaper"
 }

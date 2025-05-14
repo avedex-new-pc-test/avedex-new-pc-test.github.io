@@ -21,6 +21,7 @@
     <div class="p-15px bg-[--d-111-l-FFF] mt-4px">
       <Pairs />
     </div>
+    <Overview class="px-15px pb-10px bg-[--d-111-l-FFF] mt-4px" />
 
   </div>
 </template>
@@ -30,6 +31,7 @@
   import PriceTabs from './priceTabs.vue'
   import VolumeStats from './volumeStats.vue'
   import Pairs from './pairs.vue'
+  import Overview from './overview.vue'
   import { useTokenStore } from '~/stores/token'
   const tokenStore = useTokenStore()
   const tabs: { id: '5m' | '1h' | '4h' | '24h'; name: string }[] = [
@@ -41,10 +43,5 @@
   const tabActive = useLocalStorage('token_tab_active', '24h') as RemovableRef<'5m' | '1h' | '4h' | '24h'>
   const tabActiveName = tabs.find(i => i.id === tabActive.value)?.name || ''
   const pair = computed(() => tokenStore.pair)
-  const token = computed(() => tokenStore.token)
-
 </script>
 
-<style>
-
-</style>
