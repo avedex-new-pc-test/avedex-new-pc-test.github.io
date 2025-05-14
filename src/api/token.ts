@@ -1,13 +1,13 @@
 import type { TokenInfo, TokenInfoExtra } from './types/token'
 
 export function getTokenInfo(id: string): Promise<null | TokenInfo> {
-  let { address, chain } = getAddressAndChainFromId(id)
+  const {address, chain} = getAddressAndChainFromId(id)
   if (!address || !chain) {
     return Promise.resolve(null)
   }
   let id1 = id
   if (address === NATIVE_TOKEN) {
-    let address1 = getChainInfo(chain)?.wmain_wrapper
+    const address1 = getChainInfo(chain)?.wmain_wrapper
     id1 = address1 + '-' + chain
   }
   const { $api } = useNuxtApp()
@@ -15,13 +15,13 @@ export function getTokenInfo(id: string): Promise<null | TokenInfo> {
 }
 
 export function getTokenInfoExtra(id: string): Promise<null | TokenInfoExtra> {
-  let { address, chain } = getAddressAndChainFromId(id)
+  const {address, chain} = getAddressAndChainFromId(id)
   if (!address || !chain) {
     return Promise.resolve(null)
   }
   let id1 = id
   if (address === NATIVE_TOKEN) {
-    let address1 = getChainInfo(chain)?.wmain_wrapper
+    const address1 = getChainInfo(chain)?.wmain_wrapper
     id1 = address1 + '-' + chain
   }
   const { $api } = useNuxtApp()
@@ -102,5 +102,41 @@ export function getUserKlineTxTags(data: {
     }
   }).catch(() => {
     return Promise.resolve([])
+  })
+}
+
+export interface GetHotTokensResponse {
+  token: string;
+  chain: string;
+  symbol: string;
+  holders: number;
+  current_price_usd: number;
+  price_change: number;
+  is_adv: number;
+  is_showasadv: number;
+  token_index: number;
+  front_show_index: number;
+  logo_url: string;
+  opening_at: number;
+  hot_rank: number;
+  tx_amount_24h: number;
+  tx_count_24h: number;
+  tx_volume_u_24h: number;
+  risk_score: number;
+  pool_size: number;
+  total: number;
+  lock_amount: number;
+  burn_amount: number;
+  other_amount: number;
+  amm: string;
+  mcap: number;
+  is_hot: number;
+  launchpad: string;
+}
+
+export function getHotTokens(): Promise<GetHotTokensResponse[]> {
+  const {$api} = useNuxtApp()
+  return $api('/v1api/v2/tokens/hot', {
+    method: 'get',
   })
 }
