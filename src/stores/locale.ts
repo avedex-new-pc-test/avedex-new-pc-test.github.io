@@ -10,6 +10,7 @@ export const useLocaleStore = defineStore('locale', () => {
   const locale = useLocalStorage('language', 'en') as  RemovableRef<LocaleType>
 
   function setLanguage(lang: LocaleType) {
+    console.log('-----111-------',lang)
     locale.value = lang
   }
   watch(locale, (val) => {

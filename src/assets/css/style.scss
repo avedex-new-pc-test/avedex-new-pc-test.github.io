@@ -8,3 +8,10 @@
     opacity: 0.5;
   }
 }
+.dropdown-lang {
+  .el-dropdown-menu__item {
+    &.active {
+      color: #3f80f7;
+    }
+  }
+}
