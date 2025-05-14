@@ -13,5 +13,12 @@
   "defaultGroup": "По умолчанию",
   "token": "Токен",
   "balance1": "Баланс",
-  "price": "Цена"
+  "price": "Цена",
+  "openPrice": "Начальная цена",
+  "24Exchange": "Оборот%",
+  "liquidityPair": "Пара",
+  "amount": "Количество",
+  "initial": "Начальный",
+  "poolCirculatingSupply": "Ликвидность",
+  "phoneyPool": "Подозрительный пул"
 }

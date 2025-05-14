@@ -1,0 +1,194 @@
+<template>
+  <table class="pairs-table">
+    <thead>
+      <tr>
+        <th>{{ $t('liquidityPair') }}</th>
+        <th>{{ $t('amount') }}/{{ $t('initial') }}</th>
+        <th>{{ $t('price') }}/{{ $t('poolCirculatingSupply') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        v-for="(item, index) in ((show ? pairs : pairs?.slice?.(0, 1)) || [])"
+        :key="item.pair"
+        :class="{ active: tokenStore.pairAddress === item.pair }"
+        @click.stop="tokenStore.switchPair(item.pair)"
+      >
+        <td>
+          <div class="main flex justify-start items-center">
+            <span>{{ item.target_token === item.token0_address ? item.token0_symbol : item.token1_symbol }}</span>
+            <el-progress
+              v-if="index === 0 && percent > 0"
+              class="progress clickable"
+              type="circle"
+              :percentage="percent"
+              color="#12B886"
+              :width="16"
+              :stroke-width="1.5"
+              indeterminate
+
+               @click.stop.prevent="visible = true"
+            >
+              <Icon class="text-10px color-[--d-666-l-999]" name="material-symbols:lock" />
+            </el-progress>
+          </div>
+          <NuxtLink class="main" :to="'/token/' + (item.target_token === item.token0_address ? item.token1_address : item.token0_address) + '-' + item.chain " > {{ item.target_token === item.token0_address ? item.token1_symbol : item.token0_symbol }}</NuxtLink>
+          <Icon v-if="item.is_fake" v-tooltip="$t('phoneyPool')" name="ri:error-warning-line"   class="ml-3px color-#ffbb19 relative top-2px"  />
+        </td>
+        <td>
+          <span class="main">{{ formatNumber((item.target_token === item.token0_address ? item.reserve0 : item.reserve1) || 0, 2) }}</span>
+            <span class="minor">/
+              <template v-if="item.init_reserve0 || item.init_reserve1">
+                {{ formatNumber((item.target_token === item.token0_address ? item.init_reserve0 : item.init_reserve1) || 0, 2) }}
+              </template>
+              <template v-else>
+                --
+              </template>
+            </span>
+          <br >
+          <!-- 冲土狗的时候，这个流动性sol是个最容易判断涨跌的指标，需要醒目一点 -->
+          <span v-if="item.target_token === item.token0_address" :class="['main',new BigNumber(item.reserve1).gt(item.init_reserve1) ? 'green':'red']">{{ formatNumber(item.reserve1|| 0, 2) }}</span>
+          <span v-else class="main" :class="['main',new BigNumber(item.reserve0).gt(item.init_reserve0) ? 'green':'red']">{{ formatNumber(item.reserve0|| 0, 2) }}</span>
+          <span class="minor">/
+            <template v-if="item.init_reserve0 || item.init_reserve1">
+              {{ formatNumber((item.target_token === item.token0_address ? item.init_reserve1 : item.init_reserve0 )|| 0, 2) }}
+            </template>
+            <template v-else>
+              --
+            </template>
+          </span>
+        </td>
+        <td>
+          <div class="text-right">
+            <div class="flex items-center justify-end">
+              <Icon v-if="item.amm === 'unknown'" v-tooltip="item.amm" name="tdesign:help-circle-filled" class="mr-5px color-#848E9C text-20px" />
+              <a v-else v-tooltip="item.amm" :href="item.swap_url + item.target_token" target="_blank" class="inline-flex">
+                <img
+                  class="rounded-50% mr-5px h-16px w-16px"
+                  :src="formatIconSwap(item.amm)"
+                  onerror="this.src='/icon-default.png'"
+                  height="16"
+                >
+              </a>
+              <span v-if="item.target_token === item.token0_address" class="main" v-html="'$' + formatNumber(item.token0_price_usd || 0, 2)" />
+              <span v-else class="main" v-html="'$' + formatNumber(item.token1_price_usd || 0, 2)" />
+            </div>
+            <div class="flex items-center justify-end">
+              <span v-if="item.target_token === item.token0_address" class="main">${{formatNumber(item.reserve1 * item.token1_price_usd * 2 || 0, 2)}}</span>
+              <span v-else class="main">${{formatNumber(item.reserve0 * item.token0_price_usd * 2 || 0,2)}}</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div v-if="(pairs?.length || 0) > 1" class="collapse-button">
+    <button @click.stop.prevent="show = !show">
+      <Icon name="solar:alt-arrow-down-line-duotone" :class="show ? 'collapse' : 'expand'" class="text-20px font-bold" />
+    </button>
+  </div>
+</template>
+
+<script setup lang='ts'>
+import { formatNumber } from '@/utils/formatNumber'
+import { formatIconSwap } from '@/utils/index'
+import BigNumber from 'bignumber.js'
+const tokenStore = useTokenStore()
+const pairs = computed(() => tokenStore.pairs)
+const show = shallowRef(false)
+const percent = computed(() => (tokenStore?.tokenInfoExtra?.pair_lock_percent || 0) * 100 || 0)
+const visible = shallowRef(false)
+
+</script>
+
+<style scoped lang="scss">
+.pairs-table {
+  width: calc(100% + 30px);
+  font-size: 12px;
+  line-height: 1.5;
+  border-spacing: 0 2px;
+  margin-left: -15px;
+  color: var(--d-666-l-999);
+  border-collapse: collapse;
+  th {
+    text-align: center;
+    font-size: 12px;
+    color: var(--d-666-l-999);
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  td {
+    text-align: center;
+    padding: 5px 3px;
+    word-break: break-word;
+    vertical-align: top;
+    &:nth-child(1) {
+      padding: 5px 0;
+    }
+  }
+  tr {
+    cursor: pointer;
+    td:first-child,
+    th:first-child {
+      text-align: left;
+      padding-left: 15px;
+    }
+    td:nth-child(2),
+    th:nth-child(2) {
+      text-align: right;
+    }
+    td:last-child,
+    th:last-child {
+      text-align: right;
+      padding-right: 15px;
+    }
+    .main {
+      text-decoration: none;
+      color: var(--d-666-l-999);
+    }
+    &.active {
+      td {
+        background: var(--d-151517-l-F6F6F6);
+      }
+      .main {
+        color: var(--d-F5F5F5-l-333);
+        &.red{
+          color:#F6465D
+        }
+        &.green{
+          color:#12B886
+        }
+      }
+    }
+  }
+}
+
+.progress {
+  margin-left: 3px;
+  :deep().el-progress__text {
+    min-width: 12px;
+  }
+}
+.collapse-button {
+  font-size: 16px;
+  color: var(--d-666-l-999);
+  line-height: 1;
+  padding: 0;
+  text-align: center;
+  cursor: pointer;
+  button {
+    border: none;
+    background: transparent;
+    padding: 0 5px;
+    cursor: pointer;
+  }
+  .collapse {
+    transition: all 0.5s;
+    transform: rotateZ(180deg);
+  }
+  .expand {
+    transition: all 0.5s;
+    // transform: rotateZ(180deg);
+  }
+}
+</style>

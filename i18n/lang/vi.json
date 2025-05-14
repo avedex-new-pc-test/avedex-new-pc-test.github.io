@@ -13,5 +13,12 @@
   "defaultGroup": "Mặc định",
   "token": "Token",
   "balance1": "Số dư",
-  "price": "Giá"
+  "price": "Giá",
+  "openPrice": "Giá khởi điểm",
+  "24Exchange": "Tỷ lệ giao dịch",
+  "liquidityPair": "Cặp",
+  "amount": "Số lượng",
+  "initial": "Ban đầu",
+  "poolCirculatingSupply": "Thanh khoản",
+  "phoneyPool": "Nghi ngờ pool giả"
 }

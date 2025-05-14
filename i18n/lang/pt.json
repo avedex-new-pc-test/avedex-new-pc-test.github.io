@@ -10,5 +10,12 @@
   "attention1": "Seguindo",
   "defaultGroup": "Inadimplência ",
   "token": "Símbolo",
-  "price": "Preço"
+  "price": "Preço",
+  "openPrice": "Preço Inicial",
+  "24Exchange": "Volume",
+  "liquidityPair": "Par",
+  "amount": "Quantidade ",
+  "initial": "Inicial",
+  "poolCirculatingSupply": "Liquidez ",
+  "phoneyPool": "Pool suspeito de ser falso"
 }

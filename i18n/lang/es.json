@@ -10,5 +10,12 @@
   "attention1": "Siguiendo",
   "defaultGroup": "Predeterminado",
   "token": "Token",
-  "price": "Precio"
+  "price": "Precio",
+  "openPrice": "Precio inicial",
+  "24Exchange": "Rotación%.",
+  "liquidityPair": "Par",
+  "amount": "Cantidad",
+  "initial": "Inicial",
+  "poolCirculatingSupply": "Liquidez",
+  "phoneyPool": "Posible pool falso."
 }

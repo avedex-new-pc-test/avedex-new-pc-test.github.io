@@ -17,5 +17,12 @@
   "token": "币种",
   "balance1": "余额",
   "price": "价格",
-  "hotList": "热门榜"
+  "hotList": "热门榜",
+  "openPrice": "开盘价格",
+  "24Exchange": "24H换手率",
+  "liquidityPair": "池子配对",
+  "amount": "数量",
+  "initial": "初始",
+  "poolCirculatingSupply": "池子大小",
+  "phoneyPool": "疑似假池子"
 }

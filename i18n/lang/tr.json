@@ -10,5 +10,12 @@
   "attention1": "Favori",
   "defaultGroup": "Varsayılan Grup",
   "token": "Token",
-  "price": "Fiyat"
+  "price": "Fiyat",
+  "openPrice": "Başlangıç fiyatı",
+  "24Exchange": "24 saatlik işlem hacmi",
+  "liquidityPair": "Çift",
+  "amount": "Miktar",
+  "initial": "İlk",
+  "poolCirculatingSupply": "Likidite",
+  "phoneyPool": "Şüpheli sahte havuz"
 }

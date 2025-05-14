@@ -15,5 +15,12 @@
   "token": "Token",
   "balance1": "Balance",
   "price": "Price",
-  "hotList": "Hot List"
+  "hotList": "Hot List",
+  "openPrice": "Initial Price",
+  "24Exchange": "Turnover%",
+  "liquidityPair": "Pair",
+  "amount": "Amount",
+  "initial": "Initial",
+  "poolCirculatingSupply": "Liquidity",
+  "phoneyPool": "Suspected fake pool"
 }
