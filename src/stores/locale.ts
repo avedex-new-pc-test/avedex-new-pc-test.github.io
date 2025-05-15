@@ -8,9 +8,9 @@ type LocaleType = ReturnType<typeof useI18n>['locale']['value']
 
 export const useLocaleStore = defineStore('locale', () => {
   const locale = useLocalStorage('language', 'en') as RemovableRef<LocaleType>
-  
+
   async function setLanguage(lang: LocaleType) {
-    const { loadLocaleMessages, getLocaleMessage } = useI18n()
+    const { loadLocaleMessages, getLocaleMessage } = useNuxtApp().$i18n
     const messages = getLocaleMessage(lang)
     const isLocaleLoaded = messages && Object.keys(messages).length > 0
     if (!isLocaleLoaded) {
