@@ -1,11 +1,9 @@
 import sha1 from 'crypto-js/sha1'
 import isBase64 from 'is-base64'
+import { createCacheRequest } from '@/utils/cacheRequest'
 
 import type { MyFetchContext } from './type'
 
-
-let loading = false
-let requestCount = 0
 
 export function onRequest({ options, request }: MyFetchContext) {
    // 非 bot 基础请求
@@ -83,33 +81,22 @@ export function onResponse({ response }: MyFetchContext) {
   response._data = data
 }
 
+export const updateAveToken = createCacheRequest(() => {
+  const w: Window & {
+    vemachine?: {
+      generateToken?: (arg: boolean) => Promise<string>
+    }
+  } = window
+  if (!w?.vemachine?.generateToken) {
+    return Promise.resolve('')
+  }
+  return w?.vemachine?.generateToken?.(true)
+}, 3000)
+
 export function onResponseError ({ response }: MyFetchContext) {
   const status = response?.status
   if (status === 403) {
-    const validateStore = useValidateStore()
-    if (!validateStore.validateDialogVisible) {
-      validateStore.switchValidateDialogVisible(true)
-    }
-    if (!loading && requestCount < 3) {
-      const w: Window & {
-        vemachine?: {
-          generateToken?: (arg: boolean) => Promise<string>
-        }
-      } = window
-      w?.vemachine?.generateToken?.(true).then(res => {
-        if (res) {
-          // store.commit('setAToken', res)
-          validateStore.routeKey++
-        }
-      }).catch(() => {
-        if (!validateStore.validateDialogVisible) {
-          validateStore.switchValidateDialogVisible(true)
-        }
-      }).finally(() => {
-        loading = false
-        requestCount++
-      })
-    }
+    updateAveToken()
   }
 }
 
