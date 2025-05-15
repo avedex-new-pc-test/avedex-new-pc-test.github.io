@@ -1,8 +1,11 @@
 <template>
   <div>
     <div class="p-15px bg-[--d-111-l-FFF]">
-      <PriceTabs v-model="tabActive" :pair="tokenStore.pair" :tabs="tabs" />
-      <VolumeStats :tabActive="tabActive" :tabActiveName="tabActiveName" :pair="pair" />
+      <PriceTabs v-model="tabActive" :tabs="tabs" />
+      <template v-for="item in tabs" :key="item.id">
+        <VolumeStats v-if="tabActive === item.id" :tabActive="item.id" :tabActiveName="item.name" />
+      </template>
+
     </div>
     <!-- <div class="flex items-center justify-around color-[--d-F5F5F5-l-333] p-15px bg-[--d-111-l-FFF] mt-4px">
       <div class="text-center">
@@ -29,11 +32,10 @@
 <script setup lang='ts'>
   import { useLocalStorage, type RemovableRef } from '@vueuse/core'
   import PriceTabs from './priceTabs.vue'
-  import VolumeStats from './volumeStats.vue'
+  // import VolumeStats from './volumeStats.vue'
   import Pairs from './pairs.vue'
   import Overview from './overview.vue'
-  import { useTokenStore } from '~/stores/token'
-  const tokenStore = useTokenStore()
+  const VolumeStats = defineAsyncComponent(() => import('./volumeStats.vue'))
   const tabs: { id: '5m' | '1h' | '4h' | '24h'; name: string }[] = [
     { id: '5m', name: '5M' },
     { id: '1h', name: '1H' },
@@ -41,7 +43,5 @@
     { id: '24h', name: '24H' },
   ]
   const tabActive = useLocalStorage('token_tab_active', '24h') as RemovableRef<'5m' | '1h' | '4h' | '24h'>
-  const tabActiveName = tabs.find(i => i.id === tabActive.value)?.name || ''
-  const pair = computed(() => tokenStore.pair)
 </script>
 

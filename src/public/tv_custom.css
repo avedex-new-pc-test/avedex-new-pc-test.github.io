@@ -50,20 +50,13 @@
 
 @font-face {
   font-family: 'DINPro-Medium';
-  src: url('DINPro-Medium.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'IBMPlexSans-Medium';
-  src: url('IBMPlexSans-Medium.woff2') format('woff2');
+  src: url('/fonts/DINPro-Medium.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 
 html, body {
-  font-family: 'DINPro-Medium', 'IBMPlexSans-Medium', 'Poppins-Regular', 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  font-family: 'DINPro-Medium', 'Microsoft Yahei', sans-serif;
 }
 .text-hF57_4zZ{
   white-space: pre-line;
