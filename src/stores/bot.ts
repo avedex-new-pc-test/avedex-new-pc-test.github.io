@@ -118,6 +118,7 @@ export const useBotStore = defineStore('bot', () => {
     tgLogin,
     getUserInfo,
     getWebConfig,
-    updateWebConfig
+    updateWebConfig,
+    isSupportChains
   }
 })

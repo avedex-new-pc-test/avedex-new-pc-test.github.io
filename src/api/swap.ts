@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie'
+
 interface GetUserBalanceResponse {
     address: string;
     token: string;
@@ -41,8 +43,102 @@ function getUserBalance(
     })
 }
 
-export {
-    getUserBalance
+interface GetTokenBalanceRequest {
+  chain: string;
+  walletAddress: string;
+  tokens: string[];
 }
 
-export type {GetUserBalanceResponse}
+interface GetTokenBalanceResponse {
+  chain: string;
+  walletAddress: string;
+  token: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  balance: string;
+}
+
+
+function getTokenBalance(body: GetTokenBalanceRequest): Promise<GetTokenBalanceResponse[]> {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/getTokenBalance', {
+    method: 'post',
+    body
+  })
+}
+
+const getApprove = createCacheRequest(function (query: {
+  chain: string;
+  owner: string;
+  token: string;
+}): Promise<string> {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/getApprove', {
+    method: 'get',
+    query
+  })
+}, 500)
+
+function approve(data) {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/preApprove', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      noCb: false,
+      source: 'web',
+      ...data
+    }
+  })
+}
+
+// 查询sol bundle是否可用
+function getBundleAvailable() {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/getBundleAvailable', {
+    method: 'get',
+  })
+}
+
+// 创建 Solana 市价交易
+function createSolTx(params) {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/createSolTx', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      source: 'web',
+      autoSell: false,
+      channelRef: Cookies.get('refCode') || undefined,
+      ...params,
+    }
+  })
+}
+
+// 创建Evm交易
+function createSwapEvmTx(params) {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/createSwapEvmTx', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      source: 'web',
+      autoSell: false,
+      preApprove: true,
+      channelRef: Cookies.get('refCode') || undefined,
+      ...params,
+    }
+  })
+}
+
+export {
+  getUserBalance,
+  getTokenBalance,
+  getApprove,
+  approve,
+  createSolTx,
+  createSwapEvmTx
+}
+
+export type {GetUserBalanceResponse, GetTokenBalanceResponse}

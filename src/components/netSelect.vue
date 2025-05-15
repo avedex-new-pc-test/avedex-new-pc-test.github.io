@@ -8,12 +8,12 @@ defineProps({
     default: () => []
   }
 })
+const {userInfo, isSupportChains} = useBotStore()
 const visible = shallowRef(false)
-const options = shallowRef(['solana', 'bsc', 'base', 'eth'])
-const selectedChains = shallowRef<string[]>([])
+const options = shallowRef(isSupportChains)
+const selectedChains = shallowRef<string[]>([...isSupportChains])
 
 const {isDark} = useThemeStore()
-const {userInfo} = useBotStore()
 const displayChains = computed(() => {
   return selectedChains.value.slice(0, 2)
 })

@@ -39,19 +39,21 @@ const columns = computed(() => {
   return [{
     label: t('token'),
     value: 'symbol',
-    flex: 'flex-[1.4]',
+    flex: 'flex-1',
     sort: true
   }, {
-    label: t('price'),
+    label: t('price') + '/Chg%',
     value: 'current_price_usd',
-    flex: 'flex-[1.2] justify-end',
-    sort: true
-  }, {
-    label: '24H%',
-    value: 'price_change',
     flex: 'flex-1 justify-end',
     sort: true
-  }]
+  },
+    //   {
+    //   label: '24H%',
+    //   value: 'price_change',
+    //   flex: 'flex-1 justify-end',
+    //   sort: true
+    // }
+  ]
 })
 const sortedFavList = computed(() => {
   if (sort.value.activeSort === 0 || !sort.value.sortBy) {
@@ -197,11 +199,12 @@ function getColorClass(val: number) {
         :infinite-scroll-immediate="false"
       >
         <div v-loading="listStatus.loading && listStatus.pageNo===1" class="px-10px pb-20px">
-          <div
+          <NuxtLink
             v-for="(row, $index) in sortedFavList"
-            :key="$index" class="flex items-center min-h-35px"
+            :key="$index" class="flex items-center min-h-35px px-5px cursor-pointer hover:bg-[var(--d-1d2232-l-F5F5F5)]"
+            :to="`/token/${row.address}-${row.chain}`"
           >
-            <div class="flex items-center flex-[1.4]">
+            <div class="flex items-center flex-1">
               <TokenImg
                 class="mr-8px"
                 :row="row"
@@ -209,16 +212,20 @@ function getColorClass(val: number) {
               />
               <span class="text-12px">{{ row.symbol }}</span>
             </div>
-            <span class="flex-[1.2] text-12px text-right">
-              ${{
-                formatNumber(row.current_price_usd || 0, 4)
-              }}
-            </span>
-            <span
-              :class="`flex-1 text-right text-12px
+            <div class="flex-1 text-12px text-right">
+              <div>
+                ${{
+                  formatNumber(row.current_price_usd || 0, 4)
+                }}
+              </div>
+              <div
+                :class="`flex-1 text-right text-12px
                 ${getColorClass(row.price_change)}
-            `">{{ formatNumber(row.price_change || 0, 2) }}%</span>
-          </div>
+            `">
+                {{ row.price_change > 0 ? '+' : '-' }}{{ formatNumber(Math.abs(row.price_change) || 0, 2) }}%
+              </div>
+            </div>
+          </NuxtLink>
         </div>
         <div
           v-show="listStatus.loading && listStatus.pageNo!==1"

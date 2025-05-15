@@ -3,11 +3,17 @@ import THead from '~/pages/token/components/left/tHead.vue'
 import {getUserBalance, type GetUserBalanceResponse} from '~/api/swap'
 
 const {t} = useI18n()
+const {evmAddress, userInfo} = useBotStore()
+let userIds = []
+if (userInfo) {
+  userIds = userInfo.addresses.map(({address, chain}) => address + '-' + chain)
+}
 const tableFilter = shallowRef({
   hide_risk: 0,
   hide_small: 0,
-  user_ids: []
+  user_ids: userIds
 })
+const loadingSwap = shallowRef<{ [key: number]: boolean }>({})
 const props = defineProps({
   height: [Number, String]
 })
@@ -53,7 +59,6 @@ const listStatus = shallowRef({
   pageNo: 1,
   pageSize: 10
 })
-const {evmAddress} = useBotStore()
 const listData = shallowRef<(GetUserBalanceResponse & { index: string })[]>([])
 
 onMounted(() => {
@@ -203,6 +208,7 @@ function handleSellAmount(row) {
             <div class="flex-1 flex justify-end">
               <el-button
                 v-if="evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
+                :loading="loadingSwap[row.index]"
                 @click="handleSellAmount(row)"
               >
                 {{ $t('sellAll') }}
