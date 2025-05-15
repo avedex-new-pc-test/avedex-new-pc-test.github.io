@@ -39,8 +39,7 @@ export default class WS {
   private oncloseHandler?: WSOptions['onclose']
   private onerrorHandler?: WSOptions['onerror']
 
-  // message listeners
-  private messageListenerMap = new Map<number, MessageListener>()
+  private messageListenerMap = new Map<string | number, MessageListener>()
   private nextListenerId = 1
 
   constructor({
@@ -95,10 +94,12 @@ export default class WS {
       }
 
       this.ws.onmessage = (event) => this.handleMessage(event)
+
       this.ws.onclose = (event) => {
         this.oncloseHandler?.(event)
         this.reconnect()
       }
+
       this.ws.onerror = (event) => this.onerrorHandler?.(event)
 
       this.timeoutClose()
@@ -156,9 +157,11 @@ export default class WS {
         if (method === 'subscribe') {
           this.reconnectMessage[event] = messageToSend
         } else if (method === 'unsubscribe') {
-          delete this.reconnectMessage[event]
+          Reflect.deleteProperty(this.reconnectMessage, event)
         }
-      } catch {}
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 
@@ -228,24 +231,30 @@ export default class WS {
     return this
   }
 
-  // message event management with ID
-  public onmessage(handler: MessageListener): number {
-    const id = this.nextListenerId++
-    this.messageListenerMap.set(id, handler)
-    return id
+  public onmessage(handler: MessageListener, id?: string | number): string | number {
+    const finalId = id ?? this.nextListenerId++
+    this.messageListenerMap.set(finalId, handler)
+    return finalId
   }
 
-  public offMessage(id: number) {
-    this.messageListenerMap.delete(id)
-  }
-
-  public onceMessage(handler: MessageListener): number {
-    const id = this.nextListenerId++
+  public onceMessage(handler: MessageListener, id?: string | number): string | number {
+    const finalId = id ?? this.nextListenerId++
     const onceWrapper = (e: MessageEvent) => {
       handler(e)
+      this.messageListenerMap.delete(finalId)
+    }
+    this.messageListenerMap.set(finalId, onceWrapper)
+    return finalId
+  }
+
+  public offMessage(id: 'all' | string | number | Array<string | number>): this {
+    if (id === 'all') {
+      this.messageListenerMap.clear()
+    } else if (Array.isArray(id)) {
+      id.forEach((key) => this.messageListenerMap.delete(key))
+    } else {
       this.messageListenerMap.delete(id)
     }
-    this.messageListenerMap.set(id, onceWrapper)
-    return id
+    return this
   }
 }

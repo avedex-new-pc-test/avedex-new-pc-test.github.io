@@ -23,20 +23,6 @@ export const useWSStore = defineStore('ws', () => {
       isConnected.value = true
     }).onclose(() => {
       isConnected.value = false
-    }).onmessage((e) => {
-      const msg = getWSMessage(e)
-      if (!msg) {
-        return
-      }
-      const { event, data } = msg
-      if (event === 'tx') {
-        const tx: WSTx = data?.tx
-        if (tx.pair_address === tokenStore.pairAddress) {
-          // 更新价格 交易数和交易额
-          updatePriceFromTx(tx)
-
-        }
-      }
     })
   }
 
@@ -60,6 +46,23 @@ export const useWSStore = defineStore('ws', () => {
     return wsInstance.value
   }
 
+  function onmessageTx() {
+    getWSInstance()?.onmessage((e) => {
+      const msg = getWSMessage(e)
+      if (!msg) {
+        return
+      }
+      const { event, data } = msg
+      if (event === 'tx') {
+        const tx: WSTx = data?.tx
+        if (tx.pair_address === tokenStore.pairAddress) {
+          // 更新价格 交易数和交易额
+          updatePriceFromTx(tx)
+        }
+      }
+    }, 'tx')
+  }
+
   const close = () => {
     isConnected.value = false
     wsInstance.value?.close()
@@ -71,6 +74,7 @@ export const useWSStore = defineStore('ws', () => {
     isConnected,
     init,
     send,
-    close
+    close,
+    onmessageTx
   }
 })

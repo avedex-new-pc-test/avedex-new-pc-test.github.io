@@ -5,7 +5,7 @@
       <div class="flex gap-4px">
         <div class="w-292px bg-red">左侧</div>
         <div class="flex-1">
-          <KLine class="h-400px" />
+          <KLine />
           <div class="h-64px bg-orange min-h-300px">图表下方</div>
         </div>
       </div>
@@ -21,6 +21,7 @@ import TokenRight from './components/right/index.vue'
 import KLine from '@/components/kLine/index.vue'
 const route = useRoute()
 const tokenStore = useTokenStore()
+const wsStore = useWSStore()
 
 function _getTokenInfo() {
   const id = route.params.id as string
@@ -40,6 +41,7 @@ function _getTokenInfoExtra() {
 function init() {
   _getTokenInfo()
   _getTokenInfoExtra()
+  wsStore.onmessageTx()
 }
 
 onBeforeMount(() => {
@@ -48,6 +50,7 @@ onBeforeMount(() => {
 
 onBeforeRouteLeave(() => {
   tokenStore.reset()
+  wsStore.getWSInstance()?.offMessage(['tx', 'kline'])
 })
 </script>
 

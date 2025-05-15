@@ -1,12 +1,10 @@
 <template>
-  <div class="watermark">
-    <el-auto-resizer>
-      <template #default="{ height, width }">
-        <div id="tv_chart_container" :style="{ width: width + 'px', height: height + 'px' }" />
-      </template>
-    </el-auto-resizer>
+  <div class="watermark relative" :style="{height: `${kHeight}px`}">
+    <div id="tv_chart_container" ref="kline" :style="{ width: '100%', height: '100%' }" />
   </div>
-
+  <div id="kline-draggable" class="w-full cursor-row-resize bg-#2D3037 flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
+    <Icon name="mdi:drag-horizontal" class="text-10px color-#959A9F"/>
+  </div>
 </template>
 
 <script setup lang='ts'>
@@ -16,7 +14,7 @@ import { getKlineHistoryData, getUserKlineTxTags } from '@/api/token'
 import { getTotalHolders } from '@/api/stats'
 import { formatNumber } from '@/utils/formatNumber'
 import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView } from './utils'
-import { useLocalStorage } from '@vueuse/core'
+import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx } from './types'
 import BigNumber from 'bignumber.js'
 
@@ -157,9 +155,6 @@ function createToggleButton() {
   }
   updateButtonContent()
 }
-
-
-
 
 async function initChart() {
   const symbolUp = symbol.value?.toUpperCase?.() || ''
@@ -401,7 +396,7 @@ async function initChart() {
               }
             }
           }
-        })
+        }, 'kline')
         listenerGuidMap.set(token.value, data)
       },
       unsubscribeBars: (listenerGuid) => {
@@ -465,6 +460,48 @@ async function initChart() {
     console.log('markId', markId)
   })
 }
+
+// 拖动缩放
+let isMask = false
+const kHeight = shallowRef(500)
+const wHeight = useWindowSize().height
+const dom = useTemplateRef('kline')
+function drag(e: MouseEvent) {
+  let dy = e.clientY
+  isMask = true
+  // const dom = document.querySelector('#k-line-chart-container')
+  if (!dom) {
+    return
+  }
+  const { height } = useElementBounding(dom)
+  kHeight.value = height.value
+  document.onmousemove = e => {
+    if (!isMask) {
+      return
+    }
+    if (e.clientY > wHeight.value) {
+      isMask = false
+      return
+    }
+    document.getElementById('tv_chart_container')!.style.pointerEvents = 'none'
+    if (e.clientY < dy) {
+      kHeight.value -= dy - e.clientY
+    } else {
+      kHeight.value += e.clientY - dy
+    }
+    dy = e.clientY
+  }
+  document.onmouseup = () => {
+    document.getElementById('tv_chart_container')!.style.pointerEvents = 'auto'
+    isMask = false
+    document.onmousemove = null
+    document.onmouseup = null
+  }
+  // e.stopPropagation()
+  // e.preventDefault()
+  return false
+}
+
 
 onBeforeMount(() => {
   _getTotalHolders()
