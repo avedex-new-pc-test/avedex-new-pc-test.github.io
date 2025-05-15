@@ -443,3 +443,21 @@ export function formatIconSwap(src: string) {
     : IconUnknown
 }
 
+export function getWSMessage(e: MessageEvent) {
+  if (e.data === 'pong') {
+    return null
+  }
+  if (isJSON(e.data)) {
+    const result = JSON.parse(e.data || {})?.result || {}
+    if (result.status === 'ok') {
+      const data = result.data
+      const event = data.event
+      return {
+        event,
+        data,
+      }
+    }
+  }
+  return null
+}
+

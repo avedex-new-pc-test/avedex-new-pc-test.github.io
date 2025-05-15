@@ -13,6 +13,8 @@ export interface WSOptions {
   onmessage?: (event: MessageEvent) => void
 }
 
+type MessageListener = (e: MessageEvent) => void
+
 export default class WS {
   private url: string
   private pingTimeout: number
@@ -36,7 +38,10 @@ export default class WS {
   private onopenHandler?: WSOptions['onopen']
   private oncloseHandler?: WSOptions['onclose']
   private onerrorHandler?: WSOptions['onerror']
-  private onmessageHandler?: WSOptions['onmessage']
+
+  // message listeners
+  private messageListenerMap = new Map<number, MessageListener>()
+  private nextListenerId = 1
 
   constructor({
     url,
@@ -61,11 +66,11 @@ export default class WS {
     this.maxQueueLength = maxQueueLength
     this.queueTimeout = queueTimeout
 
-    // 设置事件处理器
     this.onopenHandler = onopen
     this.oncloseHandler = onclose
     this.onerrorHandler = onerror
-    this.onmessageHandler = onmessage
+
+    if (onmessage) this.onmessage(onmessage)
 
     this.createWebSocket()
   }
@@ -77,44 +82,24 @@ export default class WS {
       this.ws.onopen = (event) => {
         this.resetStatus()
 
-        // 重新发送订阅消息
         const allMsgs = Object.values(reconnectMessage ?? this.reconnectMessage)
         for (const msg of allMsgs) {
           this.send(msg)
         }
 
-        // 发送缓存的队列消息
         if (this.pendingQueue.length > 0) {
           this.sendQueue()
         }
 
-        // 调用 onopen 事件处理器
-        if (this.onopenHandler) {
-          this.onopenHandler(event)
-        }
+        this.onopenHandler?.(event)
       }
 
-      this.ws.onmessage = (event) => {
-        this.heartBeat()
-        this.timeoutClose()
-
-        if (this.onmessageHandler) {
-          this.onmessageHandler(event)
-        }
-      }
-
+      this.ws.onmessage = (event) => this.handleMessage(event)
       this.ws.onclose = (event) => {
-        if (this.oncloseHandler) {
-          this.oncloseHandler(event)
-        }
+        this.oncloseHandler?.(event)
         this.reconnect()
       }
-
-      this.ws.onerror = (event) => {
-        if (this.onerrorHandler) {
-          this.onerrorHandler(event)
-        }
-      }
+      this.ws.onerror = (event) => this.onerrorHandler?.(event)
 
       this.timeoutClose()
     } catch (err) {
@@ -123,8 +108,13 @@ export default class WS {
     }
   }
 
+  private handleMessage(event: MessageEvent) {
+    this.heartBeat()
+    this.timeoutClose()
+    this.messageListenerMap.forEach((fn) => fn(event))
+  }
+
   private sendQueue() {
-    // 批量发送队列中的消息
     const queueToSend = [...this.pendingQueue]
     this.pendingQueue = []
 
@@ -137,7 +127,6 @@ export default class WS {
 
   public send(msg: string | Record<string, any>) {
     let messageToSend: string
-
     if (typeof msg === 'string') {
       messageToSend = msg
     } else {
@@ -150,38 +139,26 @@ export default class WS {
     }
 
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      // 确保队列不会超出最大长度
       if (this.pendingQueue.length >= this.maxQueueLength) {
-        // 删除最早的消息，避免内存泄漏
         this.pendingQueue.shift()
       }
-      // 将消息与时间戳一起存入队列
       this.pendingQueue.push({ msg: messageToSend, timestamp: Date.now() })
       return
     }
 
-    // WebSocket 已打开时直接发送消息
     this.ws.send(messageToSend)
 
-    // 处理订阅/取消订阅消息
     if (messageToSend !== this.pingMsg) {
       try {
         const parsed = JSON.parse(messageToSend)
         const method = parsed?.method
         const event = parsed?.params?.[0]
-
         if (method === 'subscribe') {
-          // 不删除动态键，存储订阅消息
           this.reconnectMessage[event] = messageToSend
         } else if (method === 'unsubscribe') {
-          // 不删除动态键，只避免添加过时的订阅
-          if (this.reconnectMessage[event]) {
-            Reflect.deleteProperty(this.reconnectMessage, event)
-          }
+          delete this.reconnectMessage[event]
         }
-      } catch {
-        // 如果消息不是有效的 JSON，跳过处理
-      }
+      } catch {}
     }
   }
 
@@ -196,7 +173,7 @@ export default class WS {
   private timeoutClose() {
     if (this.connectTimer) clearTimeout(this.connectTimer)
     this.connectTimer = setTimeout(() => {
-      if (this.ws) this.ws.close()
+      this.ws?.close()
     }, this.connectTimeout)
   }
 
@@ -221,9 +198,9 @@ export default class WS {
   }
 
   private clearAllTimer() {
-    if (this.pingTimer) clearTimeout(this.pingTimer)
-    if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
-    if (this.connectTimer) clearTimeout(this.connectTimer)
+    clearTimeout(this.pingTimer!)
+    clearTimeout(this.reconnectTimer!)
+    clearTimeout(this.connectTimer!)
     this.pingTimer = null
     this.reconnectTimer = null
     this.connectTimer = null
@@ -236,7 +213,6 @@ export default class WS {
     this.ws = null
   }
 
-  // 链式事件处理器注册
   public onopen(handler: (e: Event) => void) {
     this.onopenHandler = handler
     return this
@@ -252,8 +228,24 @@ export default class WS {
     return this
   }
 
-  public onmessage(handler: (e: MessageEvent) => void) {
-    this.onmessageHandler = handler
-    return this
+  // message event management with ID
+  public onmessage(handler: MessageListener): number {
+    const id = this.nextListenerId++
+    this.messageListenerMap.set(id, handler)
+    return id
+  }
+
+  public offMessage(id: number) {
+    this.messageListenerMap.delete(id)
+  }
+
+  public onceMessage(handler: MessageListener): number {
+    const id = this.nextListenerId++
+    const onceWrapper = (e: MessageEvent) => {
+      handler(e)
+      this.messageListenerMap.delete(id)
+    }
+    this.messageListenerMap.set(id, onceWrapper)
+    return id
   }
 }
