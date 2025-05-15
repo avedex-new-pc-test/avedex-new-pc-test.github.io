@@ -1,5 +1,5 @@
 {
- "noData": "無復制內容",
+  "noData": "無復制內容",
   "connectWallet": "連接錢包",
   "kol_buy_tips": "最近有KOL買入",
   "smarter_buy_tips": "最近有聰明錢買入",
@@ -33,5 +33,25 @@
   "more": "更多",
   "expand": "收起",
   "website": "官網",
-  "whitepaper": "白皮書"
+  "whitepaper": "白皮書",
+  "searchHistory": "搜索記錄",
+  "whetherToClearHistory": "是否清空歷史記錄？",
+  "confirm": "確認",
+  "cancel": "取消",
+  "tips": "提示",
+  "enterAddress/token": "搜索代幣名稱/合約/錢包地址",
+  "tokenName": "幣種",
+  "popularSearches": "熱門搜索",
+  "wallet": "錢包",
+  "24Volume": "24h交易額",
+  "holders": "持幣人",
+  "pool": "池子",
+  "Txs": "交易數",
+  "riskScore": "安全評分",
+  "launchTime": "發射時間",
+  "hiddenHighToken": "收起高風險幣種",
+  "showHighToken": "展開高風險幣種",
+  "highRisk": "高風險",
+  "volume": "交易額",
+  "winRate": "總勝率"
 }

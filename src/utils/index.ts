@@ -5,8 +5,9 @@ import { PublicKey } from '@solana/web3.js'
 import { TronWeb } from 'tronweb'
 import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
+import { useRemarks } from './hook'
 
-export function isJSON (str: string) {
+export function isJSON(str: string) {
   try {
     JSON.parse(str)
   } catch (e) {
@@ -16,7 +17,10 @@ export function isJSON (str: string) {
   return true
 }
 
-export function formatDate(val: string | number | Date, dateType = 'YYYY-MM-DD HH:mm:ss') {
+export function formatDate(
+  val: string | number | Date,
+  dateType = 'YYYY-MM-DD HH:mm:ss'
+) {
   let dateStr: Date | null = null
   let timeStamp: number | string = 0
   let str
@@ -35,11 +39,26 @@ export function formatDate(val: string | number | Date, dateType = 'YYYY-MM-DD H
   }
 
   str = dateType.replace('YYYY', String(dateStr.getFullYear()))
-  str = str.replace('MM', (dateStr.getMonth() + 1 < 10 ? '0' : '') + (dateStr.getMonth() + 1))
-  str = str.replace('DD', (dateStr.getDate() < 10 ? '0' : '') + dateStr.getDate())
-  str = str.replace('HH', (dateStr.getHours() < 10 ? '0' : '') + dateStr.getHours())
-  str = str.replace('mm', (dateStr.getMinutes() < 10 ? '0' : '') + dateStr.getMinutes())
-  str = str.replace('ss', (dateStr.getSeconds() < 10 ? '0' : '') + dateStr.getSeconds())
+  str = str.replace(
+    'MM',
+    (dateStr.getMonth() + 1 < 10 ? '0' : '') + (dateStr.getMonth() + 1)
+  )
+  str = str.replace(
+    'DD',
+    (dateStr.getDate() < 10 ? '0' : '') + dateStr.getDate()
+  )
+  str = str.replace(
+    'HH',
+    (dateStr.getHours() < 10 ? '0' : '') + dateStr.getHours()
+  )
+  str = str.replace(
+    'mm',
+    (dateStr.getMinutes() < 10 ? '0' : '') + dateStr.getMinutes()
+  )
+  str = str.replace(
+    'ss',
+    (dateStr.getSeconds() < 10 ? '0' : '') + dateStr.getSeconds()
+  )
 
   return str
 }
@@ -59,7 +78,7 @@ export function formatDecimals(n: number | string, decimals = 3) {
   result = result === 11 ? 10 : result > 16 ? 16 : result
   return {
     precision: result,
-    minMove: Number('0.' + '0'.repeat(result - 1) + '1')
+    minMove: Number('0.' + '0'.repeat(result - 1) + '1'),
   }
 }
 
@@ -88,7 +107,10 @@ export function getTimezone() {
 }
 
 export function getAddressAndChainFromId(id: string, type: 1): [string, string]
-export function getAddressAndChainFromId(id: string, type?: number): { address: string; chain: string }
+export function getAddressAndChainFromId(
+  id: string,
+  type?: number
+): { address: string; chain: string }
 export function getAddressAndChainFromId(id: string, type: number = 0) {
   if (!id || !id.includes('-')) {
     if (type === 1) {
@@ -156,37 +178,39 @@ export function formatUrl(url: string) {
   return 'https://' + url
 }
 
-
 export function getChainInfo(chain: string) {
   const chainConfig = useConfigStore().chainConfig
-  const chainInfo = chainConfig?.find(item => item.net_name === chain)
+  const chainInfo = chainConfig?.find((item) => item.net_name === chain)
   if (!chainInfo) {
     return {} as Record<string, any>
   }
   return chainInfo
 }
 
-export function getSwapInfo(chain: string | { chain: string; amm: string }, amm?: string) {
+export function getSwapInfo(
+  chain: string | { chain: string; amm: string },
+  amm?: string
+) {
   const chainConfig = useConfigStore().chainConfig
   if (typeof chain === 'string') {
-    const chainInfo = chainConfig?.find(item => item.net_name === chain)
+    const chainInfo = chainConfig?.find((item) => item.net_name === chain)
     if (!chainInfo) {
       return {} as Record<string, any>
     }
-    return chainInfo?.swaps?.find?.(item => item.name === amm)
+    return chainInfo?.swaps?.find?.((item) => item.name === amm)
   } else {
-    const chainInfo = chainConfig?.find(item => item.net_name === chain.chain)
+    const chainInfo = chainConfig?.find((item) => item.net_name === chain.chain)
     if (!chainInfo) {
       return {} as Record<string, any>
     }
-    return chainInfo?.swaps?.find?.(item => item.name === chain.amm)
+    return chainInfo?.swaps?.find?.((item) => item.name === chain.amm)
   }
 }
 
 export function getTagTooltip(i: {
-  tag?: string;
-  smart_money_buy_count_24h: number;
-  smart_money_sell_count_24h: number;
+  tag?: string
+  smart_money_buy_count_24h: number
+  smart_money_sell_count_24h: number
 }) {
   const $t = getGlobalT()
   if (!i.tag) {
@@ -206,7 +230,6 @@ export function getTagTooltip(i: {
   }
   return tips?.[i.tag] || $t(i.tag)
 }
-
 
 // 根据字符串生成头像
 export function generateAvatarIcon(string: string) {
@@ -255,7 +278,6 @@ export function generateAvatarIcon(string: string) {
   return canvas.toDataURL('image/png')
 }
 
-
 export function isValidAddress(address: string, chain = 'eth') {
   if (chain === 'solana') {
     try {
@@ -302,20 +324,31 @@ export function formatSwapUrl(address: string, chain: string, amm: string) {
   return ''
 }
 
-export function formatExplorerUrl(chain: string, address: string, type: 'token' | 'address' | 'tx' = 'token') {
+export function formatExplorerUrl(
+  chain: string,
+  address: string,
+  type: 'token' | 'address' | 'tx' = 'token'
+) {
   const chainInfo = getChainInfo(chain)
   if (chain === 'halo') {
     if (type === 'tx') {
       address = address?.replace?.(/^0x/, '')
     }
   }
-  const keyUrl = type + '_url' as 'token_url' | 'address_url' | 'tx_url'
+  const keyUrl = (type + '_url') as 'token_url' | 'address_url' | 'tx_url'
   const url = chainInfo?.[keyUrl]
   if (url) {
     return url.replace(`{${type}}`, address)
   }
   const n = chainInfo ? chainInfo.block_explorer_url : ''
-  let type1: 'tokenAddr' | 'account' | 'token20' | 'contract' | 'transaction' | 'txs' | typeof type = type
+  let type1:
+    | 'tokenAddr'
+    | 'account'
+    | 'token20'
+    | 'contract'
+    | 'transaction'
+    | 'txs'
+    | typeof type = type
   if (chain === 'oec' && type === 'token') {
     type1 = 'tokenAddr'
   }
@@ -354,7 +387,11 @@ export function formatExplorerUrl(chain: string, address: string, type: 'token' 
   return `${n}/${type1}/${address}`
 }
 
-export function openBrowser(url: string, type: 'token' | 'address' | 'tx', chain: string) {
+export function openBrowser(
+  url: string,
+  type: 'token' | 'address' | 'tx',
+  chain: string
+) {
   let newUrl = url
   if (type) {
     newUrl = formatExplorerUrl(chain, url, type)
@@ -364,8 +401,6 @@ export function openBrowser(url: string, type: 'token' | 'address' | 'tx', chain
   }
   window.open(newUrl)
 }
-
-
 
 export function getChainDefaultIconColor(chain: string) {
   const theme = useThemeStore().theme
@@ -405,9 +440,28 @@ export function getChainDefaultIcon(chain: string, text = '') {
   }
   return '/icon-default.png'
 }
+export function getSymbolDefaultIcon(tokenInfo: {
+  symbol?: string
+  chain: string
+  logo_url?: string
+}) {
+  const domain = useConfigStore().token_logo_url
+  if (
+    tokenInfo &&
+    tokenInfo.logo_url !== undefined &&
+    tokenInfo.logo_url !== ''
+  ) {
+    if (/^https?:\/\//.test(tokenInfo.logo_url)) {
+      return tokenInfo.logo_url
+    }
+    return domain + tokenInfo.logo_url
+  }
+  return getChainDefaultIcon(tokenInfo.chain, tokenInfo.symbol)
+}
 
 export function formatIconTag(src: string) {
-  const urlPrefix = useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
+  const urlPrefix =
+    useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
   return src && src !== 'unknown'
     ? `${urlPrefix}signals/${src}.png`
     : IconUnknown
@@ -443,3 +497,9 @@ export function formatIconSwap(src: string) {
     : IconUnknown
 }
 
+export function getRemarkByAddress(row:{ address: string, chain: string }) {
+  if (!row.address || !row.chain) {
+    return ''
+  }
+  return useRemarks().getRemarkByAddress({ address:row.address, chain:row.chain })
+}
