@@ -4,6 +4,7 @@ import {useWindowSize, useStorage} from '@vueuse/core'
 import BottomLeftTable from '~/pages/token/components/left/bottomLeftTable.vue'
 
 const topLeftHeight = useStorage('topLeftHeight', 479)
+console.log('=>(left.vue:7) topLeftHeight', topLeftHeight)
 const canDrag = shallowRef(false)
 const {height} = useWindowSize()
 
@@ -42,10 +43,10 @@ function drag(e: MouseEvent) {
       <TopLeftTable :height="topLeftHeight"/>
       <div
           class="absolute bottom-0 left-0 cursor-row-resize w-full
-      py-5px mb--5px
+      py-2px bg-[--d-000-l-F6F6F6]
     " @mousedown.stop.prevent="drag"/>
     </div>
-    <BottomLeftTable :height="topLeftHeight"/>
+    <BottomLeftTable :topLeftHeight="topLeftHeight"/>
   </div>
 </template>
 

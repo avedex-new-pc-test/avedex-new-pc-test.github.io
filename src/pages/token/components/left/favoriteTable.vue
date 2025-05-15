@@ -198,11 +198,12 @@ function getColorClass(val: number) {
         :infinite-scroll-delay="10"
         :infinite-scroll-immediate="false"
       >
-        <div v-loading="listStatus.loading && listStatus.pageNo===1" class="px-10px pb-20px">
+        <div v-loading="listStatus.loading && listStatus.pageNo===1" class="pb-20px">
           <NuxtLink
             v-for="(row, $index) in sortedFavList"
-            :key="$index" class="flex items-center min-h-35px px-5px cursor-pointer hover:bg-[var(--d-1d2232-l-F5F5F5)]"
-            :to="`/token/${row.address}-${row.chain}`"
+            :key="$index"
+            class="px-10px flex items-center min-h-35px cursor-pointer hover:bg-[var(--d-1d2232-l-F5F5F5)]"
+            :to="`/token/${row.token}-${row.chain}`"
           >
             <div class="flex items-center flex-1">
               <TokenImg
@@ -220,9 +221,15 @@ function getColorClass(val: number) {
               </div>
               <div
                 :class="`flex-1 text-right text-12px
-                ${getColorClass(row.price_change)}
+                ${getColorClass(Number(row.price_change))}
             `">
-                {{ row.price_change > 0 ? '+' : '-' }}{{ formatNumber(Math.abs(row.price_change) || 0, 2) }}%
+                <template v-if="Number(row.price_change) === 0">0</template>
+                <template v-else-if="row.price_change === '--'">--</template>
+                <template v-else>
+                  {{
+                    Number(row.price_change) > 0 ? '+' : '-'
+                  }}{{ formatNumber(Math.abs(Number(row.price_change)) || 0, 2) }}%
+                </template>
               </div>
             </div>
           </NuxtLink>

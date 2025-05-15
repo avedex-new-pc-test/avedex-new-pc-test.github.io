@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import THead from '~/pages/token/components/left/tHead.vue'
-import {getUserBalance, type GetUserBalanceResponse} from '~/api/swap'
+import {approve, getApprove, getTokenBalance, getUserBalance, type GetUserBalanceResponse} from '~/api/swap'
+import BigNumber from 'bignumber.js'
 
 const {t} = useI18n()
-const {evmAddress, userInfo} = useBotStore()
+const {evmAddress, userInfo, getWalletAddress} = useBotStore()
 let userIds = []
 if (userInfo) {
   userIds = userInfo.addresses.map(({address, chain}) => address + '-' + chain)
@@ -115,8 +116,57 @@ function getColor(val: number) {
   }
 }
 
-function handleSellAmount(row) {
+async function handleSellAmount(row: GetUserBalanceResponse) {
+  try {
+    loadingSwap.value[row.index] = true
+    const tokens = await getTokenBalance({
+      chain: row.chain,
+      tokens: [row.token],
+      walletAddress: getWalletAddress(row.chain)
+    })
+    if (!tokens || !tokens[0]) {
+      return
+    }
+    const t = tokens[0]
+    row.balance = t.balance || 0
+    row.balance_usd = new BigNumber(t.balance || 0).times(row.current_price_usd || 0).toFixed()
+    row.decimals = t.decimals || row.decimals
+    if (!t.balance) {
+      ElNotification({
+        title: t('error'),
+        type: 'error',
+        message: t('insufficientBalance')
+      })
+    } else {
+      checkApproveAndApprove(row)
+    }
+  } catch (e) {
+    console.log('=>(positionsTable.vue:126) e', e)
+  } finally {
+    loadingSwap.value[row.index] = false
+  }
+}
 
+async function checkApproveAndApprove(row: GetUserBalanceResponse) {
+  const owner = getWalletAddress(row.chain)
+  try {
+    const res = await getApprove({
+      chain: row.chain,
+      owner,
+      token: row.token
+    })
+    if (res === '0') {
+      const notifyDom = null
+      const res = await approve({
+        batchId: Date.now().toString(),
+        chain: row.chain,
+        tokenAddress: row.token,
+        creatorAddress: [owner],
+      })
+    }
+  } catch (e) {
+
+  }
 }
 </script>
 
@@ -208,6 +258,7 @@ function handleSellAmount(row) {
             <div class="flex-1 flex justify-end">
               <el-button
                 v-if="evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
+                size="small"
                 :loading="loadingSwap[row.index]"
                 @click="handleSellAmount(row)"
               >

@@ -43,5 +43,6 @@
   "removeFavGroupTips": "Deleting the group will move the tokens in the group into the default group. Do you want to continue?",
   "tips": "Tips",
   "profit2": "PnL",
-  "sellAll": "Sell all"
+  "sellAll": "Sell all",
+  "editFav": "Edit Favourite"
 }

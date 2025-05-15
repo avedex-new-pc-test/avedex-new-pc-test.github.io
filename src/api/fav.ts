@@ -19,7 +19,7 @@ interface GetFavListResponse {
   chain: string;
   symbol: string;
   current_price_usd: number;
-  price_change: number;
+  price_change: number | string;
   price_change_v2: number;
   token_index: number;
   favorite_price: number;

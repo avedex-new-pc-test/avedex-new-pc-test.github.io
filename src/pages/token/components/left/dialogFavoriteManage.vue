@@ -16,7 +16,6 @@ defineProps({
   },
 })
 const {t} = useI18n()
-const {token_logo_url} = useConfigStore()
 const {evmAddress} = useBotStore()
 const activeTab = shallowRef(0)
 const favoritesList = shallowRef<GetFavListResponse[]>([])
@@ -167,6 +166,10 @@ async function confirmEditRemark(remark: string, tokenId: string) {
       ref="table_ref"
       v-loading="listStatus.loading"
       v-infinite-scroll="_getFavoriteList"
+      :infinite-scroll-disabled="listStatus.loading || listStatus.finished"
+      infinite-scroll-distance="200"
+      :infinite-scroll-delay="10"
+      :infinite-scroll-immediate="false"
       :data="favoritesList"
       height="350px"
       class="w-full table-container"

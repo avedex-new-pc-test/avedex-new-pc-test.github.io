@@ -110,8 +110,8 @@ export interface GetHotTokensResponse {
   chain: string;
   symbol: string;
   holders: number;
-  current_price_usd: number;
-  price_change: number;
+  current_price_usd: number | string;
+  price_change: number | string;
   is_adv: number;
   is_showasadv: number;
   token_index: number;

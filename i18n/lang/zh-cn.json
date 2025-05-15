@@ -53,5 +53,6 @@
   "amount": "数量",
   "initial": "初始",
   "poolCirculatingSupply": "池子大小",
-  "phoneyPool": "疑似假池子"
+  "phoneyPool": "疑似假池子",
+  "editFav": "编辑自选"
 }

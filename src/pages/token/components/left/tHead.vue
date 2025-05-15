@@ -15,36 +15,38 @@ function getActiveClass(activeSort: number, sortBy: string, direction: string) {
   const isEqual = props.sort.activeSort === activeSort && props.sort.sortBy === sortBy
   if (direction === 't') {
     return isEqual
-      ? 'border-t-[var(--d-F5F5F5-l-333)]'
-      : 'border-t-[var(--d-999-l-666)]'
+      ? 'border-t-[--d-F5F5F5-l-333]'
+      : 'border-t-[--d-999-l-666]'
   }
   return isEqual
-    ? 'border-b-[var(--d-F5F5F5-l-333)]'
-    : 'border-b-[var(--d-999-l-666)]'
+    ? 'border-b-[--d-F5F5F5-l-333]'
+    : 'border-b-[--d-999-l-666]'
 }
 
+const statusTo = {
+  0: -1,
+  1: 0,
+  '-1': 1
+}
 function switchSort(sortBy: string, activeSort?: number) {
   const sort = {...props.sort}
   if (!activeSort) {
     if (sort.sortBy !== sortBy) {
-      sort.activeSort = 1
-      sort.sortBy = sortBy
-    }
-    sort.activeSort++
-    if (sort.activeSort > 1) {
       sort.activeSort = -1
+    } else {
+      sort.activeSort = statusTo[sort.activeSort]
     }
   } else {
-    sort.sortBy = sortBy
     sort.activeSort = activeSort
   }
+  sort.sortBy = sortBy
   emit('update:sort', sort)
 }
 </script>
 
 <template>
   <div
-    class="flex justify-between items-center p-10px text-12px color-[var(--d-999-l-666)]"
+    class="flex justify-between items-center p-10px text-12px color-[--d-999-l-666]"
   >
     <div
       v-for="(column, i) in columns"

@@ -53,30 +53,28 @@ const Component = computed(() => {
 <template>
   <el-dialog
     v-model="show"
+    :title="t('editFav')"
     append-to-body
     width="800px"
-    :class="theme"
+    :class="`${theme} [--el-message-close-size:24px]`"
   >
-    <template #header>
+    <div
+      class="flex items-center justify-between"
+    >
       <div
-        class="flex items-center justify-between"
+        class="w-full text-left text-16px mt-5px ml-4px"
       >
-        <div
-          class="w-full text-left text-16px mt-5px ml-4px"
-        >
-          <a
-            v-for="(item, $index) in tabs"
-            :key="$index" href="javascript:;"
-            :class="`decoration-none inline-block min-w-88px rounded-20px text-16px  pr-15px
+        <a
+          v-for="(item, $index) in tabs"
+          :key="$index" href="javascript:;"
+          :class="`decoration-none inline-block min-w-88px rounded-20px text-16px  pr-15px
               ${item.id === activeTab?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
-            @click.stop.prevent="activeTab=item.id"
-          >
-            {{ item.name }}
-          </a>
-        </div>
+          @click.stop.prevent="activeTab=item.id"
+        >
+          {{ item.name }}
+        </a>
       </div>
-    </template>
-
+    </div>
     <component :is="Component" :list="list" :get-data="getData" :loading="loading"/>
   </el-dialog>
 </template>
