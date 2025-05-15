@@ -1,8 +1,9 @@
 // plugins/api.ts
 import { getApiDomainAndSave, getBestApiDomain } from './getApiDomain'
-import { onRequest, onResponse, onResponseError } from './base'
+import { onRequest, onResponse, updateAveToken } from './base'
 import { botOnRequest, botOnResponse, botOnResponseError } from './bot'
-import type { MyFetchContext } from './type'
+
+
 
 
 function getApi() {
@@ -46,7 +47,11 @@ function getApi() {
           return api(request, options)
         }
       } else if (err?.response?.status === 403) {
-        onResponseError({response: err?.response} as MyFetchContext)
+        // onResponseError({response: err?.response} as MyFetchContext)
+        const aveToken = await updateAveToken()
+        if (aveToken) {
+          return api(request, options)
+        }
       } else {
         return Promise.reject(err)
       }

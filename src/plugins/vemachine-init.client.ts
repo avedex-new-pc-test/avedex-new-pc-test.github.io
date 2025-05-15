@@ -1,28 +1,51 @@
 export default defineNuxtPlugin({
   name: 'vemachine-init',
-  enforce: 'pre', // 确保在应用初始化前运行
+  enforce: 'pre',
 
   async setup() {
-    if (import.meta.client) {
-      // 等待 DOM 和外部 script 加载
-      await nextTick()
+    if (!import.meta.client) return
 
-      // 防止 vemachine 未加载报错
-      const w: Window & {
-        vemachine?: {
-          generateToken?: (arg?: boolean) => Promise<string>
-        }
-      } = window
-      if (typeof w !== 'undefined' && w?.vemachine?.generateToken) {
-        try {
-          await w?.vemachine?.generateToken?.()
-          console.log('[vemachine] token generated')
-        } catch (err) {
-          console.error('[vemachine] failed to generate token', err)
-        }
-      } else {
-        console.warn('[vemachine] not loaded')
+    await loadScript('/vemachine.js') // 替换为实际 URL
+
+    await nextTick()
+
+    const vemachine = (window as typeof window & {
+      vemachine?: {
+        generateToken?: (arg?: boolean) => Promise<string>
       }
+    }).vemachine
+
+    if (!vemachine) {
+      console.warn('[vemachine] not loaded')
+      return
+    }
+
+    if (typeof vemachine.generateToken !== 'function') {
+      console.warn('[vemachine] generateToken is not a function')
+      return
+    }
+
+    try {
+      await vemachine.generateToken()
+      console.log('[vemachine] token generated')
+    } catch (err) {
+      console.error('[vemachine] failed to generate token', err)
     }
   }
 })
+
+async function loadScript(src: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve()
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = src
+    script.async = true
+    script.onload = () => resolve()
+    script.onerror = (err) => reject(err)
+    document.head.appendChild(script)
+  })
+}
