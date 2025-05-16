@@ -4,7 +4,7 @@ import WS, { type WSOptions } from '@/utils/ws'
 import { getBestApiDomain } from '@/plugins/api/getApiDomain'
 import { getWSMessage } from '@/utils'
 import { updatePriceFromTx } from '@/utils/txUpdate'
-import type { WSTx } from '@/components/kLine/types.ts'
+import type { WSTx } from '~/pages/token/components/kLine/types'
 
 export const useWSStore = defineStore('ws', () => {
   // 使用 shallowRef 代替 ref，WebSocket 本身是非响应式的
@@ -46,7 +46,7 @@ export const useWSStore = defineStore('ws', () => {
     return wsInstance.value
   }
 
-  function onmessageTx() {
+  function onmessageTxUpdateToken() {
     getWSInstance()?.onmessage((e) => {
       const msg = getWSMessage(e)
       if (!msg) {
@@ -55,12 +55,10 @@ export const useWSStore = defineStore('ws', () => {
       const { event, data } = msg
       if (event === 'tx') {
         const tx: WSTx = data?.tx
-        if (tx.pair_address === tokenStore.pairAddress) {
-          // 更新价格 交易数和交易额
-          updatePriceFromTx(tx)
-        }
+        // 更新价格 交易数和交易额
+        updatePriceFromTx(tx)
       }
-    }, 'tx')
+    }, 'tx_update_token')
   }
 
   const close = () => {
@@ -75,6 +73,6 @@ export const useWSStore = defineStore('ws', () => {
     init,
     send,
     close,
-    onmessageTx
+    onmessageTxUpdateToken
   }
 })
