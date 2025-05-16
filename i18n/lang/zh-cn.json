@@ -70,5 +70,20 @@
   "holder": "持币人",
   "orders": "订单",
   "mySwap": "我的交易",
-  "transactions": "交易历史"
+  "transactions": "交易历史",
+  "all": "全部",
+  "buy3": "买单",
+  "sell3": "卖单",
+  "followed": "已关注",
+  "liquidity2": "池子",
+  "time": "时间",
+  "type": "类型",
+  "swapPrice": "成交价",
+  "amountB": "成交量",
+  "amountU": "成交额",
+  "makers": "交易者",
+  "filterTime": "按日期过滤",
+  "startTime": "开始时间",
+  "endTime1": "结束时间",
+  "reset": "重置"
 }

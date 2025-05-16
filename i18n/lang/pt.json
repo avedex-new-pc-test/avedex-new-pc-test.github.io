@@ -56,5 +56,16 @@
   "website": "Local na rede Internet ",
   "whitepaper": "Artigo técnico ",
   "copySuccess": "Copiar com sucesso ",
-  "transactions": "Transações"
+  "transactions": "Transações",
+  "all": "Todo",
+  "buy3": "Comprar",
+  "sell3": "Vender",
+  "liquidity2": "Liquidez",
+  "time": "Hora",
+  "type": "Tipo",
+  "swapPrice": "Preço",
+  "amountB": "Quantidade ",
+  "amountU": "Volume",
+  "makers": "Criador",
+  "reset": "Transações"
 }

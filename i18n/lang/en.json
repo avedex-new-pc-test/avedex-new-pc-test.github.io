@@ -69,5 +69,20 @@
   "expand": "Expand",
   "website": "Website",
   "whitepaper": "Whitepaper",
-  "copySuccess": "Copy successfully !"
+  "copySuccess": "Copy successfully !",
+  "all": "All",
+  "buy3": "Buy",
+  "sell3": "Sell",
+  "followed": "Followed",
+  "liquidity2": "Liquidity",
+  "time": "Time",
+  "type": "Type",
+  "swapPrice": "Price",
+  "amountB": "Amount",
+  "amountU": "Volume",
+  "makers": "Maker",
+  "filterTime": "Filter by date",
+  "startTime": "Start Time",
+  "endTime1": "End Time",
+  "reset": "Reset"
 }

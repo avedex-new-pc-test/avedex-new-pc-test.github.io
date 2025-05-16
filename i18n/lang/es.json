@@ -56,5 +56,16 @@
   "website": "Sitio web",
   "whitepaper": "Libro blanco",
   "copySuccess": "¡Copiado con éxito!",
-  "transactions": "Transacciones"
+  "transactions": "Transacciones",
+  "all": "Todos",
+  "buy3": "Comprar",
+  "sell3": "Vender",
+  "liquidity2": "Liquidez",
+  "time": "Tiempo",
+  "type": "Tipo",
+  "swapPrice": "Precio",
+  "amountB": "Cantidad",
+  "amountU": "Volumen",
+  "makers": "Creador",
+  "reset": "Restablecer"
 }

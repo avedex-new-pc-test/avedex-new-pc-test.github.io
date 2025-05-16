@@ -5,11 +5,9 @@
       <div class="flex gap-4px">
         <Left class="w-292px"/>
         <div class="flex-1">
-          <div class="h-400px bg-yellow">图表</div>
-          <BelowChartTable class="h-64px min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]]"/>
           <el-scrollbar height="calc(100vh - 152px)">
             <KLine />
-            <div class="h-64px bg-orange min-h-300px">图表下方</div>
+            <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]]"/>
           </el-scrollbar>
         </div>
       </div>
@@ -48,6 +46,7 @@ function init() {
   _getTokenInfo()
   _getTokenInfoExtra()
   wsStore.onmessageTxUpdateToken()
+  tokenStore._getTotalHolders()
 }
 
 onBeforeMount(() => {

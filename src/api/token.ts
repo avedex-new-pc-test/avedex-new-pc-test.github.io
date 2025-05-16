@@ -140,3 +140,14 @@ export function getHotTokens(): Promise<GetHotTokensResponse[]> {
     method: 'get',
   })
 }
+
+export function getPairTxs(pair: string, address: string) {
+  const {$api} = useNuxtApp()
+  return $api(`/v1api/v5/pairs/${pair}/txs`, {
+    method: 'get',
+    params: {
+      address: address,
+      pair,
+    },
+  })
+}

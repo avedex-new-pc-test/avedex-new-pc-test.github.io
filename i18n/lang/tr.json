@@ -55,5 +55,16 @@
   "website": "Web Sitesi",
   "whitepaper": "Whitepaper",
   "copySuccess": "Kopyalama Başarılı!",
-  "transactions": "İşlemler"
+  "transactions": "İşlemler",
+  "all": "Hepsi",
+  "buy3": "Al",
+  "sell3": "Sat",
+  "liquidity2": "Likidite",
+  "time": "Zaman",
+  "type": "Tür",
+  "swapPrice": "Fiyat",
+  "amountB": "İşlem Hacmi",
+  "amountU": "İşlem Tutarı",
+  "makers": "Maker",
+  "reset": "Sıfırlama"
 }

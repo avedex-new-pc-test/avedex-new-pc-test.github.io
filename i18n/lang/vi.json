@@ -66,5 +66,16 @@
   "holder": "Người nắm giữ",
   "orders": "Lệnh",
   "mySwap": "Giao dịch của tôi",
-  "transactions": "Giao dịch"
+  "transactions": "Giao dịch",
+  "all": "Tất cả",
+  "buy3": "Mua",
+  "sell3": "Bán",
+  "liquidity2": "Thanh khoản",
+  "time": "Thời gian",
+  "type": "Loại",
+  "swapPrice": "Giá",
+  "amountB": "Số lượng",
+  "amountU": "Khối lượng",
+  "makers": "Người tạo",
+  "reset": "Đặt lại"
 }
