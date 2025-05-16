@@ -42,12 +42,15 @@
   "tips": "Подсказка",
   "profit2": "P&L",
   "sellAll": "Продать всё",
-  "price": "Цена",
   "openPrice": "Начальная цена",
   "24Exchange": "Оборот%",
   "liquidityPair": "Пара",
   "amount": "Количество",
   "initial": "Начальный",
   "poolCirculatingSupply": "Ликвидность",
-  "phoneyPool": "Подозрительный пул"
+  "phoneyPool": "Подозрительный пул",
+  "holder": "Держатель",
+  "orders": "Ордера",
+  "mySwap": "Мои транзакции",
+  "transactions": "Транзакции"
 }

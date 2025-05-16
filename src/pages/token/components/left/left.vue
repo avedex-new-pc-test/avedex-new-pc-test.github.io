@@ -4,7 +4,6 @@ import {useWindowSize, useStorage} from '@vueuse/core'
 import BottomLeftTable from '~/pages/token/components/left/bottomLeftTable.vue'
 
 const topLeftHeight = useStorage('topLeftHeight', 479)
-console.log('=>(left.vue:7) topLeftHeight', topLeftHeight)
 const canDrag = shallowRef(false)
 const {height} = useWindowSize()
 

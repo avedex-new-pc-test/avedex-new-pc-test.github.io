@@ -45,8 +45,7 @@
   "removeFavGroupTips": "删除分组会将分组内的 token 移入默认分组中，是否继续？",
   "tips": "提示",
   "profit2": "盈亏",
-  "sellAll": "全部卖出"
-  "hotList": "热门榜",
+  "sellAll": "全部卖出",
   "openPrice": "开盘价格",
   "24Exchange": "24H换手率",
   "liquidityPair": "池子配对",
@@ -54,5 +53,9 @@
   "initial": "初始",
   "poolCirculatingSupply": "池子大小",
   "phoneyPool": "疑似假池子",
-  "editFav": "编辑自选"
+  "editFav": "编辑自选",
+  "holder": "持币人",
+  "orders": "订单",
+  "mySwap": "我的交易",
+  "transactions": "交易历史"
 }

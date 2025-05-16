@@ -35,12 +35,12 @@
   "enterGroupName": "Lütfen grup adını girin",
   "removeFavGroupTips": "Grubu silmek, gruptaki token'ları varsayılan gruba taşır. Devam etmek istiyor musunuz?",
   "tips": "İpuçları",
-  "price": "Fiyat",
   "openPrice": "Başlangıç fiyatı",
   "24Exchange": "24 saatlik işlem hacmi",
   "liquidityPair": "Çift",
   "amount": "Miktar",
   "initial": "İlk",
   "poolCirculatingSupply": "Likidite",
-  "phoneyPool": "Şüpheli sahte havuz"
+  "phoneyPool": "Şüpheli sahte havuz",
+  "transactions": "İşlemler"
 }

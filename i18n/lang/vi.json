@@ -42,12 +42,15 @@
   "tips": "Mẹo",
   "profit2": "Lãi/lỗ",
   "sellAll": "Bán tất cả",
-  "price": "Giá",
   "openPrice": "Giá khởi điểm",
   "24Exchange": "Tỷ lệ giao dịch",
   "liquidityPair": "Cặp",
   "amount": "Số lượng",
   "initial": "Ban đầu",
   "poolCirculatingSupply": "Thanh khoản",
-  "phoneyPool": "Nghi ngờ pool giả"
+  "phoneyPool": "Nghi ngờ pool giả",
+  "holder": "Người nắm giữ",
+  "orders": "Lệnh",
+  "mySwap": "Giao dịch của tôi",
+  "transactions": "Giao dịch"
 }

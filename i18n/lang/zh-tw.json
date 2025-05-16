@@ -42,7 +42,6 @@
   "tips": "提示",
   "profit2": "盈虧",
   "sellAll": "全部賣出",
-  "hotList": "熱門榜",
   "openPrice": "開盤價格",
   "24Exchange": "24H換手率",
   "liquidityPair": "池子配對",
@@ -50,5 +49,9 @@
   "initial": "初始",
   "poolCirculatingSupply": "池子大小",
   "phoneyPool": "疑似假池子",
-  "editFav": "編輯自選"
+  "editFav": "編輯自選",
+  "holder": "持幣人",
+  "orders": "订单",
+  "mySwap": "我的交易",
+  "transactions": "交易歷史"
 }

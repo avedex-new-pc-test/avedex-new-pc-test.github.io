@@ -7,9 +7,9 @@ defineProps({
 })
 const activeTab = shallowRef<keyof typeof components>('FavoriteTable')
 const tabs = shallowRef([
-  {name: t('favorites'), url: '', component: 'FavoriteTable' as const},
-  {name: t('positions'), url: '', component: 'PositionsTable' as const},
-  // {name: t('attention1'), url: '', component: 'MyAttentionTable' as const},
+  {name: t('favorites'), component: 'FavoriteTable' as const},
+  {name: t('positions'), component: 'PositionsTable' as const},
+  // {name: t('attention1'),  component: 'MyAttentionTable' as const},
 ])
 const components = {
   FavoriteTable,

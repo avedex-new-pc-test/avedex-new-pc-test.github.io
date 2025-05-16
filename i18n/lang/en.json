@@ -44,5 +44,9 @@
   "tips": "Tips",
   "profit2": "PnL",
   "sellAll": "Sell all",
-  "editFav": "Edit Favourite"
+  "editFav": "Edit Favourite",
+  "holder": "Holder",
+  "orders": "Orders",
+  "mySwap": "My Transactions",
+  "transactions": "Transactions"
 }

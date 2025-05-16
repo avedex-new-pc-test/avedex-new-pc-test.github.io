@@ -36,12 +36,12 @@
   "enterGroupName": "Ingrese el nombre del grupo",
   "removeFavGroupTips": "Eliminar el grupo moverá los tokens del grupo al grupo predeterminado. ¿Desea continuar?",
   "tips": "Consejos",
-  "price": "Precio",
   "openPrice": "Precio inicial",
   "24Exchange": "Rotación%.",
   "liquidityPair": "Par",
   "amount": "Cantidad",
   "initial": "Inicial",
   "poolCirculatingSupply": "Liquidez",
-  "phoneyPool": "Posible pool falso."
+  "phoneyPool": "Posible pool falso.",
+  "transactions": "Transacciones"
 }

@@ -71,7 +71,9 @@ const sortedFavList = computed(() => {
 })
 
 onMounted(() => {
-  _getUserFavoriteGroups()
+  if (evmAddress) {
+    _getUserFavoriteGroups()
+  }
 })
 watch(() => evmAddress, () => {
   _getUserFavoriteGroups()
@@ -107,6 +109,7 @@ function setActiveTab(groupId: number) {
 }
 
 async function loadMoreFavorites() {
+  const loadingInstance = ElLoading.service({target: '#favLoading'})
   try {
     listStatus.value.loading = true
     const pageNo = listStatus.value.pageNo
@@ -144,6 +147,7 @@ async function loadMoreFavorites() {
     console.log('=>(favoriteTable.vue:106) (e)', (e))
   } finally {
     listStatus.value.loading = false
+    loadingInstance.close()
   }
 }
 
@@ -164,7 +168,7 @@ function getColorClass(val: number) {
 </script>
 
 <template>
-  <div>
+  <div id="favLoading">
     <div class="flex items-center justify-between pr-15px pl-12px mt-10px">
       <div
         class="flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
@@ -193,7 +197,7 @@ function getColorClass(val: number) {
     >
       <div
         v-infinite-scroll="loadMoreFavorites"
-        :infinite-scroll-disabled="listStatus.finished"
+        :infinite-scroll-disabled="listStatus.loading || listStatus.finished"
         infinite-scroll-distance="200"
         :infinite-scroll-delay="10"
         :infinite-scroll-immediate="false"

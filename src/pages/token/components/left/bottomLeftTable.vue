@@ -12,8 +12,8 @@ const props = defineProps({
 const {height} = useWindowSize()
 const activeTab = shallowRef<keyof typeof components>('Trending')
 const tabs = shallowRef([
-  {name: t('trending'), url: '', component: 'Trending' as const},
-  {name: 'Pump', url: '', component: 'Pump' as const},
+  {name: t('trending'), component: 'Trending' as const},
+  {name: 'Pump', component: 'Pump' as const},
 ])
 const components = {
   Trending,
