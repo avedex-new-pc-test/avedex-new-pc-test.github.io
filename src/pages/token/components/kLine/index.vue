@@ -2,7 +2,7 @@
   <div class="watermark relative" :style="{height: `${kHeight}px`}">
     <div id="tv_chart_container" ref="kline" :style="{ width: '100%', height: '100%' }" />
   </div>
-  <div id="kline-draggable" class="w-full cursor-row-resize bg-[-d-2D3037-l-FFF] flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
+  <div id="kline-draggable" class="w-full cursor-row-resize bg-[--d-2D3037-l-FFF] flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
     <Icon name="custom:drag" class="text-4px color-#959A9F"/>
   </div>
 </template>
@@ -84,7 +84,6 @@ const showMarket = useLocalStorage('tv_showMarket', false)
 
 // 切换主题
 watch(() => themeStore.theme, () => {
-  localStorage?.removeItem?.('tradingview.chartproperties')
   resetChart()
 })
 
@@ -209,9 +208,9 @@ async function initChart() {
       volumePaneSize: 'small',
       'paneProperties.topMargin': '10',
       // "scalesProperties.lineColor": '#333',
-      // "scalesProperties.textColor": '#333',
+      'scalesProperties.textColor': themeStore.isDark ? '#d5d5d5' : '#333',
       'paneProperties.backgroundType': 'solid',
-      'paneProperties.background': themeStore.theme === 'light' ? '#fff' : '#0A0B0D',
+      'paneProperties.background': themeStore.isDark ? '#0A0B0D' : '#fff',
       'paneProperties.vertGridProperties.style': 2,
       // "paneProperties.vertGridProperties.color": style.grid,
       // "paneProperties.horzGridProperties.style": 2,
@@ -437,7 +436,9 @@ async function initChart() {
   _widget.onChartReady(() => {
     // 保存指标
     saveStudy()
-    if (themeStore.theme === 'light') {
+    if (themeStore.isDark) {
+      _widget?.applyOverrides?.({ 'scalesProperties.textColor': '#d5d5d5' })
+    } else {
       _widget?.applyOverrides?.({ 'scalesProperties.textColor': '#333' })
     }
 
