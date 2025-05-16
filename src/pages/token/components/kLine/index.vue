@@ -2,8 +2,8 @@
   <div class="watermark relative" :style="{height: `${kHeight}px`}">
     <div id="tv_chart_container" ref="kline" :style="{ width: '100%', height: '100%' }" />
   </div>
-  <div id="kline-draggable" class="w-full cursor-row-resize bg-#2D3037 flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
-    <Icon name="mdi:drag-horizontal" class="text-10px color-#959A9F"/>
+  <div id="kline-draggable" class="w-full cursor-row-resize bg-[-d-2D3037-l-FFF] flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
+    <Icon name="custom:drag" class="text-4px color-#959A9F"/>
   </div>
 </template>
 
@@ -84,6 +84,7 @@ const showMarket = useLocalStorage('tv_showMarket', false)
 
 // 切换主题
 watch(() => themeStore.theme, () => {
+  localStorage?.removeItem?.('tradingview.chartproperties')
   resetChart()
 })
 
@@ -504,7 +505,7 @@ function drag(e: MouseEvent) {
 
 
 onBeforeMount(() => {
-  _getTotalHolders()
+  // _getTotalHolders()
 })
 
 onMounted(() => {

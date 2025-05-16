@@ -5,8 +5,10 @@
       <div class="flex gap-4px">
         <div class="w-292px bg-red">左侧</div>
         <div class="flex-1">
-          <KLine />
-          <div class="h-64px bg-orange min-h-300px">图表下方</div>
+          <el-scrollbar height="calc(100vh - 152px)">
+            <KLine />
+            <div class="h-64px bg-orange min-h-300px">图表下方</div>
+          </el-scrollbar>
         </div>
       </div>
     </div>
@@ -18,7 +20,7 @@
 import { getTokenInfo, getTokenInfoExtra } from '~/api/token'
 import { useTokenStore } from '~/stores/token'
 import TokenRight from './components/right/index.vue'
-import KLine from '@/components/kLine/index.vue'
+import KLine from '~/pages/token/components/kLine/index.vue'
 const route = useRoute()
 const tokenStore = useTokenStore()
 const wsStore = useWSStore()
@@ -41,7 +43,7 @@ function _getTokenInfoExtra() {
 function init() {
   _getTokenInfo()
   _getTokenInfoExtra()
-  wsStore.onmessageTx()
+  wsStore.onmessageTxUpdateToken()
 }
 
 onBeforeMount(() => {
@@ -50,7 +52,7 @@ onBeforeMount(() => {
 
 onBeforeRouteLeave(() => {
   tokenStore.reset()
-  wsStore.getWSInstance()?.offMessage(['tx', 'kline'])
+  wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline'])
 })
 </script>
 

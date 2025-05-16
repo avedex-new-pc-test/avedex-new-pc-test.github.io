@@ -1,4 +1,4 @@
-import type { WSTx } from '@/components/kLine/types.ts'
+import type { WSTx } from '~/pages/token/components/kLine/types'
 import BigNumber from 'bignumber.js'
 import { formatNumber } from './formatNumber'
 export function updatePriceFromTx(tx: WSTx) {
@@ -15,19 +15,23 @@ export function updatePriceFromTx(tx: WSTx) {
   const isBuy = tx.to_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.()
   tokenStore?.pairs?.forEach(pair => {
     if (pair.pair === tx.pair_address) {
-      pair.reserve0 = Number(isBuy ? tx.to_reserve : tx.from_reserve)
-      pair.reserve1 = Number(isBuy ? tx.from_reserve : tx.to_reserve)
+      const isToken0 = tx.from_address?.toLowerCase?.() === pair.token0_address?.toLowerCase?.()
+      pair.reserve0 = Number(isToken0 ? tx.from_reserve : tx.to_reserve)
+      pair.reserve1 = Number(isToken0 ? tx.to_reserve : tx.from_reserve)
+      pair.token0_price_usd = Number(isToken0 ? tx.from_price_usd : tx.to_price_usd)
+      pair.token1_price_usd = Number(isToken0 ? tx.to_price_usd : tx.from_price_usd)
       if (isBuy) {
-        pair.volume_u = new BigNumber(pair.volume_u).plus(tx.to_amount).toNumber()
-        pair.volume_u_1h = new BigNumber(pair.volume_u_1h).plus(tx.to_amount).toNumber()
-        pair.volume_u_24h = new BigNumber(pair.volume_u_24h).plus(tx.to_amount).toNumber()
-        pair.volume_u_4h = new BigNumber(pair.volume_u_4h).plus(tx.to_amount).toNumber()
-        pair.volume_u_5m = new BigNumber(pair.volume_u_5m).plus(tx.to_amount).toNumber()
+        const volume = new BigNumber(tx.to_amount).times(price) || 0
+        pair.volume_u = new BigNumber(pair.volume_u).plus(volume).toNumber()
+        pair.volume_u_1h = new BigNumber(pair.volume_u_1h).plus(volume).toNumber()
+        pair.volume_u_24h = new BigNumber(pair.volume_u_24h).plus(volume).toNumber()
+        pair.volume_u_4h = new BigNumber(pair.volume_u_4h).plus(volume).toNumber()
+        pair.volume_u_5m = new BigNumber(pair.volume_u_5m).plus(volume).toNumber()
 
-        pair.buy_volume_u_1h = new BigNumber(pair.buy_volume_u_1h).plus(tx.to_amount).toNumber()
-        pair.buy_volume_u_24h = new BigNumber(pair.buy_volume_u_24h).plus(tx.to_amount).toNumber()
-        pair.buy_volume_u_4h = new BigNumber(pair.buy_volume_u_4h).plus(tx.to_amount).toNumber()
-        pair.buy_volume_u_5m = new BigNumber(pair.buy_volume_u_5m).plus(tx.to_amount).toNumber()
+        pair.buy_volume_u_1h = new BigNumber(pair.buy_volume_u_1h).plus(volume).toNumber()
+        pair.buy_volume_u_24h = new BigNumber(pair.buy_volume_u_24h).plus(volume).toNumber()
+        pair.buy_volume_u_4h = new BigNumber(pair.buy_volume_u_4h).plus(volume).toNumber()
+        pair.buy_volume_u_5m = new BigNumber(pair.buy_volume_u_5m).plus(volume).toNumber()
 
         pair.buys_tx_1h_count = pair.buys_tx_1h_count + 1
         pair.buys_tx_24h_count = pair.buys_tx_24h_count + 1
@@ -35,16 +39,17 @@ export function updatePriceFromTx(tx: WSTx) {
         pair.buys_tx_5m_count = pair.buys_tx_5m_count + 1
 
       } else {
-        pair.volume_u = new BigNumber(pair.volume_u).plus(tx.from_amount).toNumber()
-        pair.volume_u_1h = new BigNumber(pair.volume_u_1h).plus(tx.from_amount).toNumber()
-        pair.volume_u_24h = new BigNumber(pair.volume_u_24h).plus(tx.from_amount).toNumber()
-        pair.volume_u_4h = new BigNumber(pair.volume_u_4h).plus(tx.from_amount).toNumber()
-        pair.volume_u_5m = new BigNumber(pair.volume_u_5m).plus(tx.from_amount).toNumber()
+        const volume = new BigNumber(tx.from_amount).times(price) || 0
+        pair.volume_u = new BigNumber(pair.volume_u).plus(volume).toNumber()
+        pair.volume_u_1h = new BigNumber(pair.volume_u_1h).plus(volume).toNumber()
+        pair.volume_u_24h = new BigNumber(pair.volume_u_24h).plus(volume).toNumber()
+        pair.volume_u_4h = new BigNumber(pair.volume_u_4h).plus(volume).toNumber()
+        pair.volume_u_5m = new BigNumber(pair.volume_u_5m).plus(volume).toNumber()
 
-        pair.sell_volume_u_1h = new BigNumber(pair.sell_volume_u_1h).plus(tx.from_amount).toNumber()
-        pair.sell_volume_u_24h = new BigNumber(pair.sell_volume_u_24h).plus(tx.from_amount).toNumber()
-        pair.sell_volume_u_4h = new BigNumber(pair.sell_volume_u_4h).plus(tx.from_amount).toNumber()
-        pair.sell_volume_u_5m = new BigNumber(pair.sell_volume_u_5m).plus(tx.from_amount).toNumber()
+        pair.sell_volume_u_1h = new BigNumber(pair.sell_volume_u_1h).plus(volume).toNumber()
+        pair.sell_volume_u_24h = new BigNumber(pair.sell_volume_u_24h).plus(volume).toNumber()
+        pair.sell_volume_u_4h = new BigNumber(pair.sell_volume_u_4h).plus(volume).toNumber()
+        pair.sell_volume_u_5m = new BigNumber(pair.sell_volume_u_5m).plus(volume).toNumber()
 
         pair.sells_tx_1h_count = pair.sells_tx_1h_count + 1
         pair.sells_tx_24h_count = pair.sells_tx_24h_count + 1
