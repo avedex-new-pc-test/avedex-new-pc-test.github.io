@@ -43,5 +43,18 @@
   "initial": "Inicial",
   "poolCirculatingSupply": "Liquidez",
   "phoneyPool": "Posible pool falso.",
+  "tokenInfo": "Información del token",
+  "name": "Nombre",
+  "createdTime": "Fecha de creación",
+  "totalSupply": "Suministro total",
+  "circulation": "Circulación",
+  "mcap": "Cap. de Mercado",
+  "contractOwner": "Propietario",
+  "pair": "Par",
+  "more": "Más",
+  "expand": "Expandir",
+  "website": "Sitio web",
+  "whitepaper": "Libro blanco",
+  "copySuccess": "¡Copiado con éxito!"
   "transactions": "Transacciones"
 }

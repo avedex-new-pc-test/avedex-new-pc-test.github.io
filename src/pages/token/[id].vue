@@ -7,6 +7,10 @@
         <div class="flex-1">
           <div class="h-400px bg-yellow">图表</div>
           <BelowChartTable class="h-64px min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]]"/>
+          <el-scrollbar height="calc(100vh - 152px)">
+            <KLine />
+            <div class="h-64px bg-orange min-h-300px">图表下方</div>
+          </el-scrollbar>
         </div>
       </div>
     </div>
@@ -20,8 +24,10 @@ import { useTokenStore } from '~/stores/token'
 import TokenRight from './components/right/index.vue'
 import {Left} from './components/left'
 import {BelowChartTable} from './components/belowChartTable'
+import KLine from '~/pages/token/components/kLine/index.vue'
 const route = useRoute()
 const tokenStore = useTokenStore()
+const wsStore = useWSStore()
 
 function _getTokenInfo() {
   const id = route.params.id as string
@@ -41,6 +47,7 @@ function _getTokenInfoExtra() {
 function init() {
   _getTokenInfo()
   _getTokenInfoExtra()
+  wsStore.onmessageTxUpdateToken()
 }
 
 onBeforeMount(() => {
@@ -49,6 +56,7 @@ onBeforeMount(() => {
 
 onBeforeRouteLeave(() => {
   tokenStore.reset()
+  wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline'])
 })
 </script>
 

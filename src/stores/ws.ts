@@ -2,12 +2,16 @@ import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 import WS, { type WSOptions } from '@/utils/ws'
 import { getBestApiDomain } from '@/plugins/api/getApiDomain'
-
+import { getWSMessage } from '@/utils'
+import { updatePriceFromTx } from '@/utils/txUpdate'
+import type { WSTx } from '~/pages/token/components/kLine/types'
 
 export const useWSStore = defineStore('ws', () => {
   // 使用 shallowRef 代替 ref，WebSocket 本身是非响应式的
   const wsInstance = shallowRef<WS | null>(null)
   const isConnected = shallowRef(false)
+
+  const tokenStore = useTokenStore()
 
   // 将 createWebSocket 重命名为 init
   const init = (options?: WSOptions) => {
@@ -17,13 +21,10 @@ export const useWSStore = defineStore('ws', () => {
 
     wsInstance.value.onopen(() => {
       isConnected.value = true
-    }).onmessage(e => {
-      console.log(e)
     }).onclose(() => {
       isConnected.value = false
     })
   }
-
 
   // 发送消息并确保初始化 WebSocket 连接
   const send = (msg: string | Record<string, any>, options?: WSOptions) => {
@@ -36,6 +37,30 @@ export const useWSStore = defineStore('ws', () => {
     return wsInstance.value
   }
 
+  function getWSInstance() {
+     if (!wsInstance.value) {
+      // 如果 WebSocket 未初始化，则自动调用 init 初始化
+      const url = `${(getBestApiDomain() || location.origin).replace('http', 'ws')}/ws`
+      init({ url: url })  // 默认空 URL，或者你可以传递默认的初始化选项
+    }
+    return wsInstance.value
+  }
+
+  function onmessageTxUpdateToken() {
+    getWSInstance()?.onmessage((e) => {
+      const msg = getWSMessage(e)
+      if (!msg) {
+        return
+      }
+      const { event, data } = msg
+      if (event === 'tx') {
+        const tx: WSTx = data?.tx
+        // 更新价格 交易数和交易额
+        updatePriceFromTx(tx)
+      }
+    }, 'tx_update_token')
+  }
+
   const close = () => {
     isConnected.value = false
     wsInstance.value?.close()
@@ -43,10 +68,11 @@ export const useWSStore = defineStore('ws', () => {
   }
 
   return {
-    wsInstance,
+    getWSInstance,
     isConnected,
     init,
     send,
-    close
+    close,
+    onmessageTxUpdateToken
   }
 })

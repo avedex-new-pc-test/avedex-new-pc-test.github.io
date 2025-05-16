@@ -55,11 +55,11 @@ export default defineNuxtPlugin(() => {
         `,
         type: 'text/javascript',
       },
-      { src: '/vemachine.js' },
-      {
-        src: tokenLogoUrl + 'charting_library/charting_library.standalone.js',
-        defer: true,
-      },
+      // { src: '/vemachine.js' },
+      // {
+      //   src: tokenLogoUrl + 'charting_library/charting_library.standalone.js',
+      //   defer: true,
+      // },
     ],
   })
 

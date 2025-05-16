@@ -5,7 +5,7 @@ import type { TokenInfo, TokenInfoExtra } from '~/api/types/token'
 import { BigNumber } from 'bignumber.js'
 
 export const useTokenStore = defineStore('token', () => {
-  const tokenInfo = shallowRef<null | TokenInfo>(null)
+  const tokenInfo = ref<null | TokenInfo>(null)
   const tokenInfoExtra = shallowRef<null | TokenInfoExtra>(null)
 
   const token = computed(() => tokenInfo.value?.token)
