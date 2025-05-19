@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware((to) => {
     if (query.redirectUrl) {
       const botStore = useBotStore()
       botStore.login(query as any)
-      navigateTo((query.redirectUrl as string)?.replace(/^(.*?)(\/.*)$/, '$2'),)
+      navigateTo((query.redirectUrl as string)?.replace(/^(.*?)(\/.*)$/, '$2'), { external: true })
     }
   }
   if (!to.fullPath?.includes('/token')) {
