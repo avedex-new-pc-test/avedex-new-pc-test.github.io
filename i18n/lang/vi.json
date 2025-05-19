@@ -34,5 +34,12 @@
   "expand": "Mở rộng",
   "website": "Website",
   "whitepaper": "Whitepaper",
-  "copySuccess": "Đã sao chép!"
+  "copySuccess": "Đã sao chép!",
+  "maximum10characters": "Độ dài ký tự quá dài",
+  "success": "Thành công",
+  "fail": "Thất bại",
+  "cancel": "Hủy",
+  "confirm": "Xác nhận",
+  "remark": "Ghi chú",
+  "cannotBeEmpty": "Không để trống"
 }

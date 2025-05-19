@@ -37,5 +37,14 @@
   "more": "更多",
   "expand": "收起",
   "website": "官网",
-  "whitepaper": "白皮书"
+  "whitepaper": "白皮书",
+  "maximum10characters": "字符长度太长",
+  "success": "操作成功",
+  "fail": "操作失败",
+  "cancel": "取消",
+  "confirm": "确认",
+  "remark": "备注名",
+  "placeholderPrefix": "请输入",
+  "cannotBeEmpty": "不能为空",
+  "remarkError": "备注名必须为 2-50 个字符且不能包含特殊字符"
 }

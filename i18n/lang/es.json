@@ -30,5 +30,11 @@
   "expand": "Expandir",
   "website": "Sitio web",
   "whitepaper": "Libro blanco",
-  "copySuccess": "¡Copiado con éxito!"
+  "copySuccess": "¡Copiado con éxito!",
+  "success": "Exitoso",
+  "fail": "Fallido",
+  "cancel": "Cancelar",
+  "confirm": "Confirmar",
+  "remark": "Comentario",
+  "cannotBeEmpty": "No puede estar vacío"
 }

@@ -30,5 +30,11 @@
   "expand": "Expandir",
   "website": "Local na rede Internet ",
   "whitepaper": "Artigo técnico ",
-  "copySuccess": "Copiar com sucesso "
+  "copySuccess": "Copiar com sucesso ",
+  "success": "Bem-sucedido ",
+  "fail": "Falhou",
+  "cancel": "Cancelar",
+  "confirm": "Confirmar ",
+  "remark": "Comentário",
+  "cannotBeEmpty": "Não pode estar vazio "
 }

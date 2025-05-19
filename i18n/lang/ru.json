@@ -34,5 +34,12 @@
   "expand": "Развернуть",
   "website": "Сайт",
   "whitepaper": "Белая книга",
-  "copySuccess": "Скопировано!"
+  "copySuccess": "Скопировано!",
+  "maximum10characters": "Слишком длинное имя",
+  "success": "Успешно",
+  "fail": "Ошибка",
+  "cancel": "Отмена",
+  "confirm": "Подтвердить",
+  "remark": "Примечание",
+  "cannotBeEmpty": "Заполните поле"
 }
