@@ -91,6 +91,8 @@ export default defineNuxtConfig({
     '@/plugins/api/index.ts',
     '@/plugins/vemachine-init.client.ts',
     '@/plugins/tradingview.client.ts',
+    '@/plugins/tooltip.client.ts',
+    '@/plugins/popover.client.ts',
   ],
   // unocss: {
   //   nuxtLayers: true,

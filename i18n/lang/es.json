@@ -55,7 +55,6 @@
   "expand": "Expandir",
   "website": "Sitio web",
   "whitepaper": "Libro blanco",
-  "copySuccess": "¡Copiado con éxito!",
   "transactions": "Transacciones",
   "all": "Todos",
   "buy3": "Comprar",
@@ -67,5 +66,7 @@
   "amountB": "Cantidad",
   "amountU": "Volumen",
   "makers": "Creador",
-  "reset": "Restablecer"
+  "reset": "Restablecer",
+  "copySuccess": "¡Copiado con éxito!",
+  "fail": "Fallido"
 }

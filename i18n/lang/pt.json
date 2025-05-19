@@ -55,7 +55,6 @@
   "expand": "Expandir",
   "website": "Local na rede Internet ",
   "whitepaper": "Artigo técnico ",
-  "copySuccess": "Copiar com sucesso ",
   "transactions": "Transações",
   "all": "Todo",
   "buy3": "Comprar",
@@ -67,5 +66,7 @@
   "amountB": "Quantidade ",
   "amountU": "Volume",
   "makers": "Criador",
-  "reset": "Transações"
+  "reset": "Transações",
+  "copySuccess": "Copiar com sucesso ",
+  "fail": "Falhou"
 }

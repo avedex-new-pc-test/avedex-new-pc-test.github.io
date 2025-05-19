@@ -5,6 +5,7 @@ import { PublicKey } from '@solana/web3.js'
 import { TronWeb } from 'tronweb'
 import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
+import { useRemarksStore } from '~/stores/remarks'
 
 export function isJSON (str: string) {
   try {
@@ -467,5 +468,30 @@ export function getWSMessage(e: MessageEvent) {
     }
   }
   return null
+}
+
+export function verifyLogin() {
+  const bottStore = useBotStore()
+  const userInfo = bottStore.userInfo
+  if (!userInfo?.evmAddress) {
+    // 连接钱包
+    return false
+  }
+  return true
+}
+
+export function formatRemark(val = '', n = 10, suffix = '...'){
+  if (typeof val !== 'string') return val
+  if (val.length > n) {
+    return val.slice(0,n) + suffix
+  }
+  return val
+}
+
+export function getRemarkByAddress({address, chain}: {address: string, chain: string}) {
+  if (!address || !chain) {
+    return ''
+  }
+  return useRemarksStore().getRemarkByAddress({address, chain})
 }
 

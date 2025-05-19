@@ -27,6 +27,7 @@ const route = useRoute()
 const tokenStore = useTokenStore()
 const wsStore = useWSStore()
 
+
 function _getTokenInfo() {
   const id = route.params.id as string
   getTokenInfo(id).then(res => {

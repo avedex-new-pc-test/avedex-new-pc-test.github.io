@@ -77,5 +77,7 @@
   "amountB": "Количество",
   "amountU": "Объем",
   "makers": "Мейкер",
-  "reset": "Сброс"
+  "reset": "Сброс",
+  "maximum10characters": "Слишком длинное имя",
+  "fail": "Ошибка"
 }

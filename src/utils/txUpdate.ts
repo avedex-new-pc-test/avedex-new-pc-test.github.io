@@ -15,11 +15,18 @@ export function updatePriceFromTx(tx: WSTx) {
   const isBuy = tx.to_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.()
   tokenStore?.pairs?.forEach(pair => {
     if (pair.pair === tx.pair_address) {
-      const isToken0 = tx.from_address?.toLowerCase?.() === pair.token0_address?.toLowerCase?.()
-      pair.reserve0 = Number(isToken0 ? tx.from_reserve : tx.to_reserve)
-      pair.reserve1 = Number(isToken0 ? tx.to_reserve : tx.from_reserve)
-      pair.token0_price_usd = Number(isToken0 ? tx.from_price_usd : tx.to_price_usd)
-      pair.token1_price_usd = Number(isToken0 ? tx.to_price_usd : tx.from_price_usd)
+      const isToken0From = tx.from_address?.toLowerCase?.() === pair.token0_address?.toLowerCase?.()
+      const isToken1From = tx.from_address?.toLowerCase?.() === pair.token1_address?.toLowerCase?.()
+      const isToken0To = tx.to_address?.toLowerCase?.() === pair.token0_address?.toLowerCase?.()
+      const isToken1To = tx.to_address?.toLowerCase?.() === pair.token1_address?.toLowerCase?.()
+      if (isToken0From || isToken0To) {
+         pair.reserve0 = Number(isToken0From ? tx.from_reserve : tx.to_reserve)
+         pair.token0_price_usd = Number(isToken0From ? tx.from_price_usd : tx.to_price_usd)
+      }
+      if (isToken1From || isToken1To) {
+         pair.reserve1 = Number(isToken1From ? tx.from_reserve : tx.to_reserve)
+         pair.token1_price_usd = Number(isToken1From ? tx.from_price_usd : tx.to_price_usd)
+      }
       if (isBuy) {
         const volume = new BigNumber(tx.to_amount).times(price) || 0
         pair.volume_u = new BigNumber(pair.volume_u).plus(volume).toNumber()
@@ -60,6 +67,7 @@ export function updatePriceFromTx(tx: WSTx) {
       pair.tx_24h_count = pair.tx_24h_count + 1
       pair.tx_4h_count = pair.tx_4h_count + 1
       pair.tx_5m_count = pair.tx_5m_count + 1
+      
       pair.price_change = calcNewChange(pair.price_change, price)
       pair.price_change_1h = calcNewChange(pair.price_change_1h, price)
       pair.price_change_24h = calcNewChange(pair.price_change_24h, price)
@@ -69,11 +77,21 @@ export function updatePriceFromTx(tx: WSTx) {
   })
 }
 
-function calcNewChange(currentChangeRate: number, pushedPrice: number): number {
+function calcNewChange(
+  currentChangeRate: number,
+  pushedPrice: number,
+  currentPrice?: number
+): number {
   const tokenStore = useTokenStore()
-  const currentPrice = tokenStore.token?.current_price_usd || 0
-  if (!currentPrice || !currentChangeRate || !pushedPrice) return 0
-  const originalPrice = currentPrice / (1 + currentChangeRate / 100)
-  const newChangeRate = ((pushedPrice - originalPrice) / originalPrice) * 100
-  return newChangeRate
+  const cp = new BigNumber(currentPrice ?? tokenStore.token?.current_price_usd ?? 0)
+
+  if (!cp.isFinite() || !Number.isFinite(currentChangeRate) || !Number.isFinite(pushedPrice)) {
+    return 0
+  }
+  const originalPrice = cp.div(1 + (currentChangeRate / 100))
+  return new BigNumber(pushedPrice)
+    .minus(originalPrice)
+    .div(originalPrice)
+    .times(100)
+    .toNumber()
 }
