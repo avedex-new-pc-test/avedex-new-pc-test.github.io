@@ -1,5 +1,5 @@
 <template>
-  <Icon :key="`remark-${address}-${chain}`" name="custom:edit" class="icon-remark text-12px clickable ml-5px" @click.stop.prevent @mouseover.stop="onEnter" />
+  <Icon :key="`remark-${address}-${chain}`" name="custom:remark" class="icon-remark text-12px clickable ml-5px" @click.stop.prevent @mouseover.stop="onEnter" />
 </template>
 
 <script setup lang="ts">

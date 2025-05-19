@@ -60,7 +60,7 @@ function onCancel() {
               class="[&&]:px-3px [&&]:py-4px justify-between"
           >
             <img
-                v-for="(item, index) in displayChains"
+                v-for="item in displayChains"
                 :key="item"
                 height="14"
                 class="rounded-50%"

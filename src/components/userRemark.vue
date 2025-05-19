@@ -39,7 +39,7 @@
         :remark="remark"
         @confirm="_updateWhaleRemark"
       />
-      <Icon v-else name="custom:edit" class="text-12px ml-5px clickable icon-remark"  @click.stop.prevent="verifyLogin" />
+      <Icon v-else name="custom:remark" class="text-12px ml-5px clickable icon-remark"  @click.stop.prevent="verifyLogin" />
     </template>
   </div>
 </template>
