@@ -3,7 +3,7 @@
     <!-- <div class="h-400px w-600px text-[var(--d-333-l-ececec)]">
       <Demo/>
     </div> -->
-    <NuxtLink class="block mb-10px" v-for="(item, $index) in list" :key="$index" :to="item.src">{{ item.name }}</NuxtLink>
+    <NuxtLink v-for="(item, $index) in list" :key="$index" class="block mb-10px" :to="item.src">{{ item.name }}</NuxtLink>
   </div>
 </template>
 

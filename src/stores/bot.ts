@@ -16,6 +16,7 @@ export const useBotStore = defineStore('bot', () => {
   const botReqCount = ref(0)
   const refreshing = ref(false)
   const walletList = shallowRef<Awaited<ReturnType<typeof bot_getWalletsAllChain>>>([])
+  console.log('=>(bot.ts:19) walletList', walletList)
   const userInfo = computed(() => {
     return walletList.value?.find?.(i => i.evmAddress === evmAddress.value)
   })
@@ -105,6 +106,13 @@ export const useBotStore = defineStore('bot', () => {
     evmAddress.value = ''
   }
 
+  function getWalletAddress(chain: string) {
+    if (Array.isArray(userInfo.value?.addresses)) {
+      return userInfo.value.addresses.find(el => el.chain === chain)?.address
+    }
+    return evmAddress.value
+  }
+
   return {
     accessToken,
     refreshToken,
@@ -118,6 +126,8 @@ export const useBotStore = defineStore('bot', () => {
     tgLogin,
     getUserInfo,
     getWebConfig,
-    updateWebConfig
+    updateWebConfig,
+    isSupportChains,
+    getWalletAddress
   }
 })
