@@ -19,7 +19,7 @@ const props = defineProps({
   },
   footerHeight: {
     type: Number,
-    default: 50
+    default: 0
   },
   loading: Boolean
 })
@@ -104,12 +104,15 @@ function getAvgWidth() {
       <!-- 透传所有 $attrs，支持 el-table-v2 的其它属性 -->
       <ElTableV2
         ref="tableRef"
-        v-bind="attrs"
+        style="--el-table-border:0;--el-bg-color:transparent;font-size: 12px;"
+        header-class="bg-[--d-222-l-F2F2F2]"
+        :header-height="32"
         :columns="computedColumns"
         :data="data"
         :height="height"
         :width="width"
         :footer-height="footerHeight"
+        v-bind="attrs"
       >
         <template v-for="(slotFn, slotName) in defaultSlots" #[slotName]="slotProps">
           <slot :name="slotName" v-bind="slotProps"/>

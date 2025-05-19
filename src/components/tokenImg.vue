@@ -16,7 +16,7 @@ const {row} = defineProps({
 const {token_logo_url} = useConfigStore()
 const shouldAddPrefix = computed(() => {
   if (row.logo_url) {
-    return row.logo_url.indexOf(token_logo_url) === -1
+    return row.logo_url.startsWith('http')
   }
   return false
 })

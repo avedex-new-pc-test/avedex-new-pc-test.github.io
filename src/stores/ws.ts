@@ -11,7 +11,7 @@ export const useWSStore = defineStore('ws', () => {
   const wsInstance = shallowRef<WS | null>(null)
   const isConnected = shallowRef(false)
 
-  const tokenStore = useTokenStore()
+  // const tokenStore = useTokenStore()
 
   // 将 createWebSocket 重命名为 init
   const init = (options?: WSOptions) => {

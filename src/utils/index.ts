@@ -414,6 +414,14 @@ export function formatIconTag(src: string) {
     : IconUnknown
 }
 
+export function formatImgUrl(type: string, src: string) {
+  if (!type || !src) {
+    return IconUnknown
+  }
+  const urlPrefix = useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
+  return `${urlPrefix}${type}/${src}.png`
+}
+
 export function deepMerge(target: any, source: any) {
   if (Array.isArray(target) && Array.isArray(source)) {
     // 如果是数组，直接覆盖
