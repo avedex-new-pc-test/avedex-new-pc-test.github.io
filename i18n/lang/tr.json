@@ -30,5 +30,11 @@
   "expand": "Genişlet",
   "website": "Web Sitesi",
   "whitepaper": "Whitepaper",
-  "copySuccess": "Kopyalama Başarılı!"
+  "copySuccess": "Kopyalama Başarılı!",
+  "success": "Başarılı",
+  "fail": "Başarısız",
+  "cancel": "İptal",
+  "confirm": "Onayla",
+  "remark": "Not",
+  "cannotBeEmpty": "Boş olamaz"
 }

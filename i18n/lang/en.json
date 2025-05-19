@@ -36,5 +36,14 @@
   "expand": "Expand",
   "website": "Website",
   "whitepaper": "Whitepaper",
-  "copySuccess": "Copy successfully !"
+  "copySuccess": "Copy successfully !",
+  "maximum10characters": "The character length is too long",
+  "success": "Successful",
+  "fail": "Failed",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "remark": "Remark",
+  "placeholderPrefix": "Please enter ",
+  "cannotBeEmpty": "Can not be empty",
+  "remarkError": "Remark must be 2-50 characters & cannot contain special characters"
 }

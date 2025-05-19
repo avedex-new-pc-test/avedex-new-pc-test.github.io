@@ -34,5 +34,14 @@
   "expand": "收起",
   "website": "官網",
   "whitepaper": "白皮書",
-  "copySuccess": "複製成功!"
+  "copySuccess": "複製成功!",
+  "maximum10characters": "字元長度太長",
+  "success": "操作成功",
+  "fail": "操作失敗",
+  "cancel": "取消",
+  "confirm": "確認",
+  "remark": "備註名",
+  "placeholderPrefix": "請輸入",
+  "cannotBeEmpty": "不能為空",
+  "remarkError": "備註名必須為 2-50 個字符且不能包含特殊字符"
 }

@@ -115,5 +115,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
 
   // 挂载到全局属性
-  nuxtApp.vueApp.config.globalProperties.$tooltip = tooltip
+  // nuxtApp.vueApp.config.globalProperties.$tooltip = tooltip
+  return {
+    provide: {
+      tooltip: tooltip,
+    },
+  }
 })
