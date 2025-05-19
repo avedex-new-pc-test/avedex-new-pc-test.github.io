@@ -67,6 +67,11 @@
   "amountU": "Volumen",
   "makers": "Creador",
   "reset": "Restablecer",
+  "removeLiq": "Eliminar",
+  "addLiq": "Añadir",
+  "buy": "Comprar",
+  "sell": "Vender",
+  "reset": "Restablecer",
   "copySuccess": "¡Copiado con éxito!",
   "fail": "Fallido"
 }

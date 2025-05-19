@@ -1,11 +1,7 @@
 <script setup lang="ts">
 const {isDark} = useThemeStore()
 const props = defineProps({
-  visible: Boolean,
-  modelValue: {
-    type: Array<string>,
-    default: () => []
-  }
+  visible: Boolean
 })
 const emit = defineEmits(['update:visible', 'update:modelValue', 'confirm', 'reset'])
 const computedVisible = computed({
@@ -16,14 +12,7 @@ const computedVisible = computed({
     emit('update:visible', val)
   }
 })
-const filterTime = computed({
-  get() {
-    return props.modelValue
-  },
-  set(val) {
-    emit('update:modelValue', val)
-  }
-})
+const filterTime = ref([])
 </script>
 
 <template>
@@ -34,24 +23,25 @@ const filterTime = computed({
     trigger="click"
     :teleported="false"
     popper-style="max-width: 420px"
+    popper-class="transaction-popover"
   >
     <template #reference>
       <Icon
         name="custom:filter"
-        :class="`${modelValue?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer`"
+        :class="`${filterTime.length?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
       />
     </template>
     <template #default>
       <div class="text-14px font-400 color-[--d-F5F5F5-l-222]">
         {{ $t('filterTime') }}
       </div>
-      <div class="mt-10px flex color-[--d-999-l-666]">
+      <div class="mt-10px flex color-[--d-999-l-666] text-12px">
         <span class="flex-[1.2]">{{ $t('startTime') }}</span>
         <span class="flex-1">{{ $t('endTime1') }}</span>
       </div>
       <el-date-picker
         v-model="filterTime"
-        class="mt-5px"
+        class="mt-5px [--el-font-size-base:12px]"
         type="datetimerange"
         range-separator="To"
         start-placeholder="yyyy/mm/dd hh:mm:ss"
@@ -60,7 +50,6 @@ const filterTime = computed({
         value-format="X"
         prefix-icon="Calendar"
         :teleported="false"
-        @calendar-change="console.log"
       />
       <div class="flex mt-20px">
         <el-button
@@ -73,7 +62,7 @@ const filterTime = computed({
         <el-button
           class="h-30px flex-1 m-l-auto"
           :color="isDark ? '#F5F5F5':'#222'"
-          @click="emit('confirm')"
+          @click="emit('confirm',filterTime)"
         >
           {{ $t('confirm') }}
         </el-button>
@@ -82,6 +71,10 @@ const filterTime = computed({
   </el-popover>
 </template>
 
-<style scoped>
-
+<style lang="scss">
+.transaction-popover {
+  .el-date-editor .el-icon {
+    display: inline-flex;
+  }
+}
 </style>

@@ -78,6 +78,11 @@
   "amountU": "Khối lượng",
   "makers": "Người tạo",
   "reset": "Đặt lại",
+  "removeLiq": "Xóa",
+  "addLiq": "Thêm",
+  "buy": "Mua",
+  "sell": "Bán",
+  "reset": "Đặt lại",
   "maximum10characters": "Độ dài ký tự quá dài",
   "fail": "Thất bại"
 }

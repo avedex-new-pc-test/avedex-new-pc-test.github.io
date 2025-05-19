@@ -67,5 +67,10 @@
   "amountU": "İşlem Tutarı",
   "makers": "Maker",
   "reset": "Sıfırlama",
+  "removeLiq": "Kaldırmak",
+  "addLiq": "Ekle",
+  "buy": "Al",
+  "sell": "Sat",
+  "reset": "Sıfırlama",
   "fail": "Başarısız"
 }

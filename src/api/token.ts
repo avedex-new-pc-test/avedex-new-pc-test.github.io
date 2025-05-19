@@ -141,13 +141,53 @@ export function getHotTokens(): Promise<GetHotTokensResponse[]> {
   })
 }
 
-export function getPairTxs(pair: string, address: string) {
+export interface GetPairTxsResponse {
+  time: number;
+  id: string;
+  chain: string;
+  transaction: string;
+  amm: any;
+  amount_eth: number;
+  amount_usd: number;
+  from_address: string;
+  from_price_eth: number;
+  from_price_usd: number;
+  from_symbol: string;
+  from_amount: number;
+  to_address: string;
+  to_price_eth: number;
+  to_price_usd: number;
+  to_symbol: string;
+  to_amount: number;
+  wallet_address: string;
+  wallet_tag_extra: any;
+  newTags: any[];
+  wallet_logo: any;
+  wallet_tag_v2?: string;
+}
+
+// 交易历史
+export function getPairTxs(pair: string, address?: string): Promise<GetPairTxsResponse[]> {
   const {$api} = useNuxtApp()
   return $api(`/v1api/v5/pairs/${pair}/txs`, {
     method: 'get',
     params: {
       address: address,
       pair,
+    },
+  })
+}
+
+// 交易历史流动性
+export function getPairLiq(pair: string, address?: string) {
+  if (!pair || pair.length < 15) {
+    return []
+  }
+  const {$api} = useNuxtApp()
+  return $api(`/v1api/v4/pairs/${pair}/liq`, {
+    method: 'get',
+    params: {
+      address
     },
   })
 }
