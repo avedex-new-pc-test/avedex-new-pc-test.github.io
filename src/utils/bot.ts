@@ -50,15 +50,15 @@ export function handleBotError(err: any) {
 }
 
 export function tgLogin() {
-  let url = `https://t.me/AveSniperBot?start=lg-`
+  let url = 'https://t.me/AveSniperBot?start=lg-'
   const config = useRuntimeConfig()
   const baseUrl = config?.public?.apiBase as string
   // test
   if (baseUrl === 'https://0ftrfsdb.xyz') {
-    url = `https://t.me/ave_sniper_bot?start=lg-`
+    url = 'https://t.me/ave_sniper_bot?start=lg-'
   }
 
-  let domains = [
+  const domains = [
     'avedex.cc',
     'ave.ai',
     'opencw.online',
@@ -72,18 +72,20 @@ export function tgLogin() {
     'ave-m-test-7.github.io',
     'ave00.com',
   ]
-  let domain = window.location.hostname
-  let index = domains.indexOf(domain) + 1
+  const domain = window.location.hostname
+  const index = domains.indexOf(domain) + 1
   let path = '1'
   if (index > 0) {
     path = String(index)
   }
-  let pathname = window.location.pathname
-  let refCode = Cookies.get('refCode') ? `-${Cookies.get('refCode')}` : ''
+  const pathname = window.location.pathname
+  const refCode = Cookies.get('refCode') ? `-${Cookies.get('refCode')}` : ''
   if (pathname?.includes('/token/')) {
-    let { address, chain } = getAddressAndChainFromId(
+    const data = getAddressAndChainFromId(
       pathname?.replace?.('/token/', '')
     )
+    const address = data?.address
+    let chain = data?.chain
     if (address && chain) {
       chain = chain.slice(0, 2)
       path = path + `-${chain}-${address}` + refCode

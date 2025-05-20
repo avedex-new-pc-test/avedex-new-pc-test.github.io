@@ -109,7 +109,7 @@ const list = shallowRef([
   { id: 'smart', name: 'Smart', src: '/' },
   { id: 'assets', name: 'Assets', src: '/' },
 ])
-const dialogVisible_search = shallowRef(true)
+const dialogVisible_search = shallowRef(false)
 </script>
 <style lang="scss" scoped>
 header {

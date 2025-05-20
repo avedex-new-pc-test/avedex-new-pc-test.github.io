@@ -5,7 +5,7 @@ import { PublicKey } from '@solana/web3.js'
 import { TronWeb } from 'tronweb'
 import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
-import { useRemarks } from './hook'
+import { useRemarksStore } from '~/stores/remarks'
 
 export function isJSON(str: string) {
   try {
@@ -467,6 +467,14 @@ export function formatIconTag(src: string) {
     : IconUnknown
 }
 
+export function formatImgUrl(type: string, src: string) {
+  if (!type || !src) {
+    return IconUnknown
+  }
+  const urlPrefix = useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
+  return `${urlPrefix}${type}/${src}.png`
+}
+
 export function deepMerge(target: any, source: any) {
   if (Array.isArray(target) && Array.isArray(source)) {
     // 如果是数组，直接覆盖
@@ -497,9 +505,46 @@ export function formatIconSwap(src: string) {
     : IconUnknown
 }
 
-export function getRemarkByAddress(row:{ address: string, chain: string }) {
-  if (!row.address || !row.chain) {
+export function getWSMessage(e: MessageEvent) {
+  if (e.data === 'pong') {
+    return null
+  }
+  if (isJSON(e.data)) {
+    const result = JSON.parse(e.data || {})?.result || {}
+    if (result.status === 'ok') {
+      const data = result.data
+      const event = data.event
+      return {
+        event,
+        data,
+      }
+    }
+  }
+  return null
+}
+
+export function verifyLogin() {
+  const bottStore = useBotStore()
+  const userInfo = bottStore.userInfo
+  if (!userInfo?.evmAddress) {
+    // 连接钱包
+    return false
+  }
+  return true
+}
+
+export function formatRemark(val = '', n = 10, suffix = '...'){
+  if (typeof val !== 'string') return val
+  if (val.length > n) {
+    return val.slice(0,n) + suffix
+  }
+  return val
+}
+
+export function getRemarkByAddress({address, chain}: {address: string, chain: string}) {
+  if (!address || !chain) {
     return ''
   }
-  return useRemarks().getRemarkByAddress({ address:row.address, chain:row.chain })
+  return useRemarksStore().getRemarkByAddress({address, chain})
 }
+

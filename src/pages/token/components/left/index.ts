@@ -1,0 +1,5 @@
+export {default as FavoriteTable} from './favoriteTable.vue'
+export {default as MyAttentionTable} from './myAttentionTable.vue'
+export {default as PositionsTable} from './positionsTable.vue'
+export {default as TopLeftTable} from './topLeftTable.vue'
+export {default as Left} from './left.vue'

@@ -3,9 +3,12 @@ import { useSessionStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import type { TokenInfo, TokenInfoExtra } from '~/api/types/token'
 import { BigNumber } from 'bignumber.js'
+import type { GetTotalHoldersResponse} from '~/api/stats'
+import {getTotalHolders} from '~/api/stats'
 
 export const useTokenStore = defineStore('token', () => {
-  const tokenInfo = shallowRef<null | TokenInfo>(null)
+  const route = useRoute()
+  const tokenInfo = ref<null | TokenInfo>(null)
   const tokenInfoExtra = shallowRef<null | TokenInfoExtra>(null)
 
   const token = computed(() => tokenInfo.value?.token)
@@ -18,6 +21,7 @@ export const useTokenStore = defineStore('token', () => {
     return pairs.value?.[0] || null
   })
   const tokenPrice = shallowRef(0)
+  const totalHolders = shallowRef<GetTotalHoldersResponse[]>([])
   const price = computed(() => tokenPrice.value || token.value?.current_price_usd)
 
   const circulation = computed(() => {
@@ -48,6 +52,12 @@ export const useTokenStore = defineStore('token', () => {
     tokenPrice.value = 0
     pairAddress.value = ''
   }
+
+  function _getTotalHolders() {
+    getTotalHolders(route.params.id as string).then(res => {
+      totalHolders.value = Array.isArray(res) ? res : []
+    })
+  }
   return {
     tokenInfo,
     tokenInfoExtra,
@@ -60,7 +70,9 @@ export const useTokenStore = defineStore('token', () => {
     circulation,
     marketCap,
     reset,
-    switchPair
+    switchPair,
+    _getTotalHolders,
+    totalHolders
   }
 })
 

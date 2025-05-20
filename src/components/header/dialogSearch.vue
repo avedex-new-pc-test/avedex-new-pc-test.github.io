@@ -241,7 +241,7 @@ function confirm() {
   margin-bottom: 10px;
   padding: 7px 9px;
   border: none;
-  color: var(--d-F5F5F5-l-333333);
+  color: var(--d-F5F5F5-l-333);
   font-size: 12px;
   cursor: pointer;
   & + .history-tag {
