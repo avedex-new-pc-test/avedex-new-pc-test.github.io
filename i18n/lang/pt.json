@@ -68,5 +68,6 @@
   "amountB": "Quantidade ",
   "amountU": "Volume",
   "makers": "Criador",
-  "reset": "Transações"
+  "reset": "Transações",
+  "noSearchResults": "Nenhum resultado da pesquisa"
 }

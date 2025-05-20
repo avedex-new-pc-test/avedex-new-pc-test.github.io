@@ -79,5 +79,6 @@
   "amountB": "Số lượng",
   "amountU": "Khối lượng",
   "makers": "Người tạo",
-  "reset": "Đặt lại"
+  "reset": "Đặt lại",
+  "noSearchResults": "Không có kết quả"
 }

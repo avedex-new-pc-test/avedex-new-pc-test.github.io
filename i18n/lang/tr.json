@@ -67,5 +67,6 @@
   "amountB": "İşlem Hacmi",
   "amountU": "İşlem Tutarı",
   "makers": "Maker",
-  "reset": "Sıfırlama"
+  "reset": "Sıfırlama",
+  "noSearchResults": "Arama Sonucu Bulunamadı"
 }
