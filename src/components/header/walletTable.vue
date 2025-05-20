@@ -1,0 +1,479 @@
+<template>
+  <div class="history">
+    <div class="top">
+      <span style="width: 20px; flex: none">#</span>
+      <span>{{ $t('wallet') }}</span>
+      <span style="text-align: right">PnL</span>
+      <span>{{ $t('volume') }}</span>
+      <span>{{ $t('Txs') }}</span>
+      <span>{{ $t('winRate') }}</span>
+    </div>
+
+    <el-scrollbar
+      v-if="tokens?.length > 0 || isLoading"
+      v-loading="isLoading"
+      height="500px"
+      max-height="calc(100vh - 200px)"
+    >
+      <ul class="content">
+        <li v-for="(row, $index) in tokens" :key="$index">
+          <a
+            href=""
+            class="flex no-underline"
+            @click.stop.prevent="tableRowClick(row)"
+          >
+            <div style="width: 20px; flex: none">
+              {{ $index + 1 }}
+            </div>
+            <div class="token-info">
+              <UserAvatar
+                class="mr-8px"
+                :wallet_logo="row.wallet_logo"
+                :address="row.wallet_address"
+                :chain="row.chain"
+                iconSize="24px"
+              />
+              <div style="display: flex; flex-direction: column">
+                <span
+                  class="token-symbol ellipsis"
+                  style="max-width: 80px; display: inline-block"
+                  :title="
+                    getRemarkByAddress({
+                      address: row.wallet_address,
+                      chain: row.chain,
+                    }) || row.wallet_address
+                  "
+                >
+                  {{
+                    getRemarkByAddress({
+                      address: row.wallet_address,
+                      chain: row.chain,
+                    }) ||
+                    row.remark ||
+                    row.wallet_address?.slice(0, 4) +
+                      '...' +
+                      row.wallet_address?.slice(-4)
+                  }}
+                </span>
+                <div
+                  style="display: inline-flex; align-items: center"
+                  class="mt-2"
+                >
+                  <!-- <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo"></UserRemark> -->
+                  <!-- <a
+                    href=""
+                    class="ml-8 fav_address a-gray"
+                    v-if="row.is_wallet_address_fav == 1"
+                    @click.stop.prevent="deleteAttention(row)"
+                  >
+                    <i class="attention iconfont icon-fav1 active font-12"></i>
+                  </a>
+                  <a
+                    v-else
+                    href=""
+                    class="ml-8 fav_address a-gray"
+                    @click.stop.prevent="openAttention(row, $index)"
+                  >
+                    <i class="attention iconfont icon-fav1 font-12"></i>
+                  </a> -->
+                  <i
+                    v-copy="row.wallet_address"
+                    class="iconfont icon-copy color-666 text-14px ml-5"
+                    @click.stop.prevent
+                  />
+                  <!--  <el-tooltip
+                    effect="customized"
+                    placement="top"
+                    v-if="row.new_tags?.length > 0"
+                    :popper-class="$store.state.mode"
+                  >
+                    <template #content>
+                      <div style="display: inline-block;" >
+                        <template v-for="(i, index) in row.new_tags" :key="index">
+                          <span
+                            class="mr-3 font-12"
+                            :style="{
+                              color: i.color
+                            }"
+                            v-if="i.type?.includes('TOP') && i.type?.slice(3) <25 || Number(i.type)"
+                          >
+                            [{{ i?.[$f.filterLanguage($store.getters.language)] }}]
+                          </span>
+                          <div
+                            v-if="i.extra_info?.length > 0 && i.type == '9'"
+                            class="color-f2ad41 mt-5"
+                          >
+                            <template
+                              v-for="(lock, $index) in i?.extra_info"
+                              :key="$index"
+                            >
+                              <span class="block mt-5 color">
+                                {{ $t('lockAmount') }}:
+                                {{ $f.formatNumber2(lock.amount, 2, 4, 1000000) }}
+                              </span>
+                              <span class="block mt-5">
+                                {{ $t('lockDate') }}:
+                                {{ $f.formatDate(lock.lockDate, 'YYYY-MM-DD') }}
+                              </span>
+                              <span class="block mt-5">
+                                {{ $t('unlockDate') }}:
+                                {{ $f.formatDate(lock.unlockDate, 'YYYY-MM-DD') }}
+                              </span>
+                            </template>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <div class="flex" v-if="row.new_tags?.length > 0">
+                      <template v-for="(i, index) in row.new_tags" :key="index">
+                        <img
+                          style="width: 15px; height: 15px"
+                          class="ml-3 pointer"
+                          :src="
+                            $f.formatNewTags(i.icon)
+                          "
+                          alt=""
+                          height="15px"
+                          v-if="i.type?.includes('TOP') && i.type?.slice(3) <25 || Number(i.type)"
+                        />
+                      </template>
+                    </div>
+                  </el-tooltip>-->
+                </div>
+              </div>
+            </div>
+            <div style="margin-left: 5px; text-align: right">
+              <div
+                :style="{
+                  color: !row?.total_profit
+                    ? '#666'
+                    : row?.total_profit > 0
+                    ? '#12B886'
+                    : '#F6465D',
+                }"
+              >
+                ${{ formatNumber(row?.total_profit || 0, 2) }}
+              </div>
+              <div
+                :style="{
+                  color: !row?.total_profit_rate
+                    ? '#666'
+                    : row?.total_profit_rate > 0
+                    ? '#12B886'
+                    : '#F6465D',
+                }"
+                class="mt-2"
+              >
+                {{ formatNumber((row?.total_profit_rate || 0) * 100, 2) }}%
+              </div>
+            </div>
+            <div>
+              <div>
+                ${{
+                  formatNumber(
+                    (Number(row?.total_purchase_usd) || 0) +
+                      (Number(row?.total_sold_usd) || 0),
+                    2
+                  )
+                }}
+              </div>
+              <div class="mt-2">
+                <span style="color: #12b886"
+                  >${{ formatNumber(row?.total_purchase_usd || 0, 2) }}</span
+                ><span style="color: #999">/</span
+                ><span style="color: #f6465d"
+                  >${{ formatNumber(row?.total_sold_usd || 0, 2) }}</span
+                >
+              </div>
+            </div>
+            <div>
+              <div>
+                {{
+                  formatNumber(
+                    (Number(row?.total_purchase) || 0) +
+                      (Number(row?.total_sold) || 0),
+                    2
+                  )
+                }}
+              </div>
+              <div class="flex-end mt-2">
+                <span style="color: #12b886">{{
+                  formatNumber(row?.total_purchase || 0, 2)
+                }}</span
+                ><span style="color: #999">/</span
+                ><span style="color: #f6465d">{{
+                  formatNumber(row?.total_sold || 0, 2)
+                }}</span>
+              </div>
+            </div>
+            <div
+              :style="{
+                color: !row?.total_win_ratio
+                  ? '#666'
+                  : Number(row?.total_win_ratio) > 0
+                  ? '#12B886'
+                  : '#F6465D',
+              }"
+            >
+              {{ formatNumber(row?.total_win_ratio || 0, 2) }}%
+            </div>
+          </a>
+        </li>
+      </ul>
+    </el-scrollbar>
+    <div v-if="!isLoading && !tokens?.length" class="empty">
+      <div>
+        <img :src="themeStore.theme === 'light' ? emptyWhite : emptyDark" />
+        <br />
+        <span>{{ $t('noSearchResults') }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- <AttentionDialog v-model:visible="attentionVisible" :row="currentAttentionRow" @submit="addAttention"/> -->
+</template>
+<script lang="ts" setup>
+import emptyWhite from '@/assets/images/empty-white.svg'
+import emptyDark from '@/assets/images/empty-black.svg'
+import { formatNumber } from '@/utils/formatNumber'
+import UserAvatar from '@/components/header/userAvatar.vue'
+import type { SearchWalletInfo } from '@/api/types/search'
+import { getRemarkByAddress } from '@/utils/index'
+
+const $router = useRouter()
+const props = defineProps({
+  tokens: {
+    type: Array<SearchWalletInfo>,
+    default: () => [],
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+})
+const tokens = computed(() => {
+  return props.tokens
+})
+const isLoading = computed(() => {
+  return props.loading
+})
+const themeStore = useThemeStore()
+
+function tableRowClick(row: { wallet_address: string; chain: string }) {
+  $router.push({
+    name: 'Balance',
+    params: { userAddress: row.wallet_address, chain: row.chain },
+  })
+}
+
+// const botStore = useBotStore()
+// const item: SearchWalletInfo
+// message.success('2222222')
+// deleteAttention (item) {
+// if (botStore.evmAddress) {
+
+//   return
+// }
+// if (this.loadingAttention) return
+// this.loadingAttention = true
+// this.$store.dispatch('deleteAttention',  {address: item.wallet_address, chain: item.chain}).then(() => {
+//   this.$message.success(this.$t('attention1Canceled'))
+//   item.is_wallet_address_fav = 0
+// }).catch(err => {
+//   this.$message.error(err)
+// }).finally(() => {
+//   this.loadingAttention = false
+// })
+// }
+</script>
+
+<style lang="scss" scoped>
+.history {
+  font-size: 12px;
+  padding-bottom: 10px;
+  color: var(--a-text-1-color);
+  .empty {
+    color: #999;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > div {
+      text-align: center;
+    }
+    img {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+  }
+  .top {
+    color: #999999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5px;
+    > :nth-child(1) {
+      // width: 150px;
+      font-size: 12px;
+      flex: 1;
+    }
+    > :nth-child(2) {
+      flex: 1;
+    }
+    > :nth-child(3) {
+      flex: 1;
+      text-align: right;
+    }
+    > :nth-child(4) {
+      flex: 1;
+      text-align: right;
+    }
+    > :nth-child(5) {
+      flex: 1;
+      text-align: right;
+    }
+    > :nth-child(6) {
+      flex: 1;
+      text-align: right;
+    }
+  }
+  .content {
+    padding: 0 0 20px;
+    .token-info {
+      display: flex;
+      align-items: center;
+      .token-symbol {
+        // white-space: nowrap;
+        // overflow: hidden;
+        // text-overflow: ellipsis;
+        // max-width: 100px;
+        display: inline-block;
+        word-break: break-all;
+        padding: 0;
+      }
+      .icon-collect {
+        font-size: 16px;
+        color: #787b86;
+        cursor: pointer;
+        margin-right: 2px;
+        &.collected {
+          color: #558bed;
+        }
+      }
+      .token-network {
+        border: 1px solid #878fbc;
+        border-radius: 10px;
+        font-size: 12px;
+        color: #878fbc;
+        padding: 2px 5px;
+        margin-left: 9px;
+      }
+      .token-icon {
+        border-radius: 50%;
+      }
+      .ad-tag {
+        border: 1px solid;
+        padding: 0 4px;
+        font-size: 12px;
+        margin-left: 5px;
+        color: #878fbc;
+        border-radius: 5px;
+      }
+      .risk-status {
+        display: inline-block;
+        font-size: 10px;
+        border: 1px solid;
+        border-radius: 20px;
+        padding: 1px 3px;
+        margin-left: 5px;
+        &.high {
+          color: #f72121;
+        }
+      }
+    }
+    li > a:hover {
+      text-decoration: none;
+      background-color: var(--a-table-hover-bg-color);
+      color: var(--a-text-1-color);
+      opacity: 1;
+    }
+    li:nth-child(1) .flex {
+      margin-top: 0;
+    }
+    .flex {
+      padding: 8px 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      font-size: 12px;
+      > :nth-child(1) {
+        // width: 150px;
+        flex: 1;
+        color: var(--custom-text-2-color);
+        font-size: 12px;
+      }
+      > :nth-child(2) {
+        flex: 1;
+      }
+      > :nth-child(3) {
+        flex: 1;
+        text-align: right;
+      }
+      > :nth-child(4) {
+        flex: 1;
+        text-align: right;
+      }
+      > :nth-child(5) {
+        flex: 1;
+        text-align: right;
+      }
+      > :nth-child(6) {
+        flex: 1;
+        text-align: right;
+        color: #eaecef;
+      }
+    }
+    > span {
+      color: var(--custom-font-1-color);
+      padding: 10px 3px;
+      &.green {
+        color: #12b886;
+      }
+      &.red {
+        color: #ff646d;
+      }
+    }
+  }
+  li > a {
+    color: var(--a-text-1-color);
+  }
+  // .fav_address .attention.active, .fav_address .attention:hover {
+  //   color: #f45469;
+  // }
+  .no-inherit {
+    vertical-align: middle;
+  }
+  .count-down {
+    text-align: right;
+    .colon {
+      display: inline-block;
+      margin: 0 2px;
+      color: #3f80f7;
+      font-size: 12px;
+      padding: 0;
+    }
+    .block {
+      display: inline-block;
+      font-size: 12px;
+      // width: 30px;
+      color: #3f80f7;
+      // line-height: 30px;
+      text-align: center;
+      border-radius: 4px;
+      background-color: #1f242a;
+      padding: 1px 5px;
+    }
+  }
+}
+</style>
