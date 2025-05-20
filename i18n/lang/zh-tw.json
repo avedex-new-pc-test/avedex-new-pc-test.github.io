@@ -103,5 +103,6 @@
   "filterTime": "按日期過濾",
   "startTime": "開始時間",
   "endTime1": "結束時間",
-  "reset": "重置"
+  "reset": "重置",
+  "noSearchResults": "暫無搜索結果"
 }

@@ -51,7 +51,8 @@ export function getKlineHistoryData(data: {
     volume_24: number
   }
 }> {
-  if (!data?.pair) {
+  const [pair, chain] = getAddressAndChainFromId(data.pair, 1)
+  if (!pair || !chain) {
     return Promise.resolve({
       kline_data: [],
       extra_data: undefined

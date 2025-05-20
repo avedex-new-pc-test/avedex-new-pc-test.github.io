@@ -7,7 +7,7 @@
         <div class="flex-1">
           <el-scrollbar height="calc(100vh - 152px)">
             <KLine />
-            <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]]"/>
+            <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]"/>
           </el-scrollbar>
         </div>
       </div>
@@ -26,6 +26,8 @@ import KLine from '~/pages/token/components/kLine/index.vue'
 const route = useRoute()
 const tokenStore = useTokenStore()
 const wsStore = useWSStore()
+
+
 
 
 function _getTokenInfo() {

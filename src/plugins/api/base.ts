@@ -60,7 +60,7 @@ export function onResponse({ response }: MyFetchContext) {
   const data = response._data
   if (data?.status === 0) {
     // return Promise.reject(data?.msg)
-    throw createError(data?.msg)
+    throw new Error(data?.msg)
   }
   if (data?.data_type === 1 && typeof(data?.data) === 'string' && data?.data) {
     response._data = JSON.parse(data?.data)

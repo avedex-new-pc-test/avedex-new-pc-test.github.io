@@ -79,5 +79,6 @@
   "amountB": "Количество",
   "amountU": "Объем",
   "makers": "Мейкер",
-  "reset": "Сброс"
+  "reset": "Сброс",
+  "noSearchResults": "Нет результатов"
 }

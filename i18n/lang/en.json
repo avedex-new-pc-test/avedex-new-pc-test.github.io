@@ -105,5 +105,6 @@
   "filterTime": "Filter by date",
   "startTime": "Start Time",
   "endTime1": "End Time",
-  "reset": "Reset"
+  "reset": "Reset",
+  "noSearchResults": "No search results"
 }
