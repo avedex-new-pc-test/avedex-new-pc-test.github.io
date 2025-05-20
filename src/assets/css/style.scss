@@ -15,3 +15,18 @@
     }
   }
 }
+.search-dialog.el-dialog {
+  background: var(--d-222-l-fff);
+  .search-input {
+    .el-input__wrapper {
+      background-color: var(--d-333-l-F2F2F2);
+      box-shadow: none;
+      & :hover {
+        box-shadow: none;
+      }
+      .el-input__inner::placeholder {
+        color: var(--d-666-l-999);
+      }
+    }
+  }
+}
