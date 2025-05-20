@@ -402,7 +402,7 @@ export function openBrowser(
   window.open(newUrl)
 }
 
-export function getChainDefaultIconColor(chain: string) {
+export function getChainDefaultIconColor(chain?: string) {
   const theme = useThemeStore().theme
   const defaultColor = theme === 'dark' ? '#333333' : '#999999'
   if (!chain) {
@@ -421,7 +421,7 @@ export function getChainDefaultIconColor(chain: string) {
   return colors?.[chain] || defaultColor
 }
 
-export function getChainDefaultIcon(chain: string, text = '') {
+export function getChainDefaultIcon(chain?: string, text = '') {
   if (text) {
     const color = getChainDefaultIconColor(chain)
     const defaultSvg = `<?xml version="1.0" standalone="no"?><svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="50%" cy="50%" r="16" stroke="transparent" fill="${color}" stroke-width="0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#fff">${text
@@ -444,7 +444,7 @@ export function getSymbolDefaultIcon(tokenInfo: {
   symbol?: string
   chain: string
   logo_url?: string
-}) {
+}| undefined ) {
   const domain = useConfigStore().token_logo_url
   if (
     tokenInfo &&
@@ -456,7 +456,7 @@ export function getSymbolDefaultIcon(tokenInfo: {
     }
     return domain + tokenInfo.logo_url
   }
-  return getChainDefaultIcon(tokenInfo.chain, tokenInfo.symbol)
+  return getChainDefaultIcon(tokenInfo?.chain || '', tokenInfo?.symbol || '')
 }
 
 export function formatIconTag(src: string) {

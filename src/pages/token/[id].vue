@@ -1,7 +1,7 @@
 <template>
   <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px" style="min-height: calc(100vh - 100px);">
     <div class="flex-1">
-      <div class="h-64px bg-green">图表上方</div>
+      <Top/>
       <div class="flex gap-4px">
         <Left class="w-292px"/>
         <div class="flex-1">
@@ -19,6 +19,7 @@
 <script setup lang='ts'>
 import { getTokenInfo, getTokenInfoExtra } from '~/api/token'
 import { useTokenStore } from '~/stores/token'
+import Top from './components/top/index.vue'
 import TokenRight from './components/right/index.vue'
 import {Left} from './components/left'
 import {BelowChartTable} from './components/belowChartTable'
