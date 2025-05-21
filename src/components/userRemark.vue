@@ -68,7 +68,7 @@ const props = defineProps({
     default: (address: string) => '*' + address?.slice(-6)
   },
   mouseoverAddress: {
-    type: Function as PropType<() => void> | null,
+    type: Function as PropType<(e: MouseEvent) => void> | null,
     default: null
   },
   addressClass: { type: String, default: '' },

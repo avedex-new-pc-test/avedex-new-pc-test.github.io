@@ -55,8 +55,6 @@
   "expand": "Expandir",
   "website": "Sitio web",
   "whitepaper": "Libro blanco",
-  "copySuccess": "¡Copiado con éxito!",
-  "fail": "Fallido",
   "transactions": "Transacciones",
   "all": "Todos",
   "buy3": "Comprar",
@@ -72,5 +70,16 @@
   "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
   "loginBot": "Iniciar sesión en la billetera de bots",
   "register": "Inscribirse",
-  "startForgetPassword": "¿Has olvidado tu contraseña?"
+  "startForgetPassword": "¿Has olvidado tu contraseña?",
+  "noSearchResults": "Sin resultados de búsqueda",
+  "removeLiq": "Eliminar",
+  "addLiq": "Añadir",
+  "buy": "Comprar",
+  "sell": "Vender",
+  "copySuccess": "¡Copiado con éxito!",
+  "fail": "Fallido",
+  "minor": "Mínimo",
+  "max1": "Máximo",
+  "ss": "Hace segundos",
+  "enterAddress": "Ingresar dirección"
 }
