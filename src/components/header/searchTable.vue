@@ -41,13 +41,13 @@
                     <img
                       class="token-icon"
                       :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    />
+                    >
                   </template>
                   <template #placeholder>
                     <img
                       class="token-icon"
                       :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    />
+                    >
                   </template>
                 </el-image>
                 <img
@@ -56,7 +56,7 @@
                   :src="`${token_logo_url}chain/${row?.chain}.png`"
                   alt=""
                   srcset=""
-                />
+                >
               </div>
               <div style="margin-left: 5px">
                 <div>
@@ -188,7 +188,7 @@
               </div>
 
               <template v-else>
-                <img src="@/assets/images/icon-unknown.png" alt="" />
+                <img src="@/assets/images/icon-unknown.png" alt="" >
                 {{ $t('unknownRisk') }}
               </template>
             </div>
@@ -225,13 +225,13 @@
                     <img
                       class="token-icon"
                       :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    />
+                    >
                   </template>
                   <template #placeholder>
                     <img
                       class="token-icon"
                       :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    />
+                    >
                   </template>
                 </el-image>
                 <img
@@ -242,7 +242,7 @@
                   }.png`"
                   alt=""
                   srcset=""
-                />
+                >
               </div>
               <div style="margin-left: 5px">
                 <div>
@@ -347,7 +347,7 @@
               </count-down> -->
               <span v-if="row.opening_at > 0"> 倒计时 </span>
               <template v-else>
-                <img src="@/assets/images/icon-unknown.png" alt="" />
+                <img src="@/assets/images/icon-unknown.png" alt="" >
                 {{ $t('unknownRisk') }}
               </template>
             </div>
@@ -387,8 +387,8 @@
     </el-scrollbar>
     <div v-if="!isLoading && !tokens?.length" class="empty">
       <div>
-        <img :src="themeStore.theme === 'light' ? emptyWhite : emptyDark" />
-        <br />
+        <img :src="themeStore.theme === 'light' ? emptyWhite : emptyDark" >
+        <br >
         <span>{{ $t('noSearchResults') }}</span>
       </div>
     </div>
@@ -416,14 +416,14 @@ const props = defineProps({
     default: false,
   },
 })
+const emit = defineEmits(['close'])
 const $router = useRouter()
 const { token_logo_url } = useConfigStore()
 const tokens1 = computed(() => {
   // const list = hotStore.hotList?.map(i => ({ ...i, current_price_usd: 0, opening_at: 1747466626 }))
   // console.log('------list--------',list)
   return (
-    props.tokens?.filter?.((i) => !(i.risk_level < 0 || i.risk_score > 55)) ||
-    []
+    props.tokens?.filter?.((i) => !(i.risk_level < 0 || i.risk_score > 55)) || []
   )
 })
 const tokens2 = computed(() => {
@@ -436,9 +436,10 @@ const isLoading = computed(() => {
 })
 function tableRowClick(id: string) {
   $router.push({
-    name: 'Token',
+    name: 'token-id',
     params: { id: id },
   })
+  emit('close')
 }
 const isShowHighRisk = shallowRef(true)
 </script>

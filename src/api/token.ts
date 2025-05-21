@@ -51,7 +51,8 @@ export function getKlineHistoryData(data: {
     volume_24: number
   }
 }> {
-  if (!data?.pair) {
+  const [pair, chain] = getAddressAndChainFromId(data.pair, 1)
+  if (!pair || !chain) {
     return Promise.resolve({
       kline_data: [],
       extra_data: undefined
@@ -141,7 +142,48 @@ export function getHotTokens(): Promise<GetHotTokensResponse[]> {
   })
 }
 
-export function getPairTxs(pair: string, address: string) {
+interface NewTag {
+  type: string;
+  en: string;
+  cn: string;
+  tw: string;
+  es: string;
+  pt: string;
+  tr: string;
+  ja: string;
+  icon: string;
+  color: string;
+  extra_info: null;
+  nick_name: string;
+}
+export interface GetPairTxsResponse {
+  time: number;
+  id: string;
+  chain: string;
+  transaction: string;
+  amm: any;
+  amount_eth: number;
+  amount_usd: number;
+  from_address: string;
+  from_price_eth: number;
+  from_price_usd: number;
+  from_symbol: string;
+  from_amount: number;
+  to_address: string;
+  to_price_eth: number;
+  to_price_usd: number;
+  to_symbol: string;
+  to_amount: number;
+  wallet_address: string;
+  wallet_tag_extra: any;
+  newTags: NewTag[];
+  wallet_logo: any;
+  wallet_tag_v2?: string;
+  profile: string;
+}
+
+// 交易历史
+export function getPairTxs(pair: string, address?: string): Promise<GetPairTxsResponse[]> {
   const {$api} = useNuxtApp()
   return $api(`/v1api/v5/pairs/${pair}/txs`, {
     method: 'get',
@@ -149,5 +191,121 @@ export function getPairTxs(pair: string, address: string) {
       address: address,
       pair,
     },
+  })
+}
+
+export interface GetPairLiqResponse {
+  time: number;
+  chain: string;
+  transaction: string;
+  amm: string;
+  sender: string;
+  pair_address: string;
+  type: string;
+  amount_eth: number;
+  amount_usd: number;
+  pair_liquidity_eth: number;
+  pair_liquidity_usd: number;
+  token0_address: string;
+  token0_price_eth: number;
+  token0_price_usd: number;
+  token0_symbol: string;
+  amount0: number;
+  reserve0: number;
+  token1_address: string;
+  token1_price_eth: number;
+  token1_price_usd: number;
+  token1_symbol: string;
+  amount1: number;
+  reserve1: number;
+  wallet_address: string;
+  is_wallet_address_fav: number;
+  remark: string;
+  wallet_logo: any;
+  newTags: NewTag[];
+}
+
+export interface Profile {
+  token0TotalHolding: number;
+  token1TotalHolding: number;
+  token0Address: string;
+  token1Address: string;
+  solTotalHolding: number;
+  token0HasNewAccount: boolean;
+  token0HasClosedAccount: boolean;
+  token0HasClearedAccount: boolean;
+  token1HasNewAccount: boolean;
+  token1HasClosedAccount: boolean;
+  token1HasClearedAccount: boolean;
+}
+
+
+// 交易历史流动性
+export function getPairLiq(pair: string, address?: string) {
+  if (!pair || pair.length < 15) {
+    return []
+  }
+  const {$api} = useNuxtApp()
+  return $api(`/v1api/v4/pairs/${pair}/liq`, {
+    method: 'get',
+    params: {
+      address
+    },
+  })
+}
+
+export interface GetTxsUserBriefResponse {
+  remark: string;
+  is_wallet_address_fav: number;
+  chain: string;
+  symbol: string;
+  newTags: any[];
+  balance_amount: string;
+  balance_usd: string;
+  history_max_balance_amount: string;
+  history_max_balance_usd: string;
+  history_min_balance_amount: string;
+  history_min_balance_usd: string;
+  total_transfer_in_usd: string;
+  total_transfer_out_usd: string;
+  total_transfer_in: string;
+  total_transfer_out: string;
+  total_transfer_in_amount: string;
+  total_transfer_out_amount: string;
+  total_sold_usd: string;
+  total_purchase_usd: string;
+  total_sold: string;
+  total_purchase: string;
+  total_sold_amount: string;
+  total_purchase_amount: string;
+  unrealized_profit: string;
+  realized_profit: string;
+  total_profit: string;
+  total_profit_ratio: string;
+  wallet_age: string;
+  top3_blue_chip: Top3BlueChip[];
+}
+
+interface Top3BlueChip {
+  token: string;
+  chain: string;
+  symbol: string;
+  logoUrl: string;
+  balance_amount: number;
+  balance_usd: number;
+  current_price_usd: number;
+}
+
+
+// 获取交易Hover地址展示
+export function getTxsUserBrief(query: {
+  user_address: string;
+  chain: string;
+  token: string;
+}): Promise<GetTxsUserBriefResponse> {
+  const {$api} = useNuxtApp()
+  return $api('/v2api/token/v1/user/brief', {
+    method: 'get',
+    query,
   })
 }

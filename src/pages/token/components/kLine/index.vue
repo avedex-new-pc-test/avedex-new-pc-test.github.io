@@ -25,6 +25,8 @@ const token = computed(() => {
   return route.params.id as string
 })
 
+let isReady = false
+
 const chain = computed(() => {
   return getAddressAndChainFromId(token.value)?.chain || tokenStore?.token?.chain
 })
@@ -38,7 +40,7 @@ const user = computed(() => {
 })
 
 const symbol = computed(() => {
-  return tokenStore?.token?.symbol
+  return tokenStore?.token?.symbol || '-'
 })
 
 const pair = computed(() => {
@@ -50,12 +52,15 @@ const amm = computed(() => {
 })
 
 watch(pair, (val) => {
-  if (val && val !== '-') {
+  if (val && val !== '-' && isReady && route.name === 'token-id') {
     const isSupportSecChains = (chain.value && supportSecChains.includes(chain.value)) || false
     resolution.value = initTradingViewIntervals(resolution.value, isSupportSecChains)
-    _widget?.resetCache?.()
-    _widget?.setSymbol?.(symbol.value + '---' + val, resolution.value as ResolutionString, () => {
-    })
+    if (_widget) {
+      _widget?.resetCache?.()
+      _widget?.setSymbol?.(symbol.value + '---' + val, resolution.value as ResolutionString, () => {})
+    } else {
+      initChart()
+    }
   }
 })
 const price = 0
@@ -157,7 +162,7 @@ function createToggleButton() {
 }
 
 async function initChart() {
-  const symbolUp = symbol.value?.toUpperCase?.() || ''
+  const symbolUp = symbol.value?.toUpperCase?.() || '-'
   // const widget = (window as any).TradingView.widget as ChartingLibraryWidgetConstructor
   // console.log('widget', window.TradingView)
   const isSupportSecChains = (chain.value && supportSecChains.includes(chain.value)) || false
@@ -278,13 +283,14 @@ async function initChart() {
         if (!isSupportSecChains) {
           configurationData.supported_resolutions = ['1', '5', '15', '30', '60', '120', '240', '1D', '1W'] as ResolutionString[]
         }
+        isReady = true
         setTimeout(() => callback(configurationData), 50)
       },
       resolveSymbol: (symbolName, onResolve, onError) => {
         try {
           // const { chain, symbol, price, amm } = props
           const isSupportSecChains = !!(chain.value && supportSecChains?.includes?.(chain.value))
-          const symbolUp = symbol.value?.toUpperCase?.() || ''
+          const symbolUp = symbol.value?.toUpperCase?.() || '-'
           const p = Number(price) || 0
           const symbolInfo = {
             symbol: symbolUp,
@@ -346,7 +352,7 @@ async function initChart() {
               })) || []
               console.log('onResult', bars)
               lastBar = bars?.[bars?.length - 1] || null
-              onResult(bars)
+              onResult(bars, {noData: bars?.length === 0})
             })
           } else {
             onResult([], { noData: true })
@@ -402,7 +408,6 @@ async function initChart() {
       unsubscribeBars: (listenerGuid) => {
         if (listenerGuid) {
           const subscribeParams = listenerGuidMap.get(token.value)
-          console.log('unsubscribeBars', subscribeParams, subscribeParams[1], tokenAddress.value)
           if (subscribeParams.params[1] === tokenAddress.value) {
             return
           }
