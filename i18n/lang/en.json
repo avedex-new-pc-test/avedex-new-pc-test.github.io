@@ -158,5 +158,10 @@
   "next": "Next",
   "startResetTitle": "Set Password",
   "startResetTitle2": "The code has been sent to your email",
-  "startResetTip": "If you do not receive the verification code, please check your spam folder."
+  "startResetTip": "If you do not receive the verification code, please check your spam folder.",
+  "tgBotWallet": "BOT Wallet",
+  "connectChainWallet": "Connect Wallet",
+  "importAddress": "Watch Address",
+  "appCode": "App Code",
+  "startConfirmPasswordError": "The two password entries do not match."
 }

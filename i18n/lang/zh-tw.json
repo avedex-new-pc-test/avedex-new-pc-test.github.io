@@ -156,5 +156,10 @@
   "next": "下一個",
   "startResetTitle": "輸入新密碼",
   "startResetTitle2": "代碼已發送至您的郵箱",
-  "startResetTip": "如果您沒有收到驗證碼，請檢查您的垃圾郵件資料夾。"
+  "startResetTip": "如果您沒有收到驗證碼，請檢查您的垃圾郵件資料夾。",
+  "tgBotWallet": "BOT 錢包",
+  "connectChainWallet": "連接鏈錢包",
+  "importAddress": "观察地址",
+  "appCode": "App Code",
+  "startConfirmPasswordError": "兩次密碼輸入不一致"
 }

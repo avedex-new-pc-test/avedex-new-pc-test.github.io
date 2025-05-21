@@ -1,13 +1,14 @@
 <template>
   <div>
-    <el-dialog v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
+    <el-dialog 
+      v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
         <img v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97">
         <img v-else src="@/assets/images/logo2-83.29x21.97.png" alt="logo" height="21.97">
         <span>{{ $t('campaignTitle') }}</span>
       </div>
-      <reset v-if="emailRegisterType == 'reset'" @update:cType="(cType) => emailRegisterType = cType"></reset>
+      <reset v-if="emailRegisterType == 'reset'" @update:c-type="(cType: string) => emailRegisterType = cType"/>
       <div v-if="emailRegisterType == 'reset'" />
       <template v-else>
         <div class='w-content'>
@@ -28,7 +29,9 @@
                 class="text-14px text-center"
                 style="min-height: 200px; color: var(--a-text-1-color)"
               >
-                <emailRegisterAndLogin ref="loginForm" :cType="emailRegisterType"
+                <emailRegisterAndLogin 
+                  ref="loginForm" 
+                  :cType="emailRegisterType"
                   @update:c-type="(cType) => emailRegisterType = cType">
                   <!-- <template #nav>
                     <ul class="tabs">

@@ -159,5 +159,10 @@
   "next": "下一步",
   "startResetTitle": "输入新密码",
   "startResetTitle2": "验证码发送到您的邮箱",
-  "startResetTip": "如果收不到验证码，请检查邮件垃圾箱"
+  "startResetTip": "如果收不到验证码，请检查邮件垃圾箱",
+  "tgBotWallet": "BOT钱包",
+  "connectChainWallet": "连接链钱包",
+  "importAddress": "观察地址",
+  "appCode": "App Code",
+  "startConfirmPasswordError": "两次密码输入不一致"
 }

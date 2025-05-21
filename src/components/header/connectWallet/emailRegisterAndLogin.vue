@@ -1,5 +1,6 @@
 <template>
   <div :class="['w-emailRegister', mode]">
+    loading:<span>{{ loading }}</span>
     <el-form
       ref="formRef"
       :model="form"
@@ -138,7 +139,7 @@
               align-items: center;
               cursor: pointer;
             "
-            @click.prevent="emit('update:cType', 'reset')"
+            @click.prevent="emit('update:c-type', 'reset')"
           >
             {{ $t("startForgetPassword") }}
           </div>
@@ -163,14 +164,14 @@
         <a
           v-if="cType == 'register'"
           href="javascript:void(0)"
-          @click.prevent="emit('update:cType', 'login')"
+          @click.prevent="emit('update:c-type', 'login')"
         >
           {{ $t("startBotFooter12") }}</a
         >
         <a
           v-else
           href="javascript:void(0)"
-          @click.prevent="emit('update:cType', 'register')"
+          @click.prevent="emit('update:c-type', 'register')"
         >
           {{ $t("register") }}</a
         >
@@ -277,7 +278,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:cType'])
+const emit = defineEmits(['update:c-type'])
 const count = ref(60)
 const isCounting = ref(false)
 const loading = ref(false)
@@ -465,7 +466,7 @@ function register() {
               : 'Registration successful, go to log in'
           )
           setTimeout(() => {
-            emit('update:cType', 'login')
+            emit('update:c-type', 'login')
           }, 1500)
         })
         .catch((err) => {

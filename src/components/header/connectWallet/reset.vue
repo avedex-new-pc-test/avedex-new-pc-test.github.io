@@ -1,7 +1,7 @@
 <template>
   <div :class="['w-reset', mode]">
     <h3 v-if="step !== 3" class="title" :style="{ marginBottom: step === 2 ? '40px' : 0 }">{{ title }}
-      <el-icon :size="35" style="color:var(--d-999-l-222);" @click="emit('update:cType', 'login')">
+      <el-icon :size="35" style="color:var(--d-999-l-222);" @click="emit('update:c-type', 'login')">
         <ArrowLeft />
       </el-icon>
     </h3>
@@ -56,7 +56,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import {
   desensitizeEmail
 } from '@/utils/index'
-const emit = defineEmits(['update:cType'])
+const emit = defineEmits(['update:c-type'])
 const props = defineProps({
   email: {
     type: String,
@@ -171,7 +171,7 @@ function submitForm() {
             ElMessage.error(err)
           })
       } else {
-        emit('update:cType', 'login')
+        emit('update:c-type', 'login')
       }
     }
   })

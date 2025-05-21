@@ -128,5 +128,10 @@
   "next": "Tiếp theo",
   "startResetTitle": "Đặt mật khẩu",
   "startResetTitle2": "Mã đã được gửi đến email của bạn",
-  "startResetTip": "Nếu không nhận được mã xác minh vui lòng kiểm tra thư rác"
+  "startResetTip": "Nếu không nhận được mã xác minh vui lòng kiểm tra thư rác",
+  "tgBotWallet": "Ví BOT",
+  "connectChainWallet": "Kết nối ví",
+  "importAddress": "Địa chỉ theo dõi",
+  "appCode": "Mã App",
+  "startConfirmPasswordError": "Hai mật khẩu không khớp"
 }
