@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-dialog modal-class="dialog-connect-bg" width="632" height='718' v-model="dialogVisible"
+    <el-dialog
+v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
         <img v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97">
@@ -8,25 +9,29 @@
         <span>{{ $t('campaignTitle') }}</span>
       </div>
       <!-- <reset v-if="emailRegisterType == 'reset'" @update:cType="(cType) => emailRegisterType = cType"></reset> -->
-      <div v-if="emailRegisterType == 'reset'"></div>
+      <div v-if="emailRegisterType == 'reset'"/>
       <template v-else>
         <div class='w-content'>
           <h3 class="connect-popup-title filterArray-button font-500">
-            <el-icon v-if="botStore.connectWalletTab != '0'" @click="botStore.connectWalletTab = '0'" :size="35"
-              style="color:var(--d-999-l-222);">
+            <el-icon
+v-if="botStore.connectWalletTab != '0'" :size="35" style="color:var(--d-999-l-222);"
+              @click="botStore.connectWalletTab = '0'">
               <ArrowLeft />
             </el-icon>
             {{ title }}
           </h3>
           <div class="m-content">
             <div>
-              <div v-show="botStore.connectWalletTab == '0'" class="text-14px text-center"
+              <div
+v-show="botStore.connectWalletTab == '0'" class="text-14px text-center"
                 style="min-height: 200px; color: var(--a-text-1-color)">
-                <emailRegisterAndLogin :cType="emailRegisterType" ref="loginForm"
-                  @update:cType="(cType) => emailRegisterType = cType">
+                <emailRegisterAndLogin
+ref="loginForm" :cType="emailRegisterType"
+                  @update:c-type="(cType) => emailRegisterType = cType">
                   <template #nav>
                     <ul class="tabs">
-                      <li v-for="(item, index) in tabs" :key="index" class="filterArray"
+                      <li
+v-for="(item, index) in tabs" :key="index" class="filterArray"
                         :class="{ active: item.value == botStore.connectWalletTab }"
                         @click="botStore.connectWalletTab = item.value">
                         <span>{{ item.name }}</span>
@@ -98,16 +103,16 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-const botStore = useBotStore()
-const configStore = useConfigStore()
 import { useI18n } from 'vue-i18n'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import CryptoJS from 'crypto-js'
 // import reset from './reset.vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
+const botStore = useBotStore()
+const configStore = useConfigStore()
 const { isDark } = useThemeStore()
 const { t } = useI18n()
 
@@ -139,7 +144,7 @@ const formRef = ref(null)
 const form2Ref = ref(null)
 
 // Computed
-const networkList = computed(() => Object.values(useConfigStore().chainConfig))
+const networkList = computed(() => useConfigStore().chainConfig)
 
 const chainInfo = computed(() => networkList.value.find((i) => i.chain_id == form.value.chainId))
 

@@ -1,20 +1,24 @@
 <template>
   <div :class="['w-emailRegister', mode]">
-    <el-form :model="form" :rules="rules" ref="formRef" label-width="0" autocomplete="off" size="large" @submit.prevent>
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="0" autocomplete="off" size="large" @submit.prevent>
       <el-form-item label="" prop="email">
-        <el-input v-model="form.email" :autocomplete="'new-email' + Math.random()" :placeholder="$t('startEmail')"
+        <el-input
+v-model="form.email" :autocomplete="'new-email' + Math.random()" :placeholder="$t('startEmail')"
           name="emailField" />
       </el-form-item>
 
-      <el-form-item label="" prop="verificationCode"
-        v-if="cType == 'register' || (cType == 'login' && loginType == 'email')">
-        <el-input v-model="form.verificationCode" :autocomplete="'new-verificationCode' + Math.random()"
+      <el-form-item
+v-if="cType == 'register' || (cType == 'login' && loginType == 'email')" label=""
+        prop="verificationCode">
+        <el-input
+v-model="form.verificationCode" :autocomplete="'new-verificationCode' + Math.random()"
           :placeholder="$t('startVerificationCode')" name="new-verificationCode">
           <template #suffix>
-            <el-button class="countdownBtn" link @click="sendVerificationCode" :disabled="isCounting"
-              :loading="loading2" :style="{
+            <el-button
+class="countdownBtn" link :disabled="isCounting" :loading="loading2"
+              :style="{
                 color: mode == 'dark' ? '#286DFF' : '#286DFF',
-              }">
+              }" @click="sendVerificationCode">
               {{
                 isCounting ? `${count}${$t("SS")}` : $t("startCountDown")
               }}</el-button>
@@ -22,21 +26,26 @@
         </el-input>
       </el-form-item>
 
-      <el-form-item label="" prop="password" v-if="
+      <el-form-item
+v-if="
         cType == 'register' || (cType == 'login' && loginType == 'password')
-      ">
-        <el-input v-model="form.password" type="password" name="password_field"
+      " label="" prop="password">
+        <el-input
+v-model="form.password" type="password" name="password_field"
           :autocomplete="'new-password' + Math.random()" :placeholder="$t('startPassword')" show-password />
       </el-form-item>
 
-      <el-form-item label="" prop="confirmPassword" v-if="cType == 'register'">
-        <el-input v-model="form.confirmPassword" type="password" name="confirm_password_field"
+      <el-form-item v-if="cType == 'register'" label="" prop="confirmPassword">
+        <el-input
+v-model="form.confirmPassword" type="password" name="confirm_password_field"
           :placeholder="$t('startConfirmPassword')" :autocomplete="'new-password2' + Math.random()" show-password />
       </el-form-item>
-      <el-form-item label-position="top" prop="refCode" v-if="cType == 'register'">
-        <label class="el-form-item__label icon" @click="showRefCode = !showRefCode"
-          :style="{ marginBottom: showRefCode ? '10px' : '0' }">
-          <div style="
+      <el-form-item v-if="cType == 'register'" label-position="top" prop="refCode">
+        <label
+class="el-form-item__label icon" :style="{ marginBottom: showRefCode ? '10px' : '0' }"
+          @click="showRefCode = !showRefCode">
+          <div
+style="
               gap: 8px;
               display: flex;
               align-items: center;
@@ -49,12 +58,14 @@
             </el-icon>
           </div>
         </label>
-        <el-input v-if="showRefCode" v-model="form.refCode" autocomplete="off" :placeholder="$t('startInvitationCode')"
+        <el-input
+v-if="showRefCode" v-model="form.refCode" autocomplete="off" :placeholder="$t('startInvitationCode')"
           :disabled="!!refCode" />
       </el-form-item>
       <el-form-item v-if="cType == 'login'" style="margin-bottom: 10px">
         <label class="el-form-item__label icon" :style="{ marginBottom: '0', justifyContent: 'space-between' }">
-          <div style="
+          <div
+style="
               gap: 8px;
               display: flex;
               align-items: center;
@@ -69,7 +80,8 @@
               <Switch />
             </el-icon>
           </div>
-          <div style="
+          <div
+style="
               gap: 8px;
               display: flex;
               align-items: center;
@@ -80,9 +92,10 @@
         </label>
       </el-form-item>
       <el-form-item :style="{ paddingTop: cType === 'login' ? '10px' : '0' }">
-        <el-button class="btn" :color="mode == 'dark' ? '#F5F5F5' : '#222222'" size="large"
-          :disabled="cType == 'register' && !form.agree" @click="submitForm" :loading="loading"
-          style="width: 100%;--el-button-disabled-text-color:#222222">{{ $t("startSubmit") }}</el-button>
+        <el-button
+class="btn" :color="mode == 'dark' ? '#F5F5F5' : '#222222'" size="large"
+          :disabled="cType == 'register' && !form.agree" :loading="loading" style="width: 100%;--el-button-disabled-text-color:#222222"
+          @click="submitForm">{{ $t("startSubmit") }}</el-button>
       </el-form-item>
       <p class="botFooter">
         <span :style="lang == 'en' ? { 'margin-right': '10px' } : ''">{{
@@ -96,7 +109,8 @@
       <el-form-item v-if="cType == 'register'" size="small" style="height: 20px; line-height: 20px;margin-top: 20px;">
         <el-checkbox v-model="form.agree" style="color: #999;margin:0 auto">
           {{ $t("startFooter1") }}&nbsp;
-          <el-link type="primary" :href="!lang?.includes?.('zh-')
+          <el-link
+type="primary" :href="!lang?.includes?.('zh-')
             ? 'https://doc.ave.ai/cn/yong-hu-xie-yi'
             : 'https://doc.ave.ai/ave.ai-user-agreement'
             " target="_blank">&nbsp;{{ $t("startFooter2") }}</el-link>
@@ -107,39 +121,41 @@
       </el-form-item>
     </el-form>
 
-    <el-divider class="w-divider" v-if="cType === 'login'">
+    <el-divider v-if="cType === 'login'" class="w-divider">
       <span style='font-weight: 400;'>
         {{ $t("startTg") }}
       </span>
     </el-divider>
-    <ul class="w-loginByThird" v-show="cType === 'login'">
+    <ul v-show="cType === 'login'" class="w-loginByThird">
       <li style="position: relative">
         <a href="javascript:void(0)" style="display: flex; position: relative; justify-content: center">
-          <img v-show="loading4" class="googleLoading" src="@/assets/images/googleSVG.svg" alt="" width="36" height="36"
-            style="cursor: pointer; border: none" />
-          <div id="g_id_onload" :class="[loading4 ? 'loading' : '']"></div>
+          <img
+v-show="loading4" class="googleLoading" src="@/assets/images/googleSVG.svg" alt="" width="36" height="36"
+            style="cursor: pointer; border: none" >
+          <div id="g_id_onload" :class="[loading4 ? 'loading' : '']"/>
         </a>
       </li>
       <li>
         <a href="javascript:void(0)" style="display: inline-block" @click.stop="$f.connectBotWallet()"><img
-            src="@/assets/images/tg.png" width="53" height="56" />
+            src="@/assets/images/tg.png" width="53" height="56" >
         </a>
       </li>
     </ul>
-    <slot name="nav" v-if="cType == 'login'"></slot>
+    <slot v-if="cType == 'login'" name="nav"/>
   </div>
-  <loading v-model:active="loading3" :can-cancel="false" loader="dots" :opacity="0.2"
+  <loading
+v-model:active="loading3" :can-cancel="false" loader="dots" :opacity="0.2"
     :backgroundColor="mode === 'light' ? '#fff' : '#131722'" color="var(--custom-primary-color)"
-    :is-full-page="false"></loading>
+    :is-full-page="false"/>
 </template>
 
 <script setup>
 import {ArrowUp,ArrowDown,Switch} from '@element-plus/icons-vue'
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 // import { useStore } from 'vuex';
-import { useI18n } from 'vue-i18n';
-import Cookies from "js-cookie";
-import sha256 from "crypto-js/sha256";
+import { useI18n } from 'vue-i18n'
+import Cookies from 'js-cookie'
+// import sha256 from 'crypto-js/sha256'
 const botStore = useBotStore()
 const { isDark } = useThemeStore()
 const mode=computed(() => isDark?'dark':'light')
@@ -150,92 +166,92 @@ const props = defineProps({
     type: String,
     required: true,
     validator: (value) => {
-      return ["login", "register"].includes(value);
+      return ['login', 'register'].includes(value)
     },
   }
-});
+})
 
-const emit = defineEmits(['update:cType']);
+const emit = defineEmits(['update:cType'])
 
 // const store = useStore();
-const { t } = useI18n();
+const { t } = useI18n()
 
-const count = ref(60);
-const isCounting = ref(false);
-const loading = ref(false);
-const loading2 = ref(false);
-const loading3 = ref(false);
-const loading4 = ref(true);
-const timer = ref(null);
-const loginType = ref("password");
-const showRefCode = ref(false);
-const formRef = ref(null);
+const count = ref(60)
+const isCounting = ref(false)
+const loading = ref(false)
+const loading2 = ref(false)
+const loading3 = ref(false)
+const loading4 = ref(true)
+const timer = ref(null)
+const loginType = ref('password')
+const showRefCode = ref(false)
+const formRef = ref(null)
 
 const form = ref({
-  email: "",
-  verificationCode: "",
-  password: "",
-  confirmPassword: "",
-  refCode: Cookies.get("refCode"),
+  email: '',
+  verificationCode: '',
+  password: '',
+  confirmPassword: '',
+  refCode: Cookies.get('refCode'),
   agree: false,
-});
+})
 
-const refCode = ref(Cookies.get("refCode"));
+const refCode = ref(Cookies.get('refCode'))
 
 const rules = computed(() => {
   return {
     email: [
       {
         required: true,
-        message: t("startEmailRequiredMsg"),
-        trigger: "blur",
+        message: t('startEmailRequiredMsg'),
+        trigger: 'blur',
       },
       {
-        type: "email",
-        message: t("startEmailError"),
-        trigger: ["blur", "change"],
+        type: 'email',
+        message: t('startEmailError'),
+        trigger: ['blur', 'change'],
       },
     ],
     verificationCode: [
       {
         required: true,
-        message: t("startVerificationCodeRequiredMsg"),
-        trigger: "blur",
+        message: t('startVerificationCodeRequiredMsg'),
+        trigger: 'blur',
       },
     ],
     password: [
       {
         required: true,
-        message: t("startPasswordRequiredMsg"),
-        trigger: "blur",
+        message: t('startPasswordRequiredMsg'),
+        trigger: 'blur',
       },
       {
         pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@#$%^&*!]{8,20}$/,
-        message: t("startPasswordError"),
-        trigger: "blur",
+        message: t('startPasswordError'),
+        trigger: 'blur',
       },
     ],
     confirmPassword: [
       {
         required: true,
-        message: t("startConfirmPasswordRequiredMsg"),
-        trigger: "blur",
+        message: t('startConfirmPasswordRequiredMsg'),
+        trigger: 'blur',
       },
-      { validator: validatePassword, trigger: "blur" },
+      { validator: validatePassword, trigger: 'blur' },
     ],
-  };
-});
+  }
+})
 
 function validatePassword(rule, value, callback) {
   if (value !== form.value.password) {
-    callback(new Error(t("startConfirmPasswordError")));
+    callback(new Error(t('startConfirmPasswordError')))
   } else {
-    callback();
+    callback()
   }
 }
 
 function startCountdown() {
-  formRef.value.validateField("email", (valid) => {
+  formRef.value.validateField('email', (valid) => {
     // if (valid) {
     //   const lang = localStorage.language || Cookies.get("language") || "en";
     //   store.dispatch("sendEmailCode", {
@@ -257,29 +273,29 @@ function startCountdown() {
     //   console.log("邮箱格式不正确，无法发送验证码");
     //   loading2.value = false;
     // }
-  });
+  })
 }
 
 function initCountdown() {
-  isCounting.value = true;
+  isCounting.value = true
   timer.value = setInterval(() => {
     if (count.value > 0) {
-      count.value--;
+      count.value--
     } else {
-      clearInterval(timer.value);
-      resetCountdown();
+      clearInterval(timer.value)
+      resetCountdown()
     }
-  }, 1000);
+  }, 1000)
 }
 
 function resetCountdown() {
-  isCounting.value = false;
-  count.value = 60;
+  isCounting.value = false
+  count.value = 60
 }
 
 function sendVerificationCode() {
-  loading2.value = true;
-  startCountdown();
+  loading2.value = true
+  startCountdown()
 }
 
 function login() {
@@ -315,7 +331,7 @@ function login() {
     //   loading.value = false;
     //   return false;
     // }
-  });
+  })
 }
 
 function register() {
@@ -351,23 +367,23 @@ function register() {
     //   loading.value = false;
     //   return false;
     // }
-  });
+  })
 }
 
 function submitForm() {
-  loading.value = true;
-  if (props.cType == "login") {
-    login();
+  loading.value = true
+  if (props.cType == 'login') {
+    login()
   } else {
-    register();
+    register()
   }
 }
 
 function handleCredentialResponse(response) {
-  console.log("Encoded JWT ID Token: " + response.credential);
-  const lang = localStorage.language || Cookies.get("language") || "en";
-  const language = lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en";
-  loading3.value = true;
+  console.log('Encoded JWT ID Token: ' + response.credential)
+  const lang = localStorage.language || Cookies.get('language') || 'en'
+  const language = lang == 'zh-cn' || lang == 'zh-tw' ? 'cn' : 'en'
+  loading3.value = true
   // store.dispatch("loginGoogle", {
   //   idToken: response.credential || "",
   //   refCode: form.value.refCode || refCode.value,
@@ -389,25 +405,25 @@ function handleCredentialResponse(response) {
 }
 
 function initGoogleLogin() {
-  if (!window.google) return;
+  if (!window.google) return
   google.accounts.id.initialize({
-    client_id: "631329100197-b57e5f06avvas9cdojmlp9d7imst26u2.apps.googleusercontent.com",
+    client_id: '631329100197-b57e5f06avvas9cdojmlp9d7imst26u2.apps.googleusercontent.com',
     callback: handleCredentialResponse,
-  });
-  google.accounts.id.renderButton(document.getElementById("g_id_onload"), {
-    type: "icon",
-    shape: "circle",
-    theme: "outline",
-    text: "signin_with",
-    size: "large",
-  });
-  const iframe = document.querySelector("#g_id_onload iframe");
-  const button = document.querySelector('#g_id_onload div[role="button"]');
+  })
+  google.accounts.id.renderButton(document.getElementById('g_id_onload'), {
+    type: 'icon',
+    shape: 'circle',
+    theme: 'outline',
+    text: 'signin_with',
+    size: 'large',
+  })
+  const iframe = document.querySelector('#g_id_onload iframe')
+  const button = document.querySelector('#g_id_onload div[role="button"]')
   if (button) {
-    button.style = `display: none;`;
+    button.style = 'display: none;'
   }
-  if (!iframe) return;
-  iframe.style = `display: none;`;
+  if (!iframe) return
+  iframe.style = 'display: none;'
   iframe.onload = () => {
     iframe.style = `
       position: absolute;
@@ -418,41 +434,41 @@ function initGoogleLogin() {
       opacity: 0; 
       pointer-events: auto; 
       z-index: 1; 
-    `;
-    loading4.value = false;
-  };
+    `
+    loading4.value = false
+  }
 }
 
 onMounted(() => {
-  console.log("login mounted");
-  formRef.value?.resetFields();
-  loading4.value = true;
-  const gsiClientEl = document.querySelector("#gsiClient");
+  console.log('login mounted')
+  formRef.value?.resetFields()
+  loading4.value = true
+  const gsiClientEl = document.querySelector('#gsiClient')
   if (!gsiClientEl) {
-    const script = document.createElement("script");
-    script.id = "gsiClient";
-    script.src = "https://accounts.google.com/gsi/client";
-    document.body.appendChild(script);
+    const script = document.createElement('script')
+    script.id = 'gsiClient'
+    script.src = 'https://accounts.google.com/gsi/client'
+    document.body.appendChild(script)
     script.onload = () => {
-      initGoogleLogin();
-    };
+      initGoogleLogin()
+    }
   } else {
-    initGoogleLogin();
+    initGoogleLogin()
   }
-});
+})
 
 // watch(() => form.value.email, (newEmail) => {
 //   store.email = newEmail;
 // });
 
 watch(() => botStore.connectVisible, (val) => {
-  formRef.value?.resetFields();
-  form.value.agree = false;
-});
+  formRef.value?.resetFields()
+  form.value.agree = false
+})
 
 onBeforeUnmount(() => {
-  clearInterval(timer.value);
-});
+  clearInterval(timer.value)
+})
 </script>
 
 <style style="scss" scoped>
