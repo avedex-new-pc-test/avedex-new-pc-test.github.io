@@ -11,3 +11,6 @@ export const MAIN_COIN: {
   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-heco':
     '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f-heco',
 }
+
+export const upColor = ['#12B886']
+export const downColor = ['#F6465D']

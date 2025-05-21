@@ -125,5 +125,7 @@
   "totalBuy2": "Bought",
   "totalSell2": "Sold",
   "walletAge": "Address Age",
-  "blueChips": "Blue-chips"
+  "blueChips": "Blue-chips",
+  "progress": "Progress"
+
 }

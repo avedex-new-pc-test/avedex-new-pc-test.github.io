@@ -72,7 +72,7 @@
   "tokenName": "币种",
   "popularSearches": "热门搜索",
   "wallet": "钱包",
-  "24Volume": "24h交易额",
+  "24Volume": "24h额",
   "holders": "持币人",
   "pool": "池子",
   "Txs": "交易数",
@@ -126,5 +126,6 @@
   "totalBuy2": "总买入",
   "totalSell2": "总卖出",
   "walletAge": "地址年龄",
-  "blueChips": "蓝筹币"
+  "blueChips": "蓝筹币",
+  "progress": "进度"
 }

@@ -21,8 +21,10 @@ export const useTokenStore = defineStore('token', () => {
     return pairs.value?.[0] || null
   })
   const tokenPrice = shallowRef(0)
+  const tokenPriceChange = shallowRef(0)
   const totalHolders = shallowRef<GetTotalHoldersResponse[]>([])
   const price = computed(() => tokenPrice.value || token.value?.current_price_usd)
+  const priceChange = computed(() => tokenPriceChange.value || token.value?.price_change)
 
   const circulation = computed(() => {
     const circulation = new BigNumber(token.value?.total || 0)
@@ -50,6 +52,7 @@ export const useTokenStore = defineStore('token', () => {
     tokenInfo.value = null
     tokenInfoExtra.value = null
     tokenPrice.value = 0
+    tokenPriceChange.value = 0
     pairAddress.value = ''
   }
 
@@ -68,6 +71,7 @@ export const useTokenStore = defineStore('token', () => {
     pairAddress,
     pair,
     price,
+    priceChange,
     tokenPrice,
     circulation,
     marketCap,

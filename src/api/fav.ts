@@ -163,6 +163,42 @@ function addFavoriteGroup(name: string, address: string) {
     }
   })
 }
+function getFavoriteCheck(token_id: string, address: string){
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/tokens/checkfavorite', {
+    method: 'get',
+    params: {
+      token_id,
+      address,
+    },
+  })
+}
+
+function addFavorite(token_id: string, address: string, group?: 0, remark?: string) {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/tokens/favorite/add', {
+    method: 'post',
+    body: {
+      token_id,
+      address,
+      group,
+      remark,
+    },
+  })
+}
+function removeFavorite(
+  token_id: string,
+  address: string
+) {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/tokens/favorite/delete', {
+    method: 'post',
+    body: {
+      token_id,
+      address
+    },
+  })
+}
 
 export {
   getUserFavoriteGroups,
@@ -175,6 +211,9 @@ export {
   setTopFavoriteGroup,
   changeIndexFavoriteGroup,
   removeFavoriteGroup,
-  addFavoriteGroup
+  addFavoriteGroup,
+  getFavoriteCheck,
+  addFavorite,
+  removeFavorite
 }
 export type {GetUserFavoriteGroupsResponse, GetFavListResponse}
