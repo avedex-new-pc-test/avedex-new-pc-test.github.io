@@ -36,8 +36,9 @@ interface TooltipController {
 
 
 function resolveTooltip(el: HTMLElementDirective): TooltipController | undefined {
+  const {$tooltip} = useNuxtApp()
   const instance = (el as any).__vueParentComponent?.proxy
-  return instance?.$tooltip || (el as any).__app?.config?.globalProperties?.$tooltip
+  return instance?.$tooltip || (el as any).__app?.config?.globalProperties?.$tooltip || $tooltip
 }
 
 const tooltipDirective: Directive<HTMLElementDirective, TooltipValue> = {
