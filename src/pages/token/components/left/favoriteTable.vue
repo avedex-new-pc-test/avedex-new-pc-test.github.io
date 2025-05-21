@@ -9,10 +9,14 @@ import {
 import TokenImg from '~/components/tokenImg.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import THead from '~/pages/token/components/left/tHead.vue'
+import {getColorClass} from '~/utils'
 
 const {t} = useI18n()
 const props = defineProps({
-  height: [Number, String]
+  height: {
+    type: [Number, String],
+    default: 0
+  }
 })
 const scrollbarHeight = computed(() => {
   return Number(props.height) - 110
@@ -154,16 +158,6 @@ async function loadMoreFavorites() {
 function resetListStatus() {
   listStatus.value.finished = false
   listStatus.value.pageNo = 1
-}
-
-function getColorClass(val: number) {
-  if (val === 0) {
-    return 'color-#848E9C'
-  } else if (val > 0) {
-    return 'color-#12b886'
-  } else {
-    return 'color-#ff646d'
-  }
 }
 </script>
 

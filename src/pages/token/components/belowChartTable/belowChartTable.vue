@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Transactions from './transactions.vue'
+import Transactions from './transactions/transactions.vue'
 
 const {t} = useI18n()
 const activeTab = shallowRef<keyof typeof components>('Transactions')
