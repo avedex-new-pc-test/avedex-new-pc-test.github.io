@@ -1,0 +1,80 @@
+<script setup lang="ts">
+const props = defineProps({
+  visible: Boolean,
+  markerAddress: {
+    type: String,
+    default: ''
+  },
+  chain: {
+    type: String,
+    default: ''
+  }
+})
+const emit = defineEmits(['update:visible', 'confirm', 'reset'])
+const {evmAddress, getWalletAddress} = useBotStore()
+const {isDark} = useThemeStore()
+const tempAddress = shallowRef('')
+
+const computedVisible = computed({
+  get() {
+    return props.visible
+  },
+  set(val) {
+    emit('update:visible', val)
+  }
+})
+</script>
+
+<template>
+  <el-popover
+    v-model:visible="computedVisible"
+    placement="bottom"
+    :width="215"
+    trigger="click"
+  >
+    <template #reference>
+      <Icon
+        name="custom:filter"
+        :class="`${true?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+      />
+    </template>
+    <template #default>
+      <div class="flex mt-10px">
+        <el-input
+          v-model.trim="tempAddress"
+          :placeholder="$t('enterAddress')"
+          clearable
+        />
+      </div>
+      <el-button
+        v-if="evmAddress"
+        class="h-30px mt-20px w-full"
+        size="default"
+        :color="isDark ? '#333':'#F2F2F2'"
+        @click="emit('confirm',getWalletAddress(chain))"
+      >
+        {{ $t('filterWallet') }}
+      </el-button>
+      <div class="flex mt-20px">
+        <el-button
+          class="h-30px flex-1 m-l-auto"
+          :color="isDark ? '#333':'#F2F2F2'"
+          @click="emit('reset')"
+        >
+          {{ $t('reset') }}
+        </el-button>
+        <el-button
+          class="h-30px flex-1 m-l-auto"
+          :color="isDark ? '#F5F5F5':'#222'"
+          @click="emit('confirm',tempAddress)"
+        >
+          {{ $t('confirm') }}
+        </el-button>
+      </div>
+    </template>
+  </el-popover>
+</template>
+
+<style scoped>
+
+</style>

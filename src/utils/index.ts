@@ -466,7 +466,6 @@ export function formatIconTag(src: string) {
     ? `${urlPrefix}signals/${src}.png`
     : IconUnknown
 }
-
 export function formatImgUrl(type: string, src: string) {
   if (!type || !src) {
     return IconUnknown
@@ -499,9 +498,15 @@ export function deepMerge(target: any, source: any) {
   }
 }
 
-export function formatIconSwap(src: string) {
+export function formatIconSwap(src?: string) {
   return src && src !== 'unknown'
     ? `${useConfigStore().token_logo_url}swap/${src}.jpeg`
+    : IconUnknown
+}
+
+export function formatNewTags(src?:string) {
+  return src && src !== 'unknown'
+    ? `${useConfigStore().token_logo_url}address_portrait/${src}`
     : IconUnknown
 }
 
@@ -548,3 +553,12 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
   return useRemarksStore().getRemarkByAddress({address, chain})
 }
 
+export function getColorClass(val: number) {
+  if (val === 0) {
+    return 'color-#848E9C'
+  } else if (val > 0) {
+    return 'color-#12b886'
+  } else {
+    return 'color-#ff646d'
+  }
+}

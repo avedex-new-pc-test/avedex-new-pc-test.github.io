@@ -55,8 +55,6 @@
   "expand": "Expandir",
   "website": "Sitio web",
   "whitepaper": "Libro blanco",
-  "copySuccess": "¡Copiado con éxito!",
-  "fail": "Fallido",
   "transactions": "Transacciones",
   "all": "Todos",
   "buy3": "Comprar",
@@ -68,5 +66,16 @@
   "amountB": "Cantidad",
   "amountU": "Volumen",
   "makers": "Creador",
-  "reset": "Restablecer"
+  "reset": "Restablecer",
+  "noSearchResults": "Sin resultados de búsqueda",
+  "removeLiq": "Eliminar",
+  "addLiq": "Añadir",
+  "buy": "Comprar",
+  "sell": "Vender",
+  "copySuccess": "¡Copiado con éxito!",
+  "fail": "Fallido",
+  "minor": "Mínimo",
+  "max1": "Máximo",
+  "ss": "Hace segundos",
+  "enterAddress": "Ingresar dirección"
 }
