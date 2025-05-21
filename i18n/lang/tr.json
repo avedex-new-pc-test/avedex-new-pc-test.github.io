@@ -76,5 +76,12 @@
   "minor": "Minimum değer",
   "max1": "Maksimum değer",
   "ss": "Saniye",
-  "enterAddress": "Adresi girin"
+  "enterAddress": "Adresi girin",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "loginBot": "Bot cüzdanına giriş yapın",
+  "register": "Üye olmak",
+  "startForgetPassword": "Parolanızı mı unuttunuz?",
+  "registerBot": "Bot cüzdanı kaydolun",
+  "SS": "Sn",
+  "startResetTitle": "Şifre Ayarla"
 }

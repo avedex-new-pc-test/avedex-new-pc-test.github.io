@@ -2,6 +2,7 @@
   <header
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
+    botStore.connectVisible:{{ botStore.connectVisible }}
     <NuxtLink to="/"><img src="~/assets/images/logo.svg" /></NuxtLink>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
@@ -28,7 +29,7 @@
     <el-button
       v-if="!botStore.evmAddress"
       class="ml-10px bg-[var(--d-222-l-F2F2F2)] rounded-4px text-[var(--d-F5F5F5-l-333)]"
-      @click="botStore.tgLogin"
+      @click="openConnect"
     >
       {{ $t('connectWallet') }}
     </el-button>
@@ -92,11 +93,15 @@
       />
     </a>
     <dialog-search v-model="dialogVisible_search" />
+    <!-- <component v-if="isConnectWalletVisible" :is="connectWallet" v-model="botStore.connectVisible"/> -->
+    <connectWallet v-model="botStore.connectVisible" />
   </header>
 </template>
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
-
+import connectWallet from '@/components/header/connectWallet/index.vue'
+// const connectWallet = defineAsyncComponent(() => import('~/components/header/connectWallet/index.vue'));
+const isConnectWalletVisible = ref(false);
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()
@@ -110,6 +115,11 @@ const list = shallowRef([
   { id: 'assets', name: 'Assets', src: '/' },
 ])
 const dialogVisible_search = shallowRef(false)
+
+const openConnect = () => {
+  isConnectWalletVisible.value = true
+  botStore.changeConnectVisible(true)
+}
 </script>
 <style lang="scss" scoped>
 header {

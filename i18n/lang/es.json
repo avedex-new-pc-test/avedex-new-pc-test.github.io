@@ -67,6 +67,10 @@
   "amountU": "Volumen",
   "makers": "Creador",
   "reset": "Restablecer",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "loginBot": "Iniciar sesión en la billetera de bots",
+  "register": "Inscribirse",
+  "startForgetPassword": "¿Has olvidado tu contraseña?",
   "noSearchResults": "Sin resultados de búsqueda",
   "removeLiq": "Eliminar",
   "addLiq": "Añadir",
@@ -77,5 +81,8 @@
   "minor": "Mínimo",
   "max1": "Máximo",
   "ss": "Hace segundos",
-  "enterAddress": "Ingresar dirección"
+  "enterAddress": "Ingresar dirección",
+  "registerBot": "Regístrese en la billetera de bot",
+  "SS": "Segundo",
+  "startResetTitle": "Establecer contraseña"
 }
