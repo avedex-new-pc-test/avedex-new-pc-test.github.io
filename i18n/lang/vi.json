@@ -82,7 +82,18 @@
   "addLiq": "Thêm",
   "buy": "Mua",
   "sell": "Bán",
-  "reset": "Đặt lại",
   "maximum10characters": "Độ dài ký tự quá dài",
-  "fail": "Thất bại"
+  "fail": "Thất bại",
+  "minor": "Tối thiểu",
+  "max1": "Tối đa",
+  "ss": "giây trước",
+  "enterAddress": "Nhập địa chỉ",
+  "filterWallet": "Lọc ví của bạn",
+  "newTokenAccount": "Tài khoản token mới",
+  "sellAl": "Bán hết",
+  "whales": "Cá voi",
+  "position1": "Vị thế",
+  "unrealized_profit": "Chưa thực hiện",
+  "totalBuy2": "Đã mua",
+  "totalSell2": "Đã bán"
 }

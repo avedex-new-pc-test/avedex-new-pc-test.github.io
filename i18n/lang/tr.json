@@ -71,6 +71,9 @@
   "addLiq": "Ekle",
   "buy": "Al",
   "sell": "Sat",
-  "reset": "Sıfırlama",
-  "fail": "Başarısız"
+  "fail": "Başarısız",
+  "minor": "Minimum değer",
+  "max1": "Maksimum değer",
+  "ss": "Saniye",
+  "enterAddress": "Adresi girin"
 }

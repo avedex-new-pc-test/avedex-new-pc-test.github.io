@@ -82,7 +82,18 @@
   "addLiq": "Добавить",
   "buy": "Купить",
   "sell": "Продать",
-  "reset": "Сброс",
   "maximum10characters": "Слишком длинное имя",
-  "fail": "Ошибка"
+  "fail": "Ошибка",
+  "minor": "Мин",
+  "max1": "Макс",
+  "ss": "сек назад",
+  "enterAddress": "Введите адрес",
+  "filterWallet": "Фильтр вашего кошелька",
+  "newTokenAccount": "Новый токен-аккаунт",
+  "sellAl": "Продано всё",
+  "whales": "Киты",
+  "position1": "Позиция",
+  "unrealized_profit": "Нереализованный",
+  "totalBuy2": "Куплено",
+  "totalSell2": "Продано"
 }

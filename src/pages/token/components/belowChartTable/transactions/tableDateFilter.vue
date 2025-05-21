@@ -3,7 +3,7 @@ const {isDark} = useThemeStore()
 const props = defineProps({
   visible: Boolean
 })
-const emit = defineEmits(['update:visible', 'update:modelValue', 'confirm', 'reset'])
+const emit = defineEmits(['update:visible', 'confirm', 'reset'])
 const computedVisible = computed({
   get() {
     return props.visible

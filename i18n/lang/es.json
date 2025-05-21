@@ -71,7 +71,10 @@
   "addLiq": "Añadir",
   "buy": "Comprar",
   "sell": "Vender",
-  "reset": "Restablecer",
   "copySuccess": "¡Copiado con éxito!",
-  "fail": "Fallido"
+  "fail": "Fallido",
+  "minor": "Mínimo",
+  "max1": "Máximo",
+  "ss": "Hace segundos",
+  "enterAddress": "Ingresar dirección"
 }
