@@ -83,5 +83,6 @@
   "register": "Inscrever-se",
   "startForgetPassword": "Esqueceu sua senha?",
   "registerBot": "Inscreva a carteira BOT",
-  "SS": "SS"
+  "SS": "SS",
+  "startResetTitle": "Defina a senha"
 }

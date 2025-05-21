@@ -153,5 +153,9 @@
   "startFooter2": "Terms of Service",
   "startFooter4": "Privacy Policy",
   "startPwdLogin": "Password Login",
-  "SS": "S"
+  "SS": "S",
+  "next": "Next",
+  "startResetTitle": "Set Password",
+  "startResetTitle2": "The code has been sent to your email",
+  "startResetTip": "If you do not receive the verification code, please check your spam folder."
 }

@@ -82,5 +82,6 @@
   "register": "Üye olmak",
   "startForgetPassword": "Parolanızı mı unuttunuz?",
   "registerBot": "Bot cüzdanı kaydolun",
-  "SS": "Sn"
+  "SS": "Sn",
+  "startResetTitle": "Şifre Ayarla"
 }

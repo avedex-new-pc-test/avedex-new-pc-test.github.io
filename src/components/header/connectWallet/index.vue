@@ -7,7 +7,7 @@
         <img v-else src="@/assets/images/logo2-83.29x21.97.png" alt="logo" height="21.97">
         <span>{{ $t('campaignTitle') }}</span>
       </div>
-      <!-- <reset v-if="emailRegisterType == 'reset'" @update:cType="(cType) => emailRegisterType = cType"></reset> -->
+      <reset v-if="emailRegisterType == 'reset'" @update:cType="(cType) => emailRegisterType = cType"></reset>
       <div v-if="emailRegisterType == 'reset'" />
       <template v-else>
         <div class='w-content'>
@@ -54,7 +54,7 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ArrowLeft } from '@element-plus/icons-vue'
 // import CryptoJS from 'crypto-js'
-// import reset from './reset.vue'
+import reset from './reset.vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
 const botStore = useBotStore()

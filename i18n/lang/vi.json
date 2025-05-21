@@ -124,5 +124,9 @@
   "startFooter2": "Điều khoản dịch vụ",
   "startFooter4": "Chính sách bảo mật",
   "startPwdLogin": "Đăng nhập bằng mật khẩu",
-  "SS": "Giây"
+  "SS": "Giây",
+  "next": "Tiếp theo",
+  "startResetTitle": "Đặt mật khẩu",
+  "startResetTitle2": "Mã đã được gửi đến email của bạn",
+  "startResetTip": "Nếu không nhận được mã xác minh vui lòng kiểm tra thư rác"
 }

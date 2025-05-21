@@ -1,4 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia'
+import { useLocalStorage } from '@vueuse/core'
 import {
   sendEmailCode,
   registerEmail,
@@ -37,10 +38,11 @@ export const useUserStore = defineStore('user', () => {
     // connectWalletTab,
   } = storeToRefs(botStore)
   const { getUserInfo } = botStore
-
+  const email = useLocalStorage('email', '')
   return {
-    sendEmailCode(data: Parameters<typeof sendEmailCode>[0]) {
-      return sendEmailCode(data)
+    email,
+    async sendEmailCode(data: Parameters<typeof sendEmailCode>[0]) {
+      return await sendEmailCode(data)
     },
     async registerEmail(data: Parameters<typeof registerEmail>[0]) {
       const res = await registerEmail(data)

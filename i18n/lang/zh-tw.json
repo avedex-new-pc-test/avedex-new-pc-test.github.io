@@ -151,5 +151,9 @@
   "startFooter2": "《用戶協議》",
   "startFooter4": "《隱私協議》",
   "startPwdLogin": "密碼登入",
-  "SS": "秒"
+  "SS": "秒",
+  "next": "下一個",
+  "startResetTitle": "輸入新密碼",
+  "startResetTitle2": "代碼已發送至您的郵箱",
+  "startResetTip": "如果您沒有收到驗證碼，請檢查您的垃圾郵件資料夾。"
 }

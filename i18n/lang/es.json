@@ -83,5 +83,6 @@
   "ss": "Hace segundos",
   "enterAddress": "Ingresar dirección",
   "registerBot": "Regístrese en la billetera de bot",
-  "SS": "Segundo"
+  "SS": "Segundo",
+  "startResetTitle": "Establecer contraseña"
 }

@@ -252,7 +252,6 @@ import type { FormInstance, FormRules } from 'element-plus'
 import Cookies from 'js-cookie'
 import { ElMessage } from 'element-plus'
 import sha256 from 'crypto-js/sha256'
-// import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 type RuleForm = {
   email: string;
@@ -360,11 +359,10 @@ function validatePassword(
 function startCountdown() {
   formRef?.value?.validateField('email', (valid) => {
     if (valid) {
-      const lang = localStorage.language || Cookies.get('language') || 'en'
       userStore
         .sendEmailCode({
           email: form.email,
-          language: lang == 'zh-cn' || lang == 'zh-tw' ? 'cn' : 'en',
+          language: lang.value == 'zh-cn' || lang.value == 'zh-tw' ? 'cn' : 'en',
           emailType: props.cType == 'register' ? 'register' : 'login',
           refCode: form.refCode || refCode.value,
         })
@@ -466,10 +464,6 @@ function register() {
               ? '注册成功,去登录'
               : 'Registration successful, go to log in'
           )
-          // store.commit('showMessage', {
-          //   type: 'success',
-          //   text: language === 'cn' ? '注册成功,去登录' : 'Registration successful, go to log in'
-          // })
           setTimeout(() => {
             emit('update:cType', 'login')
           }, 1500)
@@ -498,8 +492,7 @@ function submitForm() {
 
 function handleCredentialResponse(response: any) {
   console.log('Encoded JWT ID Token: ' + response.credential)
-  const lang = localStorage.language || Cookies.get('language') || 'en'
-  const language = lang == 'zh-cn' || lang == 'zh-tw' ? 'cn' : 'en'
+  const language = lang.value == 'zh-cn' || lang.value == 'zh-tw' ? 'cn' : 'en'
   loading3.value = true
   userStore
     .loginGoogle({
@@ -582,9 +575,13 @@ onMounted(() => {
   }
 })
 
-// watch(() => form.email, (newEmail) => {
-//   store.email = newEmail;
-// });
+watch(
+  () => form.email,
+  (newEmail) => {
+    userStore.email = newEmail
+  },
+  { immediate: true }
+)
 
 watch(
   () => botStore.connectVisible,
