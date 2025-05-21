@@ -4,7 +4,7 @@ import {
   setTopFavoriteGroup, changeIndexFavoriteGroup,
   type GetUserFavoriteGroupsResponse, removeFavoriteGroup,
 } from '~/api/fav'
-import {confirmChangeName} from '~~/composables/fav'
+import {confirmChangeName} from '~/composables/fav'
 
 const {t} = useI18n()
 const {evmAddress} = useBotStore()
