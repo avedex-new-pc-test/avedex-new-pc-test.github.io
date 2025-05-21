@@ -24,27 +24,6 @@ export const useBotStore = defineStore('bot', () => {
 
   const connectVisible = ref(false)
   const connectWalletTab = ref(0)
-  // const chainId = ref(Number(localStorage.chainId))
-  // if (isNaN(chainId.value)) {
-  //   chainId.value = Number(localStorage.chainId)
-  // }
-  // chainId.value =
-  //   localStorage.currentWallet === 'importAddress' ||
-  //   isSolanaChain() ||
-  //   localStorage.currentWallet === 'TronLink'
-  //     ? chainId.value || 0
-  //     : 0
-
-  // const currentAccount = ref(
-  //   localStorage.currentWallet === 'importAddress' ||
-  //     isSolanaChain() ||
-  //     localStorage.currentWallet === 'TronLink'
-  //     ? localStorage?.currentAccount?.replace?.(/"|'/g, '') || ''
-  //     : ''
-  // )
-  // const wallet = useLocalStorage('currentWallet', '')
-  // const provider = ref('')
-  // const signatureObj = useLocalStorage('signatureObj', {})
   const walletList = shallowRef<
     Awaited<ReturnType<typeof bot_getWalletsAllChain>>
   >([])
@@ -52,12 +31,7 @@ export const useBotStore = defineStore('bot', () => {
   const userInfo = computed(() => {
     return walletList.value?.find?.((i) => i.evmAddress === evmAddress.value)
   })
-  // function setProvider(provider: any) {
-  //   provider.value = provider
-  // }
-  // function isSolanaChain() {
-  //   return localStorage?.currentWallet?.includes('Solana') || false
-  // }
+ 
   function refreshAccessToken(type: 'acc' | 'ref') {
     if (!refreshToken.value) {
       return Promise.reject('no refreshToken')
@@ -102,12 +76,6 @@ export const useBotStore = defineStore('bot', () => {
       )
     }
   }
-  // function setSignatureObj(obj: object | null | undefined) {
-  //   signatureObj.value = obj
-  // }
-  // function setChainId(val: number) {
-  //   chainId.value = val
-  // }
   function getWebConfig(chain = '') {
     if (accessToken.value) {
       return bot_getWebConfig(chain).then((res) => {
@@ -121,30 +89,6 @@ export const useBotStore = defineStore('bot', () => {
       })
     }
   }
-  // function setCurrentAccount(val: string) {
-  //   console.log('setCurrentAccount', currentAccount.value, chainId.value)
-  //   if (!isNaN(Number(chainId))) {
-  //     currentAccount.value = val.toLowerCase()
-  //   } else {
-  //     currentAccount.value = val
-  //   }
-  //   if (
-  //     localStorage.currentAccount !== currentAccount.value &&
-  //     (localStorage.currentWallet === 'importAddress' || isSolanaChain())
-  //   ) {
-  //     localStorage.currentAccount = currentAccount.value?.replace(/"|'/g, '')
-  //   }
-  //   if (val) {
-  //     accessToken.value = ''
-  //     // localStorage.bot_accessToken = ''
-  //     refreshToken.value = ''
-  //     // localStorage.bot_refreshToken = ''
-  //     // userInfo.value = {
-  //     //   tgUid:  '',
-  //     // }
-  //     localStorage.bot_userInfo = ''
-  //   }
-  // }
   let Timer: ReturnType<typeof setTimeout> | null = null
   function updateWebConfig(data: { chain?: string; webConfig?: string } = {}) {
     if (!accessToken.value) {
