@@ -2,7 +2,6 @@
   <header
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
-    botStore.connectVisible:{{ botStore.connectVisible }}
     <NuxtLink to="/"><img src="~/assets/images/logo.svg" /></NuxtLink>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
