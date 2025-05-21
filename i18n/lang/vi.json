@@ -79,5 +79,20 @@
   "amountB": "Số lượng",
   "amountU": "Khối lượng",
   "makers": "Người tạo",
-  "reset": "Đặt lại"
+  "reset": "Đặt lại",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "loginBot": "Đăng nhập vào ví bot",
+  "startEmailRequiredMsg": "Vui lòng nhập email",
+  "startEmailError": "Vui lòng nhập email hợp lệ",
+  "startVerificationCodeRequiredMsg": "Vui lòng nhập mã xác minh",
+  "startPasswordRequiredMsg": "Vui lòng nhập mật khẩu",
+  "startPasswordError": "8-20 ký tự chữ hoa thường và số không dấu cách",
+  "startConfirmPasswordRequiredMsg": "Vui lòng xác nhận mật khẩu",
+  "register": "Đăng ký",
+  "startEmail": "Email",
+  "startPassword": "Mật khẩu",
+  "startVcodeLogin": "Đăng nhập bằng mã",
+  "startForgetPassword": "Quên mật khẩu?",
+  "startSubmit": "Xác nhận",
+  "startTg": "Hoặc đăng nhập bằng"
 }

@@ -106,5 +106,20 @@
   "filterTime": "按日期过滤",
   "startTime": "开始时间",
   "endTime1": "结束时间",
-  "reset": "重置"
+  "reset": "重置",
+  "campaignTitle": "安全、专业、最快、最全",
+  "loginBot": "登录Bot钱包",
+  "startEmailRequiredMsg": "请输入邮箱",
+  "startEmailError": "请输入正确的邮箱账号",
+  "startVerificationCodeRequiredMsg": "请输入邮箱验证码",
+  "startPasswordRequiredMsg": "请输入密码",
+  "startPasswordError": "输入8-20位字符，须包含大小字母、数字，不含空格",
+  "startConfirmPasswordRequiredMsg": "请输入确认密码",
+  "register": "注册",
+  "startEmail": "邮箱",
+  "startPassword": "密码",
+  "startVcodeLogin": "验证码登录",
+  "startForgetPassword": "忘记密码",
+  "startSubmit": "确认",
+  "startTg": "或用其他方式"
 }

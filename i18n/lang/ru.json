@@ -79,5 +79,20 @@
   "amountB": "Количество",
   "amountU": "Объем",
   "makers": "Мейкер",
-  "reset": "Сброс"
+  "reset": "Сброс",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "loginBot": "Войти в бот -кошелек",
+  "startEmailRequiredMsg": "Введите email",
+  "startEmailError": "Введите действительный email.",
+  "startVerificationCodeRequiredMsg": "Введите код подтверждения",
+  "startPasswordRequiredMsg": "Введите пароль",
+  "startPasswordError": "8-20 букв и цифр без пробелов.",
+  "startConfirmPasswordRequiredMsg": "Подтвердите пароль",
+  "register": "Зарегистрироваться",
+  "startEmail": "Email",
+  "startPassword": "Пароль",
+  "startVcodeLogin": "Вход по коду",
+  "startForgetPassword": "Забыли пароль?",
+  "startSubmit": "Подтвердить",
+  "startTg": "Или войти через"
 }

@@ -68,5 +68,9 @@
   "amountB": "Cantidad",
   "amountU": "Volumen",
   "makers": "Creador",
-  "reset": "Restablecer"
+  "reset": "Restablecer",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "loginBot": "Iniciar sesión en la billetera de bots",
+  "register": "Inscribirse",
+  "startForgetPassword": "¿Has olvidado tu contraseña?"
 }

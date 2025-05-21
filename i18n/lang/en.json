@@ -105,5 +105,20 @@
   "filterTime": "Filter by date",
   "startTime": "Start Time",
   "endTime1": "End Time",
-  "reset": "Reset"
+  "reset": "Reset",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "loginBot": "Login to Bot Wallet",
+  "startEmailRequiredMsg": "Please Enter Email",
+  "startEmailError": "Please enter a valid email address.",
+  "startVerificationCodeRequiredMsg": "Please Enter Email Verification Code",
+  "startPasswordRequiredMsg": "Please Enter Password",
+  "startPasswordError": "8-20 uppercase and lowercase letters and numbers, no spaces.",
+  "startConfirmPasswordRequiredMsg": "Please Enter Confirm Password",
+  "register": "Sign Up",
+  "startEmail": "Email",
+  "startPassword": "Password",
+  "startVcodeLogin": "Verification Code Login",
+  "startForgetPassword": "Forgot Password?",
+  "startSubmit": "Confirm",
+  "startTg": "Or log in with"
 }
