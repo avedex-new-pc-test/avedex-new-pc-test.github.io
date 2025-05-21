@@ -32,7 +32,7 @@ export function botOnResponse({ response, request, options }: MyFetchContext) {
     if (isJSON(msg)) {
       msg = JSON.parse(msg)
     }
-    throw createError(msg?.msg || msg || 'error')
+    throw new Error(msg?.msg || msg || 'error')
   }
 }
 

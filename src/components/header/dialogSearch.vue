@@ -63,6 +63,7 @@
           v-if="tabActive === 'token'"
           :tokens="hotStore.hotList?.slice?.(0, 200) || []"
           :loading="loading"
+          @close="visible = false"
         />
         <walletTable v-else :tokens="smartTop10List || []" :loading="loading" />
       </template>

@@ -54,6 +54,7 @@ export const useTokenStore = defineStore('token', () => {
   }
 
   function _getTotalHolders() {
+    if (!route.params.id) return
     getTotalHolders(route.params.id as string).then(res => {
       totalHolders.value = Array.isArray(res) ? res : []
       triggerRef(totalHolders)

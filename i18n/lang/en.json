@@ -102,6 +102,7 @@
   "startTime": "Start Time",
   "endTime1": "End Time",
   "reset": "Reset",
+  "noSearchResults": "No search results",
   "removeLiq": "Remove",
   "addLiq": "Add",
   "CollectFee": "Claim LP Fee",
