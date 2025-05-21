@@ -40,62 +40,22 @@ async function _getTxsUserBrief() {
   try {
     const res = await getTxsUserBrief(data)
     if (res) {
-      const vol = new BigNumber(
-        res.total_sold_usd === '--' ? 0 : res.total_sold_usd
-      ).plus(
-        new BigNumber(res.total_purchase_usd === '--' ? 0 : res.total_purchase_usd)
-      ).toString()
       userBriefData.value = {
         ...res,
-        // 总买入
-        // boughtCount: ((res.total_purchase == '--') || (Number.parseFloat(res.total_purchase) == 0)) ? '' : `(${res.total_purchase})`,
-        // boughtAmount: res.total_purchase_amount ? formatNumber(res.total_purchase_amount, 2) : '--',
-        // isEmptyBoughtAmount: (!res.total_purchase_amount || (res.total_purchase_amount == '--') || (Number.parseFloat(res.total_purchase_amount) == 0)),
-        // boughtUsd: res.total_purchase_usd ? '$' + formatNumber(res.total_purchase_usd, 1) : '--',
-        // 总卖出
-        // soldCount: ((res.total_sold == '--') || (Number.parseFloat(res.total_sold) == 0)) ? '' : `(${res.total_sold})`,
-        // soldAmount: res.total_sold_amount ? formatNumber(res.total_sold_amount, 2) : '--',
-        // isEmptySoldAmount: (!res.total_sold_amount || (res.total_sold_amount == '--') || (Number.parseFloat(res.total_sold_amount) == 0)),
-        // soldUsd: res.total_sold_usd ? '$' + formatNumber(res.total_sold_usd, 1) : '--',
-        // 转入
-        transferInCount: ((res.total_transfer_in == '--') || (Number.parseFloat(res.total_transfer_in) == 0)) ? '' : `(${res.total_transfer_in})`,
-        transferInAmount: res.total_transfer_in_amount ? formatNumber(res.total_transfer_in_amount, 2) : '--',
-        isEmptyTransferInAmount: (!res.total_transfer_in_amount || (res.total_transfer_in_amount == '--') || (Number.parseFloat(res.total_transfer_in_amount) == 0)),
-        // 转出
-        transferOutCount: ((res.total_transfer_out == '--') || (Number.parseFloat(res.total_transfer_out) == 0)) ? '' : `(${res.total_transfer_out})`,
-        transferOutAmount: res.total_transfer_out_amount ? formatNumber(res.total_transfer_out_amount, 2) : '--',
-        isEmptyTransferOutAmount: (!res.total_transfer_out_amount || (res.total_transfer_out_amount == '--') || (Number.parseFloat(res.total_transfer_out_amount) == 0)),
-        // 余额
-        // balance: res.balance_amount ? formatNumber(res.balance_amount, 3) : '--',
-        // 持币时间
-        holdTime: res.wallet_age,
-        // 总盈亏
-        // profit: res.total_profit !== '0' ? '$' + formatNumber(res.total_profit, 1) : '--',
-        //是否盈利
-        // isAdd$: ((res.total_profit != '0') || 0) && (Number(res.total_profit) > 0 ? 1 : 2),
-        //是否是正未实现盈亏
-        // isUnrealized$: ((res.unrealized_profit != '0') || 0) && (Number(res.unrealized_profit) > 0 ? 1 : 2),
-        // 未实现盈亏
-        // unrealized: res.unrealized_profit ? '$' + formatNumber(res.unrealized_profit, 2) : '--',
-        // 百分比
         ratio: Number(res.history_max_balance_amount) > 0
           ? Math.min(new BigNumber(res.balance_amount)
               .dividedBy(new BigNumber(res.history_max_balance_amount))
               .multipliedBy(100).toNumber()
             , 100)
           : 0,
-        // balance_amount: res.balance_amount || 0,
-        // balance_usd: res.balance_usd || 0,
-        // history_max_balance_amount: res.history_max_balance_amount || 0,
         // isLoad
         isLoading: (res.total_sold_usd === '') && (res.total_purchase_usd === ''),
-        // 总交易金额 = 总的卖出金额 + 总的买入金额
-        vol: '$' + formatNumber(vol, 2),
-        volColor: ((vol !== '0') || 0) && (Number(vol) > 0 ? 1 : 2),
       }
     }
   } catch (e) {
     console.log('=>(markerTooltip.vue:38) e', e)
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -107,12 +67,12 @@ async function _getTxsUserBrief() {
     placement="left"
     :virtual-ref="virtualRef"
     virtual-triggering
-    trigger="click"
+    trigger="hover"
     raw-content
   >
     <template #content>
       <el-skeleton
-        v-if="!userBriefData || userBriefData.isLoading"
+        v-if="!userBriefData || userBriefData.isLoading || isLoading"
         animated
         class="relative inline-block [&&]:w-210px text-12px font-400 box-border px-4px py-6px"
       >

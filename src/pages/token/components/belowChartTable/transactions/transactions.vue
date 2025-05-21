@@ -9,6 +9,9 @@ import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse
 import {formatDate, getAddressAndChainFromId, getChainInfo} from '~/utils'
 import dayjs from 'dayjs'
 
+import IconUnknown from '@/assets/images/icon-unknown.png'
+
+const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const {t} = useI18n()
 const {totalHolders, pairAddress, token} = storeToRefs(useTokenStore())
 const route = useRoute()
@@ -50,6 +53,7 @@ const tabs = computed(() => {
 const activeTab = shallowRef('all')
 
 const columns = computed(() => {
+  const visible = token.value?.chain === 'solana' && activeTab.value !== 'liquidity'
   return [{key: 'time', dataKey: 'time', title: t('time'), width: 80},
     {key: 'type', dataKey: 'type', title: t('type'), width: 80},
     {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), width: 100},
@@ -58,7 +62,16 @@ const columns = computed(() => {
       key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative'
     },
     {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right'},
-    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right'},]
+    {
+      key: 'SOLBalance',
+      dataKey: 'SOLBalance',
+      title: t('makers') + ' SOL',
+      align: 'right',
+      hidden: !visible,
+      width: 100
+    },
+    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', width: 70}]
+    .filter(el => !el.hidden)
 })
 const pairTxs = shallowRef<GetPairTxsResponse[]>([])
 const pairLiq = shallowRef<GetPairLiqResponse[]>([])
@@ -88,7 +101,6 @@ const tableFilter = shallowRef<{
   amountU: [],
   markerAddress: ''
 })
-
 const addressAndChain = computed(() => {
   const id = route.params.id as string
   if (id) {
@@ -291,7 +303,7 @@ function updateRemark() {
 }
 
 function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile }, e: MouseEvent) {
-  if (row) {
+  if (row && MAKER_SUPPORT_CHAINS.includes(row.chain)) {
     makerTooltip.value = e.currentTarget
     if (currentRow.value?.wallet_address === row.wallet_address) {
       return
@@ -299,15 +311,21 @@ function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile },
     currentRow.value = row
   }
 }
+
+function goBrowser(row: GetPairTxsResponse) {
+  window.open(
+    formatExplorerUrl(row.chain, row.transaction, 'tx')
+  )
+}
 </script>
 
 <template>
   <div class="transactions">
-    <div class="flex items-center px-12px mb-10px">
+    <div class="flex items-center px-12px mb-10px whitespace-nowrap">
       <a
         v-for="(item) in tabs"
         :key="item.value" href="javascript:;"
-        :class="`decoration-none text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+        :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
          ${activeTab===item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]':''}`"
         @click="activeTab=item.value"
       >
@@ -506,9 +524,9 @@ function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile },
             :walletAddress="row.wallet_address"
             :chain="row.chain"
           />
-          <div :key="row.wallet_address">
+          <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
-              v-if="['solana','bsc'].includes(row.chain)"
+              v-if="MAKER_SUPPORT_CHAINS.includes(row.chain)"
               :remark="row.remark"
               :address="row.wallet_address"
               :chain="row.chain"
@@ -521,6 +539,37 @@ function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile },
                 ({{ row.count }})
               </div>
             </UserRemark>
+            <Icon
+              name="custom:filter"
+              :class="`${true?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+            />
+          </div>
+        </template>
+        <template #cell-SOLBalance="{row}">
+          <span v-if="row.senderProfile" class="color-[--d-999-l-666]">
+            {{ formatNumber(row.senderProfile?.solTotalHolding || 0, 2) }}
+          </span>
+        </template>
+        <template #cell-DEX="{row}">
+          <div class="flex justify-end gap-8px">
+            <img
+              v-if="row.amm === 'unknown'"
+              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
+              class="w-16px h-16px cursor-pointer" :src="IconUnknown"
+              alt=""
+            >
+            <img
+              v-else
+              class="w-16px h-16px cursor-pointer"
+              :src="formatIconSwap(row.amm)"
+              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
+              alt=""
+            >
+            <Icon
+              name="custom:browser"
+              class="text-16px color-[--d-999-l-666] cursor-pointer"
+              @click.self="goBrowser(row)"
+            />
           </div>
         </template>
       </AveTable>
