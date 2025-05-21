@@ -140,5 +140,18 @@
   "startVcodeLogin": "Verification Code Login",
   "startForgetPassword": "Forgot Password?",
   "startSubmit": "Confirm",
-  "startTg": "Or log in with"
+  "startTg": "Or log in with",
+  "registerBot": "Sign up Bot Wallet",
+  "startBotFooter11": "Already have a wallet?",
+  "startBotFooter12": "Log in",
+  "startVerificationCode": "Email Verification Code",
+  "startCountDown": "Get Code",
+  "startConfirmPassword": "Confirm Password",
+  "startInvitationCode": "Invitation Code (Optional)",
+  "startFooter1": "I have read and agree to the",
+  "startFooter3": "and",
+  "startFooter2": "Terms of Service",
+  "startFooter4": "Privacy Policy",
+  "startPwdLogin": "Password Login",
+  "SS": "S"
 }

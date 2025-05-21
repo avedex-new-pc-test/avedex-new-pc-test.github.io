@@ -111,5 +111,18 @@
   "startVcodeLogin": "Đăng nhập bằng mã",
   "startForgetPassword": "Quên mật khẩu?",
   "startSubmit": "Xác nhận",
-  "startTg": "Hoặc đăng nhập bằng"
+  "startTg": "Hoặc đăng nhập bằng",
+  "registerBot": "Đăng ký ví bot",
+  "startBotFooter11": "Đã có ví?",
+  "startBotFooter12": "Đăng nhập",
+  "startVerificationCode": "Mã xác minh email",
+  "startCountDown": "Lấy mã",
+  "startConfirmPassword": "Xác nhận mật khẩu",
+  "startInvitationCode": "Mã giới thiệu (không bắt buộc)",
+  "startFooter1": "Tôi đã đọc và đồng ý với",
+  "startFooter3": "và",
+  "startFooter2": "Điều khoản dịch vụ",
+  "startFooter4": "Chính sách bảo mật",
+  "startPwdLogin": "Đăng nhập bằng mật khẩu",
+  "SS": "Giây"
 }

@@ -138,5 +138,18 @@
   "startVcodeLogin": "驗證碼登入",
   "startForgetPassword": "忘記密碼",
   "startSubmit": "確認",
-  "startTg": "或用其他方式"
+  "startTg": "或用其他方式",
+  "registerBot": "註冊Bot錢包",
+  "startBotFooter11": "已有錢包，",
+  "startBotFooter12": "去登入",
+  "startVerificationCode": "信箱驗證碼",
+  "startCountDown": "取得驗證碼",
+  "startConfirmPassword": "確認密碼",
+  "startInvitationCode": "邀請碼(選填)",
+  "startFooter1": "我已閱讀並同意",
+  "startFooter3": "和",
+  "startFooter2": "《用戶協議》",
+  "startFooter4": "《隱私協議》",
+  "startPwdLogin": "密碼登入",
+  "SS": "秒"
 }

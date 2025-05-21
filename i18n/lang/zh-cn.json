@@ -127,7 +127,7 @@
   "totalSell2": "总卖出",
   "walletAge": "地址年龄",
   "blueChips": "蓝筹币",
-   "campaignTitle": "安全、专业、最快、最全",
+  "campaignTitle": "安全、专业、最快、最全",
   "loginBot": "登录Bot钱包",
   "startEmailRequiredMsg": "请输入邮箱",
   "startEmailError": "请输入正确的邮箱账号",
@@ -141,5 +141,18 @@
   "startVcodeLogin": "验证码登录",
   "startForgetPassword": "忘记密码",
   "startSubmit": "确认",
-  "startTg": "或用其他方式"
+  "startTg": "或用其他方式",
+  "registerBot": "注册Bot钱包",
+  "startBotFooter11": "已有钱包，",
+  "startBotFooter12": "去登录",
+  "startVerificationCode": "邮箱验证码",
+  "startCountDown": "获取验证码",
+  "startConfirmPassword": "确认密码",
+  "startInvitationCode": "邀请码(选填)",
+  "startFooter1": "我已阅读并同意",
+  "startFooter3": "和",
+  "startFooter2": "《用户协议》",
+  "startFooter4": "《隐私协议》",
+  "startPwdLogin": "密码登录",
+  "SS": "秒"
 }

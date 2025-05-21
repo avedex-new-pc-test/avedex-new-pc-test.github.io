@@ -1,56 +1,98 @@
 <template>
   <div :class="['w-emailRegister', mode]">
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="0" autocomplete="off" size="large" @submit.prevent>
+    <el-form
+      ref="formRef"
+      :model="form"
+      :rules="rules"
+      label-width="0"
+      autocomplete="off"
+      size="large"
+      @submit.prevent
+    >
       <el-form-item label="" prop="email">
         <el-input
-v-model="form.email" :autocomplete="'new-email' + Math.random()" :placeholder="$t('startEmail')"
-          name="emailField" />
+          v-model="form.email"
+          :autocomplete="'new-email' + Math.random()"
+          :placeholder="$t('startEmail')"
+          name="emailField"
+        />
       </el-form-item>
 
       <el-form-item
-v-if="cType == 'register' || (cType == 'login' && loginType == 'email')" label=""
-        prop="verificationCode">
+        v-if="cType == 'register' || (cType == 'login' && loginType == 'email')"
+        label=""
+        prop="verificationCode"
+      >
         <el-input
-v-model="form.verificationCode" :autocomplete="'new-verificationCode' + Math.random()"
-          :placeholder="$t('startVerificationCode')" name="new-verificationCode">
+          v-model="form.verificationCode"
+          :autocomplete="'new-verificationCode' + Math.random()"
+          :placeholder="$t('startVerificationCode')"
+          name="new-verificationCode"
+        >
           <template #suffix>
             <el-button
-class="countdownBtn" link :disabled="isCounting" :loading="loading2"
+              class="countdownBtn"
+              link
+              :disabled="isCounting"
+              :loading="loading2"
               :style="{
                 color: mode == 'dark' ? '#286DFF' : '#286DFF',
-              }" @click="sendVerificationCode">
+              }"
+              @click="sendVerificationCode"
+            >
               {{
                 isCounting ? `${count}${$t("SS")}` : $t("startCountDown")
-              }}</el-button>
+              }}</el-button
+            >
           </template>
         </el-input>
       </el-form-item>
 
       <el-form-item
-v-if="
-        cType == 'register' || (cType == 'login' && loginType == 'password')
-      " label="" prop="password">
+        v-if="
+          cType == 'register' || (cType == 'login' && loginType == 'password')
+        "
+        label=""
+        prop="password"
+      >
         <el-input
-v-model="form.password" type="password" name="password_field"
-          :autocomplete="'new-password' + Math.random()" :placeholder="$t('startPassword')" show-password />
+          v-model="form.password"
+          type="password"
+          name="password_field"
+          :autocomplete="'new-password' + Math.random()"
+          :placeholder="$t('startPassword')"
+          show-password
+        />
       </el-form-item>
 
       <el-form-item v-if="cType == 'register'" label="" prop="confirmPassword">
         <el-input
-v-model="form.confirmPassword" type="password" name="confirm_password_field"
-          :placeholder="$t('startConfirmPassword')" :autocomplete="'new-password2' + Math.random()" show-password />
+          v-model="form.confirmPassword"
+          type="password"
+          name="confirm_password_field"
+          :placeholder="$t('startConfirmPassword')"
+          :autocomplete="'new-password2' + Math.random()"
+          show-password
+        />
       </el-form-item>
-      <el-form-item v-if="cType == 'register'" label-position="top" prop="refCode">
+      <el-form-item
+        v-if="cType == 'register'"
+        label-position="top"
+        prop="refCode"
+      >
         <label
-class="el-form-item__label icon" :style="{ marginBottom: showRefCode ? '10px' : '0' }"
-          @click="showRefCode = !showRefCode">
+          class="el-form-item__label icon"
+          :style="{ marginBottom: showRefCode ? '10px' : '0' }"
+          @click="showRefCode = !showRefCode"
+        >
           <div
-style="
+            style="
               gap: 8px;
               display: flex;
               align-items: center;
               cursor: pointer;
-            ">
+            "
+          >
             {{ $t("startInvitationCode") }}
             <el-icon style="height: 5.5px; width: 9.5px">
               <ArrowUp v-if="showRefCode" />
@@ -59,18 +101,27 @@ style="
           </div>
         </label>
         <el-input
-v-if="showRefCode" v-model="form.refCode" autocomplete="off" :placeholder="$t('startInvitationCode')"
-          :disabled="!!refCode" />
+          v-if="showRefCode"
+          v-model="form.refCode"
+          autocomplete="off"
+          :placeholder="$t('startInvitationCode')"
+          :disabled="!!refCode"
+        />
       </el-form-item>
       <el-form-item v-if="cType == 'login'" style="margin-bottom: 10px">
-        <label class="el-form-item__label icon" :style="{ marginBottom: '0', justifyContent: 'space-between' }">
+        <label
+          class="el-form-item__label icon"
+          :style="{ marginBottom: '0', justifyContent: 'space-between' }"
+        >
           <div
-style="
+            style="
               gap: 8px;
               display: flex;
               align-items: center;
               cursor: pointer;
-            " @click="loginType = loginType === 'password' ? 'email' : 'password'">
+            "
+            @click="loginType = loginType === 'password' ? 'email' : 'password'"
+          >
             {{
               loginType !== "email"
                 ? $t("startVcodeLogin")
@@ -81,113 +132,165 @@ style="
             </el-icon>
           </div>
           <div
-style="
+            style="
               gap: 8px;
               display: flex;
               align-items: center;
               cursor: pointer;
-            " @click.prevent="emit('update:cType', 'reset')">
+            "
+            @click.prevent="emit('update:cType', 'reset')"
+          >
             {{ $t("startForgetPassword") }}
           </div>
         </label>
       </el-form-item>
       <el-form-item :style="{ paddingTop: cType === 'login' ? '10px' : '0' }">
         <el-button
-class="btn" :color="mode == 'dark' ? '#F5F5F5' : '#222222'" size="large"
-          :disabled="cType == 'register' && !form.agree" :loading="loading" style="width: 100%;--el-button-disabled-text-color:#222222"
-          @click="submitForm">{{ $t("startSubmit") }}</el-button>
+          class="btn"
+          :color="mode == 'dark' ? '#F5F5F5' : '#222222'"
+          size="large"
+          :disabled="cType == 'register' && !form.agree"
+          :loading="loading"
+          style="width: 100%; --el-button-disabled-text-color: #222222"
+          @click="submitForm"
+          >{{ $t("startSubmit") }}</el-button
+        >
       </el-form-item>
       <p class="botFooter">
         <span :style="lang == 'en' ? { 'margin-right': '10px' } : ''">{{
-          cType == "register" ? $t("startBotFooter11") : ''
+          cType == "register" ? $t("startBotFooter11") : ""
         }}</span>
-        <a v-if="cType == 'register'" href="javascript:void(0)" @click.prevent="emit('update:cType', 'login')">
-          {{ $t("startBotFooter12") }}</a>
-        <a v-else href="javascript:void(0)" @click.prevent="emit('update:cType', 'register')">
-          {{ $t("register") }}</a>
+        <a
+          v-if="cType == 'register'"
+          href="javascript:void(0)"
+          @click.prevent="emit('update:cType', 'login')"
+        >
+          {{ $t("startBotFooter12") }}</a
+        >
+        <a
+          v-else
+          href="javascript:void(0)"
+          @click.prevent="emit('update:cType', 'register')"
+        >
+          {{ $t("register") }}</a
+        >
       </p>
-      <el-form-item v-if="cType == 'register'" size="small" style="height: 20px; line-height: 20px;margin-top: 20px;">
-        <el-checkbox v-model="form.agree" style="color: #999;margin:0 auto">
+      <el-form-item
+        v-if="cType == 'register'"
+        size="small"
+        style="height: 20px; line-height: 20px; margin-top: 20px"
+      >
+        <el-checkbox v-model="form.agree" style="color: #999; margin: 0 auto">
           {{ $t("startFooter1") }}&nbsp;
           <el-link
-type="primary" :href="!lang?.includes?.('zh-')
-            ? 'https://doc.ave.ai/cn/yong-hu-xie-yi'
-            : 'https://doc.ave.ai/ave.ai-user-agreement'
-            " target="_blank">&nbsp;{{ $t("startFooter2") }}</el-link>
+            type="primary"
+            :href="
+              !lang?.includes?.('zh-')
+                ? 'https://doc.ave.ai/cn/yong-hu-xie-yi'
+                : 'https://doc.ave.ai/ave.ai-user-agreement'
+            "
+            target="_blank"
+            >&nbsp;{{ $t("startFooter2") }}</el-link
+          >
           &nbsp;{{ $t("startFooter3") }}
           <el-link type="primary" href="https://ave.ai/privacy" target="_blank">
-            &nbsp;{{ $t("startFooter4") }}</el-link>
+            &nbsp;{{ $t("startFooter4") }}</el-link
+          >
         </el-checkbox>
       </el-form-item>
     </el-form>
 
     <el-divider v-if="cType === 'login'" class="w-divider">
-      <span style='font-weight: 400;'>
+      <span style="font-weight: 400">
         {{ $t("startTg") }}
       </span>
     </el-divider>
     <ul v-show="cType === 'login'" class="w-loginByThird">
       <li style="position: relative">
-        <a href="javascript:void(0)" style="display: flex; position: relative; justify-content: center">
+        <a
+          href="javascript:void(0)"
+          style="display: flex; position: relative; justify-content: center"
+        >
           <img
-v-show="loading4" class="googleLoading" src="@/assets/images/googleSVG.svg" alt="" width="36" height="36"
-            style="cursor: pointer; border: none" >
-          <div id="g_id_onload" :class="[loading4 ? 'loading' : '']"/>
+            v-show="loading4"
+            class="googleLoading"
+            src="@/assets/images/googleSVG.svg"
+            alt=""
+            width="36"
+            height="36"
+            style="cursor: pointer; border: none"
+          >
+          <div id="g_id_onload" :class="[loading4 ? 'loading' : '']" />
         </a>
       </li>
       <li>
-        <a href="javascript:void(0)" style="display: inline-block" @click.stop="$f.connectBotWallet()"><img
-            src="@/assets/images/tg.png" width="53" height="56" >
+        <a
+          href="javascript:void(0)"
+          style="display: inline-block"
+          @click.stop="botStore.tgLogin()"
+          ><img src="@/assets/images/tg.png" width="53" height="56" >
         </a>
       </li>
     </ul>
-    <slot v-if="cType == 'login'" name="nav"/>
+    <slot v-if="cType == 'login'" name="nav" />
   </div>
   <loading
-v-model:active="loading3" :can-cancel="false" loader="dots" :opacity="0.2"
-    :backgroundColor="mode === 'light' ? '#fff' : '#131722'" color="var(--custom-primary-color)"
-    :is-full-page="false"/>
+    v-model:active="loading3"
+    :can-cancel="false"
+    loader="dots"
+    :opacity="0.2"
+    :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
+    color="var(--custom-primary-color)"
+    :is-full-page="false"
+  />
 </template>
 
-<script setup>
-import {ArrowUp,ArrowDown,Switch} from '@element-plus/icons-vue'
+<script setup lang="ts">
+import { ArrowUp, ArrowDown, Switch } from '@element-plus/icons-vue'
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-// import { useStore } from 'vuex';
-import { useI18n } from 'vue-i18n'
+import type { FormInstance, FormRules } from 'element-plus'
 import Cookies from 'js-cookie'
-// import sha256 from 'crypto-js/sha256'
-const botStore = useBotStore()
-const { isDark } = useThemeStore()
-const mode=computed(() => isDark?'dark':'light')
+import { ElMessage } from 'element-plus'
+import sha256 from 'crypto-js/sha256'
+// import { useI18n } from 'vue-i18n'
+import { storeToRefs } from 'pinia'
+type RuleForm = {
+  email: string;
+  verificationCode: string;
+  password: string;
+  confirmPassword: string;
+  refCode?: string;
+  agree: boolean;
+};
 
-const lang = useLocaleStore().locale
+// const { t } = useI18n()
+const userStore = useUserStore()
+const botStore = useBotStore()
+const {mode,lang} = storeToRefs(useGlobalStore())
+const { t } = useGlobalStore()
 const props = defineProps({
   cType: {
     type: String,
     required: true,
-    validator: (value) => {
+    validator: (value: string) => {
       return ['login', 'register'].includes(value)
     },
-  }
+  },
 })
 
 const emit = defineEmits(['update:cType'])
-
-// const store = useStore();
-const { t } = useI18n()
-
 const count = ref(60)
 const isCounting = ref(false)
 const loading = ref(false)
 const loading2 = ref(false)
 const loading3 = ref(false)
 const loading4 = ref(true)
-const timer = ref(null)
+const timer = ref<ReturnType<typeof setInterval> | undefined>(undefined)
 const loginType = ref('password')
 const showRefCode = ref(false)
-const formRef = ref(null)
+const formRef = ref<FormInstance>()
 
-const form = ref({
+const form = reactive<RuleForm>({
   email: '',
   verificationCode: '',
   password: '',
@@ -198,7 +301,7 @@ const form = ref({
 
 const refCode = ref(Cookies.get('refCode'))
 
-const rules = computed(() => {
+const rules = computed<FormRules<RuleForm>>(() => {
   return {
     email: [
       {
@@ -242,8 +345,12 @@ const rules = computed(() => {
   }
 })
 
-function validatePassword(rule, value, callback) {
-  if (value !== form.value.password) {
+function validatePassword(
+  rule: any,
+  value: string,
+  callback: (error?: Error) => void
+) {
+  if (value !== form.password) {
     callback(new Error(t('startConfirmPasswordError')))
   } else {
     callback()
@@ -251,28 +358,29 @@ function validatePassword(rule, value, callback) {
 }
 
 function startCountdown() {
-  formRef.value.validateField('email', (valid) => {
-    // if (valid) {
-    //   const lang = localStorage.language || Cookies.get("language") || "en";
-    //   store.dispatch("sendEmailCode", {
-    //     email: form.value.email,
-    //     language: lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en",
-    //     emailType: props.cType == "register" ? "register" : "login",
-    //     refCode: form.value.refCode || refCode.value,
-    //   })
-    //     .then(() => {
-    //       initCountdown();
-    //       console.log(`验证码已发送到 ${form.value.email}`);
-    //       loading2.value = false;
-    //     })
-    //     .catch((err) => {
-    //       store.commit('showMessage', { type: 'error', text: err });
-    //       loading2.value = false;
-    //     });
-    // } else {
-    //   console.log("邮箱格式不正确，无法发送验证码");
-    //   loading2.value = false;
-    // }
+  formRef?.value?.validateField('email', (valid) => {
+    if (valid) {
+      const lang = localStorage.language || Cookies.get('language') || 'en'
+      userStore
+        .sendEmailCode({
+          email: form.email,
+          language: lang == 'zh-cn' || lang == 'zh-tw' ? 'cn' : 'en',
+          emailType: props.cType == 'register' ? 'register' : 'login',
+          refCode: form.refCode || refCode.value,
+        })
+        .then(() => {
+          initCountdown()
+          console.log(`验证码已发送到 ${form.email}`)
+          loading2.value = false
+        })
+        .catch((err) => {
+          ElMessage.error(err)
+          loading2.value = false
+        })
+    } else {
+      console.log('邮箱格式不正确，无法发送验证码')
+      loading2.value = false
+    }
   })
 }
 
@@ -282,7 +390,10 @@ function initCountdown() {
     if (count.value > 0) {
       count.value--
     } else {
-      clearInterval(timer.value)
+      if (timer.value !== undefined) {
+        clearInterval(timer.value)
+        timer.value = undefined
+      }
       resetCountdown()
     }
   }, 1000)
@@ -299,77 +410,83 @@ function sendVerificationCode() {
 }
 
 function login() {
-  formRef.value.validate((valid) => {
-    // if (valid) {
-    //   const lang = localStorage.language || Cookies.get("language") || "en";
-    //   const req = loginType.value === "password"
-    //     ? store.dispatch("loginEmail", {
-    //       email: form.value.email,
-    //       password: sha256(form.value.password).toString(),
-    //       language: lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en",
-    //     })
-    //     : store.dispatch("emailCodeLogin", {
-    //       email: form.value.email,
-    //       code: form.value.verificationCode,
-    //       refCode: form.value.refCode || refCode.value,
-    //       language: lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en",
-    //     });
-
-    //   req
-    //     .then(() => {
-    //       loading.value = false;
-    //       store.commit("changeConnectVisible", false);
-    //     })
-    //     .catch((err) => {
-    //       store.commit('showMessage', { type: 'error', text: err });
-    //     })
-    //     .finally(() => {
-    //       loading.value = false;
-    //     });
-    // } else {
-    //   console.log("登录失败");
-    //   loading.value = false;
-    //   return false;
-    // }
+  formRef?.value?.validate((valid) => {
+    if (valid) {
+      // const lang = localStorage.language || Cookies.get("language") || "en";
+      const req =
+        loginType.value === 'password'
+          ? userStore.loginEmail({
+              email: form.email,
+              password: sha256(form.password).toString(),
+              // language: lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en",
+            })
+          : userStore.emailCodeLogin({
+              email: form.email,
+              code: form.verificationCode,
+              refCode: form.refCode || refCode.value,
+              // language: lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en",
+            })
+      req
+        .then(() => {
+          loading.value = false
+          // store.commit("changeConnectVisible", false);
+          botStore.changeConnectVisible(false)
+        })
+        .catch((err) => {
+          // store.commit('showMessage', { type: 'error', text: err });
+          ElMessage.error(err)
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    } else {
+      console.log('登录失败')
+      loading.value = false
+    }
   })
 }
 
 function register() {
-  formRef.value.validate((valid) => {
-    // if (valid) {
-    //   const lang = localStorage.language || Cookies.get("language") || "en";
-    //   const language = lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en";
-    //   store.dispatch("registerEmail", {
-    //     email: form.value.email,
-    //     password: sha256(form.value.password).toString(),
-    //     code: form.value.verificationCode,
-    //     language,
-    //     refCode: form.value.refCode || refCode.value,
-    //   })
-    //     .then(() => {
-    //       loading.value = false;
-    //       store.commit('showMessage', {
-    //         type: 'success',
-    //         text: language === "cn" ? "注册成功,去登录" : "Registration successful, go to log in"
-    //       });
-    //       setTimeout(() => {
-    //         emit('update:cType', 'login')
-    //       }, 1500);
-    //     })
-    //     .catch((err) => {
-    //       store.commit('showMessage', { type: 'error', text: err });
-    //     })
-    //     .finally(() => {
-    //       loading.value = false;
-    //     });
-    // } else {
-    //   console.log("注册失败");
-    //   loading.value = false;
-    //   return false;
-    // }
+  formRef?.value?.validate((valid) => {
+    if (valid) {
+      const lang = localStorage.language || Cookies.get('language') || 'en'
+      const language = lang == 'zh-cn' || lang == 'zh-tw' ? 'cn' : 'en'
+      userStore
+        .registerEmail({
+          email: form.email,
+          password: sha256(form.password).toString(),
+          code: form.verificationCode,
+          language,
+          refCode: form.refCode || refCode.value,
+        })
+        .then(() => {
+          loading.value = false
+          ElMessage.success(
+            language === 'cn'
+              ? '注册成功,去登录'
+              : 'Registration successful, go to log in'
+          )
+          // store.commit('showMessage', {
+          //   type: 'success',
+          //   text: language === 'cn' ? '注册成功,去登录' : 'Registration successful, go to log in'
+          // })
+          setTimeout(() => {
+            emit('update:cType', 'login')
+          }, 1500)
+        })
+        .catch((err) => {
+          ElMessage.error(err)
+          // store.commit('showMessage', { type: 'error', text: err })
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    } else {
+      console.log('注册失败')
+      loading.value = false
+    }
   })
 }
-
 function submitForm() {
   loading.value = true
   if (props.cType == 'login') {
@@ -379,35 +496,41 @@ function submitForm() {
   }
 }
 
-function handleCredentialResponse(response) {
+function handleCredentialResponse(response: any) {
   console.log('Encoded JWT ID Token: ' + response.credential)
   const lang = localStorage.language || Cookies.get('language') || 'en'
   const language = lang == 'zh-cn' || lang == 'zh-tw' ? 'cn' : 'en'
   loading3.value = true
-  // store.dispatch("loginGoogle", {
-  //   idToken: response.credential || "",
-  //   refCode: form.value.refCode || refCode.value,
-  // })
-  //   .then(() => {
-  //     store.commit('showMessage', {
-  //       type: 'success',
-  //       text: language === "cn" ? "登录成功" : "Log in successful"
-  //     });
-  //     loading3.value = false;
-  //     store.commit("changeConnectVisible", false);
-  //   })
-  //   .catch((err) => {
-  //     store.commit('showMessage', { type: 'error', text: err });
-  //   })
-  //   .finally(() => {
-  //     loading3.value = false;
-  //   });
+  userStore
+    .loginGoogle({
+      idToken: response.credential || '',
+      refCode: form.refCode || refCode.value,
+    })
+    .then(() => {
+      ElMessage.success(language === 'cn' ? '登录成功' : 'Log in successful')
+      // store.commit('showMessage', {
+      //   type: 'success',
+      //   text: language === 'cn' ? '登录成功' : 'Log in successful'
+      // })
+      loading3.value = false
+      botStore.changeConnectVisible(false)
+    })
+    .catch((err) => {
+      ElMessage.error(err)
+    })
+    .finally(() => {
+      loading3.value = false
+    })
 }
+
+// Add this type declaration at the top of your <script setup lang="ts"> section
 
 function initGoogleLogin() {
   if (!window.google) return
+  const google = window.google as any
   google.accounts.id.initialize({
-    client_id: '631329100197-b57e5f06avvas9cdojmlp9d7imst26u2.apps.googleusercontent.com',
+    client_id:
+      '631329100197-b57e5f06avvas9cdojmlp9d7imst26u2.apps.googleusercontent.com',
     callback: handleCredentialResponse,
   })
   google.accounts.id.renderButton(document.getElementById('g_id_onload'), {
@@ -417,8 +540,10 @@ function initGoogleLogin() {
     text: 'signin_with',
     size: 'large',
   })
-  const iframe = document.querySelector('#g_id_onload iframe')
-  const button = document.querySelector('#g_id_onload div[role="button"]')
+  const iframe = document.querySelector('#g_id_onload iframe') as HTMLElement
+  const button = document.querySelector(
+    '#g_id_onload div[role="button"]'
+  ) as HTMLElement
   if (button) {
     button.style = 'display: none;'
   }
@@ -457,14 +582,17 @@ onMounted(() => {
   }
 })
 
-// watch(() => form.value.email, (newEmail) => {
+// watch(() => form.email, (newEmail) => {
 //   store.email = newEmail;
 // });
 
-watch(() => botStore.connectVisible, (val) => {
-  formRef.value?.resetFields()
-  form.value.agree = false
-})
+watch(
+  () => botStore.connectVisible,
+  () => {
+    formRef.value?.resetFields()
+    form.agree = false
+  }
+)
 
 onBeforeUnmount(() => {
   clearInterval(timer.value)
@@ -522,16 +650,16 @@ onBeforeUnmount(() => {
   .btn {
     height: 48px;
 
-    :deep() &.el-button {
-      /* color: #000000;
-      background-color: #F5F5F5; */
-    }
+    /* :deep() &.el-button {
+      color: #000000;
+      background-color: #F5F5F5;
+    } */
 
-    :deep() &.el-button.is-disabled,
+    /* :deep() &.el-button.is-disabled,
     :deep() &.el-button.is-disabled:hover {
-      /* color: #000000;
-      background-color: rgb(248, 248, 248); */
-    }
+      color: #000000;
+      background-color: rgb(248, 248, 248);
+    } */
   }
 
   .el-link.el-link--primary {
@@ -548,7 +676,7 @@ onBeforeUnmount(() => {
     align-items: center;
   }
 
-  :deep() .el-checkbox__input.is-checked+.el-checkbox__label {
+  :deep() .el-checkbox__input.is-checked + .el-checkbox__label {
     color: #999;
   }
 
@@ -608,7 +736,7 @@ onBeforeUnmount(() => {
     font-weight: 400;
 
     a {
-      color: #F5F5F5;
+      color: #f5f5f5;
       display: inline-block;
       line-height: 16.8px;
     }
@@ -639,16 +767,16 @@ onBeforeUnmount(() => {
 .light {
   &.w-emailRegister {
     .btn {
-      :deep() &.el-button {
-        /* color: #F5F5F5;
-        background-color: #333333; */
-      }
+      /* :deep() &.el-button {
+        color: #F5F5F5;
+        background-color: #333333;
+      } */
 
-      :deep() &.el-button.is-disabled,
+      /* :deep() &.el-button.is-disabled,
       :deep() &.el-button.is-disabled:hover {
-        /* color: #F5F5F5;
-        background-color: #333333c2; */
-      }
+        color: #F5F5F5;
+        background-color: #333333c2;
+      } */
     }
 
     .el-link.el-link--primary {
@@ -656,7 +784,7 @@ onBeforeUnmount(() => {
       --el-link-hover-text-color: #333333;
     }
 
-    :deep() .el-checkbox__input.is-checked+.el-checkbox__label {
+    :deep() .el-checkbox__input.is-checked + .el-checkbox__label {
       color: #999;
 
       &::hover {

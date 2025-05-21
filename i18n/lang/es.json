@@ -81,5 +81,7 @@
   "minor": "Mínimo",
   "max1": "Máximo",
   "ss": "Hace segundos",
-  "enterAddress": "Ingresar dirección"
+  "enterAddress": "Ingresar dirección",
+  "registerBot": "Regístrese en la billetera de bot",
+  "SS": "Segundo"
 }

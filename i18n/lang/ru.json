@@ -97,7 +97,7 @@
   "unrealized_profit": "Нереализованный",
   "totalBuy2": "Куплено",
   "totalSell2": "Продано",
-   "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
   "loginBot": "Войти в бот -кошелек",
   "startEmailRequiredMsg": "Введите email",
   "startEmailError": "Введите действительный email.",
@@ -111,5 +111,18 @@
   "startVcodeLogin": "Вход по коду",
   "startForgetPassword": "Забыли пароль?",
   "startSubmit": "Подтвердить",
-  "startTg": "Или войти через"
+  "startTg": "Или войти через",
+  "registerBot": "Зарегистрируйтесь бот -кошелек",
+  "startBotFooter11": "Уже есть кошелек?",
+  "startBotFooter12": "Войти",
+  "startVerificationCode": "Код подтверждения",
+  "startCountDown": "Получить код",
+  "startConfirmPassword": "Подтвердите пароль",
+  "startInvitationCode": "Код приглашения (опционально)",
+  "startFooter1": "Я прочитал и согласен с",
+  "startFooter3": "и",
+  "startFooter2": "Условиями использования",
+  "startFooter4": "Политикой конфиденциальности",
+  "startPwdLogin": "Вход по паролю",
+  "SS": "С"
 }
