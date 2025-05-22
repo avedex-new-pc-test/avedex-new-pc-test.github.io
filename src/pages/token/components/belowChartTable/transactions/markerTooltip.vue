@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {getTxsUserBrief} from '~/api/token'
 import {BigNumber} from 'bignumber.js'
-import {getColorClass} from '~/utils'
 import dayjs from 'dayjs'
 
 const props = defineProps({
@@ -58,6 +57,16 @@ async function _getTxsUserBrief() {
     isLoading.value = false
   }
 }
+
+function getColorClass(val: string) {
+  if (Number(val) === 0) {
+    return 'color-#848E9C'
+  } else if (Number(val) > 0) {
+    return 'color-#12b886'
+  } else {
+    return 'color-#ff646d'
+  }
+}
 </script>
 
 <template>
@@ -69,6 +78,7 @@ async function _getTxsUserBrief() {
     virtual-triggering
     trigger="hover"
     raw-content
+    popper-class="[&&]:p-20px"
   >
     <template #content>
       <el-skeleton
@@ -172,6 +182,21 @@ async function _getTxsUserBrief() {
           style="margin:0"
         />
         <div class="flex justify-between">
+          <span class="color-[--d-999-l-666]">7D {{ $t('winRate2') }}:</span>
+          <span>{{ formatNumber(userBriefData.win_ratio) }}%</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="color-[--d-999-l-666]">7D {{ $t('profit2') }}:</span>
+          <span :class="`${getColorClass(userBriefData.profit)}`">
+            <template v-if="userBriefData.profit==='0'">--</template>
+            <template v-else-if="userBriefData.profit<0">-</template>${{ formatNumber(Math.abs(userBriefData.profit)) }}
+          </span>
+        </div>
+        <div class="flex justify-between">
+          <span class="color-[--d-999-l-666]">7D {{ $t('token') }}:</span>
+          <span>{{ formatNumber(userBriefData.token_txns) }}</span>
+        </div>
+        <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">{{ $t('walletAge') }}:</span>
           <TimerCount
             v-if="userBriefData.wallet_age && Number(formatTimeFromNow(userBriefData.wallet_age,true)) < 60"
@@ -208,7 +233,7 @@ async function _getTxsUserBrief() {
             <li
               v-for="(item) in userBriefData.top3_blue_chip"
               :key="item.token"
-              class="flex items-center"
+              class="flex items-center color-[--d-999-l-666]"
             >
               <TokenImg
                 :row="{
