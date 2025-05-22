@@ -6,7 +6,7 @@ import MarkerTooltip from './markerTooltip.vue'
 
 import {filterLanguage} from '~/pages/token/components/kLine/utils'
 import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse, type Profile} from '~/api/token'
-import {formatDate, getAddressAndChainFromId, getChainInfo} from '~/utils'
+import {formatDate, getAddressAndChainFromId, getChainInfo, getWSMessage} from '~/utils'
 import dayjs from 'dayjs'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
@@ -14,6 +14,8 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const {t} = useI18n()
 const {totalHolders, pairAddress, token} = storeToRefs(useTokenStore())
+const botStore = useBotStore()
+const wsStore = useWSStore()
 const route = useRoute()
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
@@ -73,16 +75,79 @@ const columns = computed(() => {
     {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', width: 70}]
     .filter(el => !el.hidden)
 })
+const listStatus = ref({
+  loadingTxs: false,
+  loadingLiq: false
+})
 const pairTxs = shallowRef<GetPairTxsResponse[]>([])
 const pairLiq = shallowRef<GetPairLiqResponse[]>([])
+const tableFilter = ref<{
+  timestamp: string[];
+  amountU: string[];
+  markerAddress: string;
+  tag_type: string;
+}>({
+  timestamp: [],
+  amountU: [],
+  markerAddress: '',
+  tag_type: ''
+})
+
+const filterTableListMap = {
+  all: () => [...pairTxs.value, ...pairLiq.value].toSorted((a, b) => b.time - a.time),
+  liquidity: () => pairLiq.value,
+  buy: () => pairTxs.value.filter(el => isBuy((el))),
+  sell: () => pairTxs.value.filter(el => !isBuy(el))
+}
+// 纯前端筛选
 const filterTableList = computed(() => {
-  return [...pairTxs.value, ...pairLiq.value].toSorted((a, b) => b.time - a.time)
+  let tableList: (GetPairTxsResponse | GetPairLiqResponse)[] = []
+  if (activeTab.value in filterTableListMap) {
+    tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
+  } else {
+    tableList = pairTxs.value
+  }
+  const {timestamp, amountU, markerAddress} = tableFilter.value
+  const [startTime, endTime] = timestamp || []
+  const [startVol, endVol] = amountU || []
+  if (startTime) {
+    tableList = tableList.filter(el => el.time >= Number(startTime))
+  }
+  if (endTime) {
+    tableList = tableList.filter(el => el.time <= Number(endTime))
+  }
+  if (markerAddress) {
+    tableList = tableList.filter(el => el.wallet_address === markerAddress)
+  }
+  if (startVol) {
+    tableList = tableList.filter(el => {
+      if ('type' in el) {
+        // 计算流动性的交易额
+        const vol = el.amount0 * el.token0_price_usd + el.amount1 * el.token1_price_usd
+        return vol >= Number(startVol)
+      } else {
+        return getAmount(el, true, true) >= Number(startVol)
+      }
+    })
+  }
+  if (endVol) {
+    tableList = tableList.filter(el => {
+      if ('type' in el) {
+        // 计算流动性的交易额
+        const vol = el.amount0 * el.token0_price_usd + el.amount1 * el.token1_price_usd
+        return vol <= Number(endVol)
+      } else {
+        return getAmount(el, true, true) <= Number(endVol)
+      }
+    })
+  }
+  return tableList
 })
 
 const txCount = shallowRef<{ [key: string]: number }>({})
 const tableView = ref({
   isShowDate: false,
-  isSwapPriceUSDT: true,
+  // isSwapPriceUSDT: true, 不常用，先删除
   isVolUSDT: true
 })
 const tableFilterVisible = ref({
@@ -92,15 +157,7 @@ const tableFilterVisible = ref({
 })
 const makerTooltip = ref()
 const currentRow = shallowRef<GetPairTxsResponse & { senderProfile: Profile }>({} as any)
-const tableFilter = shallowRef<{
-  timestamp: string[],
-  amountU: string[],
-  markerAddress: string
-}>({
-  timestamp: [],
-  amountU: [],
-  markerAddress: ''
-})
+
 const addressAndChain = computed(() => {
   const id = route.params.id as string
   if (id) {
@@ -115,19 +172,67 @@ watch(() => pairAddress, () => {
   if (pairAddress.value) {
     _getPairTxs()
     _getPairLiq()
+    initTxsAndLiqWs()
   }
 }, {
   immediate: true
 })
 
-function onTimestampConfirm(timestamp: string[]) {
+function initTxsAndLiqWs() {
+  const liqParams = {
+    jsonrpc: '2.0',
+    params: ['liq', pairAddress.value],
+    id: 1
+  }
+  wsStore.send({
+    ...liqParams,
+    method: 'unsubscribe'
+  })
+  wsStore.send({
+    ...liqParams,
+    method: 'subscribe'
+  })
+  wsStore.getWSInstance()?.onmessage(e => {
+    const msg = getWSMessage(e)
+    if (!msg) {
+      return
+    }
+    const {event, data} = msg
+    if (event == WSEventType.TX) {
+
+    } else if (event === WSEventType.LIQ) {
+      pairLiq.value.unshift(data)
+      if (pairLiq.value.length > 300) {
+        pairLiq.value.pop()
+      }
+    }
+  })
+}
+
+function onTimestampConfirm(timestamp: string[] = []) {
   tableFilterVisible.value.timestamp = false
   tableFilter.value.timestamp = timestamp
 }
 
+function confirmVolFilter(amountU: string[] = []) {
+  tableFilterVisible.value.amountU = false
+  tableFilter.value.amountU = amountU
+}
+
+function confirmMakersFilter(markerAddress = '') {
+  tableFilterVisible.value.markers = false
+  tableFilter.value.markerAddress = markerAddress
+}
+
 async function _getPairTxs() {
   try {
-    const res = await getPairTxs(pairAddress.value + '-' + addressAndChain.value.chain)
+    listStatus.value.loadingTxs = true
+    const {tag_type} = tableFilter.value
+    const getPairTxsParams = {
+      pair: pairAddress.value + '-' + addressAndChain.value.chain,
+      tag_type
+    }
+    const res = await getPairTxs(getPairTxsParams)
     pairTxs.value = (res || []).map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       const wallet_tagStr = val.wallet_tag_v2 || ''
@@ -152,15 +257,20 @@ async function _getPairTxs() {
     })
   } catch (e) {
     console.log('=>(transactions.vue:62) e', e)
+  } finally {
+    listStatus.value.loadingTxs = false
   }
 }
 
 async function _getPairLiq() {
   try {
+    listStatus.value.loadingLiq = true
     const res = await getPairLiq(pairAddress.value + '-' + addressAndChain.value.chain)
     pairLiq.value = res || []
   } catch (e) {
     console.log('=>(transactions.vue:155) e', e)
+  } finally {
+    listStatus.value.loadingLiq = false
   }
 }
 
@@ -317,26 +427,57 @@ function goBrowser(row: GetPairTxsResponse) {
     formatExplorerUrl(row.chain, row.transaction, 'tx')
   )
 }
+
+function setActiveTab(val: string) {
+  activeTab.value = val
+  if (val === '-100' && !botStore.evmAddress) {
+    throw new Error('')
+  }
+  tableFilter.value.tag_type = val
+  if (val !== 'liquidity') {
+    _getPairTxs()
+  } else {
+    _getPairLiq()
+  }
+}
+
+function setMakerAddress(address: string) {
+  tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
+}
 </script>
 
 <template>
   <div class="transactions">
-    <div class="flex items-center px-12px mb-10px whitespace-nowrap">
-      <a
-        v-for="(item) in tabs"
-        :key="item.value" href="javascript:;"
-        :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+    <div class="px-12px mb-10px flex justify-between">
+      <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
+        <a
+          v-for="(item) in tabs"
+          :key="item.value" href="javascript:;"
+          :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
          ${activeTab===item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]':''}`"
-        @click="activeTab=item.value"
-      >
-        {{ item.label }}
-      </a>
+          @click="setActiveTab(item.value)"
+        >
+          {{ item.label }}
+        </a>
+      </div>
+      <div class="flex items-center color-#FFA622 text-12px">
+        <Icon name="custom:stop/"/>
+        <span class="ml-3px">{{ $t('paused') }}</span>
+      </div>
     </div>
-    <div class="text-12px">
+    <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
       <AveTable
         :data="filterTableList"
         :columns="columns"
         class="h-560px"
+        :rowEventHandlers="{
+          onMouseenter:()=>{
+
+          },
+          onMouseleave:()=>{
+
+          }
+        }"
       >
         <template #header-time>
           <div class="flex items-center gap-2px">
@@ -348,6 +489,7 @@ function goBrowser(row: GetPairTxsResponse) {
             />
             <TableDateFilter
               v-model:visible="tableFilterVisible.timestamp"
+              :modelValue="tableFilter.timestamp"
               @confirm="onTimestampConfirm"
             />
           </div>
@@ -401,23 +543,23 @@ function goBrowser(row: GetPairTxsResponse) {
         <template #header-swapPrice>
           <div class="flex items-center gap-2px">
             <span>{{ $t('swapPrice') }}</span>
-            <Icon
-              :name="`${tableView.isSwapPriceUSDT?'custom:u':'custom:b'}`"
-              class="color-[--d-666-l-999] cursor-pointer"
-              @click.self="tableView.isSwapPriceUSDT=!tableView.isSwapPriceUSDT"
-            />
+            <!--<Icon-->
+            <!--  :name="`${tableView.isSwapPriceUSDT?'custom:u':'custom:b'}`"-->
+            <!--  class="color-[&#45;&#45;d-666-l-999] cursor-pointer"-->
+            <!--  @click.self="tableView.isSwapPriceUSDT=!tableView.isSwapPriceUSDT"-->
+            <!--/>-->
           </div>
         </template>
         <template #cell-swapPrice="{row}">
           <template v-if="row.type !== undefined">- -</template>
           <div v-else :class="getRowColor(row)">
-            <template v-if="tableView.isSwapPriceUSDT">
+            <!--<template v-if="tableView.isSwapPriceUSDT">-->
               ${{ formatNumber(getPrice(row), 4) }}
-            </template>
-            <template v-else>
-              {{ formatNumber(getPrice(row, true), 4) }}
-              <span class="color-[--d-999-l-666]">{{ getChainInfo(row.chain)?.main_name }}</span>
-            </template>
+            <!--</template>-->
+            <!--<template v-else>-->
+            <!--  {{ formatNumber(getPrice(row, true), 4) }}-->
+            <!--  <span class="color-[&#45;&#45;d-999-l-666]">{{ getChainInfo(row.chain)?.main_name }}</span>-->
+            <!--</template>-->
           </div>
         </template>
         <template #cell-amountB="{row}">
@@ -450,6 +592,8 @@ function goBrowser(row: GetPairTxsResponse) {
             />
             <VolFilter
               v-model:visible="tableFilterVisible.amountU"
+              :modelValue="tableFilter.amountU"
+              @confirm="confirmVolFilter"
             />
           </div>
         </template>
@@ -471,7 +615,7 @@ function goBrowser(row: GetPairTxsResponse) {
             <template v-else>
               ${{ formatNumber(getAmount(row, true, false), 3) }}
               <span class="color-[--d-999-l-666]">
-                {{ getChainInfo(row.chain)?.main_name }}
+                &nbsp;{{ getChainInfo(row.chain)?.main_name }}
               </span>
             </template>
           </div>
@@ -493,11 +637,12 @@ function goBrowser(row: GetPairTxsResponse) {
           </div>
         </template>
         <template #header-makers>
-          <span>{{ $t('makers') }}</span>
+          <span class="mr-2px">{{ $t('makers') }}</span>
           <MakersFilter
             v-model:visible="tableFilterVisible.markers"
-            :markerAddress="tableFilter.markerAddress"
+            :modelValue="tableFilter.markerAddress"
             :chain="addressAndChain.chain"
+            @confirm="confirmMakersFilter"
           />
         </template>
         <template #cell-makers="{row}">
@@ -516,7 +661,9 @@ function goBrowser(row: GetPairTxsResponse) {
             <Icon
               v-if="bigWallet(row)"
               v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
-              name="custom:big"/>
+              name="custom:big"
+              class="mr-3px"
+            />
           </template>
           <SignalTags
             tagClass="mr-3px"
@@ -541,7 +688,8 @@ function goBrowser(row: GetPairTxsResponse) {
             </UserRemark>
             <Icon
               name="custom:filter"
-              :class="`${true?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+              :class="`${tableFilter.markerAddress?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+              @click.self.stop="setMakerAddress(row.wallet_address)"
             />
           </div>
         </template>
@@ -560,9 +708,9 @@ function goBrowser(row: GetPairTxsResponse) {
             >
             <img
               v-else
+              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
               class="w-16px h-16px cursor-pointer"
               :src="formatIconSwap(row.amm)"
-              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
               alt=""
             >
             <Icon

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import TopLeftTable from './topLeftTable.vue'
-import {useWindowSize, useStorage} from '@vueuse/core'
+import {useWindowSize} from '@vueuse/core'
 import BottomLeftTable from '~/pages/token/components/left/bottomLeftTable.vue'
 
-const topLeftHeight = useStorage('topLeftHeight', 479)
+const topLeftHeight = shallowRef(370)
 const canDrag = shallowRef(false)
 const {height} = useWindowSize()
 
@@ -41,9 +41,11 @@ function drag(e: MouseEvent) {
     <div class="relative">
       <TopLeftTable :height="topLeftHeight"/>
       <div
-          class="absolute bottom-0 left-0 cursor-row-resize w-full
-      py-2px bg-[--d-000-l-F6F6F6]
-    " @mousedown.stop.prevent="drag"/>
+        class="w-full cursor-row-resize bg-[--d-2D3037-l-F5F5F5] flex items-center justify-center h-6px"
+        @mousedown.stop.prevent="drag"
+      >
+        <Icon name="custom:drag" class="text-4px color-#959A9F"/>
+      </div>
     </div>
     <BottomLeftTable :topLeftHeight="topLeftHeight"/>
   </div>

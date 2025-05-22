@@ -77,5 +77,14 @@
   "minor": "Mínimo",
   "max1": "Máximo",
   "ss": "s atrás",
-  "enterAddress": "Digite o endereço "
+  "enterAddress": "Digite o endereço ",
+  "campaignTitle": "Safe, Professional, Fastest, Most Comprehensive",
+  "loginBot": "Faça login na carteira de bot",
+  "register": "Inscrever-se",
+  "startForgetPassword": "Esqueceu sua senha?",
+  "registerBot": "Inscreva a carteira BOT",
+  "SS": "SS",
+  "startResetTitle": "Defina a senha",
+  "connectChainWallet": "Conecte a carteira",
+  "importAddress": "Ver endereço "
 }

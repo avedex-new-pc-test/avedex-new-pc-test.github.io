@@ -70,7 +70,7 @@
                       :style="{ color: filterTag(item.tag_type)?.color }"
                     /> -->
                     <Icon
-                      class="dot iconfont font-10 mr-5 color-red-6"
+                      class="dot iconfont font-10 mr-5px color-red-6"
                       :name="filterTag(item.tag_type)?.icon"
                       :style="{ color: filterTag(item.tag_type)?.color }"
                     />
@@ -86,16 +86,16 @@
               </el-tooltip>
             </div>
           </div>
-          <div class="flex-between mt_10">
+          <div class="flex-between mt-10px">
             <div>
-              <div class="flex-start mt_10">
+              <div class="flex-start mt-10px">
                 <!-- <i
-                  class="dot iconfont font-10 mr-5"
+                  class="dot iconfont font-10 mr-5px"
                   :class="filterTag(1)?.icon"
                   :style="{ color: filterTag(1)?.color }"
                 /> -->
                 <Icon
-                  class="dot iconfont font-10 mr-5 color-red-6"
+                  class="dot iconfont font-10 mr-5px color-red-6"
                   :name="filterTag(1)?.icon"
                   :style="{ color: filterTag(1)?.color }"
                 />
@@ -103,14 +103,14 @@
                   list?.filter((i) => i.tag_type == 1)?.length || 0
                 }}
               </div>
-              <div class="flex-start mt_10">
+              <div class="flex-start mt-10px">
                 <!-- <i
-                  class="dot iconfont font-10 mr-5"
+                  class="dot iconfont font-10 mr-5px"
                   :class="filterTag(3)?.icon"
                   :style="{ color: filterTag(3)?.color }"
                 /> -->
                 <Icon
-                  class="dot iconfont font-10 mr-5 color-red-6"
+                  class="dot iconfont font-10 mr-5px color-red-6"
                   :name="filterTag(3)?.icon"
                   :style="{ color: filterTag(3)?.color }"
                 />
@@ -120,14 +120,14 @@
               </div>
             </div>
             <div>
-              <div class="flex-start mt_10">
+              <div class="flex-start mt-10px">
                 <!-- <i
-                  class="dot iconfont font-10 mr-5"
+                  class="dot iconfont font-10 mr-5px"
                   :class="filterTag(2)?.icon"
                   :style="{ color: filterTag(2)?.color }"
                 /> -->
                 <Icon
-                  class="dot iconfont font-10 mr-5 color-red-6"
+                  class="dot iconfont font-10 mr-5pxpx color-red-6"
                   :name="filterTag(2)?.icon"
                   :style="{ color: filterTag(2)?.color }"
                 />
@@ -135,9 +135,9 @@
                   list?.filter((i) => i.tag_type == 2)?.length || 0
                 }}
               </div>
-              <div class="flex-start mt_10">
+              <div class="flex-start mt-10px">
                 <Icon
-                  class="dot iconfont font-10 mr-5 color-red-6"
+                  class="dot iconfont font-10 mr-5px color-red-6"
                   :name="filterTag(4)?.icon"
                   :style="{ color: filterTag(4)?.color, 'margin-top': '2px' }"
                 />
@@ -156,9 +156,9 @@
             alt=""
             srcset=""
           />
-          <span class="ml-5 font-14">Ave.ai</span>
+          <span class="ml-5px font-14">Ave.ai</span>
         </div>
-        <span class="mt_5 block" style="font-size: 10px; color: #959a9f">
+        <span class="mt_5px block" style="font-size: 10px; color: #959a9f">
           {{ t('campaignTitle') }}
         </span>
       </div>
@@ -196,22 +196,22 @@ function filterTag(type) {
   const obj = {
     1: {
       color: '#12B886',
-      icon: 'custom-top50Holders',
+      icon: 'custom-top50-holders',
       text: t('top50Holders'),
     },
     2: {
       color: '#00B00F',
-      icon: 'custom-top50Holders',
+      icon: 'custom-top50-holders',
       text: t('top50Increase'),
     },
     3: {
       color: '#F6465D',
-      icon: 'custom-top50SSoldOut',
+      icon: 'custom-top50-sold',
       text: t('top50SSoldOut'),
     },
     4: {
       color: '#F6465D',
-      icon: 'custom-top50SSoldOut',
+      icon: 'custom-top50-partial',
       text: t('top50PartialSale'),
     },
   }

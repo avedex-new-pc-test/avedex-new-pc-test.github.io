@@ -1,22 +1,24 @@
 <script setup lang="ts">
-import THead from '~/pages/token/components/left/tHead.vue'
-import {approve, getApprove, getTokenBalance, getUserBalance, type GetUserBalanceResponse} from '~/api/swap'
-import BigNumber from 'bignumber.js'
+import THead from './tHead.vue'
+import {getUserBalance, type GetUserBalanceResponse} from '~/api/swap'
 
 const {t} = useI18n()
-const {evmAddress, userInfo, getWalletAddress} = useBotStore()
-let userIds = []
-if (userInfo) {
-  userIds = userInfo.addresses.map(({address, chain}) => address + '-' + chain)
+const botStore = useBotStore()
+let userIds: string[] = []
+if (botStore.userInfo) {
+  userIds = botStore.userInfo.addresses.map(({address, chain}) => address + '-' + chain)
 }
-const tableFilter = shallowRef({
+const tableFilter = ref({
   hide_risk: 0,
   hide_small: 0,
   user_ids: userIds
 })
-const loadingSwap = shallowRef<{ [key: number]: boolean }>({})
+const loadingSwap = shallowRef<{ [key: string]: boolean }>({})
 const props = defineProps({
-  height: [Number, String]
+  height: {
+    type: [Number, String],
+    default: 370
+  }
 })
 const scrollbarHeight = computed(() => {
   return Number(props.height) - 110
@@ -116,58 +118,58 @@ function getColor(val: number) {
   }
 }
 
-async function handleSellAmount(row: GetUserBalanceResponse) {
-  try {
-    loadingSwap.value[row.index] = true
-    const tokens = await getTokenBalance({
-      chain: row.chain,
-      tokens: [row.token],
-      walletAddress: getWalletAddress(row.chain)
-    })
-    if (!tokens || !tokens[0]) {
-      return
-    }
-    const t = tokens[0]
-    row.balance = t.balance || 0
-    row.balance_usd = new BigNumber(t.balance || 0).times(row.current_price_usd || 0).toFixed()
-    row.decimals = t.decimals || row.decimals
-    if (!t.balance) {
-      ElNotification({
-        title: t('error'),
-        type: 'error',
-        message: t('insufficientBalance')
-      })
-    } else {
-      checkApproveAndApprove(row)
-    }
-  } catch (e) {
-    console.log('=>(positionsTable.vue:126) e', e)
-  } finally {
-    loadingSwap.value[row.index] = false
-  }
-}
-
-async function checkApproveAndApprove(row: GetUserBalanceResponse) {
-  const owner = getWalletAddress(row.chain)
-  try {
-    const res = await getApprove({
-      chain: row.chain,
-      owner,
-      token: row.token
-    })
-    if (res === '0') {
-      const notifyDom = null
-      const res = await approve({
-        batchId: Date.now().toString(),
-        chain: row.chain,
-        tokenAddress: row.token,
-        creatorAddress: [owner],
-      })
-    }
-  } catch (e) {
-
-  }
-}
+// async function handleSellAmount(row: GetUserBalanceResponse) {
+//   try {
+//     loadingSwap.value[row.index] = true
+//     const tokens = await getTokenBalance({
+//       chain: row.chain,
+//       tokens: [row.token],
+//       walletAddress: botStore.getWalletAddress(row.chain)
+//     })
+//     if (!tokens || !tokens[0]) {
+//       return
+//     }
+//     const t = tokens[0]
+//     row.balance = t.balance || 0
+//     row.balance_usd = new BigNumber(t.balance || 0).times(row.current_price_usd || 0).toFixed()
+//     row.decimals = t.decimals || row.decimals
+//     if (!t.balance) {
+//       ElNotification({
+//         title: t('error'),
+//         type: 'error',
+//         message: t('insufficientBalance')
+//       })
+//     } else {
+//       checkApproveAndApprove(row)
+//     }
+//   } catch (e) {
+//     console.log('=>(positionsTable.vue:126) e', e)
+//   } finally {
+//     loadingSwap.value[row.index] = false
+//   }
+// }
+//
+// async function checkApproveAndApprove(row: GetUserBalanceResponse) {
+//   const owner = botStore.getWalletAddress(row.chain)
+//   try {
+//     const res = await getApprove({
+//       chain: row.chain,
+//       owner,
+//       token: row.token
+//     })
+//     if (res === '0') {
+//       const notifyDom = null
+//       const res = await approve({
+//         batchId: Date.now().toString(),
+//         chain: row.chain,
+//         tokenAddress: row.token,
+//         creatorAddress: [owner],
+//       })
+//     }
+//   } catch (e) {
+//
+//   }
+// }
 </script>
 
 <template>
@@ -190,7 +192,7 @@ async function checkApproveAndApprove(row: GetUserBalanceResponse) {
         {{ $t('hideSmallAssets1') + '<1USD' }}
       </el-checkbox>
       <NetSelect
-        v-if="evmAddress"
+        v-if="botStore.evmAddress"
         v-model:userIds="tableFilter.user_ids"
         @update:user-ids="_getUserBalance"
       />
@@ -204,12 +206,12 @@ async function checkApproveAndApprove(row: GetUserBalanceResponse) {
       :height="scrollbarHeight"
     >
       <div
-        :infinite-scroll-disabled="listStatus.finished"
+        :infinite-scroll-disabled="listStatus.finished|| listStatus.loading"
         infinite-scroll-distance="200"
         :infinite-scroll-delay="10"
         :infinite-scroll-immediate="false"
       >
-        <div v-loading="listStatus.loading && listStatus.pageNo===1" class="px-10px pb-20px">
+        <div class="px-10px pb-20px">
           <div v-for="(row,$index) in listData" :key="$index" class="text-12px flex justify-between py-10px min-h-35px">
             <div class="flex-[1.5] flex items-center">
               <TokenImg
@@ -257,10 +259,9 @@ async function checkApproveAndApprove(row: GetUserBalanceResponse) {
             </div>
             <div class="flex-1 flex justify-end">
               <el-button
-                v-if="evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
+                v-if="botStore.evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
                 size="small"
                 :loading="loadingSwap[row.index]"
-                @click="handleSellAmount(row)"
               >
                 {{ $t('sellAll') }}
               </el-button>
@@ -269,8 +270,9 @@ async function checkApproveAndApprove(row: GetUserBalanceResponse) {
           </div>
         </div>
         <div
-          v-show="listStatus.loading && listStatus.pageNo!==1"
-          class="color-#959a9f text-12px text-center">
+          v-if="listStatus.loading"
+          class="color-#959a9f text-12px text-center"
+        >
           {{ $t('loading') }}
         </div>
       </div>

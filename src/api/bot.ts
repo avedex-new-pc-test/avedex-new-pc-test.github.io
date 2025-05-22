@@ -28,11 +28,16 @@ export function login(data: {
     body: newData,
   })
 }
-
+//  "emailType":"register",
+//   "email":"xxx@xxx.com",
+//   "refCode":"123321", -> 邀请码
+//   "language":"cn",
+//   "source": "ios" -> 客户端
 export function sendEmailCode(data: {
   email: string
   language?: string
   emailType?: string
+  refCode?: string
 }) {
   const { $api } = useNuxtApp()
   return $api('/botapi/user/sendEmailCode', {
@@ -40,7 +45,8 @@ export function sendEmailCode(data: {
     body: {
       email: data.email,
       language: data.language || 'cn',
-      emailType: data.emailType || 'register'
+      emailType: data.emailType || 'register',
+      refCode: data.refCode
     },
     // query: {
 
@@ -75,7 +81,6 @@ export function registerEmail(data: {
 export function loginEmail(data: {
   email: string
   password: string
-  language?: string
 }): Promise<{
   accessToken: string
   refreshToken: string
@@ -148,7 +153,7 @@ export function updateEmailPassword(data: {
 // 谷歌登录
 export function googleLogin(data: {
   idToken: string
-  refCode: string
+  refCode?: string
 }): Promise<{
   accessToken: string
   refreshToken: string
@@ -227,7 +232,7 @@ export function bindEmailAccount(data: {
   email: string
   code: string
   password: string
-  refCode: string
+  refCode?: string
 }) {
   const { $api } = useNuxtApp()
   return $api('/botapi/user/bindEmailAccount', {

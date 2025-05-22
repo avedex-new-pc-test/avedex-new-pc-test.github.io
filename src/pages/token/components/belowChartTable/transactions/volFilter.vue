@@ -1,7 +1,11 @@
 <script setup lang="ts">
 const {isDark} = useThemeStore()
 const props = defineProps({
-  visible: Boolean
+  visible: Boolean,
+  modelValue: {
+    type: Array,
+    default: () => []
+  }
 })
 const emit = defineEmits(['update:visible', 'confirm', 'reset'])
 
@@ -14,7 +18,7 @@ const computedVisible = computed({
   }
 })
 const filterArray = ref<(undefined | number)[]>([])
-const isActive = computed(() => filterArray.value.filter(el => !!el).length > 0)
+const isActive = computed(() => props.modelValue.filter(el => !!el).length > 0)
 
 function onBlur(index: number) {
   const min = Number(filterArray.value[0])
@@ -78,14 +82,14 @@ function onBlur(index: number) {
         <el-button
           class="h-30px flex-1 m-l-auto"
           :color="isDark ? '#333':'#F2F2F2'"
-          @click="emit('reset')"
+          @click="filterArray.length=0;emit('confirm')"
         >
           {{ $t('reset') }}
         </el-button>
         <el-button
           class="h-30px flex-1 m-l-auto"
           :color="isDark ? '#F5F5F5':'#222'"
-          @click="emit('confirm',filterArray)"
+          @click="emit('confirm',filterArray.slice())"
         >
           {{ $t('confirm') }}
         </el-button>

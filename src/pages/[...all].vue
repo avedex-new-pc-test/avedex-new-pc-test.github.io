@@ -2,7 +2,7 @@
 // 未匹配的路由跳转到首页
 definePageMeta({
   middleware: defineNuxtRouteMiddleware(() => {
-    return navigateTo('/')
+    return navigateTo('/', { external: true })
   })
 })
 </script>

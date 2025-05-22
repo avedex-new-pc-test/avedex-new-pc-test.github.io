@@ -183,14 +183,17 @@ export interface GetPairTxsResponse {
 }
 
 // 交易历史
-export function getPairTxs(pair: string, address?: string): Promise<GetPairTxsResponse[]> {
+export function getPairTxs(query: {
+  pair: string,
+  tag_type?: string,
+  maker?: string,
+  time_min?: string,
+  time_max?: string
+}): Promise<GetPairTxsResponse[]> {
   const {$api} = useNuxtApp()
-  return $api(`/v1api/v5/pairs/${pair}/txs`, {
+  return $api(`/v1api/v5/pairs/${query.pair}/txs`, {
     method: 'get',
-    params: {
-      address: address,
-      pair,
-    },
+    query
   })
 }
 
@@ -282,7 +285,11 @@ export interface GetTxsUserBriefResponse {
   realized_profit: string;
   total_profit: string;
   total_profit_ratio: string;
+  profit: string;
+  profit_ratio: string;
+  win_ratio: string;
   wallet_age: string;
+  token_txns: string;
   top3_blue_chip: Top3BlueChip[];
 }
 
