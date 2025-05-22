@@ -9,7 +9,6 @@ import {
 import TokenImg from '~/components/tokenImg.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import THead from '~/pages/token/components/left/tHead.vue'
-import {getColorClass} from '~/utils'
 
 const {t} = useI18n()
 const props = defineProps({
@@ -21,7 +20,7 @@ const props = defineProps({
 const scrollbarHeight = computed(() => {
   return Number(props.height) - 110
 })
-const {evmAddress} = useBotStore()
+const botStore = useBotStore()
 const editVisible = shallowRef(false)
 const loading = shallowRef(false)
 const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
@@ -33,7 +32,7 @@ const sort = shallowRef<{
   activeSort: 0,
   sortBy: null
 })
-const listStatus = shallowRef({
+const listStatus = ref({
   finished: false,
   loading: false,
   pageNo: 1
@@ -63,7 +62,7 @@ const sortedFavList = computed(() => {
   if (sort.value.activeSort === 0 || !sort.value.sortBy) {
     return favoritesList.value
   }
-  return [...favoritesList.value].sort((a, b) => {
+  return favoritesList.value.toSorted((a: any, b: any) => {
     if (sort.value.sortBy === 'symbol') {
       const codeB = b[sort.value.sortBy][0].toLowerCase().charCodeAt(0) || 0
       const codeA = a[sort.value.sortBy][0].toLowerCase().charCodeAt(0) || 0
@@ -75,18 +74,18 @@ const sortedFavList = computed(() => {
 })
 
 onMounted(() => {
-  if (evmAddress) {
+  if (botStore.evmAddress) {
     _getUserFavoriteGroups()
   }
 })
-watch(() => evmAddress, () => {
+watch(() => botStore.evmAddress, () => {
   _getUserFavoriteGroups()
 })
 
 async function _getUserFavoriteGroups() {
   try {
     loading.value = true
-    const res = await getUserFavoriteGroups(evmAddress)
+    const res = await getUserFavoriteGroups(botStore.evmAddress)
     userFavoriteGroups.value = [{
       group_id: 0,
       name: t('defaultGroup')
@@ -113,11 +112,10 @@ function setActiveTab(groupId: number) {
 }
 
 async function loadMoreFavorites() {
-  const loadingInstance = ElLoading.service({target: '#favLoading'})
   try {
     listStatus.value.loading = true
     const pageNo = listStatus.value.pageNo
-    const res = await getFavoriteList(activeTab.value, pageNo, evmAddress)
+    const res = await getFavoriteList(activeTab.value, pageNo, botStore.evmAddress)
     if (Array.isArray(res) && res?.length > 0) {
       const list = res.map(i => ({
         ...i,
@@ -151,7 +149,6 @@ async function loadMoreFavorites() {
     console.log('=>(favoriteTable.vue:106) (e)', (e))
   } finally {
     listStatus.value.loading = false
-    loadingInstance.close()
   }
 }
 
@@ -159,10 +156,20 @@ function resetListStatus() {
   listStatus.value.finished = false
   listStatus.value.pageNo = 1
 }
+
+function getColorClass(val: number) {
+  if (val === 0) {
+    return 'color-#848E9C'
+  } else if (val > 0) {
+    return 'color-#12b886'
+  } else {
+    return 'color-#ff646d'
+  }
+}
 </script>
 
 <template>
-  <div id="favLoading">
+  <div>
     <div class="flex items-center justify-between pr-15px pl-12px mt-10px">
       <div
         class="flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
@@ -196,7 +203,7 @@ function resetListStatus() {
         :infinite-scroll-delay="10"
         :infinite-scroll-immediate="false"
       >
-        <div v-loading="listStatus.loading && listStatus.pageNo===1" class="pb-20px">
+        <div class="pb-20px">
           <NuxtLink
             v-for="(row, $index) in sortedFavList"
             :key="$index"
@@ -233,8 +240,9 @@ function resetListStatus() {
           </NuxtLink>
         </div>
         <div
-          v-show="listStatus.loading && listStatus.pageNo!==1"
-          class="color-#959a9f text-12px text-center">
+          v-if="listStatus.loading"
+          class="color-#959a9f text-12px text-center"
+        >
           {{ $t('loading') }}
         </div>
       </div>

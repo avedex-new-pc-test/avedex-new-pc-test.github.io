@@ -129,6 +129,7 @@
   "startResetTitle": "Đặt mật khẩu",
   "startResetTitle2": "Mã đã được gửi đến email của bạn",
   "startResetTip": "Nếu không nhận được mã xác minh vui lòng kiểm tra thư rác",
+  "paused": "Tạm dừng",
   "tgBotWallet": "Ví BOT",
   "connectChainWallet": "Kết nối ví",
   "importAddress": "Địa chỉ theo dõi",

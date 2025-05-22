@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps({
   visible: Boolean,
-  markerAddress: {
+  modelValue: {
     type: String,
     default: ''
   },
@@ -23,6 +23,10 @@ const computedVisible = computed({
     emit('update:visible', val)
   }
 })
+
+watch(() => props.modelValue, () => {
+  tempAddress.value = props.modelValue
+})
 </script>
 
 <template>
@@ -35,7 +39,7 @@ const computedVisible = computed({
     <template #reference>
       <Icon
         name="custom:filter"
-        :class="`${true?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+        :class="`${modelValue?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
       />
     </template>
     <template #default>
@@ -51,7 +55,7 @@ const computedVisible = computed({
         class="h-30px mt-20px w-full"
         size="default"
         :color="isDark ? '#333':'#F2F2F2'"
-        @click="emit('confirm',getWalletAddress(chain))"
+        @click="tempAddress=getWalletAddress(chain)||''"
       >
         {{ $t('filterWallet') }}
       </el-button>
@@ -59,7 +63,7 @@ const computedVisible = computed({
         <el-button
           class="h-30px flex-1 m-l-auto"
           :color="isDark ? '#333':'#F2F2F2'"
-          @click="emit('reset')"
+          @click="tempAddress='';emit('confirm')"
         >
           {{ $t('reset') }}
         </el-button>

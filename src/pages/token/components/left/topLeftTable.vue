@@ -3,8 +3,12 @@ import FavoriteTable from './favoriteTable.vue'
 
 const {t} = useI18n()
 defineProps({
-  height: [Number, String]
+  height: {
+    type: [Number, String],
+    default: 370
+  }
 })
+const botStore = useBotStore()
 const activeTab = shallowRef<keyof typeof components>('FavoriteTable')
 const tabs = shallowRef([
   {name: t('favorites'), component: 'FavoriteTable' as const},
@@ -36,7 +40,17 @@ const Component = computed(() => {
         {{ item.name }}
       </a>
     </div>
-    <component :is="Component" :height="height"/>
+    <component
+      :is="Component"
+      v-if="botStore.evmAddress"
+      :height="height"
+    />
+    <div
+      v-else
+      :style="{height:`${height}px`}"
+    >
+      空空如也
+    </div>
   </div>
 </template>
 

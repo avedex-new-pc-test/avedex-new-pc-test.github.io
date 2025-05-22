@@ -14,3 +14,22 @@ export const MAIN_COIN: {
 
 export const upColor = ['#12B886']
 export const downColor = ['#F6465D']
+// WebSocket 事件类型常量
+export const WSEventType = {
+  KLINE: 'kline',
+  SWITCH_MAIN_PAIR: 'switch_main_pair',
+  TX: 'tx',
+  LIQ: 'liq',
+  PRICE: 'price',
+  PRICE_NEW: 'price-new',
+  PRICE_GAINER: 'price-gainer',
+  PRICE_EXTRA: 'price_extra',
+  PUMPSTATE: 'pumpstate',
+  PRICEV2: 'pricev2',
+  TGBOT: 'tgbot',
+  ASSET: 'asset',
+  MONITOR: 'monitor',
+  GOLD_SIGNAL: 'gold_signal',
+  SIGNALSV2_PUBLIC_MONITOR: 'signalsv2_public_monitor',
+  PUBLIC_PORTRAIT: 'public_portrait',
+}

@@ -129,6 +129,7 @@
   "startResetTitle": "Установите пароль",
   "startResetTitle2": "Код отправлен на вашу почту",
   "startResetTip": "Если код не пришел проверьте папку спам.",
+  "paused": "Приостановлено",
   "tgBotWallet": "BOT кошелек",
   "connectChainWallet": "Подключите кошелек",
   "importAddress": "Адрес просмотра",

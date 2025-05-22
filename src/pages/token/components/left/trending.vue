@@ -6,7 +6,10 @@ import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
 
 defineProps({
-  scrollbarHeight: Number
+  scrollbarHeight: {
+    type: Number,
+    required: true
+  }
 })
 const {t} = useI18n()
 onMounted(() => {
