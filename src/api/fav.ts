@@ -199,6 +199,16 @@ function removeFavorite(
     },
   })
 }
+function getCheckFavoriteGroup(token_id: string, address: string) {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/tokens/checkfavoritegroup', {
+    method: 'get',
+    params: {
+      token_id,
+      address,
+    },
+  })
+}
 
 export {
   getUserFavoriteGroups,
@@ -214,6 +224,7 @@ export {
   addFavoriteGroup,
   getFavoriteCheck,
   addFavorite,
-  removeFavorite
+  removeFavorite,
+  getCheckFavoriteGroup
 }
 export type {GetUserFavoriteGroupsResponse, GetFavListResponse}

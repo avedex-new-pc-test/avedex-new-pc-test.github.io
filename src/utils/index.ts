@@ -466,7 +466,6 @@ export function formatIconTag(src: string) {
     ? `${urlPrefix}signals/${src}.png`
     : IconUnknown
 }
-
 export function formatImgUrl(type: string, src: string) {
   if (!type || !src) {
     return IconUnknown
