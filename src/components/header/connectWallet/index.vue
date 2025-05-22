@@ -26,8 +26,7 @@
             <div>
               <div
                 v-show="botStore.connectWalletTab == 0"
-                class="text-14px text-center"
-                style="min-height: 200px; color: var(--a-text-1-color)"
+                class="text-14px text-center min-h-200px"
               >
                 <emailRegisterAndLogin 
                   ref="loginForm" 
