@@ -96,5 +96,6 @@
   "position1": "Позиция",
   "unrealized_profit": "Нереализованный",
   "totalBuy2": "Куплено",
-  "totalSell2": "Продано"
+  "totalSell2": "Продано",
+  "paused": "Приостановлено"
 }

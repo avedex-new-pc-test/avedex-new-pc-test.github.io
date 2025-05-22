@@ -553,13 +553,3 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
   }
   return useRemarksStore().getRemarkByAddress({address, chain})
 }
-
-export function getColorClass(val: number) {
-  if (val === 0) {
-    return 'color-#848E9C'
-  } else if (val > 0) {
-    return 'color-#12b886'
-  } else {
-    return 'color-#ff646d'
-  }
-}

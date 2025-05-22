@@ -123,5 +123,7 @@
   "totalBuy2": "總買入",
   "totalSell2": "總賣出",
   "walletAge": "地址年齡",
-  "blueChips": "藍籌幣"
+  "blueChips": "藍籌幣",
+  "winRate2": "勝率",
+  "paused": "已暫停"
 }

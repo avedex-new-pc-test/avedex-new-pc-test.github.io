@@ -126,5 +126,7 @@
   "totalBuy2": "总买入",
   "totalSell2": "总卖出",
   "walletAge": "地址年龄",
-  "blueChips": "蓝筹币"
+  "blueChips": "蓝筹币",
+  "winRate2": "胜率",
+  "paused": "已暂停"
 }
