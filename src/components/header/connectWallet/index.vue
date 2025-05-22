@@ -54,22 +54,20 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { ArrowLeft } from '@element-plus/icons-vue'
 // import CryptoJS from 'crypto-js'
 import reset from './reset.vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
 const botStore = useBotStore()
-const { isDark } = useThemeStore()
-const { t } = useI18n()
+const {mode} = storeToRefs(useGlobalStore())
+const { t } = useGlobalStore()
 
 const props = defineProps({
   modelValue: Boolean
 })
 
 const emit = defineEmits(['update:modelValue'])
-const mode = computed(() => isDark ? 'dark' : 'light')
 // Refs
 const dialogVisible = computed({
   get: () => props.modelValue,
@@ -135,7 +133,7 @@ watch(dialogVisible, (val) => {
   }
 
   &.light {
-    background: var(--custom-primary-lighter-0-color) !important;
+    background: var(--d-131722-l-fff) !important;
     border-color: #D8D8DC;
   }
 }

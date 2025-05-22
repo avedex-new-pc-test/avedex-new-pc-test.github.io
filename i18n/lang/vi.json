@@ -133,5 +133,6 @@
   "connectChainWallet": "Kết nối ví",
   "importAddress": "Địa chỉ theo dõi",
   "appCode": "Mã App",
-  "startConfirmPasswordError": "Hai mật khẩu không khớp"
+  "startConfirmPasswordError": "Hai mật khẩu không khớp",
+  "startSuccessTitle": "Đặt lại mật khẩu thành công"
 }

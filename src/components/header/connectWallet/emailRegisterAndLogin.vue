@@ -1,6 +1,5 @@
 <template>
   <div :class="['w-emailRegister', mode]">
-    loading:<span>{{ loading }}</span>
     <el-form
       ref="formRef"
       :model="form"
@@ -200,7 +199,6 @@
         </el-checkbox>
       </el-form-item>
     </el-form>
-
     <el-divider v-if="cType === 'login'" class="w-divider">
       <span style="font-weight: 400">
         {{ $t("startTg") }}

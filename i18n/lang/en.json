@@ -163,5 +163,6 @@
   "connectChainWallet": "Connect Wallet",
   "importAddress": "Watch Address",
   "appCode": "App Code",
-  "startConfirmPasswordError": "The two password entries do not match."
+  "startConfirmPasswordError": "The two password entries do not match.",
+  "startSuccessTitle": "Password reset successful"
 }

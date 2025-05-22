@@ -133,5 +133,6 @@
   "connectChainWallet": "Подключите кошелек",
   "importAddress": "Адрес просмотра",
   "appCode": "Код приложения",
-  "startConfirmPasswordError": "Пароли не совпадают."
+  "startConfirmPasswordError": "Пароли не совпадают.",
+  "startSuccessTitle": "Пароль успешно сброшен"
 }

@@ -164,5 +164,6 @@
   "connectChainWallet": "连接链钱包",
   "importAddress": "观察地址",
   "appCode": "App Code",
-  "startConfirmPasswordError": "两次密码输入不一致"
+  "startConfirmPasswordError": "两次密码输入不一致",
+  "startSuccessTitle": "重置密码成功"
 }
