@@ -84,5 +84,7 @@
   "startForgetPassword": "Esqueceu sua senha?",
   "registerBot": "Inscreva a carteira BOT",
   "SS": "SS",
-  "startResetTitle": "Defina a senha"
+  "startResetTitle": "Defina a senha",
+  "connectChainWallet": "Conecte a carteira",
+  "importAddress": "Ver endereço "
 }

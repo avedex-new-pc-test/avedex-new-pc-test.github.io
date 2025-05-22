@@ -1,13 +1,12 @@
-import { defineStore ,storeToRefs} from 'pinia'
+import { defineStore } from 'pinia'
 export const useGlobalStore = defineStore('global', () => {
-  const { isDark } = useThemeStore()
   const { t } = useI18n()
-  const mode = computed(() => isDark ? 'dark' : 'light')
-  const {locale} = storeToRefs(useLocaleStore())
-  console.log('=>(global.ts:9) lang', locale)
+  const localeStore = useLocaleStore()
+  const themeStore = useThemeStore()
   return {
     t,
-    lang:locale,
-    mode
+    lang: computed(() => localeStore.locale),
+    mode: computed(() => themeStore.isDark ? 'dark' : 'light'),
+    isDark: computed(() => themeStore.isDark)
   }
 })

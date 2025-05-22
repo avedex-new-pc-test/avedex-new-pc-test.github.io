@@ -86,15 +86,10 @@
           @click="showRefCode = !showRefCode"
         >
           <div
-            style="
-              gap: 8px;
-              display: flex;
-              align-items: center;
-              cursor: pointer;
-            "
+            class="gap-8px flex items-center cursor-pointer w-100%"
           >
             {{ $t("startInvitationCode") }}
-            <el-icon style="height: 5.5px; width: 9.5px">
+            <el-icon class="h-5.5px w-9.5px">
               <ArrowUp v-if="showRefCode" />
               <ArrowDown v-else />
             </el-icon>
@@ -108,18 +103,12 @@
           :disabled="!!refCode"
         />
       </el-form-item>
-      <el-form-item v-if="cType == 'login'" style="margin-bottom: 10px">
+      <el-form-item v-if="cType == 'login'" class="mb-10px">
         <label
-          class="el-form-item__label icon"
-          :style="{ marginBottom: '0', justifyContent: 'space-between' }"
+          class="el-form-item__label icon mb-0 justify-between!"
         >
           <div
-            style="
-              gap: 8px;
-              display: flex;
-              align-items: center;
-              cursor: pointer;
-            "
+            class="gap-8px flex items-center cursor-pointer"
             @click="loginType = loginType === 'password' ? 'email' : 'password'"
           >
             {{
@@ -127,18 +116,13 @@
                 ? $t("startVcodeLogin")
                 : $t("startPwdLogin")
             }}
-            <el-icon style="height: 11.33px; width: 13.33px">
+            <el-icon class="h-11.33px w-13.33px">
               <Switch />
             </el-icon>
           </div>
           <div
-            style="
-              gap: 8px;
-              display: flex;
-              align-items: center;
-              cursor: pointer;
-            "
-            @click.prevent="emit('update:cType', 'reset')"
+            class="gap-8px flex items-center cursor-pointer"
+            @click.prevent="emit('update:c-type', 'reset')"
           >
             {{ $t("startForgetPassword") }}
           </div>
@@ -163,14 +147,14 @@
         <a
           v-if="cType == 'register'"
           href="javascript:void(0)"
-          @click.prevent="emit('update:cType', 'login')"
+          @click.prevent="emit('update:c-type', 'login')"
         >
           {{ $t("startBotFooter12") }}</a
         >
         <a
           v-else
           href="javascript:void(0)"
-          @click.prevent="emit('update:cType', 'register')"
+          @click.prevent="emit('update:c-type', 'register')"
         >
           {{ $t("register") }}</a
         >
@@ -178,9 +162,9 @@
       <el-form-item
         v-if="cType == 'register'"
         size="small"
-        style="height: 20px; line-height: 20px; margin-top: 20px"
+        class="h-20px lh-20px mt-20px"
       >
-        <el-checkbox v-model="form.agree" style="color: #999; margin: 0 auto">
+        <el-checkbox v-model="form.agree" class="text-[#999] mx-auto! my-0">
           {{ $t("startFooter1") }}&nbsp;
           <el-link
             type="primary"
@@ -199,26 +183,24 @@
         </el-checkbox>
       </el-form-item>
     </el-form>
-
     <el-divider v-if="cType === 'login'" class="w-divider">
-      <span style="font-weight: 400">
+      <span class="font-400">
         {{ $t("startTg") }}
       </span>
     </el-divider>
     <ul v-show="cType === 'login'" class="w-loginByThird">
-      <li style="position: relative">
+      <li class="relative">
         <a
           href="javascript:void(0)"
-          style="display: flex; position: relative; justify-content: center"
+          class="flex relative justify-center"
         >
           <img
             v-show="loading4"
-            class="googleLoading"
+            class="googleLoading cursor-pointer border-[none]"
             src="@/assets/images/googleSVG.svg"
             alt=""
             width="36"
             height="36"
-            style="cursor: pointer; border: none"
           >
           <div id="g_id_onload" :class="[loading4 ? 'loading' : '']" />
         </a>
@@ -226,15 +208,15 @@
       <li>
         <a
           href="javascript:void(0)"
-          style="display: inline-block"
+          class="inline-block"
           @click.stop="botStore.tgLogin()"
           ><img src="@/assets/images/tg.png" width="53" height="56" >
         </a>
       </li>
     </ul>
-    <slot v-if="cType == 'login'" name="nav" />
+    <!-- <slot v-if="cType == 'login'" name="nav" /> -->
   </div>
-  <loading
+  <!-- <loading
     v-model:active="loading3"
     :can-cancel="false"
     loader="dots"
@@ -242,7 +224,7 @@
     :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
     color="var(--custom-primary-color)"
     :is-full-page="false"
-  />
+  /> -->
 </template>
 
 <script setup lang="ts">
@@ -277,7 +259,9 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:cType'])
+const emit = defineEmits<{
+  (e: 'update:c-type', cType: 'login' | 'register'| 'reset'): void
+}>()
 const count = ref(60)
 const isCounting = ref(false)
 const loading = ref(false)
@@ -465,7 +449,7 @@ function register() {
               : 'Registration successful, go to log in'
           )
           setTimeout(() => {
-            emit('update:cType', 'login')
+            emit('update:c-type', 'login')
           }, 1500)
         })
         .catch((err) => {
@@ -635,7 +619,6 @@ onBeforeUnmount(() => {
   .el-form-item__label.icon {
     color: #f5f5f5;
     display: flex;
-    justify-content: flex-start;
     width: 100%;
     height: 20px;
     line-height: 20px;
@@ -795,11 +778,11 @@ onBeforeUnmount(() => {
     }
 
     :deep() .el-checkbox__inner {
-      border-color: var(--custom-font-1-color);
+      border-color: var(--d-EAECEF-l-333);
     }
 
     :deep() .el-checkbox__inner:hover {
-      border-color: var(--custom-font-1-color);
+      border-color: var(--d-EAECEF-l-333);
     }
 
     .countdownBtn {

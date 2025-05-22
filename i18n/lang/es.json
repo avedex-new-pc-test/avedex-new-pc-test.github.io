@@ -84,5 +84,7 @@
   "enterAddress": "Ingresar dirección",
   "registerBot": "Regístrese en la billetera de bot",
   "SS": "Segundo",
-  "startResetTitle": "Establecer contraseña"
+  "startResetTitle": "Establecer contraseña",
+  "connectChainWallet": "Conectar billetera",
+  "importAddress": "Ver dirección"
 }

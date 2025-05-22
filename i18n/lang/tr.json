@@ -83,5 +83,7 @@
   "startForgetPassword": "Parolanızı mı unuttunuz?",
   "registerBot": "Bot cüzdanı kaydolun",
   "SS": "Sn",
-  "startResetTitle": "Şifre Ayarla"
+  "startResetTitle": "Şifre Ayarla",
+  "connectChainWallet": "Cüzdan Bağlayın",
+  "importAddress": "Adresi İçe Aktar"
 }

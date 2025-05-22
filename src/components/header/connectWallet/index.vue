@@ -1,13 +1,14 @@
 <template>
   <div>
-    <el-dialog v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
+    <el-dialog 
+      v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
         <img v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97">
         <img v-else src="@/assets/images/logo2-83.29x21.97.png" alt="logo" height="21.97">
         <span>{{ $t('campaignTitle') }}</span>
       </div>
-      <reset v-if="emailRegisterType == 'reset'" @update:cType="(cType) => emailRegisterType = cType"></reset>
+      <reset v-if="emailRegisterType == 'reset'" @update:c-type="(cType: string) => emailRegisterType = cType"/>
       <div v-if="emailRegisterType == 'reset'" />
       <template v-else>
         <div class='w-content'>
@@ -25,10 +26,11 @@
             <div>
               <div
                 v-show="botStore.connectWalletTab == 0"
-                class="text-14px text-center"
-                style="min-height: 200px; color: var(--a-text-1-color)"
+                class="text-14px text-center min-h-200px"
               >
-                <emailRegisterAndLogin ref="loginForm" :cType="emailRegisterType"
+                <emailRegisterAndLogin 
+                  ref="loginForm" 
+                  :cType="emailRegisterType"
                   @update:c-type="(cType) => emailRegisterType = cType">
                   <!-- <template #nav>
                     <ul class="tabs">
@@ -51,22 +53,20 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { ArrowLeft } from '@element-plus/icons-vue'
 // import CryptoJS from 'crypto-js'
 import reset from './reset.vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
 const botStore = useBotStore()
-const { isDark } = useThemeStore()
-const { t } = useI18n()
+const {mode} = storeToRefs(useGlobalStore())
+const { t } = useGlobalStore()
 
 const props = defineProps({
   modelValue: Boolean
 })
 
 const emit = defineEmits(['update:modelValue'])
-const mode = computed(() => isDark ? 'dark' : 'light')
 // Refs
 const dialogVisible = computed({
   get: () => props.modelValue,
@@ -132,7 +132,7 @@ watch(dialogVisible, (val) => {
   }
 
   &.light {
-    background: var(--custom-primary-lighter-0-color) !important;
+    background: var(--d-131722-l-fff) !important;
     border-color: #D8D8DC;
   }
 }
@@ -179,143 +179,6 @@ watch(dialogVisible, (val) => {
     }
   }
 }
-
-/* .content {
-  border: 1px solid #444444;
-  color: var(--custom-text-1-color);
-
-  &:hover {
-    border: 1px solid transparent;
-    box-shadow: 0 0 0 1px #c0c4cc inset;
-  }
-
-  border-radius: 10px;
-
-  &+.content {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  text-decoration: none;
-  cursor: pointer;
-  padding: 12px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .tip {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  h5 {
-    margin: 0;
-    padding: 0;
-    font-weight: normal;
-    font-size: 18px;
-    font-weight: 500;
-  }
-
-  .icon-wallet {
-    width: 33px;
-    height: 35px;
-  }
-
-  .middle {
-    font-size: 18px;
-    text-align: left;
-    margin-left: 20px;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--custom-text-2-color);
-
-      &.recommend {
-        font-size: 12px;
-        background: var(--custom-primary-lighter-10-color);
-        color: #f6465d;
-        padding: 1px 5px;
-        border-radius: 4px;
-      }
-
-      &.red {
-        color: red;
-      }
-    }
-  }
-} */
-
-/* .filterArray-container {
-  width: 100%;
-  text-align: left;
-  font-size: 16px;
-  font-weight: normal;
-  color: #000;
-  margin: 0px 0 15px 0px;
-
-  .filterArray-radio-input {
-    width: 0;
-    height: 0;
-    font-size: 0;
-    opacity: 0;
-
-    &:checked+.filterArray-item {
-      font-size: 18px;
-      color: var(--custom-text-1-color);
-    }
-  }
-
-  .filterArray-button {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 10px;
-
-    .filterArray-item {
-      display: inline-block;
-      border-radius: 20px;
-      font-size: 16px;
-      color: var(--custom-text-2-color);
-      cursor: pointer;
-    }
-
-    .line {
-      width: 0px;
-      height: 16px;
-      border-right: 1px solid #848e9c;
-      margin-right: 15px;
-      margin-left: 15px;
-    }
-  }
-} */
-
-/* .icon-net-connect {
-  font-size: 24px;
-  border-radius: 50%;
-  margin-right: 3px;
-
-  &.mr-0 {
-    margin-right: 3px;
-  }
-} */
-
-/* .select2 {
-  width: 100%;
-
-  &:deep(.el-input__inner) {
-    border-radius: 0px;
-
-    &.select3 {
-      padding-left: 40px !important;
-    }
-  }
-} */
-
-/* .el-select {
-  width: 150px;
-} */
 
 .w-content {
   display: inline-block;
@@ -428,16 +291,6 @@ watch(dialogVisible, (val) => {
 
     .m-content :deep() .el-input {
       --el-input-border-color: #D8D8DC
-    }
-
-    .content {
-      border: 1px solid #D8D8DC;
-      color: var(--custom-text-1-color);
-
-      &:hover {
-        border: 1px solid transparent;
-        box-shadow: 0 0 0 1px #c0c4cc inset;
-      }
     }
   }
 }

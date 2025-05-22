@@ -92,15 +92,13 @@
       />
     </a>
     <dialog-search v-model="dialogVisible_search" />
-    <!-- <component v-if="isConnectWalletVisible" :is="connectWallet" v-model="botStore.connectVisible"/> -->
-    <connectWallet v-model="botStore.connectVisible" />
+    <connect-wallet v-model="botStore.connectVisible" />
   </header>
 </template>
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
 import connectWallet from '@/components/header/connectWallet/index.vue'
-// const connectWallet = defineAsyncComponent(() => import('~/components/header/connectWallet/index.vue'));
-const isConnectWalletVisible = ref(false);
+// const connectWallet = defineAsyncComponent(() => import('~/components/header/connectWallet/index.vue'))
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()
@@ -116,7 +114,6 @@ const list = shallowRef([
 const dialogVisible_search = shallowRef(false)
 
 const openConnect = () => {
-  isConnectWalletVisible.value = true
   botStore.changeConnectVisible(true)
 }
 </script>
