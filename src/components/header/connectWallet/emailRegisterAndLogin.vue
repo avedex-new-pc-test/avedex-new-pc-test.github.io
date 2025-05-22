@@ -214,9 +214,9 @@
         </a>
       </li>
     </ul>
-    <slot v-if="cType == 'login'" name="nav" />
+    <!-- <slot v-if="cType == 'login'" name="nav" /> -->
   </div>
-  <loading
+  <!-- <loading
     v-model:active="loading3"
     :can-cancel="false"
     loader="dots"
@@ -224,7 +224,7 @@
     :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
     color="var(--custom-primary-color)"
     :is-full-page="false"
-  />
+  /> -->
 </template>
 
 <script setup lang="ts">
@@ -259,7 +259,9 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:c-type'])
+const emit = defineEmits<{
+  (e: 'update:c-type', cType: 'login' | 'register'| 'reset'): void
+}>()
 const count = ref(60)
 const isCounting = ref(false)
 const loading = ref(false)
