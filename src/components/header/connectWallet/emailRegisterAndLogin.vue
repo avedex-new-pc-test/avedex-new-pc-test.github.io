@@ -86,7 +86,7 @@
           @click="showRefCode = !showRefCode"
         >
           <div
-            class="gap-8px flex items-center cursor-pointer"
+            class="gap-8px flex items-center cursor-pointer w-100%"
           >
             {{ $t("startInvitationCode") }}
             <el-icon class="h-5.5px w-9.5px">
@@ -105,7 +105,7 @@
       </el-form-item>
       <el-form-item v-if="cType == 'login'" class="mb-10px">
         <label
-          class="el-form-item__label icon mb-0 justify-between"
+          class="el-form-item__label icon mb-0 justify-between!"
         >
           <div
             class="gap-8px flex items-center cursor-pointer"
@@ -164,7 +164,7 @@
         size="small"
         class="h-20px lh-20px mt-20px"
       >
-        <el-checkbox v-model="form.agree" class="text-[#999] mx-auto my-0">
+        <el-checkbox v-model="form.agree" class="text-[#999] mx-auto! my-0">
           {{ $t("startFooter1") }}&nbsp;
           <el-link
             type="primary"
@@ -617,7 +617,6 @@ onBeforeUnmount(() => {
   .el-form-item__label.icon {
     color: #f5f5f5;
     display: flex;
-    justify-content: flex-start;
     width: 100%;
     height: 20px;
     line-height: 20px;
@@ -777,11 +776,11 @@ onBeforeUnmount(() => {
     }
 
     :deep() .el-checkbox__inner {
-      border-color: var(--custom-font-1-color);
+      border-color: var(--d-EAECEF-l-333);
     }
 
     :deep() .el-checkbox__inner:hover {
-      border-color: var(--custom-font-1-color);
+      border-color: var(--d-EAECEF-l-333);
     }
 
     .countdownBtn {
