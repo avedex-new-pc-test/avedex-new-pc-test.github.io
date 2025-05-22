@@ -583,6 +583,6 @@ export function desensitizeEmail(email: string) {
 
     return `${maskedUsername}${domain}`
   } else {
-    throw new Error("Invalid email format")
+    throw new Error('Invalid email format')
   }
 }

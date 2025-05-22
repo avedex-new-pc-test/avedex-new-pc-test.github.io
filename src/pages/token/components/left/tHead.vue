@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps({
   columns: {
-    type: Array<{ label: string, value: string }>,
+    type: Array<{ label: string, value: string, flex: string, sort: boolean }>,
     default: () => []
   },
   sort: {
@@ -28,13 +28,14 @@ const statusTo = {
   1: 0,
   '-1': 1
 }
+
 function switchSort(sortBy: string, activeSort?: number) {
   const sort = {...props.sort}
   if (!activeSort) {
     if (sort.sortBy !== sortBy) {
       sort.activeSort = -1
     } else {
-      sort.activeSort = statusTo[sort.activeSort]
+      sort.activeSort = statusTo[sort.activeSort as 0 | 1 | '-1']
     }
   } else {
     sort.activeSort = activeSort
