@@ -31,4 +31,6 @@
   border-color: var(--el-button-border-color);
   opacity: 0.5;
 }
-
+.el-drawer__body{
+  --el-drawer-padding-primary: 0
+}

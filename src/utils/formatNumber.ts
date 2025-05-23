@@ -157,7 +157,9 @@ function formatNumShort(n: string | number, l = 4) {
   return pre + n
 }
 
-
+export function formatPercent(n: number, decimals = 2) {
+  return Math.round(n * 10 ** (2 + decimals)) / 10 ** decimals + '%'
+}
 function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0) {
   const n1 = Number(n)
   if (

@@ -53,7 +53,10 @@
                   v-tooltip="item.url"
                   class="bg-btn"
                 >
-                  <Icon :name="`custom:${item.icon}`" class="text-[--d-666-l-999] h-16px w-16px"/>
+                  <Icon
+                    :name="`custom:${item.icon}`"
+                    class="text-[--d-666-l-999] h-16px w-16px"
+                  />
                 </span>
                 <a
                   v-else
@@ -467,11 +470,67 @@
       <span>DEV</span>
       <span class="block mt-4px color-[--d-F5F5F5-l-333]">--</span>
     </div>
+    <div class="item ml-24px">
+      <span class="cursor-pointer" @click="showCheck = !showCheck">
+        {{ $t('audit1') }}
+        <Icon
+          name="material-symbols:arrow-forward-ios-rounded"
+          class="text-12px"
+        />
+      </span>
+      <div class="color-text-1 mt-5px font-500 text-14px flex-start">
+        <img
+          v-if="
+            token?.risk_level == -1 ||
+            (token?.risk_score ?? 0) >= 60 ||
+            statistics_risk_store > 0
+          "
+          :width="12"
+          class="icon-svg1"
+          src="@/assets/images/risk-gaoliang.svg"
+        />
+        <img
+          v-else-if="statistics_warning_store > 0"
+          :width="12"
+          class="icon-svg1"
+          src="@/assets/images/yichang1-gaoliang.svg"
+        />
+        <img
+          v-else-if="
+            !statistics_risk_store && !statistics_warning_store && !statistics_unknown_store
+          "
+          :width="12"
+          class="icon-svg1"
+          src="@/assets/images/安全.svg"
+        />
+
+        <img v-else class="icon-svg1" src="@/assets/images/zhuyi1.svg" />
+        <span
+          v-if="statistics_risk_store || statistics_warning_store || statistics_unknown_store"
+          class="ml-5"
+          style="font-weight: 600"
+          :style="{ color: getRiskColor(token) }"
+        >
+          {{
+            statistics_risk_store || statistics_warning_store || statistics_unknown_store || ''
+          }}
+        </span>
+        <!-- __{{ checkStore?.statistics_risk_store || checkStore?.statistics_warning_store || checkStore?.statistics_unknown_store || ''}} -->
+      </div>
+      <Check v-model="showCheck" />
+    </div>
+    <div class="item ml-24px">
+      <span>跑路</span>
+      <Run :v-model="showRun" :obj="rugPull"/>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import Top50 from './top50'
+import Top50 from './top50.vue'
+import Run from './run.vue'
+import Check from './check.vue'
 import {
   getSymbolDefaultIcon,
   getChainDefaultIcon,
@@ -480,6 +539,7 @@ import {
   formatIconSwap,
   isJSON,
   formatIconTag,
+  getAddressAndChainFromId
 } from '@/utils/index'
 import {
   type GetUserFavoriteGroupsResponse,
@@ -491,6 +551,8 @@ import {
   moveFavoriteGroup,
   editTokenFavRemark,
 } from '@/api/fav'
+import { _getRugPull } from '@/api/run'
+import type { Token } from '@/api/types/token'
 import { upColor, downColor } from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
@@ -512,6 +574,16 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
 const remark2 = shallowRef('')
+const showCheck = shallowRef(false)
+const showRun = shallowRef(false)
+const rugPull = shallowRef(null)
+
+const loadingRun = shallowRef(false)
+
+const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
+  useCheckStore()
+)
+const checkStore  = useCheckStore()
 
 const token = computed(() => {
   return tokenStore.token
@@ -554,6 +626,10 @@ const currentGroup = computed(() => {
     ? t('defaultGroup')
     : userFavoriteGroups.value?.find((i) => i.group_id == groupId.value)?.name
 })
+const chain = computed(() => {
+  const { chain } = getAddressAndChainFromId(id,0)
+  return chain
+})
 // const tokenInfo = computed(() => {
 //   return tokenStore.tokenInfo || 0
 // })
@@ -564,6 +640,10 @@ onMounted(() => {
     getTokenFavoriteCheck()
     getTokenCheckFavoriteGroup() //获取当前分组
     getTokenUserFavoriteGroups() //获取分组数组
+  }
+  useCheckStore().getContractCheckResult(id, evmAddress)
+  if (chain.value  == 'solana') {
+    getRugPull()
   }
 })
 watch(
@@ -862,6 +942,44 @@ function getTagTooltip(i) {
   }
   return tips?.[i.tag] || t(i.tag)
 }
+function getRiskColor(token?: Token | null) {
+  if (
+    (token?.risk_level ?? 0) == -1 ||
+    (token?.risk_score ?? 0) >= 60 ||
+    statistics_risk_store > 0
+  ) {
+    return '#e74e54'
+  } else if (statistics_warning_store ?? 0 > 0) {
+    return '#f8be46'
+  } else if (!statistics_risk_store && !statistics_warning_store && !statistics_unknown_store) {
+    return '#81c54e'
+  } else {
+    return '#507eef'
+  }
+}
+
+function  getRugPull () {
+      loadingRun.value = true
+      _getRugPull(id)
+        .then(res => {
+          rugPull.value = res
+          rugPull.value.all_tag_rate = rugPull.value.rates?.rateList?.filter(i => i.icon == 'icon_all_tag_rate')?.[0].rate
+          rugPull.value.all_tag_rate = rugPull.value.all_tag_rate?.toFixed(1) || 0
+          rugPull.value.rateList = rugPull.value?.rates?.rateList?.filter(i => i.icon !== 'icon_all_tag_rate')
+          rugPull.value.rateList = rugPull.value.rateList?.map(i => ({
+            ...i,
+            rate: Number(i.rate?.toFixed(1) || 0)
+          }))
+          console.log('-----getRugPull------', res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .finally(() => {
+          loadingRun.value = false
+        })
+    }
+
 </script>
 
 <style scoped lang="scss">
