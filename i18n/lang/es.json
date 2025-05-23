@@ -116,5 +116,6 @@
   "estimatedGas": "Gas estimado",
   "address": "Direción",
   "plsEnterAmount": "Por favor ingrese la cantidad",
-  "plsEnterAddress": "Por favor, ingresa la dirección."
+  "plsEnterAddress": "Por favor, ingresa la dirección.",
+  "pleaseEnterCorrectAddress": "Ingrese la dirección correcta"
 }

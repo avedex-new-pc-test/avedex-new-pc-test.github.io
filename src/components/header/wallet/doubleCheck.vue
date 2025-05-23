@@ -1,5 +1,6 @@
 <template>
     <div :class="['w-check', mode]">
+        lang:{{ lang }}
         <div class="flex-start text-20px tg-wallet-list_title">
             <el-icon size="24" class="clickable" @click="back">
                 <Back />
@@ -19,7 +20,8 @@
                     <li @click="(step = 1) && (checkType = 'email')">
                         <!-- mode === 'light' -->
                         <span>
-                            <img v-if="mode === 'light'" src="@/assets/images/checkLogo11.svg" alt=""
+                            <img
+v-if="mode === 'light'" src="@/assets/images/checkLogo11.svg" alt=""
                                 width="14">
                             <img v-else src="@/assets/images/checkLogo1.svg" alt="" width="14">{{ $t('DbCheckEmail') }}
                         </span>
@@ -29,16 +31,18 @@
                     </li>
                 </ul>
                 <div v-show="step === 1" class="checkType-content">
-                    <loading v-model:active="loading3" :can-cancel="false" loader="dots" :opacity="0.2"
+                    <loading
+v-model:active="loading3" :can-cancel="false" loader="dots" :opacity="0.2"
                         :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
-                        color="var(--custom-primary-color)" :is-full-page="false"></loading>
+                        color="var(--custom-primary-color)" :is-full-page="false"/>
                     <div v-show="(checkType === 'google') && (googleAuth.authSetting === false)">
                         <ul>
                             <li>
                                 <label>{{ $t('DbCheckContentTitle1') }}</label>
                                 <div>
                                     <div style="margin-bottom: 6px;">{{ $t('DbCheckContentContent11') }}</div>
-                                    <a style="text-decoration: underline;"
+                                    <a
+style="text-decoration: underline;"
                                         href="https://doc.ave.ai/cn/ave.ai-jiao-cheng/gu-ge-yan-zheng-qi-an-zhuang-jiao-cheng"
                                         target="_blank">{{ $t('DbCheckContentContent12') }}</a>
                                 </div>
@@ -49,22 +53,23 @@
                                     <div style="margin-bottom: 6px;">{{ $t('DbCheckContentContent2') }}</div>
                                     <el-skeleton :loading="loading4" animated :throttle="500">
                                         <template #template>
-                                            <el-skeleton-item variant="h1"
+                                            <el-skeleton-item
+variant="h1"
                                                 style="width: 100%; height: 48px;margin-bottom: 6px;" />
                                             <el-skeleton-item variant="image" style="width: 120px; height: 120px;margin-bottom: 5px;" />
                                         </template>
-                                        <template #default>
-                                        </template>
+                                        <template #default/>
                                     </el-skeleton>
                                     <div v-show="!loading4">
                                         <el-input v-model="googleAuth.secret" disabled>
                                             <template #suffix>
-                                                <a href="javascript:void(0)"
-                                                    :style="`font-family: PingFang SC;font-size: 14px;font-weight: 400;line-height: 20px;text-align: left;text-underline-position: from-font;text-decoration-skip-ink: none;color:#3F80F7;`"
-                                                    v-copy="googleAuth.secret">Copy</a>
+                                                <a
+v-copy="googleAuth.secret"
+                                                    href="javascript:void(0)"
+                                                    :style="`font-family: PingFang SC;font-size: 14px;font-weight: 400;line-height: 20px;text-align: left;text-underline-position: from-font;text-decoration-skip-ink: none;color:#3F80F7;`">Copy</a>
                                             </template>
                                         </el-input>
-                                        <canvas id="qr-google-canvas"></canvas>
+                                        <canvas id="qr-google-canvas"/>
                                     </div>
                                 </div>
                             </li>
@@ -73,24 +78,27 @@
                                 <div>{{ $t('DbCheckContentContent3') }}</div>
                             </li>
                         </ul>
-                        <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large"
-                            type="primary" @click="googleAuth.authSetting = 'pending'"
-                            style="width: 100%;margin-top: 30px;">{{
+                        <el-button
+:color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large"
+                            type="primary" style="width: 100%;margin-top: 30px;"
+                            @click="googleAuth.authSetting = 'pending'">{{
                                 $t('confirm')
                             }}</el-button>
                     </div>
                     <div
                         v-show="(checkType === 'google') && (googleAuth.authSetting === true || googleAuth.authSetting === 'pending')">
-                        <el-form :model="googleAuth" :rules="rules" ref="googleAuthRef" label-width="0" autocomplete="off"
+                        <el-form
+ref="googleAuthRef" :model="googleAuth" :rules="rules" label-width="0" autocomplete="off"
                             size="large" @submit.prevent>
                             <div class="tip">{{ $t('DbCheckTitle2') }}</div>
                             <el-form-item label="" prop="authCode">
-                                <el-input v-model="googleAuth.authCode" :autocomplete="'new-authCode' + Math.random()"
-                                    :placeholder="$t('authCode')" name="authCodeField">
-                                </el-input>
+                                <el-input
+v-model="googleAuth.authCode" :autocomplete="'new-authCode' + Math.random()"
+                                    :placeholder="$t('authCode')" name="authCodeField"/>
                             </el-form-item>
                             <el-form-item style="position: absolute;bottom: 20px;left: 20px;width:320px">
-                                <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large"
+                                <el-button
+:color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large"
                                     style="width: 100%;" type="primary" @click="confirmAuth">{{
                                         $t('confirm')
                                     }}</el-button>
@@ -99,21 +107,25 @@
                     </div>
                     <div v-if="checkType === 'email'">
                         <!-- 通过email 判断是否需要绑定 -->
-                        <el-form v-if="!email" :model="form" :rules="rules" ref="formRef" label-width="0"
+                        <el-form
+v-if="!email" ref="formRef" :model="form" :rules="rules" label-width="0"
                             autocomplete="off" size="large" @submit.prevent>
                             <el-form-item label="" prop="email">
-                                <el-input v-model="form.email" :autocomplete="'new-email' + Math.random()"
+                                <el-input
+v-model="form.email" :autocomplete="'new-email' + Math.random()"
                                     :placeholder="$t('startEmail')" name="emailField" />
                             </el-form-item>
                             <el-form-item label="" prop="verificationCode">
-                                <el-input v-model="form.verificationCode"
+                                <el-input
+v-model="form.verificationCode"
                                     :autocomplete="'new-verificationCode' + Math.random()"
                                     :placeholder="$t('startVerificationCode')" name="new-verificationCode">
                                     <template #suffix>
-                                        <el-button class="countdownBtn" link @click="sendVerificationCode"
-                                            :disabled="disabledCountdownBtn" :loading="loading2" :style="{
+                                        <el-button
+class="countdownBtn" link :disabled="disabledCountdownBtn"
+                                            :loading="loading2" :style="{
                                                 color: mode == 'dark' ? '#f5f5f5' : '#333333',
-                                            }">
+                                            }" @click="sendVerificationCode">
                                             {{
                                                 isCounting ? `${count}${$t("SS")}` : $t("startCountDown")
                                             }}</el-button>
@@ -121,19 +133,22 @@
                                 </el-input>
                             </el-form-item>
                             <el-form-item label="" prop="password">
-                                <el-input v-model="form.password" type="password" name="password_field"
+                                <el-input
+v-model="form.password" type="password" name="password_field"
                                     :autocomplete="'new-password' + Math.random()" :placeholder="$t('startPassword')"
                                     show-password />
                             </el-form-item>
                             <el-form-item label="" prop="confirmPassword">
-                                <el-input v-model="form.confirmPassword" type="password" name="confirm_password_field"
+                                <el-input
+v-model="form.confirmPassword" type="password" name="confirm_password_field"
                                     :placeholder="$t('startConfirmPassword')"
                                     :autocomplete="'new-password2' + Math.random()" show-password />
                             </el-form-item>
                             <el-form-item size="small" style="height: 20px; line-height: 20px">
                                 <el-checkbox v-model="form.agree" style="color: #999;width: 100%">
                                     {{ $t("startFooter1") }}&nbsp;
-                                    <el-link type="primary" :href="!language?.includes?.('zh')
+                                    <el-link
+type="primary" :href="!lang?.includes?.('zh')
                                         ? 'https://doc.ave.ai/cn/yong-hu-xie-yi'
                                         : 'https://doc.ave.ai/ave.ai-user-agreement'
                                         " target="_blank">&nbsp;{{ $t("startFooter2") }}</el-link>
@@ -143,26 +158,30 @@
                                 </el-checkbox>
                             </el-form-item>
                             <el-form-item>
-                                <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'"
-                                    :class="['btn']" size="large" type="primary" @click="submitForm" :loading="loading"
-                                    :disabled="!form.agree"
-                                    style="width: 100%;--el-button-disabled-text-color:#000000">{{
+                                <el-button
+:color="mode === 'dark' ? '#f5f5f5' : '#333333'"
+                                    :class="['btn']" size="large" type="primary" :loading="loading" :disabled="!form.agree"
+                                    style="width: 100%;--el-button-disabled-text-color:#000000"
+                                    @click="submitForm">{{
                                         $t('confirm')
                                     }}</el-button>
                             </el-form-item>
                         </el-form>
-                        <el-form v-else :model="form2" :rules="rules" ref="formRef2" label-width="0" autocomplete="off"
+                        <el-form
+v-else ref="formRef2" :model="form2" :rules="rules" label-width="0" autocomplete="off"
                             size="large" @submit.prevent>
                             <div class="tip">{{ $t('enterEmailCodeTips', { email: showEmail }) }}</div>
                             <el-form-item label="" prop="verificationCode">
-                                <el-input v-model="form2.verificationCode"
+                                <el-input
+v-model="form2.verificationCode"
                                     :autocomplete="'new-verificationCode2' + Math.random()"
                                     :placeholder="$t('startVerificationCode')" name="new-verificationCode2">
                                     <template #suffix>
-                                        <el-button class="countdownBtn" link @click="sendVerificationCode"
-                                            :disabled="disabledCountdownBtn" :loading="loading2" :style="{
+                                        <el-button
+class="countdownBtn" link :disabled="disabledCountdownBtn"
+                                            :loading="loading2" :style="{
                                                 color: mode == 'dark' ? '#f5f5f5' : '#333333',
-                                            }">
+                                            }" @click="sendVerificationCode">
                                             {{
                                                 isCounting ? `${count}${$t("SS")}` : $t("startCountDown")
                                             }}</el-button>
@@ -170,9 +189,10 @@
                                 </el-input>
                             </el-form-item>
                             <el-form-item style="position: absolute;bottom: 20px;width:320px">
-                                <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'"
-                                    :class="['btn']" size="large" type="primary" @click="submitForm2" :loading="loading"
-                                    style="width: 100%">{{ $t('withdraw')
+                                <el-button
+:color="mode === 'dark' ? '#f5f5f5' : '#333333'"
+                                    :class="['btn']" size="large" type="primary" :loading="loading" style="width: 100%"
+                                    @click="submitForm2">{{ $t('withdraw')
                                     }}</el-button>
                             </el-form-item>
                         </el-form>
@@ -185,12 +205,10 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { useI18n } from 'vue-i18n'
 import { ElNotification } from 'element-plus'
-import { setAuth, getUserInfoByGuid, confirmAuthSetting } from '@/api'
-import Cookies from "js-cookie";
-import sha256 from "crypto-js/sha256";
+import { setGoogleAuth as setAuth, bot_getUserInfoByGuid as getUserInfoByGuid, confirmAuthSetting } from '@/api/bot'
+import Cookies from 'js-cookie'
+import sha256 from 'crypto-js/sha256'
 import QrCodeWithLogo from 'qr-code-with-logo'
 
 const props = defineProps({
@@ -209,12 +227,11 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:showVisible', 'update:authCode', 'update:emailCode'])
+const { mode ,token_logo_url,lang} = storeToRefs(useGlobalStore())
+const { t } = useGlobalStore()
+const botStore = useBotStore()
+const userStore =useUserStore()
 
-const store = useStore()
-const { t } = useI18n()
-
-const mode = computed(() => store.state.mode)
-const language = computed(() => store.getters.language)
 
 const email = ref(localStorage.email)
 const tgUid = ref(localStorage.userInfo?.tgUid)
@@ -296,8 +313,7 @@ function validatePassword(rule, value, callback) {
 }
 
 function confirmAuth() {
-    const lang = localStorage.language || Cookies.get("language") || "en"
-    const currentLanguage = lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en"
+    const currentLanguage = lang.value.indexOf('zh') > -1 ? 'cn' : 'en'
     
     googleAuthRef.value.validate((valid) => {
         if (valid) {
@@ -311,9 +327,9 @@ function confirmAuth() {
                             ElNotification({
                                 title: 'Success',
                                 type: 'success',
-                                message: currentLanguage === "cn"
-                                    ? "绑定谷歌验证器成功"
-                                    : "Google Authenticator Binding Successful"
+                                message: currentLanguage === 'cn'
+                                    ? '绑定谷歌验证器成功'
+                                    : 'Google Authenticator Binding Successful'
                             })
                             googleAuth.value.authSetting = true
                             emit('update:authCode', googleAuth.value.authCode)
@@ -368,7 +384,7 @@ function initGoogleAuth() {
 }
 
 async function setChainQr() {
-    let canvas = document.getElementById('qr-google-canvas')
+    const canvas = document.getElementById('qr-google-canvas')
     QrCodeWithLogo.toCanvas({
         canvas: canvas,
         content: googleAuth.value.url,
@@ -398,28 +414,28 @@ function back() {
 }
 
 function submitForm() {
-    const lang = localStorage.language || Cookies.get("language") || "en"
-    const currentLanguage = lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en"
+    const currentLanguage = lang.value.indexOf('zh') > -1 ? 'cn' : 'en'
     
     formRef.value.validate((valid) => {
         if (valid) {
             loading.value = true
-            store.dispatch("bindEmailAccount", {
+            userStore.bindEmailAccount({
                 email: form.value.email,
                 code: form.value.verificationCode,
                 password: sha256(form.value.password).toString(),
-                refCode: Cookies.get("refCode"),
+                refCode: Cookies.get('refCode'),
             }).then(() => {
                 getUserInfoByGuid(googleAuth.value.tgUid).then(res => {
                     loading.value = false
                     ElNotification({
                         title: 'Success',
                         type: 'success',
-                        message: currentLanguage === "cn"
-                            ? "邮箱绑定成功"
-                            : "Mailbox Binding Success"
+                        message: currentLanguage === 'cn'
+                            ? '邮箱绑定成功'
+                            : 'Mailbox Binding Success'
                     })
-                    store.commit('setEmail', res.emailAddress)
+                    // store.commit('setEmail', res.emailAddress)
+                    userStore.email = res.emailAddress
                     resetFields()
                     resetCountdown()
                 }).catch(err => {
@@ -445,8 +461,7 @@ function submitForm2() {
 
 function startCountdown() {
     let currentEmail, emailType
-    const lang = localStorage.language || Cookies.get("language") || "en"
-    const currentLanguage = lang == "zh-cn" || lang == "zh-tw" ? "cn" : "en"
+    const currentLanguage = lang.value.indexOf('zh') > -1 ? 'cn' : 'en'
     
     disabledCountdownBtn.value = true
     if (email.value) {
@@ -457,7 +472,7 @@ function startCountdown() {
         emailType = 'bind'
     }
     
-    store.dispatch("sendEmailCode", {
+    userStore.sendEmailCode( {
         email: currentEmail,
         language: currentLanguage,
         emailType,
@@ -517,7 +532,7 @@ watch(() => props.visible, (newVal) => {
     }
 })
 
-watch(() => store.state.bot.email, (newVal) => {
+watch(() => userStore.email, (newVal) => {
     email.value = newVal
     if (step.value === 1 && checkType.value === 'email' && !!email.value) {
         sendVerificationCode()

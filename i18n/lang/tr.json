@@ -114,5 +114,6 @@
   "estimatedGas": "Tahmini Gas Ücreti",
   "address": "Adres",
   "plsEnterAmount": "Lütfen tutarı giriniz",
-  "plsEnterAddress": "Lütfen adres girin"
+  "plsEnterAddress": "Lütfen adres girin",
+  "pleaseEnterCorrectAddress": "Lütfen doğru adresi girin"
 }
