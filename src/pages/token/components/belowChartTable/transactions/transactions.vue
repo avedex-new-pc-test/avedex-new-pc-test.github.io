@@ -8,6 +8,7 @@ import {filterLanguage} from '~/pages/token/components/kLine/utils'
 import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse, type Profile} from '~/api/token'
 import {formatDate, getAddressAndChainFromId, getChainInfo, getWSMessage} from '~/utils'
 import dayjs from 'dayjs'
+import {useThrottleFn} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
 
@@ -53,6 +54,8 @@ const tabs = computed(() => {
     }, ...arr]
 })
 const activeTab = shallowRef('all')
+const isPausedTxs = shallowRef(false)
+const documentVisible = inject<Ref<boolean>>('documentVisible')
 
 const columns = computed(() => {
   const visible = token.value?.chain === 'solana' && activeTab.value !== 'liquidity'
@@ -80,7 +83,10 @@ const listStatus = ref({
   loadingLiq: false
 })
 const pairTxs = shallowRef<GetPairTxsResponse[]>([])
+const wsPairCache = shallowRef<GetPairTxsResponse[]>([])
 const pairLiq = shallowRef<GetPairLiqResponse[]>([])
+const wsLiqCache = shallowRef<GetPairLiqResponse[]>([])
+
 const tableFilter = ref<{
   timestamp: string[];
   amountU: string[];
@@ -168,17 +174,76 @@ const addressAndChain = computed(() => {
     chain: token.value?.chain || ''
   }
 })
-watch(() => pairAddress, () => {
+watch(() => pairAddress.value, () => {
   if (pairAddress.value) {
+    txCount.value = {}
     _getPairTxs()
     _getPairLiq()
-    initTxsAndLiqWs()
+    subscribeTxsAndLiq()
   }
 }, {
   immediate: true
 })
 
-function initTxsAndLiqWs() {
+if (documentVisible) {
+  watch(() => documentVisible.value, (val) => {
+    if (val) {
+      txCount.value = {}
+      wsPairCache.value.length = 0
+      wsLiqCache.value.length = 0
+      _getPairTxs()
+      _getPairLiq()
+    }
+  })
+}
+
+onMounted(() => {
+  onTxsLiqMessage()
+})
+
+onUnmounted(() => {
+  wsStore.getWSInstance()?.offMessage('tx_history')
+})
+
+function onTxsLiqMessage() {
+  wsStore.getWSInstance()?.onmessage(e => {
+    const msg = getWSMessage(e)
+    if (!msg || (documentVisible && !documentVisible.value)) {
+      return
+    }
+    const {event, data} = msg
+    if (event == WSEventType.TX && !listStatus.value.loadingTxs) {
+      const {wallet_address} = data.tx
+      txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+      const {topN, wallet_tag} = getWalletTag(data.tx)
+      const item = {
+        ...data.tx,
+        topN, wallet_tag,
+        senderProfile: JSON.parse(data.tx.profile || '{}'),
+        count: txCount.value[wallet_address]
+      }
+      wsPairCache.value.unshift(item)
+      if (!isPausedTxs.value) {
+        updatePairTxs()
+      }
+    } else if (event === WSEventType.LIQ && !listStatus.value.loadingLiq) {
+      const {wallet_address} = data.liq
+      txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+      wsLiqCache.value.unshift({
+        ...data.liq,
+        count: txCount.value[wallet_address]
+      })
+      if (!isPausedTxs.value) {
+        updateLiqList()
+      }
+      if (pairLiq.value.length > 300) {
+        pairLiq.value.pop()
+      }
+    }
+  }, 'tx_history')
+}
+
+function subscribeTxsAndLiq() {
   const liqParams = {
     jsonrpc: '2.0',
     params: ['liq', pairAddress.value],
@@ -192,22 +257,19 @@ function initTxsAndLiqWs() {
     ...liqParams,
     method: 'subscribe'
   })
-  wsStore.getWSInstance()?.onmessage(e => {
-    const msg = getWSMessage(e)
-    if (!msg) {
-      return
-    }
-    const {event, data} = msg
-    if (event == WSEventType.TX) {
-
-    } else if (event === WSEventType.LIQ) {
-      pairLiq.value.unshift(data)
-      if (pairLiq.value.length > 300) {
-        pairLiq.value.pop()
-      }
-    }
-  })
 }
+
+const updatePairTxs = useThrottleFn(() => {
+  pairTxs.value.unshift(...wsPairCache.value)
+  wsPairCache.value.length = 0
+  triggerRef(pairTxs)
+}, 500)
+
+const updateLiqList = useThrottleFn(() => {
+  pairLiq.value.unshift(...wsLiqCache.value)
+  wsLiqCache.value.length = 0
+  triggerRef(pairLiq)
+}, 500)
 
 function onTimestampConfirm(timestamp: string[] = []) {
   tableFilterVisible.value.timestamp = false
@@ -222,6 +284,7 @@ function confirmVolFilter(amountU: string[] = []) {
 function confirmMakersFilter(markerAddress = '') {
   tableFilterVisible.value.markers = false
   tableFilter.value.markerAddress = markerAddress
+  _getUserTxs(markerAddress)
 }
 
 async function _getPairTxs() {
@@ -233,28 +296,17 @@ async function _getPairTxs() {
       tag_type
     }
     const res = await getPairTxs(getPairTxsParams)
-    pairTxs.value = (res || []).map(val => {
+    pairTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
-      const wallet_tagStr = val.wallet_tag_v2 || ''
-      let topN = ''
-      let wallet_tag: string[] = []
-      if (wallet_tagStr.length > 0) {
-        wallet_tag = wallet_tagStr.split(',')
-        wallet_tag.forEach((i: string, index: number) => {
-          const isTopN = new RegExp('^top.*$', 'gi').test(i)
-          if (isTopN) {
-            topN = i
-            wallet_tag.splice(index, 1)
-          }
-        })
-      }
+      const {wallet_tag, topN} = getWalletTag(val)
       return {
         ...val,
         wallet_tag,
         topN,
+        count: txCount.value[val.wallet_address],
         senderProfile: JSON.parse(val.profile || '{}')
       }
-    })
+    }).reverse()
   } catch (e) {
     console.log('=>(transactions.vue:62) e', e)
   } finally {
@@ -262,11 +314,37 @@ async function _getPairTxs() {
   }
 }
 
+function getWalletTag(val: GetPairTxsResponse) {
+  const wallet_tagStr = val.wallet_tag_v2 || ''
+  let topN = ''
+  let wallet_tag: string[] = []
+  if (wallet_tagStr.length > 0) {
+    wallet_tag = wallet_tagStr.split(',')
+    wallet_tag.forEach((i: string, index: number) => {
+      const isTopN = new RegExp('^top.*$', 'gi').test(i)
+      if (isTopN) {
+        topN = i
+        wallet_tag.splice(index, 1)
+      }
+    })
+  }
+  return {
+    topN,
+    wallet_tag
+  }
+}
+
 async function _getPairLiq() {
   try {
     listStatus.value.loadingLiq = true
     const res = await getPairLiq(pairAddress.value + '-' + addressAndChain.value.chain)
-    pairLiq.value = res || []
+    pairLiq.value = (res || []).reverse().map(val => {
+      txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
+      return {
+        ...val,
+        count: txCount.value[val.wallet_address],
+      }
+    }).reverse()
   } catch (e) {
     console.log('=>(transactions.vue:155) e', e)
   } finally {
@@ -433,6 +511,7 @@ function setActiveTab(val: string) {
   if (val === '-100' && !botStore.evmAddress) {
     throw new Error('')
   }
+  txCount.value = {}
   tableFilter.value.tag_type = val
   if (val !== 'liquidity') {
     _getPairTxs()
@@ -442,7 +521,14 @@ function setActiveTab(val: string) {
 }
 
 function setMakerAddress(address: string) {
-  tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
+  const result = tableFilter.value.markerAddress ? '' : address
+  tableFilter.value.markerAddress = result
+  if (result && filterTableList.value.length > 0) {
+    _getUserTxs(result)
+  }
+}
+
+function _getUserTxs(address: string) {
 }
 </script>
 
@@ -460,10 +546,29 @@ function setMakerAddress(address: string) {
           {{ item.label }}
         </a>
       </div>
-      <div class="flex items-center color-#FFA622 text-12px">
-        <Icon name="custom:stop/"/>
+      <div v-show="isPausedTxs" class="flex items-center color-#FFA622 text-12px">
+        <Icon name="custom:stop"/>
         <span class="ml-3px">{{ $t('paused') }}</span>
       </div>
+    </div>
+    <div
+      v-if="tableFilter.markerAddress"
+      class="py-6px bg-#3F80F71A text-center mb-12px"
+    >
+        <span
+          v-if="listStatus.loadingTxs || listStatus.loadingLiq"
+          class="lh-20px text-13px"
+        >
+          {{ $t('loading') }}
+        </span>
+      <div
+        v-else
+        class="lh-20px text-13px"
+        v-html="$t('filterTip',{
+          address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
+          count:`<span>&nbsp;${filterTableList[0]?.count}&nbsp;</span>`
+        })"
+      />
     </div>
     <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
       <AveTable
@@ -472,10 +577,10 @@ function setMakerAddress(address: string) {
         class="h-560px"
         :rowEventHandlers="{
           onMouseenter:()=>{
-
+            isPausedTxs = true
           },
           onMouseleave:()=>{
-
+            isPausedTxs = false
           }
         }"
       >

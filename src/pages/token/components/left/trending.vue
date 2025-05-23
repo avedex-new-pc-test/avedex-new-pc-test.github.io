@@ -67,9 +67,7 @@ function getColor(val: number) {
 </script>
 
 <template>
-  <div
-    class="flex-1"
-  >
+  <div>
     <THead
       v-model:sort="sort"
       :columns="columns"
