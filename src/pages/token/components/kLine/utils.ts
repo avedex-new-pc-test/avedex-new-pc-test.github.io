@@ -1,7 +1,8 @@
 // import { getGlobalT } from '@/utils/i18nBridge'
-import type { Mark, ChartingLibraryWidgetConstructor } from '~/types/tradingview/charting_library'
+import type { Mark, ChartingLibraryWidgetConstructor, IChartingLibraryWidget } from '~/types/tradingview/charting_library'
 import { formatNumber } from '@/utils/formatNumber'
 import type { WSTx, KLineBar  } from './types'
+import { useDocumentVisibility } from '@vueuse/core'
 
 export const supportSecChains = ['solana', 'bsc', 'eth', 'base', 'tron']
 
@@ -226,6 +227,28 @@ export function waitForTradingView (): Promise<ChartingLibraryWidgetConstructor>
     window.addEventListener('tradingview:ready', () => {
       resolve(window.TradingView.widget)
     })
+  })
+}
+
+export function useWidgetVisibilityRefresh(getWidget: () => IChartingLibraryWidget | null) {
+  const documentVisible = useDocumentVisibility()
+  const lastHiddenTime = ref<number | null>(null)
+  const REFRESH_THRESHOLD = 5 * 60 * 1000 // 10 分钟
+
+  watch(documentVisible, (val) => {
+    if (val === 'hidden') {
+      lastHiddenTime.value = Date.now()
+    }
+
+    if (val === 'visible') {
+      const now = Date.now()
+      const duration = now - (lastHiddenTime.value || 0)
+      const _widget = getWidget()
+      if (duration > REFRESH_THRESHOLD && _widget) {
+        _widget?.resetCache?.()
+        _widget?.activeChart?.().resetData?.()
+      }
+    }
   })
 }
 

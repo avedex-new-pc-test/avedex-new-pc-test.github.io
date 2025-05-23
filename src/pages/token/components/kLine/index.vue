@@ -13,7 +13,7 @@ import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, get
 import { getKlineHistoryData, getUserKlineTxTags } from '@/api/token'
 import { getTotalHolders } from '@/api/stats'
 import { formatNumber } from '@/utils/formatNumber'
-import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView } from './utils'
+import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useWidgetVisibilityRefresh } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx } from './types'
 import BigNumber from 'bignumber.js'
@@ -96,6 +96,15 @@ watch(() => themeStore.theme, () => {
 watch(() => localeStore.locale, () => {
   resetChart()
 })
+
+// const documentVisible = inject<Ref<boolean>>('documentVisible') as Ref<boolean>
+
+// watch(documentVisible, (val) => {
+//   if (val && _widget) {
+//     _widget?.resetCache?.()
+//     _widget?.activeChart?.().resetData?.()
+//   }
+// })
 
 function resetChart() {
   _widget?.remove?.()
@@ -192,6 +201,7 @@ async function initChart() {
       'timeframes_toolbar',
     ],
     enabled_features: [
+    'request_only_visible_range_on_reset',
       ...(isSupportSecChains ? ['seconds_resolution' as ChartingLibraryFeatureset] : [])
     ],
     charts_storage_url: location.host,
@@ -204,7 +214,7 @@ async function initChart() {
       priceFormatterFactory: () => {
         return {
           format: (price) => {
-            return String(formatNumber(price, showMarket.value ? 2 : 3))
+            return String(formatNumber(price, showMarket.value ? 2 : 4))
           },
         }
       }
@@ -516,6 +526,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
   initChart()
+  useWidgetVisibilityRefresh(() => _widget)
 })
 
 </script>

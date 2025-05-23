@@ -111,5 +111,6 @@
   "approve": "Onayla",
   "buying": "Satın alma",
   "selling": "satış",
-  "estimatedGas": "Tahmini Gas Ücreti"
+  "estimatedGas": "Tahmini Gas Ücreti",
+  "unknownRisk": "Bilinmeyen risk"
 }

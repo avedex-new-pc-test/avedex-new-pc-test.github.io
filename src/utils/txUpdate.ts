@@ -3,22 +3,24 @@ import BigNumber from 'bignumber.js'
 import { formatNumber } from './formatNumber'
 export function updatePriceFromTx(tx: WSTx) {
   const tokenStore = useTokenStore()
+  const isBuy = tx.to_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.()
   const price = Number(tx.from_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.() ? tx.from_price_usd : tx.to_price_usd) || 0
   if (tx.pair_address === tokenStore.pairAddress) {
     if (price) {
       tokenStore.tokenPrice = price
       if ((useRoute().fullPath as string)?.includes?.('/token')) {
-        useHead({ title: '$' + formatNumber(price, 3) + ' ' + tokenStore.token?.symbol + ' | Ave' })
+        useHead({ title: '$' + formatNumber(price, 4) + ' ' + tokenStore.token?.symbol + ' | Ave' })
       }
     }
   }
-  const isBuy = tx.to_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.()
   tokenStore?.pairs?.forEach(pair => {
     if (pair.pair === tx.pair_address) {
       const isToken0From = tx.from_address?.toLowerCase?.() === pair.token0_address?.toLowerCase?.()
       const isToken1From = tx.from_address?.toLowerCase?.() === pair.token1_address?.toLowerCase?.()
       const isToken0To = tx.to_address?.toLowerCase?.() === pair.token0_address?.toLowerCase?.()
       const isToken1To = tx.to_address?.toLowerCase?.() === pair.token1_address?.toLowerCase?.()
+      const price = Number(tx.from_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.() ? tx.from_price_usd : tx.to_price_usd) || 0
+      const currentPrice = pair.token0_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.() ? pair.token0_price_usd : pair.token1_price_usd
       if (isToken0From || isToken0To) {
          pair.reserve0 = Number(isToken0From ? tx.from_reserve : tx.to_reserve)
          pair.token0_price_usd = Number(isToken0From ? tx.from_price_usd : tx.to_price_usd)
@@ -67,12 +69,12 @@ export function updatePriceFromTx(tx: WSTx) {
       pair.tx_24h_count = pair.tx_24h_count + 1
       pair.tx_4h_count = pair.tx_4h_count + 1
       pair.tx_5m_count = pair.tx_5m_count + 1
-      
-      pair.price_change = calcNewChange(pair.price_change, price)
-      pair.price_change_1h = calcNewChange(pair.price_change_1h, price)
-      pair.price_change_24h = calcNewChange(pair.price_change_24h, price)
-      pair.price_change_4h = calcNewChange(pair.price_change_4h, price)
-      pair.price_change_5m = calcNewChange(pair.price_change_5m, price)
+
+      pair.price_change = calcNewChange(pair.price_change, price, currentPrice)
+      pair.price_change_1h = calcNewChange(pair.price_change_1h, price, currentPrice)
+      pair.price_change_24h = calcNewChange(pair.price_change_24h, price, currentPrice)
+      pair.price_change_4h = calcNewChange(pair.price_change_4h, price, currentPrice)
+      pair.price_change_5m = calcNewChange(pair.price_change_5m, price, currentPrice)
     }
   })
 }

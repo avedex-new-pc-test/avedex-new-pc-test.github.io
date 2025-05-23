@@ -168,7 +168,6 @@ const emit = defineEmits(['update:slippage', 'onSubmit'])
 
 const { t } = useI18n()
 const botSwapStore = useBotSwapStore()
-const themeStore = useThemeStore()
 
 const slippageList = [5, 9, 20]
 // 获取 uuid
@@ -450,6 +449,7 @@ function onProtectionChange() {
   justify-content: space-between;
   background: var(--d-333-l-F2F2F2);
   color: #999;
+  padding: 2px;
   button {
     display: flex;
     justify-content: center;
@@ -459,12 +459,12 @@ function onProtectionChange() {
     cursor: pointer;
     flex: 1;
     border-radius: 4px;
-    height: 32px;
+    height: 28px;
     font-size: 14px;
     background: transparent;
     &.active {
-      background: var(--d-F5F5F5-l-333);
-      color: var(--d-333-l-F2F2F2);
+      background: var(--d-111-l-FFF);
+      color: var(--d-F5F5F5-l-333);
     }
   }
 }

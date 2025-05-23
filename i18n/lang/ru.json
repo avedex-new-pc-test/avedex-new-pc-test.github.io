@@ -181,5 +181,7 @@
   "auto": "Авто",
   "login": "Вход",
   "connectWallet1": "Подключить кошелек",
-  "limitSubmitted": "Лимитный ордер отправлен"
+  "limitSubmitted": "Лимитный ордер отправлен",
+  "top50PartialSale": "Частичная продажа",
+  "unknownRisk": "Неизвестный риск"
 }

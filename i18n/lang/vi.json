@@ -181,5 +181,7 @@
   "auto": "Tự động",
   "login": "Đăng nhập",
   "connectWallet1": "Kết nối ví",
-  "limitSubmitted": "Đã gửi lệnh giới hạn"
+  "limitSubmitted": "Đã gửi lệnh giới hạn",
+  "top50PartialSale": "Bán một phần",
+  "unknownRisk": "Rủi ro không xác định"
 }

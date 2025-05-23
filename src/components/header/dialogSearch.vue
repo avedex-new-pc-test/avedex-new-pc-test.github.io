@@ -4,7 +4,8 @@
     width="860"
     height="600"
     :show-close="false"
-    class ="search-dialog"
+    class="search-dialog"
+    header-class="p-0!"
 
   >
     <el-input
@@ -41,6 +42,7 @@
           v-for="(item, index) in historyList"
           :key="index"
           class="history-tag"
+          @click.stop="query=item;isHistory=true;tokenSearch()"
         >
           {{ formatLength(item) }}
         </button>
@@ -76,6 +78,7 @@
         v-else
         :tokens="searchResult?.token_list?.slice?.(0, 200) || []"
         :loading="loading"
+        @close="visible = false"
       />
     </div>
   </el-dialog>
@@ -170,10 +173,15 @@ function tokenSearch() {
     })
     .finally(() => {
       loading.value = false
+      isHistory = false
     })
 }
 const debouncedFetch = useDebounceFn(tokenSearch, 500)
+let isHistory = false
 watch(query, (newval) => {
+  if (isHistory) {
+    return
+  }
   if (newval) {
     debouncedFetch()
   }
