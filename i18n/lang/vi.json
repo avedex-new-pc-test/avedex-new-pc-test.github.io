@@ -181,5 +181,6 @@
   "auto": "Tự động",
   "login": "Đăng nhập",
   "connectWallet1": "Kết nối ví",
-  "limitSubmitted": "Đã gửi lệnh giới hạn"
+  "limitSubmitted": "Đã gửi lệnh giới hạn",
+  "address": "Địa chỉ"
 }

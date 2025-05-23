@@ -125,12 +125,6 @@ watch(dialogVisible, (val) => {
     right: 11px;
   }
 
-  &.reset {
-    :deep() header {
-      height: 0;
-    }
-  }
-
   &.light {
     background: var(--d-131722-l-fff) !important;
     border-color: #D8D8DC;

@@ -181,5 +181,6 @@
   "auto": "Авто",
   "login": "Вход",
   "connectWallet1": "Подключить кошелек",
-  "limitSubmitted": "Лимитный ордер отправлен"
+  "limitSubmitted": "Лимитный ордер отправлен",
+  "address": "Адрес"
 }

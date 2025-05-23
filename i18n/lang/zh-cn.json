@@ -268,5 +268,6 @@
   "auto": "自动",
   "login": "登录",
   "connectWallet1": "连接钱包",
-  "limitSubmitted": "挂单已提交"
+  "limitSubmitted": "挂单已提交",
+  "address": "地址"
 }

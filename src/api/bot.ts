@@ -562,4 +562,57 @@ export function bot_createEvmLimitTx(params: {
     }
   })
 }
-
+// 创建安全转账交易
+// swap/transfer
+// {
+//     "batchId":"111546",
+//     "chain":"solana",
+//     "creatorAddress":"FSFB1mQqXc3cC57DHaKijHzcqMsnYHsueCWnLt97ePbD",
+//     "tokenAddress":"7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+//     "tgUid":"6097411603",
+//     "amount":"1000000000",
+//     "transferTo":"3SBB1mQqXc3cC57DHaKijHzcqMsnYHsueCWnLt97ePbD",
+//     "gasTip":0,
+//     "memo":"1234342342",
+//     "source":"web",  //枚举 web，app。不传的话默认 app
+//     "emailCode":"123321", //如果不使用邮箱验证， ""即可
+//     "authCode":"123321", //如果不使用Authenticator验证， ""即可
+//     "autoGas": 2; // 0: 关闭, 1: 低速， 2：中速， 3：高速
+// }
+export function bot_createSafeTransferTx(params: {
+  chain: 'eth' | 'base' | 'bsc'
+  creatorAddress: string
+  tokenAddress: string
+  tgUid: string
+  amount: string
+  transferTo: string
+  gasTip: number
+  memo: string
+  source: 'web'|'app'
+  emailCode?: string
+  authCode?: string
+  autoGas?: 0 | 1 | 2 | 3
+}) {
+  const { $api } = useNuxtApp()
+  const { gasTip = 0, source = 'web', ...rest } = params
+  return $api('/botapi/swap/transferBySafeCheck', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      gasTip,
+      source,
+      ...rest,
+    }
+  })
+}
+// 转账主币GasFee
+// url: /swap/getTransferGasFee GET
+// 校验：双token
+// 请求参数: chain -> 当前支持 eth, base, bsc
+export function bot_getTransferGasFee(params: { chain: 'eth' | 'base' | 'bsc' } | undefined) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/getTransferGasFee', {
+    method: 'get',
+     query: params
+  })
+}

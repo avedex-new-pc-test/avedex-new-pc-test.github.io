@@ -2,11 +2,11 @@ import timezoneObj from './json/timezone.json'
 import dayjs from './day'
 import sha1 from 'crypto-js/sha1'
 import { PublicKey } from '@solana/web3.js'
-import { TronWeb } from 'tronweb'
+import { TronWeb, utils } from 'tronweb'
 import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
-import { JsonRpcProvider} from 'ethers'
+import { JsonRpcProvider, formatUnits, parseUnits,FixedNumber, ethers } from 'ethers'
 
 export function isJSON(str: string) {
   try {
@@ -599,4 +599,24 @@ export function getRpcProvider(chain: string) {
   }
   const rpcUrl = chainInfo?.rpc_url || ''
   return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
+}
+
+export const evm_utils = {
+  ...ethers,
+  formatUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
+    const decimals = Number(arg?.[1])
+    if (!decimals) {
+      return arg?.[0] || 0
+    }
+    return formatUnits(...arg)
+  },
+  parseUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
+    const decimals = Number(arg?.[1])
+    if (!decimals) {
+      return FixedNumber.fromString(String(arg?.[0] ?? '0')).value
+    }
+    // Ensure the value is a string as required by ethers' parseUnits
+    const valueStr = String(arg?.[0] ?? '')
+    return parseUnits(valueStr, decimals)
+  }
 }

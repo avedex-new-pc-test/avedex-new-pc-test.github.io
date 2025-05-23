@@ -170,7 +170,19 @@ function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0
   }
   return formatNumShort(formatNumUnit(n, decimals, unit), l)
 }
-
+export function formatNumberS(n: string | number, config: any = {}) {
+  let config1 = config
+  if (typeof config === "number") {
+    config1 = {
+      decimals: config,
+    }
+  }
+  const { decimals, l, limit } = config1
+  const decimalsVal = decimals ?? 1
+  const lVal = l || 4
+  const unit = limit ? 10 ** limit : 10000
+  return formatNumber2(n, decimalsVal, lVal, unit)
+}
 export function formatNumber(n: string | number, config: { decimals?: number; l?: number; limit?: number } | number = {}) {
   let config1: { decimals?: number; l?: number; limit?: number }  = {}
   if (typeof config === 'number') {

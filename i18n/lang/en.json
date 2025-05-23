@@ -268,5 +268,6 @@
   "auto": "Auto",
   "login": "Login",
   "connectWallet1": "Connect Wallet",
-  "limitSubmitted": "Limit order has been submitted"
+  "limitSubmitted": "Limit order has been submitted",
+  "address": "Address"
 }
