@@ -1,4 +1,6 @@
 import type { TokenInfo, TokenInfoExtra } from './types/token'
+import { getAddressAndChainFromId, getChainInfo } from '@/utils'
+import { NATIVE_TOKEN } from '@/utils/constants'
 
 export function getTokenInfo(id: string): Promise<null | TokenInfo> {
   const {address, chain} = getAddressAndChainFromId(id)
@@ -325,5 +327,25 @@ export function getUserTxs(token_id: string, address: string) {
       token_id: token_id,
       user_address: address,
     }
+  })
+}
+
+export function getTokensPrice(tokenIds: string[]) {
+  const ids = tokenIds.map(i => {
+    const [token, chain] = getAddressAndChainFromId(i, 1)
+    if (token && chain && token === NATIVE_TOKEN) {
+      const chainInfo = getChainInfo(chain)
+      return chainInfo.wmain_wrapper + '-' + chain
+    }
+    return i
+  })
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v2/tokens/price4h5',{
+    method: 'post',
+    body: {
+      token_ids: ids
+    }
+  }).then(async res => {
+    return ids.map(i => res[i])
   })
 }

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 import { deepMerge } from '@/utils/index'
-import { isEqual } from 'lodash-es'
+import { isEqual, cloneDeep } from 'lodash-es'
 import { useBotStore } from './bot'
 
 export const useBotSettingStore = defineStore('botSetting', () => {
@@ -50,17 +50,24 @@ export const useBotSettingStore = defineStore('botSetting', () => {
   })
   const botSettings = useLocalStorage('bot_settings_v3', settings, { mergeDefaults: (storageValue, defaults) => deepMerge(defaults, storageValue) })
 
-  chains.forEach(i => {
-    watch(() => botSettings.value[i], (val, oldVal) => {
-      if (!isEqual(val, oldVal)) {
-        console.log('botSettings update', i, val)
-        useBotStore().updateWebConfig({
-          chain: i,
-          webConfig: JSON.stringify(val)
-        })
-      }
+  function watchBotSetting() {
+    chains.forEach(i => {
+      let previous = cloneDeep(botSettings.value[i])
+      watch(() => botSettings.value[i], (val) => {
+        if (!isEqual(val, previous)) {
+          useBotStore().updateWebConfig({
+            chain: i,
+            webConfig: JSON.stringify(val)
+          })
+          previous = cloneDeep(val)
+        }
+      },
+      { deep: true })
     })
-  })
+  }
+
+  watchBotSetting()
+
   return {
     botSettings
   }

@@ -1,3 +1,6 @@
+import Cookies from 'js-cookie'
+import BigNumber from 'bignumber.js'
+
 export function login(data: {
   username?: string
   firstName?: string
@@ -276,6 +279,8 @@ export function bot_getWalletsAllChain(params: {
   addresses: Array<{
     chain: string
     address: string
+    price?: number
+    balance?: string
   }>
 }>> {
   const { $api } = useNuxtApp()
@@ -346,3 +351,215 @@ export function bot_updateWebConfig(data: { chain?: string, webConfig?: string }
     body: data
   })
 }
+
+// export function bot_getTokenBalance(data) {
+//   return request({
+//     method: 'post',
+//     url: `/swap/getTokenBalance`,
+//     data: {
+//       chain: store.getters.chain,
+//       walletAddress: store.getters.botWallet,
+//       // tokens: []
+//       ...data
+//     }
+//   })
+// }
+
+export function bot_getTokenBalance(data: {
+  chain: string
+  walletAddress: string
+  tokens: string[]
+}) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/getTokenBalance', {
+    method: 'post',
+    body: data
+  }).then(res => {
+    return res?.map((i: { balance: any; decimals: number; token: string }) => {
+      const balance = i.balance
+      const decimals = i.decimals || 0
+      const token = i.token === 'sol' ? 'So11111111111111111111111111111111111111112' : i.token
+      return {
+        ...i,
+        initBalance: balance,
+        balance: Number(decimals) === 0 ? balance : new BigNumber(balance).div(new BigNumber(10).pow(decimals || 0)).toFixed(),
+        chain: data.chain || '',
+        token
+      }
+    })
+  })
+}
+
+// 推荐GasTip(二期)
+// 返回高、中、低三档，eth用wei， solana返回lamports, solana忽略mev
+export function bot_getGasTip(): Promise<Array<{ chain: string, mev: boolean, high: string, average: string, low: string, gasLimit: number }>> {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/gastip', {
+    method: 'get'
+  })
+}
+
+
+// 5.3.17. 查询预授权状态
+export const bot_getApprove = createCacheRequest(function(params: {
+  token: string
+  chain: string
+  owner: string
+}) {
+  const { $api } = useNuxtApp()
+  return  $api('/botapi/swap/getApprove', {
+    method: 'get',
+    query: params
+  })
+}, 500)
+
+
+
+// 预授权代币
+export function bot_approve(data: {
+  tokenAddress: string
+  batchId: string
+  chain: string
+  creatorAddress: string[]
+}) {
+  const { $api } = useNuxtApp()
+  const botStore = useBotStore()
+  return $api('/botapi/swap/preApprove', {
+    method: 'post',
+    body: {
+      // batchId: Date.now().toString(),
+      // chain: store.getters.botChain,
+      // creatorAddress: [store.getters.botWallet],
+      tgUid: botStore.userInfo?.tgUid,
+      noCb: false,
+      source: 'web',
+      ...data
+    }
+  })
+}
+
+
+// 创建 Solana 市价交易
+export function bot_createSolTx(params: {
+  batchId?: string
+  swapList: Array<{
+    creatorAddress: string
+    inAmount: string
+  }>
+  inTokenAddress: string
+  outTokenAddress: string
+  swapType: 1 | 2
+  isPrivate: boolean
+  priorityFee: string
+  autoSell?: boolean
+  slippage: number
+}) {
+  const { $api } = useNuxtApp()
+  const botStore = useBotStore()
+  return $api('/botapi/swap/createSolTx', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      source: 'web',
+      autoSell: false,
+      channelRef: Cookies.get('refCode') || undefined,
+      tgUid: botStore.userInfo?.tgUid,
+      ...params,
+    }
+  })
+}
+
+
+// 创建Evm交易
+export function bot_createSwapEvmTx(params: {
+  batchId?: string
+  swapList: Array<{
+    creatorAddress: string
+    inAmount: string
+  }>
+  inTokenAddress: string
+  outTokenAddress: string
+  swapType: 1 | 2
+  contractType: 0 | 1
+  isPrivate: boolean
+  gasTip: number
+  autoSell?: boolean
+  slippage: number
+}) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/createSwapEvmTx', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      source: 'web',
+      autoSell: false,
+      preApprove: true,
+      channelRef: Cookies.get('refCode') || undefined,
+      ...params,
+    }
+  })
+}
+
+//  创建Solana限价交易
+export function bot_createSolLimitTx(params: {
+  batchId?: string
+  swapList: Array<{
+    creatorAddress: string
+    inAmount: string
+  }>
+  tokenAddress: string
+  swapType: 5 | 6
+  isPrivate: boolean
+  priceLimit: string
+  autoGas: 0 | 1 | 2 | 3
+  priorityFee: string
+  autoSell?: boolean
+  slippage: number
+  autoSlippage?: boolean
+}) {
+  const { $api } = useNuxtApp()
+  const botStore = useBotStore()
+  return $api('/botapi/swap/createSolLimitTx', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      source: 'web',
+      tgUid: botStore.userInfo?.tgUid,
+      ...params,
+    }
+  })
+}
+
+// 创建Evm限价交易(二期)
+export function bot_createEvmLimitTx(params: {
+  batchId?: string
+  chain: string
+  swapList: Array<{
+    creatorAddress: string
+    inAmount: string
+  }>
+  inTokenAddress: string
+  outTokenAddress: string
+  swapType: 5 | 6
+  swapPrice: string
+  contractType: 0 | 1
+  isPrivate: boolean
+  gasTip: number
+  autoSell?: boolean
+  slippage: number
+  autoSlippage?: boolean
+}) {
+  const { $api } = useNuxtApp()
+  const botStore = useBotStore()
+  return $api('/botapi/swap/createEvmLimitTx', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      tgUid: botStore.userInfo?.tgUid,
+      source: 'web',
+      preApprove: true,
+     ...params,
+    }
+  })
+}
+

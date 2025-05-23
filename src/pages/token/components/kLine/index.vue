@@ -407,8 +407,8 @@ async function initChart() {
       },
       unsubscribeBars: (listenerGuid) => {
         if (listenerGuid) {
-          const subscribeParams = listenerGuidMap.get(token.value)
-          if (subscribeParams.params[1] === tokenAddress.value) {
+          const subscribeParams = listenerGuidMap.get(token.value) || {}
+          if (subscribeParams?.params?.[1] === tokenAddress.value) {
             return
           }
           subscribeParams.method = 'unsubscribe'

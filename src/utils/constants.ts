@@ -33,3 +33,30 @@ export const WSEventType = {
   SIGNALSV2_PUBLIC_MONITOR: 'signalsv2_public_monitor',
   PUBLIC_PORTRAIT: 'public_portrait',
 }
+
+export const MAX_UINT_AMOUNT = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+
+export const MIN_BALANCE = {
+  bsc: 0.002,
+  arbitrum: 0.001,
+  core: 0.01,
+  polygon: 0.1,
+  oec: 0.0001,
+  optimism: 0.001,
+  zksync: 0.001,
+  eth: 0.005,
+  heco: 0.01,
+  fsc: 0.01,
+  telegramx: 0.01,
+  shj: 0.01,
+  pego: 0.1,
+  pulsechain: 1000,
+  opbnb: 0.0008,
+  solana: 0.01,
+  base: 0.00005,
+  linea: 0.0001,
+  xlayer: 0.01,
+  morph: 0.001,
+  berachain: 0.00001,
+  sonic: 0.1
+}

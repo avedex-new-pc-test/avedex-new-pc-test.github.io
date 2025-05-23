@@ -6,6 +6,7 @@ import { TronWeb } from 'tronweb'
 import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
+import { JsonRpcProvider} from 'ethers'
 
 export function isJSON(str: string) {
   try {
@@ -584,4 +585,18 @@ export function desensitizeEmail(email: string) {
   } else {
     throw new Error('Invalid email format')
   }
+}
+
+export function isEvmChain(chain: string) {
+  const chainInfo = getChainInfo(chain)
+  return chainInfo?.vm_type === 'evm'
+}
+
+export function getRpcProvider(chain: string) {
+  const chainInfo = getChainInfo(chain)
+  if (!chainInfo || chainInfo?.vm_type !== 'evm') {
+    return null
+  }
+  const rpcUrl = chainInfo?.rpc_url || ''
+  return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
 }
