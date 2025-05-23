@@ -3,11 +3,11 @@
     <div class="flex-1">
       <div class="h-64px bg-green">图表上方</div>
       <div class="flex gap-4px">
-        <Left class="w-292px"/>
+        <Left class="w-292px flex flex-col"/>
         <div class="flex-1 hide-scrollbar">
           <el-scrollbar height="calc(100vh - 152px)">
+            <KLine/>
             <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]"/>
-            <KLine />
           </el-scrollbar>
         </div>
       </div>
@@ -28,7 +28,8 @@ const tokenStore = useTokenStore()
 const wsStore = useWSStore()
 
 
-
+const documentVisible = shallowRef(true)
+provide('documentVisible', documentVisible)
 
 function _getTokenInfo() {
   const id = route.params.id as string
@@ -54,6 +55,10 @@ function init() {
 
 onBeforeMount(() => {
   init()
+  document.addEventListener('visibilitychange', () => {
+    console.log(`页面是否隐藏: ${document.hidden}`)
+    documentVisible.value = (!document.hidden || document.visibilityState === 'visible')
+  })
 })
 
 onBeforeRouteLeave(() => {

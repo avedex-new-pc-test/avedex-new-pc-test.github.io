@@ -128,5 +128,7 @@
   "walletAge": "地址年龄",
   "blueChips": "蓝筹币",
   "winRate2": "胜率",
-  "paused": "已暂停"
+  "paused": "已暂停",
+  "trending": "热门币",
+  "filterTip": "已筛选{address}的{count}笔交易"
 }

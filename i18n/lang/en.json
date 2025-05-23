@@ -127,5 +127,7 @@
   "walletAge": "Address Age",
   "blueChips": "Blue-chips",
   "winRate2": "Win Rate",
-  "paused": "Paused"
+  "paused": "Paused",
+  "trending": "Trending",
+  "filterTip": "Filtered {count} transactions for {address}"
 }

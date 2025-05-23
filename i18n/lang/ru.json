@@ -97,5 +97,6 @@
   "unrealized_profit": "Нереализованный",
   "totalBuy2": "Куплено",
   "totalSell2": "Продано",
-  "paused": "Приостановлено"
+  "paused": "Приостановлено",
+  "trending": "Популярное"
 }

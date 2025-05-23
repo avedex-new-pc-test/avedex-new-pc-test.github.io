@@ -37,7 +37,7 @@ function drag(e: MouseEvent) {
 </script>
 
 <template>
-  <div class="h-full">
+  <div>
     <div class="relative">
       <TopLeftTable :height="topLeftHeight"/>
       <div

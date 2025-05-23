@@ -125,5 +125,7 @@
   "walletAge": "地址年齡",
   "blueChips": "藍籌幣",
   "winRate2": "勝率",
-  "paused": "已暫停"
+  "paused": "已暫停",
+  "trending": "熱門幣",
+  "filterTip": "已篩選{address}的{count}筆交易"
 }
