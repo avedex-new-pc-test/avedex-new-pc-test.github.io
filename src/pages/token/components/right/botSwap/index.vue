@@ -80,7 +80,6 @@ const types = computed(() => {
 function onSelectBotSwapSet(item: string) {
   if (botSettingStore?.botSettings?.[chain.value]) {
     (botSettingStore.botSettings[chain.value] as any).selected = item
-    console.log('botSettingStore.botSettings', botSettingStore.botSettings[chain.value])
   }
 }
 
@@ -248,8 +247,8 @@ onMounted(() => {
       height: 20px;
       text-align: center;
       &.active {
+        background: var(--d-111-l-FFF);
         color: var(--d-F5F5F5-l-333);
-        background: var(--d-333-l-DDD);
       }
     }
   }

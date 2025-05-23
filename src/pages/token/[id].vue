@@ -68,17 +68,20 @@ watch(() => route.params.id, () => {
   init()
 })
 
+function visibilitychangeFn() {
+  console.log(`页面是否隐藏: ${document.hidden}`)
+  documentVisible.value = (!document.hidden || document.visibilityState === 'visible')
+}
+
 onBeforeMount(() => {
   init()
-  document.addEventListener('visibilitychange', () => {
-    console.log(`页面是否隐藏: ${document.hidden}`)
-    documentVisible.value = (!document.hidden || document.visibilityState === 'visible')
-  })
+  document.addEventListener('visibilitychange', visibilitychangeFn)
 })
 
 onBeforeRouteLeave(() => {
   tokenStore.reset()
   wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline', 'price'])
+  document.removeEventListener('visibilitychange', visibilitychangeFn)
 })
 </script>
 

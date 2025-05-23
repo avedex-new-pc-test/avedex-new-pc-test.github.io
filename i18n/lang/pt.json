@@ -113,5 +113,6 @@
   "approve": "Aprovar",
   "buying": "Comprando",
   "selling": "Vendendo",
-  "estimatedGas": "Gás estimado "
+  "estimatedGas": "Gás estimado ",
+  "unknownRisk": "Risco Desconhecido"
 }

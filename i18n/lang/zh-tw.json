@@ -265,5 +265,8 @@
   "auto": "自動",
   "login": "登入",
   "connectWallet1": "連接錢包",
-  "limitSubmitted": "掛單已提交"
+  "limitSubmitted": "掛單已提交",
+  "top50PartialSale": "減倉",
+  "vol": "交易額",
+  "unknownRisk": "未開盤"
 }
