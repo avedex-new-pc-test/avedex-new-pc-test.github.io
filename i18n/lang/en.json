@@ -269,5 +269,11 @@
   "login": "Login",
   "connectWallet1": "Connect Wallet",
   "limitSubmitted": "Limit order has been submitted",
-  "address": "Address"
+  "address": "Address",
+  "allAccounts": "All Accounts",
+  "deposit": "Deposit",
+  "withdraw": "Withdraw",
+  "plsEnterAmount": "Please enter amount",
+  "logout": "Log Out",
+  "plsEnterAddress": "Please enter address"
 }

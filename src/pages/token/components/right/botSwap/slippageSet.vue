@@ -389,10 +389,10 @@ function onProtectionChange() {
     opacity: 0.5;
   }
   &:deep() .el-input__wrapper, &:deep() .el-input__inner {
-    background-color: var(--a-bg-7-color);
+    background-color: var(--d-333-l-F2F2F2);
   }
   &:deep() .el-input-number__decrease, &:deep() .el-input-number__increase {
-    background-color: var(--a-bg-7-color);
+    background-color: var(--d-333-l-F2F2F2);
   }
   .input {
     font-size: 14px;

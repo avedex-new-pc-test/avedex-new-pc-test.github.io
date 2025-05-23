@@ -182,5 +182,11 @@
   "login": "Вход",
   "connectWallet1": "Подключить кошелек",
   "limitSubmitted": "Лимитный ордер отправлен",
-  "address": "Адрес"
+  "address": "Адрес",
+  "allAccounts": "Все счета",
+  "deposit": "Депозит",
+  "withdraw": "Вывод",
+  "plsEnterAmount": "Введите сумму",
+  "logout": "Выход",
+  "plsEnterAddress": "Введите адрес"
 }

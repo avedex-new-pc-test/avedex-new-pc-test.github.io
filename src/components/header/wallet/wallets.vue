@@ -119,7 +119,7 @@
               </el-select>
               <div class="flex-center mt-30 flex-col" >
                 <canvas id="qr-chain-canvas"></canvas>
-                <div class="text-12px" style="display: flex; align-items: center; word-break: break-all; line-height: 1.2; padding: 20px 20px 40px; color: var(--a-text-4-color);">
+                <div class="text-12px" style="display: flex; align-items: center; word-break: break-all; line-height: 1.2; padding: 20px 20px 40px; color: var(--d-999-l-222);">
                   <span>{{ depositChainInfo?.address || '' }}</span>
                   <i
                     v-if="depositChainInfo?.address"
@@ -183,7 +183,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item :label="$t('plsEnterAmount')" label-position="top" prop="amount">
-                <el-input style="background: var(--custom-bg-9-color); --el-input-bg-color: var(--custom-bg-9-color); --el-input-border-color: var(--custom-bg-9-color); border-radius: 4px;--el-input-height:48px;" v-model="withdrawForm.amount" inputmode="decimal" @input="value => withdrawForm.amount = value.replace(/\-|[^\d.]/g, '')" clearable placeholder="0.00">
+                <el-input style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;" v-model="withdrawForm.amount" inputmode="decimal" @input="value => withdrawForm.amount = value.replace(/\-|[^\d.]/g, '')" clearable placeholder="0.00">
                   <template #suffix>
                     <span class="color-text-1">{{ $f.getChainInfo(withdrawForm.chain)?.main_name }}</span>
                   </template>
@@ -193,11 +193,11 @@
                 </div>
               </el-form-item>
               <el-form-item :label="$t('plsEnterAddress')" label-position="top" prop="address">
-                <el-input style="background: var(--custom-bg-9-color); --el-input-bg-color: var(--custom-bg-9-color); --el-input-border-color: var(--custom-bg-9-color); border-radius: 4px;--el-input-height:48px;" v-model="withdrawForm.address" clearable placeholder="">
+                <el-input style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;" v-model="withdrawForm.address" clearable placeholder="">
                 </el-input>
               </el-form-item>
               <el-form-item v-if="withdrawForm.chain === 'ton'" label="memo" label-position="top" prop="memo">
-                <el-input style="background: var(--custom-bg-9-color); --el-input-bg-color: var(--custom-bg-9-color); --el-input-border-color: var(--custom-bg-9-color); border-radius: 4px;--el-input-height:48px;" v-model="withdrawForm.memo" clearable placeholder="">
+                <el-input style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;" v-model="withdrawForm.memo" clearable placeholder="">
                 </el-input>
               </el-form-item>
               <el-button native-type="submit" style="width: 100%; margin-top: 5px" size="large" :color="$store.state.mode === 'dark' ? '#f5f5f5' : '#333333'" :loading="loadingWithdraw">{{ $t('withdraw') }}</el-button>
@@ -537,10 +537,10 @@ function handleMax() {
       line-height: 1;
       cursor: pointer;
       &:hover {
-        background: var(--a-bg-7-color);
+        background: var(--d-333-l-F2F2F2);
       }
       &.active {
-        background: var(--a-bg-7-color);
+        background: var(--d-333-l-F2F2F2);
       }
     }
   }
@@ -552,13 +552,13 @@ function handleMax() {
     :deep() {
       .el-select__wrapper.el-select__wrapper {
         box-shadow: none;
-        background: var(--a-bg-7-color);
+        background: var(--d-333-l-F2F2F2);
         min-height: 48px;
       }
       .el-select-dropdown__item {
         padding: 0 32px 0 15px;
         height: 48px;
-        --el-fill-color-lighter: var(--a-bg-7-color);
+        --el-fill-color-lighter: var(--d-333-l-F2F2F2);
       }
     }
   }
@@ -567,7 +567,7 @@ function handleMax() {
     font-size: 14px;
     color: #999999;
     &:hover {
-      color: var(--a-text-6-color);
+      color: var(--d-FFF-l-000);
     }
   }
 }

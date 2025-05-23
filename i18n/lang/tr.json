@@ -112,5 +112,7 @@
   "buying": "Satın alma",
   "selling": "satış",
   "estimatedGas": "Tahmini Gas Ücreti",
-  "address": "Adres"
+  "address": "Adres",
+  "plsEnterAmount": "Lütfen tutarı giriniz",
+  "plsEnterAddress": "Lütfen adres girin"
 }

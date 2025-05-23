@@ -269,5 +269,11 @@
   "login": "登录",
   "connectWallet1": "连接钱包",
   "limitSubmitted": "挂单已提交",
-  "address": "地址"
+  "address": "地址",
+  "allAccounts": "所有账户",
+  "deposit": "存入",
+  "withdraw": "提现",
+  "plsEnterAmount": "请输入数量",
+  "logout": "退出",
+  "plsEnterAddress": "请输入地址"
 }

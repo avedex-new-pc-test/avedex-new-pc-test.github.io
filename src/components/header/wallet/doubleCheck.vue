@@ -612,9 +612,9 @@ onMounted(() => {
                         }
 
                         .el-input {
-                            background: var(--custom-bg-9-color);
-                            --el-input-bg-color: var(--custom-bg-9-color);
-                            --el-input-border-color: var(--custom-bg-9-color);
+                            background: var( --d-333-l-F2F2F2);
+                            --el-input-bg-color: var( --d-333-l-F2F2F2);
+                            --el-input-border-color: var( --d-333-l-F2F2F2);
                             border-radius: 8px;
                             --el-input-height: 48px;
                             margin-bottom: 10px;
@@ -628,9 +628,9 @@ onMounted(() => {
             }
 
             .el-input {
-                background: var(--custom-bg-9-color);
-                --el-input-bg-color: var(--custom-bg-9-color);
-                --el-input-border-color: var(--custom-bg-9-color);
+                background: var( --d-333-l-F2F2F2);
+                --el-input-bg-color: var( --d-333-l-F2F2F2);
+                --el-input-border-color: var( --d-333-l-F2F2F2);
                 border-radius: 8px;
                 --el-input-height: 48px;
             }

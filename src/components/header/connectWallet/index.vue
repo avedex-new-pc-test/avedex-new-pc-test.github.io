@@ -126,7 +126,7 @@ watch(dialogVisible, (val) => {
   }
 
   &.light {
-    background: var(--d-131722-l-fff) !important;
+    background: var(--d-131722-l-FFF) !important;
     border-color: #D8D8DC;
   }
 }

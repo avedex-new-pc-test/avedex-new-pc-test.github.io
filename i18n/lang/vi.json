@@ -182,5 +182,11 @@
   "login": "Đăng nhập",
   "connectWallet1": "Kết nối ví",
   "limitSubmitted": "Đã gửi lệnh giới hạn",
-  "address": "Địa chỉ"
+  "address": "Địa chỉ",
+  "allAccounts": "Tất cả tài khoản",
+  "deposit": "Nạp tiền",
+  "withdraw": "Rút tiền",
+  "plsEnterAmount": "Vui lòng nhập số lượng",
+  "logout": "Đăng xuất",
+  "plsEnterAddress": "Nhập địa chỉ"
 }

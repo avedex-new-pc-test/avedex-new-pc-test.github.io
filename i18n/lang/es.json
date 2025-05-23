@@ -114,5 +114,7 @@
   "buying": "Comprando",
   "selling": "vendiendo",
   "estimatedGas": "Gas estimado",
-  "address": "Direción"
+  "address": "Direción",
+  "plsEnterAmount": "Por favor ingrese la cantidad",
+  "plsEnterAddress": "Por favor, ingresa la dirección."
 }

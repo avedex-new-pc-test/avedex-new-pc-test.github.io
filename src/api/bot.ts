@@ -215,7 +215,7 @@ export function confirmAuthSetting(data: {
 }
 
 // 查询是否已绑定authenticator(登录态之后，getUserInfoByGuid 用这个接口可以立即获取邮箱绑定)
-export function getUserInfoByGuid(guid: string): Promise<{
+export function bot_getUserInfoByGuid(guid: string): Promise<{
   guid: string
   emailAddress: string // 已绑定的email address
   authSetting: boolean //  已绑定google验证器, false -> 未绑定google验证器
@@ -413,8 +413,23 @@ export const bot_getApprove = createCacheRequest(function(params: {
   })
 }, 500)
 
+export const bot_getChainsTokenBalance = createCacheRequest(function(params) {
+  const { $api } = useNuxtApp()
+  return  $api('/botapi/swap/getChainsTokenBalance', {
+    method: 'post',
+    body: params
+  })
+}, 500)
 
-
+// 查询sol bundle是否可用
+// /swap/getBundleAvailable GET
+export function bot_getBundleAvailable() {
+  const { $api } = useNuxtApp()
+  return  $api('/botapi/swap/getBundleAvailable', {
+    method: 'get',
+    query: {}
+  })
+}
 // 预授权代币
 export function bot_approve(data: {
   tokenAddress: string
@@ -613,6 +628,6 @@ export function bot_getTransferGasFee(params: { chain: 'eth' | 'base' | 'bsc' } 
   const { $api } = useNuxtApp()
   return $api('/botapi/swap/getTransferGasFee', {
     method: 'get',
-     query: params
+    query: params
   })
 }

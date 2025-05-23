@@ -6,11 +6,18 @@ import {
   bot_getWalletsAllChain,
   bot_getWebConfig,
   bot_updateWebConfig,
+  bot_getChainsTokenBalance,
+  bot_getUserInfoByGuid,
+  bot_getBundleAvailable
 } from '@/api/bot'
+import { getTokensPrice  } from '@/api/token'
 import { createCacheRequest } from '@/utils/cacheRequest'
 import { tgLogin } from '@/utils/bot'
 import { useBotSettingStore } from './botSetting'
-import { deepMerge } from '@/utils'
+import { deepMerge,evm_utils as utils } from '@/utils'
+import { NATIVE_TOKEN } from '@/utils/constants'
+
+type AddressItem = { chain: string; address: string; price?: number; balance?: string; decimals?: number; logo_url?: string };
 
 const _refreshAccessToken = createCacheRequest(_refAcc, 3000)
 
@@ -20,6 +27,7 @@ export const useBotStore = defineStore('bot', () => {
   const refreshToken = useLocalStorage('bot_refreshToken', '')
   const evmAddress = useLocalStorage('bot_evmAddress', '')
   const botReqCount = ref(0)
+  const bundleAvailableUpdate = ref(0)
   const refreshing = ref(false)
   const subscribed = ref(false)
   const bundleAvailable = ref(false)
@@ -31,7 +39,12 @@ export const useBotStore = defineStore('bot', () => {
   const wsStore = useWSStore()
   const userInfo = computed(() => {
     return walletList.value?.find?.((i) => i.evmAddress === evmAddress.value)
-  })
+  }) as ComputedRef<{
+    tgUid: string
+    evmAddress: string
+    name: string
+    addresses: Array<AddressItem>
+  }>
 
   function refreshAccessToken(type: 'acc' | 'ref') {
     if (!refreshToken.value) {
@@ -45,6 +58,97 @@ export const useBotStore = defineStore('bot', () => {
         refreshToken.value = res.refreshToken
       }
     })
+  }
+  async function getUserInfoByGuid() {
+    if (!userInfo.value?.tgUid) {
+      return Promise.resolve(userInfo.value)
+    }
+    const res = await bot_getUserInfoByGuid(userInfo.value?.tgUid)
+    useUserStore().email = res.emailAddress
+    return res
+  }
+
+  function switchWallet(item: { tgUid: string; evmAddress: string; name: string; addresses: Array<AddressItem> } | undefined) {
+    if (!item) return
+    const isWallet = walletList.value?.some?.(i => item.evmAddress === i.evmAddress)
+    if (isWallet) {
+      // userInfo.value = {...item}
+      evmAddress.value = item.evmAddress
+      console.log('switchWallet', item)
+      localStorage.bot_userInfo = JSON.stringify(item)
+      getUserAllChainBalance()
+      getBundleAvailable()
+      // dispatch('bot_set_user_ids',{...item})
+    }
+  }
+
+  function getChainsTokenBalance(data: { chain: string; tokens: any[]; walletAddress: string }[]) {
+      if (!accessToken.value) {
+        return Promise.resolve([])
+      }
+      return bot_getChainsTokenBalance(data).then(async res => {
+        return res?.map((i: { balance: any; decimals: any; decimal: any; token: string; chain: any }) => {
+          const balance = i.balance
+          const decimals = i.decimals || i.decimal || 0
+          const token = i.token === 'sol' ? 'So11111111111111111111111111111111111111112' : i.token
+          return {
+            ...i,
+            initBalance: balance,
+            balance: decimals == 0 ? balance : utils.formatUnits(balance.toString(), decimals),
+            chain: i.chain,
+            token
+          }
+        })
+      })
+  }
+  function getUserAllChainBalance() {
+       if (!accessToken.value) {
+        return
+      }
+      const chainMainToken: { [key: string]: string } = {
+        solana: 'sol',
+        ton: 'TON',
+      }
+      if (userInfo.value?.addresses && userInfo.value.addresses.length > 0) {
+        const addresses = userInfo.value?.addresses || []
+        const tokens = addresses.map((i) => {
+          return {
+            chain: i.chain,
+            tokens: [chainMainToken[i.chain] || NATIVE_TOKEN],
+            walletAddress: i.address
+          }
+        })
+        getChainsTokenBalance(tokens).then(res => {
+          if (userInfo.value && Array.isArray(userInfo.value.addresses)) {
+            (res || []).forEach?.((i: { balance: any; decimals: any; decimal: any }, k: number) => {
+              userInfo.value!.addresses[k] = { ...userInfo.value!.addresses?.[k], balance: i?.balance || 0, decimals: i.decimals || i.decimal }
+            })
+          }
+        })
+        const chainMainToken1: { [key: string]: string } = {
+          solana: 'So11111111111111111111111111111111111111112',
+        }
+        // const adds = Array.from(new Set(addresses?.map?.(i => i?.address || '') || []))
+        // dispatch('subBalanceChange', adds)
+        const tokenIds = userInfo.value?.addresses?.map(i => ((chainMainToken1?.[i.chain] || NATIVE_TOKEN) + '-' +  i.chain))
+        getTokensPrice(tokenIds).then(res => {
+          if (userInfo.value && Array.isArray(userInfo.value.addresses)) {
+            res?.forEach?.((i, k) => {
+              userInfo.value!.addresses[k] = {...userInfo.value?.addresses?.[k], price: i?.current_price_usd || 0, logo_url: i?.logo_url || ''}
+            })
+          }
+        })
+    }
+  }
+  function getBundleAvailable(): Promise<any> {
+      if (bundleAvailableUpdate.value > 0) {
+        return Promise.resolve(bundleAvailable.value)
+      }
+      return bot_getBundleAvailable().then(res => {
+        bundleAvailable.value = res
+        bundleAvailableUpdate.value++
+        return res
+      })
   }
   function getUserInfo(evmAddress1 = '') {
     if (accessToken.value) {
@@ -60,16 +164,23 @@ export const useBotStore = defineStore('bot', () => {
             } else {
               evmAddress.value = walletList.value?.[0]?.evmAddress || ''
             }
-          } else {
-            const isWallet = walletList.value?.find?.(
-              (i) =>
-                evmAddress.value === i?.evmAddress &&
-                userInfo.value?.addresses?.length === i?.addresses?.length
-            )
-            if (!isWallet) {
-              evmAddress.value = walletList.value?.[0]?.evmAddress || ''
-            }
+            switchWallet(item)
+          } 
+          const isWallet = walletList.value?.find?.(
+            (i) =>
+              evmAddress.value === i?.evmAddress &&
+              userInfo.value?.addresses?.length === i?.addresses?.length
+          )
+          if (!isWallet) {
+            evmAddress.value = walletList.value?.[0]?.evmAddress || ''
+            switchWallet(res?.[0] || {})
+            // dispatch("switchWallet", res?.[0] || {})
+          }else{
+            switchWallet(isWallet)
+            // dispatch("switchWallet", isWallet)
           }
+          getUserInfoByGuid()
+          getBundleAvailable()
           // 获取用户交易配置信息
           getWebConfig()
           botSwapStore.bot_getGasTip()
@@ -206,6 +317,11 @@ export const useBotStore = defineStore('bot', () => {
     getWalletAddress,
     changeConnectVisible,
     connectWalletTab,
-    bundleAvailable
+    bundleAvailable,
+    getUserInfoByGuid,
+    switchWallet,
+    getChainsTokenBalance,
+    getUserAllChainBalance,
+    getBundleAvailable
   }
 })

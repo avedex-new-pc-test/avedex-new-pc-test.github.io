@@ -27,7 +27,11 @@
     <div class="flex-1" />
     <el-button
       v-if="!botStore.evmAddress"
-      class="ml-10px bg-[var(--d-222-l-F2F2F2)] rounded-4px text-[var(--d-F5F5F5-l-333)]"
+      text
+      type=""
+      bg
+      color="bg-[var(--d-222-l-F2F2F2)]"
+      class="ml-10px  rounded-4px text-[var(--d-F5F5F5-l-333)]!"
       @click="openConnect"
     >
       {{ $t('connectWallet') }}
