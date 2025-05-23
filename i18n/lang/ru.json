@@ -136,5 +136,10 @@
   "importAddress": "Адрес просмотра",
   "appCode": "Код приложения",
   "startConfirmPasswordError": "Пароли не совпадают.",
-  "startSuccessTitle": "Пароль успешно сброшен"
+  "startSuccessTitle": "Пароль успешно сброшен",
+  "profit": "Прибыль",
+  "totalBuy": "Всего покупок",
+  "totalSell": "Всего продаж",
+  "avgBuyPrice": "Средняя цена покупки",
+  "avgSellPrice": "Средняя цена продажи"
 }

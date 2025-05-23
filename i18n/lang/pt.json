@@ -87,5 +87,8 @@
   "SS": "SS",
   "startResetTitle": "Defina a senha",
   "connectChainWallet": "Conecte a carteira",
-  "importAddress": "Ver endereço "
+  "importAddress": "Ver endereço ",
+  "profit": "Lucro",
+  "totalBuy": "Total Comprado",
+  "totalSell": "Total Vendido"
 }

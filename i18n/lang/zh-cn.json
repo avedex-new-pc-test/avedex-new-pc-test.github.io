@@ -222,5 +222,10 @@
   "startConfirmPasswordError": "两次密码输入不一致",
   "startSuccessTitle": "重置密码成功",
   "trending": "热门币",
-  "filterTip": "已筛选{address}的{count}笔交易"
+  "filterTip": "已筛选{address}的{count}笔交易",
+  "profit": "盈亏",
+  "totalBuy": "总买入",
+  "totalSell": "总卖出",
+  "avgBuyPrice": "买入成本价",
+  "avgSellPrice": "卖出成本价"
 }

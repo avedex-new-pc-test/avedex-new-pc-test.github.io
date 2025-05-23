@@ -222,5 +222,10 @@
   "startConfirmPasswordError": "The two password entries do not match.",
   "startSuccessTitle": "Password reset successful",
   "trending": "Trending",
-  "filterTip": "Filtered {count} transactions for {address}"
+  "filterTip": "Filtered {count} transactions for {address}",
+  "profit": "Profit",
+  "totalBuy": "Total Buy",
+  "totalSell": "Total Sell",
+  "avgBuyPrice": " Avg Buy Price",
+  "avgSellPrice": " Avg Sell Price"
 }

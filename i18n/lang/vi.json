@@ -136,5 +136,10 @@
   "importAddress": "Địa chỉ theo dõi",
   "appCode": "Mã App",
   "startConfirmPasswordError": "Hai mật khẩu không khớp",
-  "startSuccessTitle": "Đặt lại mật khẩu thành công"
+  "startSuccessTitle": "Đặt lại mật khẩu thành công",
+  "profit": "Lợi nhuận",
+  "totalBuy": "Tổng mua",
+  "totalSell": "Tổng bán",
+  "avgBuyPrice": "Giá mua trung bình",
+  "avgSellPrice": "Giá bán trung bình"
 }

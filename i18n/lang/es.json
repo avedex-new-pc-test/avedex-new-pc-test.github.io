@@ -87,5 +87,8 @@
   "SS": "Segundo",
   "startResetTitle": "Establecer contraseña",
   "connectChainWallet": "Conectar billetera",
-  "importAddress": "Ver dirección"
+  "importAddress": "Ver dirección",
+  "profit": "Ganancia",
+  "totalBuy": "Compra Total",
+  "totalSell": "Venta Total"
 }

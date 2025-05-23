@@ -219,5 +219,10 @@
   "startConfirmPasswordError": "兩次密碼輸入不一致",
   "startSuccessTitle": "密碼重置成功",
   "trending": "熱門幣",
-  "filterTip": "已篩選{address}的{count}筆交易"
+  "filterTip": "已篩選{address}的{count}筆交易",
+  "profit": "盈虧",
+  "totalBuy": "總買入",
+  "totalSell": "總賣出",
+  "avgBuyPrice": "買入成本價",
+  "avgSellPrice": "賣出成本價"
 }

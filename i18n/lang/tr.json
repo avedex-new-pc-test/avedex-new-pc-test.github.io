@@ -86,5 +86,8 @@
   "SS": "Sn",
   "startResetTitle": "Şifre Ayarla",
   "connectChainWallet": "Cüzdan Bağlayın",
-  "importAddress": "Adresi İçe Aktar"
+  "importAddress": "Adresi İçe Aktar",
+  "profit": "Kazanç",
+  "totalBuy": "Toplam Alış",
+  "totalSell": "Toplam Satış"
 }
