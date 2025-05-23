@@ -9,7 +9,7 @@
     >
       <div class="name">{{ item.name }}</div>
       <div class="value" :style="{ color: getColor(item.id) }">
-        {{!!tokenStore.pair ? formatNumber(tokenStore.pair?.[`price_change_${item?.id}`]) : '--' }}%
+        {{!!tokenStore.pair ? formatNumber(tokenStore.pair?.[`price_change_${item?.id}`], 2) : '--' }}%
       </div>
     </button>
   </div>

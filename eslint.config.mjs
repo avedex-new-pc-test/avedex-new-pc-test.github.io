@@ -13,7 +13,8 @@ export default withNuxt({
     '@typescript-eslint/no-explicit-any': 'off',
     'vue/no-multiple-template-root': 'off',
     'vue/attribute-hyphenation': 'off',
-    'vue/no-v-html': 'off'
+    'vue/no-v-html': 'off',
+    'vue/v-on-event-hyphenation': 'off'
   }
 })
 

@@ -12,6 +12,23 @@
   }
 }
 
-.el-popper[role="tooltip"] {
-  //--at-apply: [&&]:p-20px;
+
+.el-dialog__header {
+  color: var(--d-F5F5F5-l-333);
+  .el-dialog__headerbtn {
+    --el-message-close-size: 24px;
+    top: 10px;
+    right: 5px;
+    .el-dialog__close {
+      --el-color-info: var(--d-F5F5F5-l-333);
+    }
+  }
 }
+
+.el-button:disabled.is-disabled, .el-button:disabled.is-disabled:hover {
+  // color:  var(--el-button-text-color);
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  opacity: 0.5;
+}
+

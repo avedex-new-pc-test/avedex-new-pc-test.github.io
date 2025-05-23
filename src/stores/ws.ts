@@ -5,6 +5,7 @@ import { getBestApiDomain } from '@/plugins/api/getApiDomain'
 import { getWSMessage } from '@/utils'
 import { updatePriceFromTx } from '@/utils/txUpdate'
 import type { WSTx } from '~/pages/token/components/kLine/types'
+import { WSEventType } from '~/utils/constants'
 
 export const useWSStore = defineStore('ws', () => {
   // 使用 shallowRef 代替 ref，WebSocket 本身是非响应式的
@@ -12,6 +13,14 @@ export const useWSStore = defineStore('ws', () => {
   const isConnected = shallowRef(false)
 
   // const tokenStore = useTokenStore()
+
+  const wsResult = reactive<Record<typeof WSEventType[keyof typeof WSEventType], any>>({
+    [WSEventType.TX]: null,
+    [WSEventType.LIQ]: null,
+    [WSEventType.KLINE]: null,
+    [WSEventType.PRICEV2]: null,
+    [WSEventType.TGBOT]: null
+  })
 
   // 将 createWebSocket 重命名为 init
   const init = (options?: WSOptions) => {
@@ -23,7 +32,18 @@ export const useWSStore = defineStore('ws', () => {
       isConnected.value = true
     }).onclose(() => {
       isConnected.value = false
-    })
+    }).onmessage((e) => {
+      const msg = getWSMessage(e)
+      if (!msg) {
+        return
+      }
+      const { event, data } = msg
+      if (event === WSEventType.TGBOT) {
+        wsResult[event] = data?.msg
+      } else {
+        wsResult[event] = data
+      }
+    }, 'main')
   }
 
   // 发送消息并确保初始化 WebSocket 连接
@@ -73,6 +93,7 @@ export const useWSStore = defineStore('ws', () => {
     init,
     send,
     close,
-    onmessageTxUpdateToken
+    onmessageTxUpdateToken,
+    wsResult
   }
 })
