@@ -2,7 +2,10 @@
 const {row} = defineProps({
   row: {
     type: Object,
-    default: () => ({})
+    default: () => ({
+      chain: '',
+      logo_url: ''
+    })
   },
   tokenClass: {
     type: String,

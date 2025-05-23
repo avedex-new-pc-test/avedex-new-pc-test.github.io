@@ -15,7 +15,7 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const {t} = useI18n()
-const {totalHolders, pairAddress, token} = storeToRefs(useTokenStore())
+const {totalHolders, pairAddress, token, pair} = storeToRefs(useTokenStore())
 const botStore = useBotStore()
 const wsStore = useWSStore()
 const route = useRoute()
@@ -308,6 +308,19 @@ async function _getPairTxs() {
         senderProfile: JSON.parse(val.profile || '{}')
       }
     }).reverse()
+    if (process.env.NODE_ENV === 'development') {
+      const tokenDetailStore = useTokenDetailsStore()
+      tokenDetailStore.$patch({
+        drawerVisible: true,
+        tokenInfo: {
+          ...token.value,
+          address: token.value?.token,
+          id: route.params.id,
+        },
+        pairInfo: pair.value,
+        user_address: (res || [])[0].wallet_address
+      })
+    }
   } catch (e) {
     console.log('=>(transactions.vue:62) e', e)
   } finally {
@@ -522,8 +535,7 @@ function setActiveTab(val: string) {
 }
 
 function setMakerAddress(address: string) {
-  const result = tableFilter.value.markerAddress ? '' : address
-  tableFilter.value.markerAddress = result
+  tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
 }
 
 </script>

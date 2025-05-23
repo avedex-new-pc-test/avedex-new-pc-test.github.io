@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
 import {getPairTxs, type GetPairTxsResponse} from '~/api/token'
-import {getTokenBalance} from '~/api/swap'
 
 const props = defineProps({
   makerAddress: {
@@ -99,26 +98,26 @@ async function _getPairTxs() {
   }
 }
 
-async function _getTokenBalance() {
-  try {
-    const tokenAddress = tokenStore.token?.token
-    if (tokenAddress) {
-      const res = await getTokenBalance({
-        chain: props.chain,
-        walletAddress: props.makerAddress,
-        tokens: [tokenAddress]
-      })
-      if (Array.isArray(res) && res.length > 0) {
-        balanceAmount.value = res[0]
-          ? new BigNumber(res[0].balance).div(new BigNumber(10).pow(res[0].decimals)).toString()
-          : '0'
-      }
-    }
-  } catch (e) {
-    console.log('=>(userTxsFilterHead.vue:83) e', e)
-
-  }
-}
+// async function _getTokenBalance() {
+//   try {
+//     const tokenAddress = tokenStore.token?.token
+//     if (tokenAddress) {
+//       const res = await getTokenBalance({
+//         chain: props.chain,
+//         walletAddress: props.makerAddress,
+//         tokens: [tokenAddress]
+//       })
+//       if (Array.isArray(res) && res.length > 0) {
+//         balanceAmount.value = res[0]
+//           ? new BigNumber(res[0].balance).div(new BigNumber(10).pow(res[0].decimals)).toString()
+//           : '0'
+//       }
+//     }
+//   } catch (e) {
+//     console.log('=>(userTxsFilterHead.vue:83) e', e)
+//
+//   }
+// }
 
 function getColorClass(val: string) {
   if (Number(val) === 0) {
