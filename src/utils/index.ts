@@ -402,7 +402,7 @@ export function openBrowser(
   window.open(newUrl)
 }
 
-export function getChainDefaultIconColor(chain: string) {
+export function getChainDefaultIconColor(chain?: string) {
   const theme = useThemeStore().theme
   const defaultColor = theme === 'dark' ? '#333333' : '#999999'
   if (!chain) {
@@ -421,7 +421,7 @@ export function getChainDefaultIconColor(chain: string) {
   return colors?.[chain] || defaultColor
 }
 
-export function getChainDefaultIcon(chain: string, text = '') {
+export function getChainDefaultIcon(chain?: string, text = '') {
   if (text) {
     const color = getChainDefaultIconColor(chain)
     const defaultSvg = `<?xml version="1.0" standalone="no"?><svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="50%" cy="50%" r="16" stroke="transparent" fill="${color}" stroke-width="0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#fff">${text
@@ -444,7 +444,7 @@ export function getSymbolDefaultIcon(tokenInfo: {
   symbol?: string
   chain: string
   logo_url?: string
-}) {
+}| undefined ) {
   const domain = useConfigStore().token_logo_url
   if (
     tokenInfo &&
@@ -456,7 +456,7 @@ export function getSymbolDefaultIcon(tokenInfo: {
     }
     return domain + tokenInfo.logo_url
   }
-  return getChainDefaultIcon(tokenInfo.chain, tokenInfo.symbol)
+  return getChainDefaultIcon(tokenInfo?.chain || '', tokenInfo?.symbol || '')
 }
 
 export function formatIconTag(src: string) {
@@ -499,13 +499,13 @@ export function deepMerge(target: any, source: any) {
   }
 }
 
-export function formatIconSwap(src: string) {
+export function formatIconSwap(src?: string) {
   return src && src !== 'unknown'
     ? `${useConfigStore().token_logo_url}swap/${src}.jpeg`
     : IconUnknown
 }
 
-export function formatNewTags(src) {
+export function formatNewTags(src?:string) {
   return src && src !== 'unknown'
     ? `${useConfigStore().token_logo_url}address_portrait/${src}`
     : IconUnknown
@@ -552,4 +552,37 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
     return ''
   }
   return useRemarksStore().getRemarkByAddress({address, chain})
+}
+
+export function getColorClass(val: number) {
+  if (val === 0) {
+    return 'color-#848E9C'
+  } else if (val > 0) {
+    return 'color-#12b886'
+  } else {
+    return 'color-#ff646d'
+  }
+}
+export function desensitizeEmail(email: string) {
+  // 使用正则表达式匹配邮箱格式
+  const emailPattern = /^(.+?)(@.*)$/
+  const match = email.match(emailPattern)
+
+  if (match) {
+    const username = match[1] // 获取用户名部分
+    const domain = match[2] // 获取域名部分
+
+    let maskedUsername
+    if (username.length === 1) {
+      // 只有一个字符，保留该字符并加上 ***
+      maskedUsername = `${username}***`
+    } else if (username.length >= 2) {
+      // 大于等于两个字符，保留前两个字符并加上 ***
+      maskedUsername = `${username.slice(0, 2)}***`
+    }
+
+    return `${maskedUsername}${domain}`
+  } else {
+    throw new Error('Invalid email format')
+  }
 }
