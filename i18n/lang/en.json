@@ -220,5 +220,7 @@
   "importAddress": "Watch Address",
   "appCode": "App Code",
   "startConfirmPasswordError": "The two password entries do not match.",
-  "startSuccessTitle": "Password reset successful"
+  "startSuccessTitle": "Password reset successful",
+  "trending": "Trending",
+  "filterTip": "Filtered {count} transactions for {address}"
 }

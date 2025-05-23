@@ -244,7 +244,7 @@ export interface Profile {
 
 
 // 交易历史流动性
-export function getPairLiq(pair: string, address?: string) {
+export async function getPairLiq(pair: string, address?: string): Promise<GetPairLiqResponse[]> {
   if (!pair || pair.length < 15) {
     return []
   }
@@ -314,5 +314,16 @@ export function getTxsUserBrief(query: {
   return $api('/v2api/token/v1/user/brief', {
     method: 'get',
     query,
+  })
+}
+
+export function getUserTxs(token_id: string, address: string) {
+  const {$api} = useNuxtApp()
+  return $api(`/v1api/v2/pairs/userMergedTxs`, {
+    method: 'get',
+    params: {
+      token_id: token_id,
+      user_address: address,
+    }
   })
 }

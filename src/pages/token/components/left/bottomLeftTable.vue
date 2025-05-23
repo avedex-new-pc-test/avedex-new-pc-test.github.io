@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Trending from './trending.vue'
-import {useWindowSize} from '@vueuse/core'
+import {templateRef, useElementSize} from '@vueuse/core'
 
 const {t} = useI18n()
 const props = defineProps({
@@ -9,7 +9,8 @@ const props = defineProps({
     required: true
   }
 })
-const {height} = useWindowSize()
+const leftBottomBox = templateRef('leftBottomBox')
+const {height} = useElementSize(leftBottomBox)
 const activeTab = shallowRef<keyof typeof components>('Trending')
 const tabs = shallowRef([
   {name: t('trending'), component: 'Trending' as const},
@@ -23,15 +24,17 @@ const Component = computed(() => {
   return components[activeTab.value]
 })
 const scrollbarHeight = computed(() => {
-  const TOPBAR_HEIGHT = 60
-  const CHARTTOP_HEIGHT = 64
-  return height.value - props.topLeftHeight - TOPBAR_HEIGHT - CHARTTOP_HEIGHT - 122
+  if (height.value) {
+    return height.value - 66
+  }
+  return 1
 })
 </script>
 
 <template>
   <div
-    :class="`bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px flex-1
+    ref="leftBottomBox"
+    :class="`bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px flex-1 flex flex-col
     `">
     <div class="flex items-center px-12px gap-20px">
       <a
@@ -44,7 +47,7 @@ const scrollbarHeight = computed(() => {
         {{ item.name }}
       </a>
     </div>
-    <component :is="Component" :scrollbarHeight="scrollbarHeight"/>
+    <component class="flex-1" :is="Component" :scrollbarHeight="scrollbarHeight"/>
   </div>
 </template>
 
