@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 // 小于 0.1 数字的格式化
-function formatDec(n: number | string, decimals = 3) {
+export function formatDec(n: number | string, decimals = 3) {
   let n1 = Number(n) || 0
   let d = 0
   if (n1 < 0) {
@@ -166,7 +166,7 @@ function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0
       0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 &&
       n1 > 0
   ) {
-    return 0
+    return '0'
   }
   return formatNumShort(formatNumUnit(n, decimals, unit), l)
 }

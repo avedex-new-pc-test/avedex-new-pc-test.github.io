@@ -6,6 +6,16 @@ import { BigNumber } from 'bignumber.js'
 import type { GetTotalHoldersResponse} from '~/api/stats'
 import {getTotalHolders} from '~/api/stats'
 
+type Token = {
+  chain?: string
+  balance?: string
+  symbol?: string
+  decimals?: number
+  address?: string
+  price?: number
+  logo_url?: string
+}
+
 export const useTokenStore = defineStore('token', () => {
   const route = useRoute()
   const tokenInfo = ref<null | TokenInfo>(null)
@@ -25,6 +35,14 @@ export const useTokenStore = defineStore('token', () => {
   const totalHolders = shallowRef<GetTotalHoldersResponse[]>([])
   const price = computed(() => tokenPrice.value || token.value?.current_price_usd)
   const priceChange = computed(() => tokenPriceChange.value || token.value?.price_change)
+
+  const swap = reactive<{
+    native: Token
+    token: Token
+  }>({
+    native: {},
+    token: {}
+  })
 
   const circulation = computed(() => {
     const circulation = new BigNumber(token.value?.total || 0)
@@ -78,7 +96,8 @@ export const useTokenStore = defineStore('token', () => {
     reset,
     switchPair,
     _getTotalHolders,
-    totalHolders
+    totalHolders,
+    swap
   }
 })
 

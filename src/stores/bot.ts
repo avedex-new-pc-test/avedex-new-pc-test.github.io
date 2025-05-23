@@ -21,17 +21,18 @@ export const useBotStore = defineStore('bot', () => {
   const evmAddress = useLocalStorage('bot_evmAddress', '')
   const botReqCount = ref(0)
   const refreshing = ref(false)
+  const subscribed = ref(false)
+  const bundleAvailable = ref(false)
 
   const connectVisible = ref(false)
   const connectWalletTab = ref(0)
-  const walletList = shallowRef<
-    Awaited<ReturnType<typeof bot_getWalletsAllChain>>
-  >([])
-  console.log('=>(bot.ts:19) walletList', walletList)
+  const walletList = shallowRef<Awaited<ReturnType<typeof bot_getWalletsAllChain>>>([])
+  const botSwapStore = useBotSwapStore()
+  const wsStore = useWSStore()
   const userInfo = computed(() => {
     return walletList.value?.find?.((i) => i.evmAddress === evmAddress.value)
   })
- 
+
   function refreshAccessToken(type: 'acc' | 'ref') {
     if (!refreshToken.value) {
       return Promise.reject('no refreshToken')
@@ -71,7 +72,10 @@ export const useBotStore = defineStore('bot', () => {
           }
           // 获取用户交易配置信息
           getWebConfig()
+          botSwapStore.bot_getGasTip()
           // 获取用户其他信息
+          bot_subscribe()
+
         }
       )
     }
@@ -79,11 +83,11 @@ export const useBotStore = defineStore('bot', () => {
   function getWebConfig(chain = '') {
     if (accessToken.value) {
       return bot_getWebConfig(chain).then((res) => {
-        const botSettings = useBotSettingStore().botSettings
+        let botSettings = useBotSettingStore().botSettings
         if (chain) {
           botSettings[chain] = deepMerge(botSettings[chain], res)
         } else {
-          botSettings.value = deepMerge(botSettings.value, res)
+          botSettings = deepMerge(botSettings, res)
         }
         return botSettings.value
       })
@@ -129,6 +133,59 @@ export const useBotStore = defineStore('bot', () => {
     connectVisible.value = visible
     connectWalletTab.value = tab ?? 0
   }
+
+  function bot_subscribe() {
+    if (accessToken.value && userInfo.value?.tgUid) {
+      if (subscribed.value) {
+        bot_unsubscribe()
+      }
+      const data = {
+        'jsonrpc': '2.0',
+        'method': 'subscribe',
+        'params': [
+          'tgbot',     // topic
+          userInfo.value?.tgUid // tgUid
+        ],
+        'id': 1
+      }
+      // const data2 = {
+      //   'jsonrpc': '2.0',
+      //   'method': 'subscribe',
+      //   'params': [
+      //     'monitor',     // topic
+      //     userInfo.value?.tgUid, // tgUid
+      //     'web'
+      //   ],
+      //   'id': 1
+      // }
+      wsStore.send(data)
+      subscribed.value = true
+    }
+  }
+
+  function bot_unsubscribe() {
+    if (accessToken.value && userInfo.value?.tgUid) {
+      const data = {
+        'jsonrpc': '2.0',
+        'method': 'unsubscribe',
+        'params': [
+          'tgbot',     // topic
+          userInfo.value?.tgUid // tgUid
+        ],
+        'id': 1
+      }
+      // const data2 = {
+      //   'jsonrpc': '2.0',
+      //   'method': 'unsubscribe',
+      //   'params': [
+      //     'monitor',     // topic
+      //   ],
+      //   'id': 1
+      // }
+      wsStore.send(data)
+      subscribed.value = false
+    }
+  }
   return {
     accessToken,
     walletList,
@@ -149,5 +206,6 @@ export const useBotStore = defineStore('bot', () => {
     getWalletAddress,
     changeConnectVisible,
     connectWalletTab,
+    bundleAvailable
   }
 })

@@ -1,9 +1,9 @@
 <template>
-  <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px" style="min-height: calc(100vh - 100px);">
-    <div class="flex-1">
+  <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px w-100%" style="min-height: calc(100vh - 100px);">
+    <div class="flex-1 min-w-0">
       <Top/>
       <div class="flex gap-4px">
-        <Left class="w-292px flex flex-col"/>
+        <Left class="w-292px flex flex-col flex-shrink-0"/>
         <div class="flex-1 hide-scrollbar">
           <el-scrollbar height="calc(100vh - 152px)">
             <KLine />
@@ -12,7 +12,7 @@
         </div>
       </div>
     </div>
-    <TokenRight class="w-334px" />
+    <TokenRight class="w-334px flex-shrink-0" />
   </div>
 </template>
 
@@ -24,6 +24,13 @@ import TokenRight from './components/right/index.vue'
 import {Left} from './components/left'
 import {BelowChartTable} from './components/belowChartTable'
 import KLine from '~/pages/token/components/kLine/index.vue'
+
+definePageMeta({
+  name: 'token-id',
+  key: (route) => {
+    return (route.name as string)
+  },
+})
 const route = useRoute()
 const tokenStore = useTokenStore()
 const wsStore = useWSStore()
@@ -31,6 +38,8 @@ const wsStore = useWSStore()
 
 const documentVisible = shallowRef(true)
 provide('documentVisible', documentVisible)
+const botSwapStore = useBotSwapStore()
+
 
 function _getTokenInfo() {
   const id = route.params.id as string
@@ -52,7 +61,12 @@ function init() {
   _getTokenInfoExtra()
   wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
+  botSwapStore.sendNativePriceWs()
 }
+
+watch(() => route.params.id, () => {
+  init()
+})
 
 onBeforeMount(() => {
   init()
@@ -64,7 +78,7 @@ onBeforeMount(() => {
 
 onBeforeRouteLeave(() => {
   tokenStore.reset()
-  wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline'])
+  wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline', 'price'])
 })
 </script>
 

@@ -1,5 +1,6 @@
 import langs from './json/botLang.json'
 import Cookies from 'js-cookie'
+import BigNumber from 'bignumber.js'
 
 export function formatBotError(msg: string) {
   const locale = localStorage.language
@@ -95,4 +96,28 @@ export function tgLogin() {
   }
   url = url + path
   window.open(url)
+}
+
+
+export function formatBotGasTips(gasTipList: Array<{
+  chain: string
+  mev: boolean
+  low: number | string
+  average: number | string
+  high: number | string
+}>, chain: string) {
+  const gasTip1 = gasTipList.find((i) => i.chain === chain && i.mev)
+  const gasTip2 = gasTipList.find((i) => i.chain === chain && !i.mev)
+  let gasTip1List = gasTip1
+    ? [gasTip1?.low, gasTip1?.average, gasTip1?.high]
+    : []
+  gasTip1List = gasTip1List.map((i) => new BigNumber(i).div(10 ** 9).toFixed())
+  let gasTip2List = gasTip2
+    ? [gasTip2?.low, gasTip2?.average, gasTip2?.high]
+    : []
+  gasTip2List = gasTip2List.map((i) => new BigNumber(i).div(10 ** 9).toFixed())
+  return {
+    gasTip1List,
+    gasTip2List,
+  }
 }
