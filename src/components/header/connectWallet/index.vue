@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog 
+    <el-dialog
       v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
@@ -13,7 +13,7 @@
       <template v-else>
         <div class='w-content'>
           <h3 class="connect-popup-title filterArray-button font-500">
-            <el-icon 
+            <el-icon
               v-if="botStore.connectWalletTab !== 0"
               :size="35"
               style="color:var(--d-999-l-222);"
@@ -28,8 +28,8 @@
                 v-show="botStore.connectWalletTab == 0"
                 class="text-14px text-center min-h-200px"
               >
-                <emailRegisterAndLogin 
-                  ref="loginForm" 
+                <emailRegisterAndLogin
+                  ref="loginForm"
                   :cType="emailRegisterType"
                   @update:c-type="(cType) => emailRegisterType = cType">
                   <!-- <template #nav>

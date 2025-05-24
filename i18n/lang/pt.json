@@ -114,6 +114,7 @@
   "buying": "Comprando",
   "selling": "Vendendo",
   "estimatedGas": "Gás estimado ",
+  "unknownRisk": "Risco Desconhecido",
   "address": "Endereço",
   "plsEnterAmount": "Por favor, insira a quantidade",
   "plsEnterAddress": "Por favor, insira o endereço",
