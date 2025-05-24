@@ -28,7 +28,8 @@
                     </li>
                 </ul>
                 <div v-show="step === 1" class="checkType-content">
-                    <loading v-model:active="loading3" :can-cancel="false" loader="dots" :opacity="0.2"
+                    <loading 
+                        v-model:active="loading3" :can-cancel="false" loader="dots" :opacity="0.2"
                         :backgroundColor="mode === 'light' ? '#fff' : '#131722'" color="var(--custom-primary-color)"
                         :is-full-page="false" />
                     <div v-show="(checkType === 'google') && (googleAuth.authSetting === false)">
@@ -36,8 +37,9 @@
                             <li>
                                 <label>{{ $t('DbCheckContentTitle1') }}</label>
                                 <div>
-                                    <div style="margin-bottom: 6px;">{{ $t('DbCheckContentContent11') }}</div>
-                                    <a style="text-decoration: underline;"
+                                    <div class="mb-6px">{{ $t('DbCheckContentContent11') }}</div>
+                                    <a 
+                                        class="decoration-underline"
                                         href="https://doc.ave.ai/cn/ave.ai-jiao-cheng/gu-ge-yan-zheng-qi-an-zhuang-jiao-cheng"
                                         target="_blank">{{ $t('DbCheckContentContent12') }}</a>
                                 </div>
@@ -45,21 +47,24 @@
                             <li>
                                 <label>{{ $t('DbCheckContentTitle2') }}</label>
                                 <div>
-                                    <div style="margin-bottom: 6px;">{{ $t('DbCheckContentContent2') }}</div>
+                                    <div class="mb-6px">{{ $t('DbCheckContentContent2') }}</div>
                                     <el-skeleton :loading="loading4" animated :throttle="500">
                                         <template #template>
-                                            <el-skeleton-item variant="h1"
-                                                style="width: 100%; height: 48px;margin-bottom: 6px;" />
-                                            <el-skeleton-item variant="image"
-                                                style="width: 120px; height: 120px;margin-bottom: 5px;" />
+                                            <el-skeleton-item 
+                                                variant="h1"
+                                                class="w-[100%] h-48px mb-6px" />
+                                            <el-skeleton-item 
+                                                variant="image"
+                                                class="w-120px h-120px mb-5px" />
                                         </template>
                                         <template #default />
                                     </el-skeleton>
                                     <div v-show="!loading4">
                                         <el-input v-model="googleAuth.secret" disabled>
                                             <template #suffix>
-                                                <a v-copy="googleAuth.secret" href="javascript:void(0)"
-                                                    :style="`font-family: PingFang SC;font-size: 14px;font-weight: 400;line-height: 20px;text-align: left;text-underline-position: from-font;text-decoration-skip-ink: none;color:#3F80F7;`">Copy</a>
+                                                <a 
+                                                    v-copy="googleAuth.secret" href="javascript:void(0)"
+                                                    :class="`text-14px font-400 lh-20px text-left text-from-font decoration-none text-[#3F80F7]`">Copy</a>
                                             </template>
                                         </el-input>
                                         <canvas id="qr-google-canvas" />
@@ -71,23 +76,27 @@
                                 <div>{{ $t('DbCheckContentContent3') }}</div>
                             </li>
                         </ul>
-                        <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large" type="primary"
-                            style="width: 100%;margin-top: 30px;" @click="googleAuth.authSetting = 'pending'">{{
+                        <el-button 
+                            :color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large" type="primary"
+                            class="w-[100%] mt-30px" @click="googleAuth.authSetting = 'pending'">{{
                                 $t('confirm')
                             }}</el-button>
                     </div>
                     <div
                         v-show="(checkType === 'google') && (googleAuth.authSetting === true || googleAuth.authSetting === 'pending')">
-                        <el-form ref="googleAuthRef" :model="googleAuth" :rules="rules" label-width="0"
+                        <el-form 
+                            ref="googleAuthRef" :model="googleAuth" :rules="rules" label-width="0"
                             autocomplete="off" size="large" @submit.prevent>
                             <div class="tip">{{ $t('DbCheckTitle2') }}</div>
                             <el-form-item label="" prop="authCode">
-                                <el-input v-model="googleAuth.authCode" :autocomplete="'new-authCode' + Math.random()"
+                                <el-input 
+                                    v-model="googleAuth.authCode" :autocomplete="'new-authCode' + Math.random()"
                                     :placeholder="$t('authCode')" name="authCodeField" />
                             </el-form-item>
-                            <el-form-item style="position: absolute;bottom: 20px;left: 20px;width:320px">
-                                <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large"
-                                    style="width: 100%;" type="primary" @click="confirmAuth">{{
+                            <el-form-item class="absolute bottom-20px left-20px w-320px">
+                                <el-button
+                                    :color="mode === 'dark' ? '#f5f5f5' : '#333333'" size="large"
+                                    class="w-[100%]" type="primary" @click="confirmAuth">{{
                                         $t('confirm')
                                     }}</el-button>
                             </el-form-item>
@@ -95,14 +104,17 @@
                     </div>
                     <div v-if="checkType === 'email'">
                         <!-- 通过email 判断是否需要绑定 -->
-                        <el-form v-if="!email" ref="formRef" :model="form" :rules="rules" label-width="0"
+                        <el-form 
+                            v-if="!email" ref="formRef" :model="form" :rules="rules" label-width="0"
                             autocomplete="off" size="large" @submit.prevent>
                             <el-form-item label="" prop="email">
-                                <el-input v-model="form.email" :autocomplete="'new-email' + Math.random()"
+                                <el-input 
+                                    v-model="form.email" :autocomplete="'new-email' + Math.random()"
                                     :placeholder="$t('startEmail')" name="emailField" />
                             </el-form-item>
                             <el-form-item label="" prop="verificationCode">
-                                <el-input v-model="form.verificationCode"
+                                <el-input 
+                                    v-model="form.verificationCode"
                                     :autocomplete="'new-verificationCode' + Math.random()"
                                     :placeholder="$t('startVerificationCode')" name="new-verificationCode">
                                     <template #suffix>
@@ -117,17 +129,19 @@
                                 </el-input>
                             </el-form-item>
                             <el-form-item label="" prop="password">
-                                <el-input v-model="form.password" type="password" name="password_field"
+                                <el-input 
+                                    v-model="form.password" type="password" name="password_field"
                                     :autocomplete="'new-password' + Math.random()" :placeholder="$t('startPassword')"
                                     show-password />
                             </el-form-item>
                             <el-form-item label="" prop="confirmPassword">
-                                <el-input v-model="form.confirmPassword" type="password" name="confirm_password_field"
+                                <el-input 
+                                    v-model="form.confirmPassword" type="password" name="confirm_password_field"
                                     :placeholder="$t('startConfirmPassword')"
                                     :autocomplete="'new-password2' + Math.random()" show-password />
                             </el-form-item>
-                            <el-form-item size="small" style="height: 20px; line-height: 20px">
-                                <el-checkbox v-model="form.agree" style="color: #999;width: 100%">
+                            <el-form-item size="small" class="h-20px lh-20px">
+                                <el-checkbox v-model="form.agree" class="text-[#999] w-[100%]">
                                     {{ $t("startFooter1") }}&nbsp;
                                     <el-link type="primary" :href="!lang?.includes?.('zh')
                                         ? 'https://doc.ave.ai/cn/yong-hu-xie-yi'
@@ -139,7 +153,8 @@
                                 </el-checkbox>
                             </el-form-item>
                             <el-form-item>
-                                <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'" :class="['btn']"
+                                <el-button 
+                                    :color="mode === 'dark' ? '#f5f5f5' : '#333333'" :class="['btn']"
                                     size="large" type="primary" :loading="loading" :disabled="!form.agree"
                                     style="width: 100%;--el-button-disabled-text-color:#000000" @click="submitForm">{{
                                         $t('confirm')
@@ -150,11 +165,13 @@
                             size="large" @submit.prevent>
                             <div class="tip">{{ $t('enterEmailCodeTips', { email: showEmail }) }}</div>
                             <el-form-item label="" prop="verificationCode">
-                                <el-input v-model="form2.verificationCode"
+                                <el-input 
+                                    v-model="form2.verificationCode"
                                     :autocomplete="'new-verificationCode2' + Math.random()"
                                     :placeholder="$t('startVerificationCode')" name="new-verificationCode2">
                                     <template #suffix>
-                                        <el-button class="countdownBtn" link :disabled="disabledCountdownBtn"
+                                        <el-button 
+                                            class="countdownBtn" link :disabled="disabledCountdownBtn"
                                             :loading="loading2" :style="{
                                                 color: mode == 'dark' ? '#f5f5f5' : '#333333',
                                             }" @click="sendVerificationCode">
@@ -164,8 +181,9 @@
                                     </template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item style="position: absolute;bottom: 20px;width:320px">
-                                <el-button :color="mode === 'dark' ? '#f5f5f5' : '#333333'" :class="['btn']"
+                            <el-form-item class="absolute bottom-20px w-320px">
+                                <el-button 
+                                    :color="mode === 'dark' ? '#f5f5f5' : '#333333'" :class="['btn']"
                                     size="large" type="primary" :loading="loading" style="width: 100%"
                                     @click="submitForm2">{{ $t('withdraw')
                                     }}</el-button>
@@ -190,7 +208,8 @@ import QrCodeWithLogo from 'qr-code-with-logo'
 const props = defineProps({
     action: {
         type: Function,
-        required: false
+        required: false,
+        default: () => {}
     },
     visible: {
         type: Boolean,

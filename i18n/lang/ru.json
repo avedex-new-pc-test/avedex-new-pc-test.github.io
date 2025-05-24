@@ -208,5 +208,6 @@
   "withdrawSubmitted": "Вывод отправлен",
   "withdrawToSelf": "Адрес вывода совпадает с текущим",
   "withdrawAmountTooSmall": "Сумма вывода слишком мала",
-  "insufficientBalance2": "Недостаточный баланс"
+  "insufficientBalance2": "Недостаточный баланс",
+  "authCode": "Введите код подтверждения"
 }

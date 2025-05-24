@@ -297,5 +297,6 @@
   "withdrawSubmitted": "提现已提交",
   "withdrawToSelf": "提现地址与当前钱包地址相同",
   "withdrawAmountTooSmall": "提现数量过少",
-  "insufficientBalance2": "余额不足"
+  "insufficientBalance2": "余额不足",
+  "authCode": "打开谷歌验证器，输入6位数字验证码"
 }

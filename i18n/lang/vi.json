@@ -208,5 +208,6 @@
   "withdrawSubmitted": "Đã gửi rút tiền",
   "withdrawToSelf": "Địa chỉ rút trùng với địa chỉ ví",
   "withdrawAmountTooSmall": "Số tiền rút quá nhỏ",
-  "insufficientBalance2": "Số dư không đủ"
+  "insufficientBalance2": "Số dư không đủ",
+  "authCode": "Vui lòng nhập mã xác minh"
 }

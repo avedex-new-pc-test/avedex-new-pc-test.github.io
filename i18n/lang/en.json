@@ -296,5 +296,6 @@
   "withdrawSubmitted": "Withdrawal submitted",
   "withdrawToSelf": "The withdrawal address is the same as the current wallet address",
   "withdrawAmountTooSmall": "Withdrawal amount is too small",
-  "insufficientBalance2": "Insufficient Balance"
+  "insufficientBalance2": "Insufficient Balance",
+  "authCode": "Please enter the verification code"
 }
