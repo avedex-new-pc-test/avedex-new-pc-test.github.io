@@ -171,11 +171,11 @@
               </div>
             </el-form-item>
 
-            <el-form-item v-if="withdrawForm.chain === 'ton'" label="memo" label-position="top" prop="memo">
+            <!-- <el-form-item v-if="withdrawForm.chain === 'ton'" label="memo" label-position="top" prop="memo">
               <el-input v-model="withdrawForm.memo"
                 style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;"
                 clearable placeholder="" />
-            </el-form-item>
+            </el-form-item> -->
             <el-button native-type="submit" style="width: 100%; margin-top: 25px" size="large"
               :color="mode === 'dark' ? '#f5f5f5' : '#333333'" :loading="loadingWithdraw">{{ t('withdraw')
               }}</el-button>
@@ -184,16 +184,15 @@
 
       </div>
       <double-check v-if="showVisible === 4" v-model:showVisible="showVisible" :visible="tgWalletVisible"
-        @action="handleWithdraw2" @update:emailCode="(code) => emailCode = code"
-        @update:authCode="(code) => authCode = code" />
+        @action="handleWithdraw2" @update:emailCode="(code: string) => emailCode = code"
+        @update:authCode="(code: string) => authCode = code" />
     </div>
   </el-popover>
 </template>
 
 <script setup lang="ts">
 import { Back, ArrowDownBold } from '@element-plus/icons-vue'
-import { useRoute, useRouter } from 'vue-router'
-import DoubleCheck from './doubleCheck.vue'
+// import { useRoute, useRouter } from 'vue-router'
 import BigNumber from 'bignumber.js'
 import QrCodeWithLogo from 'qr-code-with-logo'
 import { bot_createSafeTransferTx, bot_getTransferGasFee } from '@/api/bot'
@@ -202,14 +201,14 @@ import { throttle } from 'lodash'
 import { generateAvatarIcon, getChainInfo, isValidAddress, evm_utils as utils } from '@/utils'
 import { formatBotError, handleBotError } from '@/utils/bot'
 import { formatNumberS } from '@/utils/formatNumber'
+import doubleCheck from './doubleCheck.vue'
 import { ElMessage, ElMessageBox, ElNotification as ElNotify, type FormInstance } from 'element-plus'
 
 const { mode, token_logo_url } = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
 const botStore = useBotStore()
-// const store = useStore()
-const route = useRoute()
-const router = useRouter()
+// const route = useRoute()
+// const router = useRouter()
 
 const tgWalletVisible = ref(false)
 const showVisible = ref(0)
@@ -217,7 +216,7 @@ const depositChain = ref('solana')
 interface WithdrawFormData {
   amount: string
   address: string
-  chain: string
+  chain: 'solana' | 'eth' | 'bsc' | 'base'
   memo?: string
 }
 const withdrawForm = reactive<WithdrawFormData>({
@@ -231,7 +230,7 @@ const emailCode = ref('')
 const authCode = ref('')
 const withdrawFormRef = ref<FormInstance>()
 
-const gasFeeObj = ref({
+const gasFeeObj = ref<{ [key: string]: number }>({
   solana: 1000000,
   eth: 599999906814000,
   bsc: 21000000000000,
@@ -246,7 +245,7 @@ const withdrawChainInfo = computed(() => {
   return botStore?.userInfo?.addresses?.find?.(i => i?.chain === withdrawForm?.chain)
 })
 
-const checkAddress = (chain) => (rule, value, callback) => {
+const checkAddress = (chain: string | undefined) => (rule: any, value: string, callback: (arg0?: Error | undefined) => void) => {
   if (!value) {
     return callback(new Error(t('plsEnterAddress')))
   } else if (!isValidAddress(value, chain)) {
@@ -256,7 +255,7 @@ const checkAddress = (chain) => (rule, value, callback) => {
   }
 }
 
-const checkAmount = (balance) => (rule, value, callback) => {
+const checkAmount = (balance: BigNumber.Value) => (rule: any, value: BigNumber.Value, callback: (arg0?: Error | undefined) => void) => {
   if (!value) {
     return callback(new Error(t('plsEnterAmount')))
   } else if (new BigNumber(value).gt(balance)) {
@@ -319,7 +318,7 @@ onMounted(() => {
   getTransferGasFee()
 })
 
-function handleWithdrawChainChange(val) {
+function handleWithdrawChainChange(val: any) {
   if (val && !withdrawForm.amount && !withdrawForm.address) {
     withdrawFormRef.value?.resetFields?.()
     nextTick(() => {
@@ -334,6 +333,9 @@ async function setChainQr() {
     return
   }
   const canvas = document.getElementById('qr-chain-canvas')
+  if (!canvas) {
+    return
+  }
   console.log('canvas', token_logo_url.value, depositChain.value)
   QrCodeWithLogo.toCanvas({
     canvas: canvas,
@@ -344,7 +346,7 @@ async function setChainQr() {
     },
     logo: {
       src: `${token_logo_url.value}chain/${depositChain.value}.png`,
-      radius: 8
+      logoRadius: 8
     }
   }).catch(err => {
     console.log('QrCodeWithLogo error', err)
@@ -366,20 +368,18 @@ function handleWithdraw() {
         return
       }
       showVisible.value = 4
-    } else {
-      return false
     }
   })
 }
 
 function handleWithdraw2() {
-  withdrawFormRef.value.validate((valid) => {
+  withdrawFormRef?.value?.validate((valid) => {
     if (valid) {
-      const chainMainToken = {
+      const chainMainToken: { [key: string]: string } = {
         solana: 'sol',
         ton: 'TON',
       }
-      const amount = (new BigNumber(withdrawForm.amount || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${withdrawChainInfo.value?.decimals || 18}})?`))[0]
+      const amount = ((new BigNumber(withdrawForm.amount || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${withdrawChainInfo.value?.decimals || 18}})?`)) || [''])[0]
       if ((Number(amount) || 0) <= 0) {
         ElNotify({ title: 'Error', type: 'error', message: t('withdrawAmountTooSmall') })
         return
@@ -392,29 +392,35 @@ function handleWithdraw2() {
       const data = {
         batchId: Date.now().toString(),
         chain: withdrawForm.chain,
-        creatorAddress: withdrawChainInfo.value?.address,
+        creatorAddress: withdrawChainInfo?.value?.address || '',
         tokenAddress: chainMainToken[withdrawForm.chain] || NATIVE_TOKEN,
         tgUid: botStore?.userInfo?.tgUid,
         amount: utils.parseUnits(amount || 0, withdrawChainInfo.value?.decimals || 18).toString(),
         transferTo: withdrawForm.address,
         memo: '',
         emailCode: emailCode.value,
-        authCode: authCode.value
+        authCode: authCode.value,
+        gasTip: 0,
+        source: "web" as const
       }
 
-      ElMessageBox.confirm(t('confirmWithdraw', {
-        amount: amount,
-        address: withdrawForm.address,
-        symbol: getChainInfo(withdrawForm.chain)?.main_name
-      }), t('tips'), {
-        confirmButtonText: t('confirm'),
-        cancelButtonText: t('cancel'),
-        appendTo: document.querySelector('.tg-wallet-container'),
-      }).then(() => {
+      ElMessageBox.confirm(
+        t('confirmWithdraw', {
+          amount: amount,
+          address: withdrawForm.address,
+          symbol: getChainInfo(withdrawForm.chain)?.main_name
+        }),
+        t('tips'),
+        {
+          confirmButtonText: t('confirm'),
+          cancelButtonText: t('cancel'),
+          appendTo: '.tg-wallet-container',
+        }
+      ).then(() => {
         loadingWithdraw.value = true
         bot_createSafeTransferTx(data).then(res => {
           if (res) {
-            let Timer = setTimeout(() => {
+            let Timer: ReturnType<typeof setTimeout> | null = setTimeout(() => {
               ElNotify({ title: 'Success', type: 'success', message: t('withdrawSubmitted') })
             }, 500)
             tgWalletVisible.value = false
@@ -485,7 +491,8 @@ function handleMax() {
     ElMessage.error(t('transferInsufficientBalance', { s: getChainInfo(withdrawForm.chain)?.main_name }))
     return
   }
-  const amount = balance.minus(gasFee).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${withdrawChainInfo.value?.decimals || 18}})?`))[0]
+  const matchResult = balance.minus(gasFee).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${withdrawChainInfo.value?.decimals || 18}})?`))
+  const amount = matchResult ? matchResult[0] : ''
   withdrawForm.amount = amount
   withdrawFormRef.value?.validateField?.('amount')
 }
