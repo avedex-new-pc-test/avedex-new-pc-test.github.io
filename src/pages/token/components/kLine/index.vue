@@ -95,7 +95,13 @@ const showMarket = useLocalStorage('tv_showMarket', false)
 // 切换主题
 watch(() => themeStore.theme, (val) => {
   if (_widget) {
-   _widget?.changeTheme(val)
+    _widget?.changeTheme(val).then(() => {
+      _widget?.applyOverrides?.({
+        'scalesProperties.textColor': themeStore.isDark ? '#d5d5d5' : '#333',
+        'paneProperties.backgroundType': 'solid',
+        'paneProperties.background': themeStore.isDark ? '#0A0B0D' : '#fff',
+      })
+    })
   }
 })
 
