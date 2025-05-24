@@ -238,6 +238,7 @@ import Cookies from 'js-cookie'
 import { ElMessage } from 'element-plus'
 import sha256 from 'crypto-js/sha256'
 import { storeToRefs } from 'pinia'
+
 type RuleForm = {
   email: string;
   verificationCode: string;
@@ -247,6 +248,7 @@ type RuleForm = {
   agree: boolean;
 };
 
+console.log('emailRegisterAndLogin')
 // const { t } = useI18n()
 const userStore = useUserStore()
 const botStore = useBotStore()

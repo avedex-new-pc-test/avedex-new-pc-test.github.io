@@ -58,6 +58,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 import reset from './reset.vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
+console.log('connectWallet')
 const botStore = useBotStore()
 const {mode} = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
