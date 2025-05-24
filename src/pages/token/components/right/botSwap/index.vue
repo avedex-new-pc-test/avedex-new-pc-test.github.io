@@ -13,9 +13,8 @@
         <div class="tabs-1 mr-5px">
           <button v-for="item in ['s1', 's2', 's3']" :key="item" :class="{'active': item === botSettingStore?.botSettings?.[chain]?.selected}" type="button" @click.stop="onSelectBotSwapSet(item)">{{ item.toUpperCase() }}</button>
         </div>
-        <SlippageSet :canSetAuto="true" :isAutoSell="swapType === 'market'" :chain="tokenStore.tokenInfo?.token?.chain" :setting="botSettingStore?.botSettings[chain]" @onSubmit="onSubmitBotSwapSet"/>
+        <SlippageSet :canSetAuto="true" :isAutoSell="swapType === 'market'" :chain="tokenStore.tokenInfo?.token?.chain" :setting="botSettingStore?.botSettings[chain]"/>
       </div>
-
     </div>
     <Swap :activeTab="activeTab" :swapType="swapType" :tabs1="tabs1" :tabs2="tabs2" @getTokenBalance="getTokenBalance"/>
   </div>
