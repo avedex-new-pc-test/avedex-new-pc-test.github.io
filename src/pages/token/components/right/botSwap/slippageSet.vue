@@ -174,8 +174,11 @@ const slippageList = [5, 9, 20]
 const key = Math.random().toString(36).slice(-8)
 const show = ref(false)
 const isAuto = ref(false)
+const botSettingStore = useBotSettingStore()
 
 const botSetting = ref(cloneDeep(props.setting ?? {}))
+
+
 const selected = computed(() => botSetting.value.selected)
 
 const slippageValue = ref<number | undefined>()
@@ -239,7 +242,21 @@ function handleCustomSlippage(val: number | undefined) {
 
 
 function confirmSubmit() {
-  emit('onSubmit', botSetting.value)
+  const setting = botSetting.value as typeof botSettingStore.botSettings[string]
+  if (setting?.selected) {
+    if (props.chain === 'solana') {
+      botSettingStore.botSettings = {
+        ...botSettingStore.botSettings,
+        solana: {...setting}
+      }
+    } else {
+      botSettingStore.botSettings = {
+        ...botSettingStore.botSettings,
+        [props.chain]: {...setting}
+      }
+    }
+  }
+  emit('onSubmit', setting)
   show.value = false
 }
 

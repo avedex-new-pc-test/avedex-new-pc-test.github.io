@@ -93,8 +93,10 @@ let _widget: null | IChartingLibraryWidget = null
 const showMarket = useLocalStorage('tv_showMarket', false)
 
 // 切换主题
-watch(() => themeStore.theme, () => {
-  resetChart()
+watch(() => themeStore.theme, (val) => {
+  if (_widget) {
+   _widget?.changeTheme(val)
+  }
 })
 
 // 切换语言

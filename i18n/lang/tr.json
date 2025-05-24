@@ -112,5 +112,7 @@
   "buying": "Satın alma",
   "selling": "satış",
   "estimatedGas": "Tahmini Gas Ücreti",
-  "unknownRisk": "Bilinmeyen risk"
+  "unknownRisk": "Bilinmeyen risk",
+  "buy1": "Al",
+  "sell1": "Sat"
 }

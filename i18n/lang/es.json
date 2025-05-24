@@ -114,5 +114,7 @@
   "buying": "Comprando",
   "selling": "vendiendo",
   "estimatedGas": "Gas estimado",
-  "unknownRisk": "Riesgo desconocido"
+  "unknownRisk": "Riesgo desconocido",
+  "buy1": "Comprar",
+  "sell1": "Vender"
 }

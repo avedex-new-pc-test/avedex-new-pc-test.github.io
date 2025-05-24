@@ -487,6 +487,7 @@ export function bot_createSwapEvmTx(params: {
   slippage: number
 }) {
   const { $api } = useNuxtApp()
+  const botStore = useBotStore()
   return $api('/botapi/swap/createSwapEvmTx', {
     method: 'post',
     body: {
@@ -494,6 +495,7 @@ export function bot_createSwapEvmTx(params: {
       source: 'web',
       autoSell: false,
       preApprove: true,
+      tgUid: botStore.userInfo?.tgUid,
       channelRef: Cookies.get('refCode') || undefined,
       ...params,
     }

@@ -268,5 +268,8 @@
   "limitSubmitted": "掛單已提交",
   "top50PartialSale": "減倉",
   "vol": "交易額",
-  "unknownRisk": "未開盤"
+  "unknownRisk": "未開盤",
+  "oneClick": "一鍵買賣",
+  "buy1": "買",
+  "sell1": "賣"
 }

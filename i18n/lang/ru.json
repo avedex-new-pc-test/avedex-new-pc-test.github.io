@@ -183,5 +183,8 @@
   "connectWallet1": "Подключить кошелек",
   "limitSubmitted": "Лимитный ордер отправлен",
   "top50PartialSale": "Частичная продажа",
-  "unknownRisk": "Неизвестный риск"
+  "unknownRisk": "Неизвестный риск",
+  "oneClick": "Один клик",
+  "buy1": "Купить",
+  "sell1": "Продать"
 }

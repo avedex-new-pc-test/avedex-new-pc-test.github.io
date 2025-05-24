@@ -25,7 +25,13 @@ export function formatLang(lang: string) {
   return {
     en: 'en',
     'zh-cn': 'zh',
-    'zh-tw': 'zh_TW'
+    'zh-tw': 'zh_TW',
+    pt: 'pt',
+    es: 'es',
+    ru: 'ru',
+    tr: 'tr',
+    vi: 'vi',
+
   }?.[lang] || 'en'
 }
 
