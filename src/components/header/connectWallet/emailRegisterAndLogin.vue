@@ -14,6 +14,7 @@
           v-model="form.email"
           :autocomplete="'new-email' + Math.random()"
           :placeholder="$t('startEmail')"
+          class="color-[#--d-333-l-F2F2F2]"
           name="emailField"
         />
       </el-form-item>
@@ -36,7 +37,7 @@
               :disabled="isCounting"
               :loading="loading2"
               :style="{
-                color: mode == 'dark' ? '#286DFF' : '#286DFF',
+                color: mode == 'dark' ? '#3F80F7' : '#3F80F7',
               }"
               @click="sendVerificationCode"
             >
@@ -147,6 +148,7 @@
         <a
           v-if="cType == 'register'"
           href="javascript:void(0)"
+          class="color-[#3F80F7]"
           @click.prevent="emit('update:c-type', 'login')"
         >
           {{ $t("startBotFooter12") }}</a
@@ -154,6 +156,7 @@
         <a
           v-else
           href="javascript:void(0)"
+          class="color-[#3F80F7]"
           @click.prevent="emit('update:c-type', 'register')"
         >
           {{ $t("register") }}</a
@@ -716,7 +719,7 @@ onBeforeUnmount(() => {
     font-weight: 400;
 
     a {
-      color: #f5f5f5;
+      /* color: #f5f5f5; */
       display: inline-block;
       line-height: 16.8px;
     }
@@ -809,7 +812,7 @@ onBeforeUnmount(() => {
 
     .botFooter {
       a {
-        color: #222222;
+        /* color: #222222; */
         display: inline-block;
       }
     }
