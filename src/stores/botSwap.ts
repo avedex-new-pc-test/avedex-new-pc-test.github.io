@@ -14,6 +14,8 @@ export const useBotSwapStore = defineStore('botSwap', () => {
 
   const wsStore = useWSStore()
 
+  const priceLimit = shallowRef(0)
+
 
   const mainTokensPrice = shallowRef([
     {
@@ -105,6 +107,7 @@ export const useBotSwapStore = defineStore('botSwap', () => {
 
   return {
     gasTip,
+    priceLimit,
     mainTokensPrice,
     bot_getGasTip: _bot_getGasTip,
     sendNativePriceWs

@@ -1,5 +1,5 @@
 // import { getGlobalT } from '@/utils/i18nBridge'
-import type { Mark, ChartingLibraryWidgetConstructor, IChartingLibraryWidget } from '~/types/tradingview/charting_library'
+import type { Mark, ChartingLibraryWidgetConstructor, IChartingLibraryWidget, EntityId } from '~/types/tradingview/charting_library'
 import { formatNumber } from '@/utils/formatNumber'
 import type { WSTx, KLineBar  } from './types'
 import { useDocumentVisibility } from '@vueuse/core'
@@ -250,5 +250,77 @@ export function useWidgetVisibilityRefresh(getWidget: () => IChartingLibraryWidg
       }
     }
   })
+}
+
+export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null, getIsReady: () => boolean) {
+  let priceLimitLineId = '' as EntityId
+  let isCreating = false
+  // 创建 限价价格线
+  async function createLimitPriceLine(price: number) {
+    const _widget = getWidget()
+    const chart = _widget?.activeChart?.()
+    if (!_widget || !chart) return
+    if (priceLimitLineId) {
+      const line = chart?.getShapeById?.(priceLimitLineId)
+      if (line) {
+        if (!price) {
+          chart?.removeEntity?.(priceLimitLineId)
+          priceLimitLineId = '' as EntityId
+          return
+        }
+        line?.setPoints?.([{ price: price, time: 0 }])
+        return
+      }
+    }
+    if (isCreating) return
+    isCreating = true
+    priceLimitLineId = await chart?.createShape?.(
+      { price: price, time: 0 }, // 水平线的起始位置
+      {
+        shape: 'horizontal_line',
+        lock: true,
+        disableSelection: true,
+        disableSave: true,
+        text: '挂单价格',
+        overrides: {
+          linecolor: '#800080',  // 线的颜色
+          linewidth: 1,          // 线的粗细
+          linestyle: 2        // 线的样式：0表示实线，1表示虚线 2 长虚线
+        }
+      }
+    )
+    isCreating = false
+    chart?.getShapeById?.(priceLimitLineId)?.setProperties?.({
+      textcolor: '#800080',
+      showLabel: true,
+      horzLabelsAlign: 'right',
+      vertLabelsAlign: 'middle',
+      bold: true,
+      fontSize: 14,
+      // italic: true,
+    })
+  }
+
+
+
+  const botSwapStore = useBotSwapStore()
+  const stop = watch(() => botSwapStore.priceLimit, (val) => {
+    const isReady = getIsReady()
+    if (isReady) {
+      createLimitPriceLine(val)
+    }
+  })
+
+  onUnmounted(() => {
+    if (stop) {
+      stop()
+    }
+  })
+
+  return {
+    resetLimitPriceLineId: () => {
+      priceLimitLineId = '' as EntityId
+    }
+  }
 }
 
