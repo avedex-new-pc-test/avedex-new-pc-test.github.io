@@ -113,6 +113,8 @@
   "selling": "satış",
   "estimatedGas": "Tahmini Gas Ücreti",
   "unknownRisk": "Bilinmeyen risk",
+  "buy1": "Al",
+  "sell1": "Sat",
   "address": "Adres",
   "plsEnterAmount": "Lütfen tutarı giriniz",
   "plsEnterAddress": "Lütfen adres girin",

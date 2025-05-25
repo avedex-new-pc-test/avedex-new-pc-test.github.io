@@ -13,7 +13,7 @@ import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, get
 import { getKlineHistoryData, getUserKlineTxTags } from '@/api/token'
 import { getTotalHolders } from '@/api/stats'
 import { formatNumber } from '@/utils/formatNumber'
-import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useWidgetVisibilityRefresh } from './utils'
+import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useWidgetVisibilityRefresh, useLimitPriceLine } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx } from './types'
 import BigNumber from 'bignumber.js'
@@ -26,6 +26,7 @@ const token = computed(() => {
 })
 
 let isReady = false
+let isReadyLine = false
 
 const chain = computed(() => {
   return getAddressAndChainFromId(token.value)?.chain || tokenStore?.token?.chain
@@ -52,12 +53,16 @@ const amm = computed(() => {
 })
 
 watch(pair, (val) => {
+  isReadyLine = false
+  resetLimitPriceLineId()
   if (val && val !== '-' && isReady && route.name === 'token-id') {
     const isSupportSecChains = (chain.value && supportSecChains.includes(chain.value)) || false
     resolution.value = initTradingViewIntervals(resolution.value, isSupportSecChains)
     if (_widget) {
       _widget?.resetCache?.()
-      _widget?.setSymbol?.(symbol.value + '---' + val, resolution.value as ResolutionString, () => {})
+      _widget?.setSymbol?.(symbol.value + '---' + val, resolution.value as ResolutionString, () => {
+        isReadyLine = true
+      })
     } else {
       initChart()
     }
@@ -88,8 +93,16 @@ let _widget: null | IChartingLibraryWidget = null
 const showMarket = useLocalStorage('tv_showMarket', false)
 
 // 切换主题
-watch(() => themeStore.theme, () => {
-  resetChart()
+watch(() => themeStore.theme, (val) => {
+  if (_widget) {
+    _widget?.changeTheme(val).then(() => {
+      _widget?.applyOverrides?.({
+        'scalesProperties.textColor': themeStore.isDark ? '#d5d5d5' : '#333',
+        'paneProperties.backgroundType': 'solid',
+        'paneProperties.background': themeStore.isDark ? '#0A0B0D' : '#fff',
+      })
+    })
+  }
 })
 
 // 切换语言
@@ -105,8 +118,9 @@ watch(() => localeStore.locale, () => {
 //     _widget?.activeChart?.().resetData?.()
 //   }
 // })
-
 function resetChart() {
+  isReadyLine = false
+  resetLimitPriceLineId()
   _widget?.remove?.()
   initChart()
 }
@@ -294,6 +308,7 @@ async function initChart() {
           configurationData.supported_resolutions = ['1', '5', '15', '30', '60', '120', '240', '1D', '1W'] as ResolutionString[]
         }
         isReady = true
+        isReadyLine = true
         setTimeout(() => callback(configurationData), 50)
       },
       resolveSymbol: (symbolName, onResolve, onError) => {
@@ -519,6 +534,7 @@ function drag(e: MouseEvent) {
   return false
 }
 
+const { resetLimitPriceLineId } = useLimitPriceLine(() => _widget, () => isReadyLine)
 
 onBeforeMount(() => {
   // _getTotalHolders()
@@ -527,6 +543,7 @@ onBeforeMount(() => {
 onMounted(() => {
   initChart()
   useWidgetVisibilityRefresh(() => _widget)
+
 })
 
 </script>
