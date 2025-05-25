@@ -74,7 +74,7 @@
             <!-- $store.dispatch('bot_switchWallet', item); -->
             <li v-for="(item, index) in botStore.walletList" :key="index"
               :class="{ active: item.name === botStore?.userInfo?.name }"
-              @click.stop="botStore.switchWallet(item); tgWalletVisible = false">
+              @click.stop="switchWallet(item)">
               <img style="border-radius: 50%;margin-right: 5px;" height="32" :src="generateAvatarIcon(item?.name || '')"
                 alt="">
               <span style="margin-right: auto;">{{ item.name || '' }}</span>
@@ -317,6 +317,12 @@ onMounted(() => {
   preLoadShareImg()
   getTransferGasFee()
 })
+
+function switchWallet(item: any) {
+  // Implement wallet switching logic here, for example:
+  botStore.switchWallet(item.evmAddress)
+  tgWalletVisible.value = false
+}
 
 function handleWithdrawChainChange(val: any) {
   if (val && !withdrawForm.amount && !withdrawForm.address) {

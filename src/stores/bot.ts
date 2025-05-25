@@ -68,17 +68,14 @@ export const useBotStore = defineStore('bot', () => {
     return res
   }
 
-  function switchWallet(item: { tgUid: string; evmAddress: string; name: string; addresses: Array<AddressItem> } | undefined) {
-    if (!item) return
-    const isWallet = walletList.value?.some?.(i => item.evmAddress === i.evmAddress)
+  function switchWallet(val: string) {
+    if (!val) return
+    const isWallet = walletList.value?.some?.(i => val === i.evmAddress)
     if (isWallet) {
-      // userInfo.value = {...item}
-      evmAddress.value = item.evmAddress
-      console.log('switchWallet', item)
-      localStorage.bot_userInfo = JSON.stringify(item)
+      evmAddress.value = val
+      console.log('switchWallet', val)
       getUserAllChainBalance()
       getBundleAvailable()
-      // dispatch('bot_set_user_ids',{...item})
     }
   }
 
@@ -150,22 +147,22 @@ export const useBotStore = defineStore('bot', () => {
         return res
       })
   }
-  function getUserInfo(evmAddress1 = '') {
+  function getUserInfo() {
     if (accessToken.value) {
       bot_getWalletsAllChain({ chain: isSupportChains?.join(',') }).then(
         (res) => {
           walletList.value = res || []
-          if (evmAddress1) {
-            const item = walletList.value?.find?.(
-              (i) => i.evmAddress === evmAddress1
-            )
-            if (item) {
-              evmAddress.value = evmAddress1
-            } else {
-              evmAddress.value = walletList.value?.[0]?.evmAddress || ''
-            }
-            switchWallet(item)
-          } 
+          // if (evmAddress1) {
+          //   const item = walletList.value?.find?.(
+          //     (i) => i.evmAddress === evmAddress1
+          //   )
+          //   if (item) {
+          //     evmAddress.value = evmAddress1
+          //   } else {
+          //     evmAddress.value = walletList.value?.[0]?.evmAddress || ''
+          //   }
+          //   switchWallet(item)
+          // } 
           const isWallet = walletList.value?.find?.(
             (i) =>
               evmAddress.value === i?.evmAddress &&
@@ -173,20 +170,16 @@ export const useBotStore = defineStore('bot', () => {
           )
           if (!isWallet) {
             evmAddress.value = walletList.value?.[0]?.evmAddress || ''
-            switchWallet(res?.[0] || {})
             // dispatch("switchWallet", res?.[0] || {})
-          }else{
-            switchWallet(isWallet)
-            // dispatch("switchWallet", isWallet)
           }
           getUserInfoByGuid()
+          getUserAllChainBalance()
           getBundleAvailable()
           // 获取用户交易配置信息
           getWebConfig()
           botSwapStore.bot_getGasTip()
           // 获取用户其他信息
           bot_subscribe()
-
         }
       )
     }

@@ -14,7 +14,7 @@
           v-model="form.email"
           :autocomplete="'new-email' + Math.random()"
           :placeholder="$t('startEmail')"
-          class="color-[#--d-333-l-F2F2F2]"
+          class="color-[--d-333-l-F2F2F2]"
           name="emailField"
         />
       </el-form-item>
