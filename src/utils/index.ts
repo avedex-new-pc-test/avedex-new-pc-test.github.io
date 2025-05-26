@@ -107,7 +107,7 @@ export function getTimezone() {
   }
 }
 
-export function getAddressAndChainFromId(id: string, type: 1): [string, string]
+export function getAddressAndChainFromId(id: string, type?: 1): [string, string]
 export function getAddressAndChainFromId(
   id: string,
   type?: number
@@ -618,5 +618,30 @@ export const evm_utils = {
     // Ensure the value is a string as required by ethers' parseUnits
     const valueStr = String(arg?.[0] ?? '')
     return parseUnits(valueStr, decimals)
+  }
+}
+export function filterGas(num: number, chain?: string) {
+  if (chain === 'bsc') {
+    if (num < 1) {
+      return '#848E9C'
+    } else if (num < 2) {
+      return '#EAECEF'
+    } else {
+      return '#f81111'
+    }
+  } else if (chain === 'eth') {
+    if (num < 3) {
+      return '#848E9C'
+    } else if (num < 6) {
+      return '#EAECEF'
+    } else {
+      return '#f81111'
+    }
+  } else {
+    if (num < 0.5) {
+      return '#878fbc'
+    } else {
+      return '#f81111'
+    }
   }
 }
