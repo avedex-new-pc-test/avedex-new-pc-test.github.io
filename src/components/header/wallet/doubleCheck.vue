@@ -544,16 +544,16 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
 .w-check {
   min-height: 488px;
-  color: var(--custom-text-1-color);
+  color: var(--d-E9E9E9-l-222);
   display: flex;
   flex-direction: column;
 
   .tg-wallet-list_title {
     padding: 20px;
-    border-bottom: 0.5px solid var(--custom-br-1-color);
+    border-bottom: 0.5px solid var(--d-33353D-l-F5F5F5);
   }
 
   .w-content {

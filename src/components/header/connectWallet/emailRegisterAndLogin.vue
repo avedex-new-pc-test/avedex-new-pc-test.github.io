@@ -1,5 +1,5 @@
 <template>
-  <div :class="['w-emailRegister', mode]">
+  <div  v-loading="loading3" :element-loading-background="isDark ? 'rgba(19, 23, 34 0.2)' : 'rgba(255, 255, 255, 0.2)'" :class="['w-emailRegister', mode]">
     <el-form
       ref="formRef"
       :model="form"
@@ -252,7 +252,7 @@ console.log('emailRegisterAndLogin')
 // const { t } = useI18n()
 const userStore = useUserStore()
 const botStore = useBotStore()
-const {mode,lang} = storeToRefs(useGlobalStore())
+const {mode,lang,isDark} = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
 const props = defineProps({
   cType: {
@@ -751,18 +751,18 @@ onBeforeUnmount(() => {
 
 .light {
   &.w-emailRegister {
-    .btn {
-      /* :deep() &.el-button {
+    /* .btn {
+      :deep() &.el-button {
         color: #F5F5F5;
         background-color: #333333;
-      } */
+      }
 
-      /* :deep() &.el-button.is-disabled,
+      :deep() &.el-button.is-disabled,
       :deep() &.el-button.is-disabled:hover {
         color: #F5F5F5;
         background-color: #333333c2;
-      } */
-    }
+      }
+    } */
 
     .el-link.el-link--primary {
       --el-link-text-color: #333333;

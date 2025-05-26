@@ -432,7 +432,7 @@ function handleWithdraw2() {
         emailCode: emailCode.value,
         authCode: authCode.value,
         gasTip: 0,
-        source: "web" as const
+        source: 'web' as const
       }
 
       ElMessageBox.confirm(
