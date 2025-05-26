@@ -14,8 +14,10 @@
     "addlang": "node ./scripts/migrate.cjs"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@solana/web3.js": "^1.98.2",
     "@vueuse/core": "^13.1.0",
+    "arc-progress": "^1.0.0",
     "bignumber.js": "^9.3.0",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
@@ -30,6 +32,7 @@
     "lodash-es": "^4.17.21",
     "nuxt": "^3.16.2",
     "pinia": "^3.0.2",
+    "qr-code-with-logo": "^1.1.0",
     "qrcode": "^1.5.4",
     "sass": "^1.87.0",
     "tonweb": "^0.0.66",

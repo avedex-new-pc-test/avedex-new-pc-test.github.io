@@ -9,6 +9,7 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import { JsonRpcProvider} from 'ethers'
 import Cookies from "js-cookie";
+import { JsonRpcProvider, formatUnits, parseUnits,FixedNumber, ethers } from 'ethers'
 
 export function isJSON(str: string) {
   try {
@@ -109,7 +110,7 @@ export function getTimezone() {
   }
 }
 
-export function getAddressAndChainFromId(id: string, type: 1): [string, string]
+export function getAddressAndChainFromId(id: string, type?: 1): [string, string]
 export function getAddressAndChainFromId(
   id: string,
   type?: number
@@ -604,6 +605,50 @@ export function getRpcProvider(chain: string) {
   return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
 }
 
+export const evm_utils = {
+  ...ethers,
+  formatUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
+    const decimals = Number(arg?.[1])
+    if (!decimals) {
+      return arg?.[0] || 0
+    }
+    return formatUnits(...arg)
+  },
+  parseUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
+    const decimals = Number(arg?.[1])
+    if (!decimals) {
+      return FixedNumber.fromString(String(arg?.[0] ?? '0')).value
+    }
+    // Ensure the value is a string as required by ethers' parseUnits
+    const valueStr = String(arg?.[0] ?? '')
+    return parseUnits(valueStr, decimals)
+  }
+}
+export function filterGas(num: number, chain?: string) {
+  if (chain === 'bsc') {
+    if (num < 1) {
+      return '#848E9C'
+    } else if (num < 2) {
+      return '#EAECEF'
+    } else {
+      return '#f81111'
+    }
+  } else if (chain === 'eth') {
+    if (num < 3) {
+      return '#848E9C'
+    } else if (num < 6) {
+      return '#EAECEF'
+    } else {
+      return '#f81111'
+    }
+  } else {
+    if (num < 0.5) {
+      return '#878fbc'
+    } else {
+      return '#f81111'
+    }
+  }
+}
 export function addSign(val: number) {
   if (val > 0) {
     return '+'
