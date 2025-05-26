@@ -220,11 +220,6 @@
   "startSuccessTitle": "密碼重置成功",
   "trending": "熱門幣",
   "filterTip": "已篩選{address}的{count}筆交易",
-  "profit": "盈虧",
-  "totalBuy": "總買入",
-  "totalSell": "總賣出",
-  "avgBuyPrice": "買入成本價",
-  "avgSellPrice": "賣出成本價",
   "swapT": "市價交易",
   "limitT": "限價委託(掛單)",
   "slow": "緩慢",
@@ -270,5 +265,11 @@
   "auto": "自動",
   "login": "登入",
   "connectWallet1": "連接錢包",
-  "limitSubmitted": "掛單已提交"
+  "limitSubmitted": "掛單已提交",
+  "top50PartialSale": "減倉",
+  "vol": "交易額",
+  "unknownRisk": "未開盤",
+  "oneClick": "一鍵買賣",
+  "buy1": "買",
+  "sell1": "賣"
 }

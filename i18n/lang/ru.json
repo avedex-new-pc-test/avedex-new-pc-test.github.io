@@ -137,11 +137,6 @@
   "appCode": "Код приложения",
   "startConfirmPasswordError": "Пароли не совпадают.",
   "startSuccessTitle": "Пароль успешно сброшен",
-  "profit": "Прибыль",
-  "totalBuy": "Всего покупок",
-  "totalSell": "Всего продаж",
-  "avgBuyPrice": "Средняя цена покупки",
-  "avgSellPrice": "Средняя цена продажи",
   "swapT": "Рынок",
   "limitT": "Лимитный",
   "slow": "Медленно",
@@ -186,5 +181,10 @@
   "auto": "Авто",
   "login": "Вход",
   "connectWallet1": "Подключить кошелек",
-  "limitSubmitted": "Лимитный ордер отправлен"
+  "limitSubmitted": "Лимитный ордер отправлен",
+  "top50PartialSale": "Частичная продажа",
+  "unknownRisk": "Неизвестный риск",
+  "oneClick": "Один клик",
+  "buy1": "Купить",
+  "sell1": "Продать"
 }

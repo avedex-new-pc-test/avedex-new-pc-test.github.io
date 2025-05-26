@@ -223,11 +223,6 @@
   "startSuccessTitle": "重置密码成功",
   "trending": "热门币",
   "filterTip": "已筛选{address}的{count}笔交易",
-  "profit": "盈亏",
-  "totalBuy": "总买入",
-  "totalSell": "总卖出",
-  "avgBuyPrice": "买入成本价",
-  "avgSellPrice": "卖出成本价",
   "swapT": "市价交易",
   "limitT": "限价委托(挂单)",
   "slow": "缓慢",
@@ -273,5 +268,11 @@
   "auto": "自动",
   "login": "登录",
   "connectWallet1": "连接钱包",
-  "limitSubmitted": "挂单已提交"
+  "limitSubmitted": "挂单已提交",
+  "top50PartialSale": "减仓",
+  "vol": "交易额",
+  "unknownRisk": "未开盘",
+  "oneClick": "一键买卖",
+  "buy1": "买",
+  "sell1": "卖"
 }

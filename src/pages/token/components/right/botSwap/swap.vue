@@ -234,6 +234,15 @@ watch(priceLimitRange, (val) => {
 watch(priceLimit, () => {
   if (props.swapType !== 'limit') return
   watchAmount(props.activeTab)
+  updateStorePriceLimit()
+})
+
+watch(() => props.swapType, (val) => {
+  if (val !== 'limit') {
+    botSwapStore.priceLimit = 0
+  } else {
+    updateStorePriceLimit()
+  }
 })
 
 watch(isPriceLimit, (val) => {
@@ -246,6 +255,14 @@ watch(isPriceLimit, (val) => {
     }
   }
 })
+
+function updateStorePriceLimit() {
+   if(!isPriceLimit.value) {
+    botSwapStore.priceLimit = Number(formatDec(new BigNumber(priceLimit.value).div(tokenStore.circulation || 1).toFixed(), 4))
+  } else {
+    botSwapStore.priceLimit = Number(priceLimit.value)
+  }
+}
 
 const gasPrice = ref(0)
 
@@ -1011,9 +1028,19 @@ function initPriceLimit() {
       setTimeout(initPriceLimit, 1000)
       return
     }
-    priceLimit.value = formatDec(new BigNumber(tokenStore.price || 0).times(isPriceLimit.value ? 1 : tokenStore.circulation).toFixed(), 4)
+  } else {
+    if (!tokenStore.price) {
+      setTimeout(initPriceLimit, 1000)
+      return
+    }
   }
+  priceLimitRange.value = undefined
+  priceLimit.value = formatDec(new BigNumber(tokenStore.token?.current_price_usd || 0).times(isPriceLimit.value ? 1 : tokenStore.circulation).toFixed(), 4)
 }
+
+watch(() => tokenStore.token?.token, () => {
+  initPriceLimit()
+})
 
 // 生命周期钩子
 onMounted(() => {

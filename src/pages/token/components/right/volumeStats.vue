@@ -1,14 +1,14 @@
 <template>
   <div class="flex items-center justify-between text-12px mt-10px rounded-4px">
     <div>
-      <div class="color-[var(--d-666-l-999)]">{{ tabActiveName }} VOL</div>
+      <div class="color-[var(--d-666-l-999)]">{{ tabActiveName }} {{ $t('vol') }}</div>
       <div class="color-[var(--d-F5F5F5-l-333)] mt-5px">
         {{ formatNumber(pair?.[`tx_${tabActive}_count` as TxCount] || 0, 1) }}<span
           class="color-[var(--d-666-l-999)]">/</span>${{ formatNumber(pair?.[`volume_u_${tabActive}` as VolumeU] || 0,
             2) }}</div>
     </div>
     <div class="text-center">
-      <div class="color-[var(--d-666-l-999)]">Buy</div>
+      <div class="color-[var(--d-666-l-999)]">{{ $t('buy3') }}</div>
       <div class="mt-5px color-#12B886">
         {{ formatNumber(pair?.[`buys_tx_${tabActive}_count` as TxCount] || 0, 1) }}<span
           class="color-[var(--d-666-l-999)]">/</span>${{ formatNumber(pair?.[`buy_volume_u_${tabActive}` as VolumeU] ||
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="text-center">
-      <div class="color-[var(--d-666-l-999)]">Sell</div>
+      <div class="color-[var(--d-666-l-999)]">{{ $t('sell3') }}</div>
       <div class="mt-5px color-#F6465D">
         {{ formatNumber(pair?.[`sells_tx_${tabActive}_count` as TxCount] || 0, 1) }}<span
           class="color-[var(--d-666-l-999)]">/</span>${{ formatNumber(pair?.[`sell_volume_u_${tabActive}` as VolumeU] ||

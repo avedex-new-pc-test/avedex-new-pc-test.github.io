@@ -87,10 +87,7 @@
   "SS": "SS",
   "startResetTitle": "Defina a senha",
   "connectChainWallet": "Conecte a carteira",
-  "importAddress": "Ver endereço ",
-  "profit": "Lucro",
-  "totalBuy": "Total Comprado",
-  "totalSell": "Total Vendido",
+  "importAddress": "Ver endereço",
   "swapT": "Mercado",
   "limitT": "Limite",
   "slow": "Lento",
@@ -116,5 +113,8 @@
   "approve": "Aprovar",
   "buying": "Comprando",
   "selling": "Vendendo",
-  "estimatedGas": "Gás estimado "
+  "estimatedGas": "Gás estimado ",
+  "unknownRisk": "Risco Desconhecido",
+  "buy1": "Comprar",
+  "sell1": "Vender"
 }

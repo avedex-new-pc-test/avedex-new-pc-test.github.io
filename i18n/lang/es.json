@@ -88,9 +88,6 @@
   "startResetTitle": "Establecer contraseña",
   "connectChainWallet": "Conectar billetera",
   "importAddress": "Ver dirección",
-  "profit": "Ganancia",
-  "totalBuy": "Compra Total",
-  "totalSell": "Venta Total",
   "swapT": "Mercado",
   "limitT": "Límite",
   "slow": "Lento",
@@ -116,5 +113,8 @@
   "approve": "Aprobar",
   "buying": "Comprando",
   "selling": "vendiendo",
-  "estimatedGas": "Gas estimado"
+  "estimatedGas": "Gas estimado",
+  "unknownRisk": "Riesgo desconocido",
+  "buy1": "Comprar",
+  "sell1": "Vender"
 }

@@ -87,9 +87,6 @@
   "startResetTitle": "Şifre Ayarla",
   "connectChainWallet": "Cüzdan Bağlayın",
   "importAddress": "Adresi İçe Aktar",
-  "profit": "Kazanç",
-  "totalBuy": "Toplam Alış",
-  "totalSell": "Toplam Satış",
   "swapT": "Market",
   "limitT": "Limit",
   "slow": "Yavaş",
@@ -114,5 +111,8 @@
   "approve": "Onayla",
   "buying": "Satın alma",
   "selling": "satış",
-  "estimatedGas": "Tahmini Gas Ücreti"
+  "estimatedGas": "Tahmini Gas Ücreti",
+  "unknownRisk": "Bilinmeyen risk",
+  "buy1": "Al",
+  "sell1": "Sat"
 }

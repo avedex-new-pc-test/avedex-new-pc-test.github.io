@@ -137,11 +137,6 @@
   "appCode": "Mã App",
   "startConfirmPasswordError": "Hai mật khẩu không khớp",
   "startSuccessTitle": "Đặt lại mật khẩu thành công",
-  "profit": "Lợi nhuận",
-  "totalBuy": "Tổng mua",
-  "totalSell": "Tổng bán",
-  "avgBuyPrice": "Giá mua trung bình",
-  "avgSellPrice": "Giá bán trung bình",
   "swapT": "Thị trường",
   "limitT": "Giới hạn",
   "slow": "Chậm",
@@ -186,5 +181,10 @@
   "auto": "Tự động",
   "login": "Đăng nhập",
   "connectWallet1": "Kết nối ví",
-  "limitSubmitted": "Đã gửi lệnh giới hạn"
+  "limitSubmitted": "Đã gửi lệnh giới hạn",
+  "top50PartialSale": "Bán một phần",
+  "unknownRisk": "Rủi ro không xác định",
+  "oneClick": "Một chạm",
+  "buy1": "Mua",
+  "sell1": "Bán"
 }
