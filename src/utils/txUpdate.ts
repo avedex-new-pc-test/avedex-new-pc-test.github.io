@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js'
 import { formatNumber } from './formatNumber'
 export function updatePriceFromTx(tx: WSTx) {
   const tokenStore = useTokenStore()
+  if (tx.to_address !== tokenStore.token?.token && tx.from_address !== tokenStore.token?.token) return
   const isBuy = tx.to_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.()
   const price = Number(tx.from_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.() ? tx.from_price_usd : tx.to_price_usd) || 0
   if (tx.pair_address === tokenStore.pairAddress) {
