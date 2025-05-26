@@ -478,5 +478,15 @@
   "totalBuy": "總買入",
   "totalSell": "總賣出",
   "avgBuyPrice": "買入成本價",
-  "avgSellPrice": "賣出成本價"
+  "avgSellPrice": "賣出成本價",
+  "abnormalChips": "异常籌碼",
+  "abnormalChipsTip": "异常籌碼比例已去重處理",
+  "devAddress": "發幣",
+  "runPullHistory": "跑路歷史",
+  "tokenMethod": "幣種/跑路管道",
+  "runPullTime": "跑路時長",
+  "noMore": "沒有更多了",
+  "shitcoin": "撤池子",
+  "unKnown": "砸盤",
+  "unKnown1": "未知"
 }

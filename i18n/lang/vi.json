@@ -286,5 +286,15 @@
   "totalBuy": "Tổng mua",
   "totalSell": "Tổng bán",
   "avgBuyPrice": "Giá mua trung bình",
-  "avgSellPrice": "Giá bán trung bình"
+  "avgSellPrice": "Giá bán trung bình",
+  "abnormalChips": "Chip bất thường",
+  "abnormalChipsTip": "Tỷ lệ chip bất thường đã được xử lý lại",
+  "devAddress": "Địa chỉ tạo",
+  "runPullHistory": "Lịch sử",
+  "tokenMethod": "Token/Loại",
+  "runPullTime": "Thời gian chạy",
+  "noMore": "Không còn nữa",
+  "shitcoin": "Xóa",
+  "unKnown": "Đổ",
+  "unKnown1": "Không xác định"
 }

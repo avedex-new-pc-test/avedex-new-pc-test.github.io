@@ -242,7 +242,7 @@
                       min-width: 70px;
                       --el-button-font-weight: 400;
                     "
-                    @click.stop="confirmEditRemark(remark2, id)"
+                    @click.stop="confirmEditRemark(id, remark2)"
                   >
                     {{ $t('confirm') }}
                   </el-button>
@@ -535,15 +535,38 @@
       </div>
       <Check v-model="showCheck" />
     </div>
-    <div class="item ml-24px">
-      <span @click="showRun= !showRun"
-        >跑路
+    <div class="item ml-24px" v-if="chain === 'solana'">
+      <span class="cursor-pointer" @click="showRun = !showRun"
+        >{{ t('flag_rug_pull') }}
         <Icon
+          v-if="
+            (rugPull?.rates?.rugged_rate ?? 0) > 0 ||
+            (rugPull?.rates?.rugged_rate ?? 0) == -1
+          "
           name="material-symbols:arrow-forward-ios-rounded"
           class="text-12px"
         />
       </span>
-      <Run :v-model="showRun" />
+      <div
+        class="color-text-1 mt-5px font-500 flex-start text-12px"
+        :style="{
+          color:
+            (rugPull?.rates?.rugged_rate ?? 0) > 60 ? '#F6465D' : '#959A9F',
+        }"
+      >
+        <!-- <i class="iconfont icon-rug font-12 mr-2px"></i> -->
+        <Icon
+
+          name="custom:rug"
+          class="text-12px mr-2px"
+        />
+        {{
+          rugPull?.rates?.rugged_rate == -1
+            ? t('unKnown1')
+            : formatNumber(rugPull?.rates?.rugged_rate || 0, 2) + '%'
+        }}
+      </div>
+      <Run v-model="showRun" :obj="rugPull" />
     </div>
   </div>
 </template>
@@ -572,7 +595,7 @@ import {
   moveFavoriteGroup,
   editTokenFavRemark,
 } from '@/api/fav'
-import { _getRugPull } from '@/api/run'
+import { _getRugPull, type ResultRugPull } from '@/api/run'
 import type { Token } from '@/api/types/token'
 import { upColor, downColor } from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
@@ -597,7 +620,9 @@ const remark = shallowRef('')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
-const rugPull = shallowRef(null)
+const rugPull = shallowRef<ResultRugPull>({
+  all_tag_rate: 0,
+})
 
 const loadingRun = shallowRef(false)
 
@@ -680,7 +705,9 @@ function getTokenFavoriteCheck() {
   getFavoriteCheck(id, evmAddress)
     .then((res) => {
       console.log('------getFavoriteCheck---------', res, typeof res)
-      collected.value = res == true ? true : false
+      collected.value = res?.address ? true : false
+      remark.value = res?.remark || ''
+      remark2.value = res?.remark || ''
     })
     .catch((err) => {
       console.log(err)
@@ -753,7 +780,7 @@ function getTokenCheckFavoriteGroup() {
     .finally(() => {})
 }
 
-function confirmSwitchGroup(tokenId, id, evmAddress) {
+function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
   if (!evmAddress) {
     return
   }
@@ -783,29 +810,28 @@ function handleReset() {
     selectedGroup.value = groupId.value
   }
   if (editableRemark.value) {
-    editable2 = false
+    editableRemark.value = false
     remark2.value = remark.value
   }
 }
-function confirmEditRemark(remark, tokenId, evmAddress) {
-  if (evmAddress) {
+function confirmEditRemark(tokenId: string, remark2: string) {
+  console.log('-------evmAddress-----', evmAddress)
+  if (!evmAddress) {
     return
   }
-  if (remark?.length > 50) {
-    return this.$message.error(this.$t('maximum10characters'))
+  if (remark2?.length > 50) {
+    return ElMessage.error(t('maximum10characters'))
   }
-  editTokenFavRemark(tokenId, remark, evmAddress)
+  editTokenFavRemark(tokenId, remark2, evmAddress)
     .then(() => {
-      ElMessage.success(this.$t('success'))
-      remark2.value = remark
+      ElMessage.success(t('success'))
+      remark.value = remark2
     })
     .catch((err) => {
       console.log(err)
-      tElMessage.error(this.$t('fail'))
+      ElMessage.error(t('fail'))
     })
-    .finally(() => {
-      this.editableRemark = false
-    })
+    .finally(() => {})
 }
 
 function getTags(i) {
@@ -987,19 +1013,21 @@ function getRugPull() {
   loadingRun.value = true
   _getRugPull(id)
     .then((res) => {
-      rugPull.value = res
-      rugPull.value.all_tag_rate = rugPull.value.rates?.rateList?.filter(
-        (i) => i.icon == 'icon_all_tag_rate'
-      )?.[0].rate
-      rugPull.value.all_tag_rate = rugPull.value.all_tag_rate?.toFixed(1) || 0
-      rugPull.value.rateList = rugPull.value?.rates?.rateList?.filter(
+      rugPull.value.dev = res?.dev || ''
+      rugPull.value.all_tag_rate = res?.rates?.rateList?.find(
+        (i) => i?.icon == 'icon_all_tag_rate'
+      )?.rate
+      rugPull.value.all_tag_rate =
+        Number(rugPull.value.all_tag_rate?.toFixed(1) || 0) || 0
+      rugPull.value.rates = res?.rates
+      rugPull.value.rateList = res?.rates?.rateList?.filter(
         (i) => i.icon !== 'icon_all_tag_rate'
       )
-      rugPull.value.rateList = rugPull.value.rateList?.map((i) => ({
+      rugPull.value.rateList = rugPull.value?.rateList?.map((i) => ({
         ...i,
         rate: Number(i.rate?.toFixed(1) || 0),
       }))
-      console.log('-----getRugPull------', res)
+      console.log('-----getRugPull------', rugPull.value)
     })
     .catch((err) => {
       console.log(err)

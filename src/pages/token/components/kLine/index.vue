@@ -13,7 +13,7 @@ import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, get
 import { getKlineHistoryData, getUserKlineTxTags } from '@/api/token'
 import { getTotalHolders } from '@/api/stats'
 import { formatNumber } from '@/utils/formatNumber'
-import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useWidgetVisibilityRefresh, useLimitPriceLine } from './utils'
+import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx } from './types'
 import BigNumber from 'bignumber.js'
@@ -222,6 +222,10 @@ async function initChart() {
     charts_storage_api_version: '1.1',
     timezone: getTimezone() as Timezone,
     time_frames: [],
+    // loading_screen: {
+    //   backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    //   foregroundColor: '#3F80F7'
+    // },
     custom_css_url: `${location.origin}/tv_custom.css`,
     // format: (showMarket.value ? 'volume' : 'price') as SeriesFormat,
     custom_formatters: {

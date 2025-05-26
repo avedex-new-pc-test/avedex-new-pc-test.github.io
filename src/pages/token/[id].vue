@@ -60,7 +60,7 @@ function init() {
   tokenStore.tokenPrice = 0
   _getTokenInfo()
   _getTokenInfoExtra()
-  wsStore.onmessageTxUpdateToken()
+  // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
   botSwapStore.sendNativePriceWs()
 }
