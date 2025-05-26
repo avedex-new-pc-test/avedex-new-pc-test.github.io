@@ -1,8 +1,14 @@
 <script setup lang="ts">
 const {row} = defineProps({
   row: {
-    type: Object,
-    default: () => ({})
+    type: Object as PropType<{
+      chain: string;
+      logo_url: string
+    }>,
+    default: () => ({
+      chain: '',
+      logo_url: ''
+    })
   },
   tokenClass: {
     type: String,

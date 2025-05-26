@@ -1,4 +1,5 @@
 import timezoneObj from './json/timezone.json'
+import config from './json/config.json'
 import dayjs from './day'
 import sha1 from 'crypto-js/sha1'
 import { PublicKey } from '@solana/web3.js'
@@ -6,6 +7,7 @@ import { TronWeb } from 'tronweb'
 import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
+import Cookies from 'js-cookie'
 import { JsonRpcProvider, formatUnits, parseUnits,FixedNumber, ethers } from 'ethers'
 
 export function isJSON(str: string) {
@@ -533,6 +535,7 @@ export function verifyLogin() {
   const bottStore = useBotStore()
   const userInfo = bottStore.userInfo
   if (!userInfo?.evmAddress) {
+    bottStore.changeConnectVisible(true)
     // 连接钱包
     return false
   }
@@ -554,13 +557,13 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
   return useRemarksStore().getRemarkByAddress({address, chain})
 }
 
-export function getColorClass(val: number) {
-  if (val === 0) {
-    return 'color-#848E9C'
-  } else if (val > 0) {
+export function getColorClass(val: string) {
+  if (Number(val) > 0) {
     return 'color-#12b886'
-  } else {
+  } else if (Number(val) < 0) {
     return 'color-#ff646d'
+  } else {
+    return 'color-[--d-F5F5F5-l-333]'
   }
 }
 export function desensitizeEmail(email: string) {
@@ -644,4 +647,58 @@ export function filterGas(num: number, chain?: string) {
       return '#f81111'
     }
   }
+}
+export function addSign(val: number) {
+  if (val > 0) {
+    return '+'
+  } else if (val < 0) {
+    return '-'
+  }
+  return ''
+}
+
+export function getTextWidth(text: string, min = 0) {
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')!
+  context.font = '12px DINPro-Medium'
+  const metrics = context.measureText(text)
+  return Math.max(metrics.width, min)
+}
+
+export function jumpTg() {
+  const inviterUrl =
+    config.inviter_url_v2 || 'https://share.ave.ai'
+  const text =
+    useLocaleStore().locale == 'zh-cn'
+      ? '我正在Ave.ai挖百倍金狗，现在注册并交易，跟我一起探寻百倍Meme。'
+      : 'I’m currently mining 100x Gold Doge on Ave.ai. Register and trade now, and join me in exploring 100x Meme.'
+  const refCode = Cookies.get('refCode') || ''
+  const url =
+    `${inviterUrl}?code=${refCode}` +
+    `
+#AveAI #CryptoTrading #MemeCoins`
+  const share_url = `https://t.me/share/url?url=${encodeURIComponent(
+    url
+  )}&text=${encodeURIComponent(text)}`
+  window.open(share_url)
+}
+
+export function jumpX() {
+  const inviterUrl =
+    config.inviter_url_v2 || 'https://share.ave.ai'
+  const text =
+    useLocaleStore().locale == 'zh-cn'
+      ? `我正在Ave.ai挖百倍金狗，现在注册并交易，跟我一起探寻百倍Meme。
+👉`
+      : `I’m currently mining 100x Gold Doge on Ave.ai. Register and trade now, and join me in exploring 100x Meme.
+👉`
+  const refCode = Cookies.get('refCode') || ''
+  const url =
+    `${inviterUrl}?code=${refCode}` +
+    `
+#AveAI #CryptoTrading #MemeCoins`
+  const share_url = `https://x.com/intent/post?text=${encodeURIComponent(
+    text
+  )}+${encodeURIComponent(url)}`
+  window.open(share_url)
 }

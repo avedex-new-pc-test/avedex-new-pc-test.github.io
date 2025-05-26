@@ -168,5 +168,10 @@
   "address": "Direción",
   "plsEnterAmount": "Por favor ingrese la cantidad",
   "plsEnterAddress": "Por favor, ingresa la dirección.",
-  "pleaseEnterCorrectAddress": "Ingrese la dirección correcta"
+  "pleaseEnterCorrectAddress": "Ingrese la dirección correcta",
+  "walletTotalBalance": "Saldo total de la billetera",
+  "noWalletTip": "Por favor conecte su billetera para usar esta función",
+  "profit": "Ganancia",
+  "totalBuy": "Compra Total",
+  "totalSell": "Venta Total"
 }

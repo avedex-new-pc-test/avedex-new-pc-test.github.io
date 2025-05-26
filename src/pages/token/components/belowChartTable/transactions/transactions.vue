@@ -3,6 +3,8 @@ import TableDateFilter from './tableDateFilter.vue'
 import VolFilter from './volFilter.vue'
 import MakersFilter from './makersFilter.vue'
 import MarkerTooltip from './markerTooltip.vue'
+import UserTxsFilterHead from './userTxsFilterHead.vue'
+import type {RowEventHandlerParams} from 'element-plus'
 
 import {filterLanguage} from '~/pages/token/components/kLine/utils'
 import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse, type Profile} from '~/api/token'
@@ -14,10 +16,11 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const {t} = useI18n()
-const {totalHolders, pairAddress, token} = storeToRefs(useTokenStore())
+const {totalHolders, pairAddress, token, pair} = storeToRefs(useTokenStore())
+const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
-const route = useRoute()
+const route = useRoute<{ id: string }>()
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
@@ -57,8 +60,9 @@ const activeTab = shallowRef('all')
 const isPausedTxs = shallowRef(false)
 const documentVisible = inject<Ref<boolean>>('documentVisible')
 
+const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
-  const visible = token.value?.chain === 'solana' && activeTab.value !== 'liquidity'
+  const visible = token.value?.chain === 'solana' && !isLiquidity.value
   return [{key: 'time', dataKey: 'time', title: t('time'), width: 80},
     {key: 'type', dataKey: 'type', title: t('type'), width: 80},
     {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), width: 100},
@@ -107,7 +111,7 @@ const filterTableListMap = {
 }
 // 纯前端筛选
 const filterTableList = computed(() => {
-  let tableList: (GetPairTxsResponse | GetPairLiqResponse)[] = []
+  let tableList: ((GetPairTxsResponse | GetPairLiqResponse) & { count?: number })[] = []
   if (activeTab.value in filterTableListMap) {
     tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
   } else {
@@ -284,7 +288,6 @@ function confirmVolFilter(amountU: string[] = []) {
 function confirmMakersFilter(markerAddress = '') {
   tableFilterVisible.value.markers = false
   tableFilter.value.markerAddress = markerAddress
-  _getUserTxs(markerAddress)
 }
 
 async function _getPairTxs() {
@@ -521,14 +524,31 @@ function setActiveTab(val: string) {
 }
 
 function setMakerAddress(address: string) {
-  const result = tableFilter.value.markerAddress ? '' : address
-  tableFilter.value.markerAddress = result
-  if (result && filterTableList.value.length > 0) {
-    _getUserTxs(result)
-  }
+  tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
 }
 
-function _getUserTxs(address: string) {
+function onRowClick({rowData}: RowEventHandlerParams) {
+  const {symbol, logo_url, chain, token: _token} = token.value!
+  const {target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress} = pair.value!
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: route.params.id!,
+      symbol,
+      logo_url,
+      chain,
+      address: _token,
+      remark: rowData.remark!,
+    },
+    pairInfo: {
+      target_token,
+      token0_address,
+      token0_symbol,
+      token1_symbol,
+      pairAddress
+    },
+    user_address: rowData.wallet_address
+  })
 }
 </script>
 
@@ -551,25 +571,35 @@ function _getUserTxs(address: string) {
         <span class="ml-3px">{{ $t('paused') }}</span>
       </div>
     </div>
-    <div
+    <template
       v-if="tableFilter.markerAddress"
-      class="py-6px bg-#3F80F71A text-center mb-12px"
     >
-        <span
+      <div
           v-if="listStatus.loadingTxs || listStatus.loadingLiq"
-          class="lh-20px text-13px"
+          class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
         >
           {{ $t('loading') }}
-        </span>
-      <div
-        v-else
-        class="lh-20px text-13px"
-        v-html="$t('filterTip',{
+      </div>
+      <template v-else>
+        <div
+          class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
+          v-html="$t('filterTip',{
           address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
           count:`<span>&nbsp;${filterTableList[0]?.count}&nbsp;</span>`
-        })"
-      />
-    </div>
+         })"
+        />
+        <UserTxsFilterHead
+          :makerAddress="tableFilter.markerAddress"
+          :isLiquidity="isLiquidity"
+          :pairLiq="pairLiq"
+          :isBuy="isBuy"
+          :getAmount="getAmount"
+          :getPrice="getPrice"
+          :chain="addressAndChain.chain"
+          :tagType="tableFilter.tag_type"
+        />
+      </template>
+    </template>
     <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
       <AveTable
         :data="filterTableList"
@@ -581,7 +611,8 @@ function _getUserTxs(address: string) {
           },
           onMouseleave:()=>{
             isPausedTxs = false
-          }
+          },
+          onClick:onRowClick
         }"
       >
         <template #header-time>

@@ -45,12 +45,20 @@ const Component = computed(() => {
       v-if="botStore.evmAddress"
       :height="height"
     />
-    <div
+    <AveEmpty
       v-else
       :style="{height:`${height}px`}"
     >
-      空空如也
-    </div>
+      <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
+      <el-button
+        class="mt-10px"
+        @click="botStore.$patch({
+        connectVisible: true
+      })"
+      >
+        {{ $t('connectWallet') }}
+      </el-button>
+    </AveEmpty>
   </div>
 </template>
 
