@@ -14,7 +14,7 @@
           alt="">
         <span>{{ botStore?.userInfo?.name || '' }}</span>
         <Icon
-          name="i-mdi:menu-down"
+          name="mdi:menu-down"
           :class="['font-size-28px cursor-pointer ml--5px transition-all duration-0.4s', !!tgWalletVisible && 'rotate-z-180 origin-center']" />
       </div>
     </template>
@@ -27,7 +27,7 @@
               :src="generateAvatarIcon(botStore?.userInfo?.name || '')" alt="">
             <span style="margin-right: 8px;">{{ botStore?.userInfo?.name || '' }}</span>
             <Icon
-              name="i-mdi:menu-down"
+              name="mdi:menu-down"
               :class="['font-size-28px cursor-pointer ml--5px transition-all duration-0.4s']" />
           </div>
         </div>
