@@ -19,7 +19,7 @@ interface GetFavListResponse {
   chain: string;
   symbol: string;
   current_price_usd: number;
-  price_change: number | string;
+  price_change: string;
   price_change_v2: number;
   token_index: number;
   favorite_price: number;
@@ -37,6 +37,7 @@ interface GetFavListResponse {
   tx_volume_u_24h: number;
   tx_count_24h: number;
   pool_size: number;
+  remark?: string;
 }
 
 // Get user favorite tokens

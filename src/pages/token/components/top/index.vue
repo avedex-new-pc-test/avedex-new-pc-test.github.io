@@ -553,10 +553,11 @@ import {
 } from '@/api/fav'
 import { _getRugPull } from '@/api/run'
 import type { Token } from '@/api/types/token'
-import { upColor, downColor } from '@/utils/constants'
+import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
+import {useEventBus} from "@vueuse/core";
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = useBotStore()
@@ -579,6 +580,15 @@ const showRun = shallowRef(false)
 const rugPull = shallowRef(null)
 
 const loadingRun = shallowRef(false)
+const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
+favDialogEvent.on((key) => {
+  if (key === 'confirmSwitchGroup') {
+    getTokenCheckFavoriteGroup()
+  } else if (key === 'remark') {
+    getTokenFavoriteCheck()
+  }
+})
+const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
 
 const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
   useCheckStore()
@@ -675,6 +685,7 @@ function addTokenFavorite() {
     .then(() => {
       ElMessage.success('收藏成功！')
       collected.value = true
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -689,6 +700,7 @@ function removeTokenFavorite() {
     .then(() => {
       ElMessage.success('已取消收藏！')
       collected.value = false
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -744,6 +756,7 @@ function confirmSwitchGroup(tokenId:string, id: number, evmAddress: string) {
       .then(() => {
         ElMessage.success(t('success'))
         getTokenCheckFavoriteGroup()
+        topEventBus.emit()
       })
       .catch((err) => {
         console.log(err)
@@ -780,6 +793,7 @@ function confirmEditRemark(tokenId: string, remark2: string) {
     .then(() => {
       ElMessage.success(t('success'))
       remark.value = remark2
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
