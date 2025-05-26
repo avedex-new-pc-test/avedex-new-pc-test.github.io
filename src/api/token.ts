@@ -473,9 +473,9 @@ export interface GetTokenDetailsListReq {
   pageSize: number;
   max_block_number: number;
   max_event_id: number;
-  event_type: string;
-  volume_min: number;
-  volume_max: number;
+  event_type?: string;
+  volume_min?: number;
+  volume_max?: number;
 }
 
 export interface GetTokenDetailsListResponse {
@@ -524,3 +524,45 @@ export function getTokenDetailsList(query: GetTokenDetailsListReq): Promise<GetT
     query,
   })
 }
+
+export interface GetHomePumpListResponse {
+  pair: string;
+  chain: string;
+  amm: string;
+  target_token: string;
+  target_name: string;
+  token0_address: string;
+  token0_symbol: string;
+  reserve0: number;
+  token0_logo_url: string;
+  token1_address: string;
+  token1_symbol: string;
+  reserve1: number;
+  token1_logo_url: string;
+  current_price_usd: number;
+  price_change_24h: number;
+  tx_24h_count: number;
+  volume_u_24h: number;
+  makers_24h: number;
+  created_at: Date;
+  progress: number;
+  market_cap: number;
+  is_fav: boolean;
+  issue_platform: string;
+}
+
+//pump榜单
+export function homePumpList(query: {
+  chain: string;
+  pageNO: number;
+  pageSize: number;
+  category: string;
+  self_address?: string;
+}): Promise<{ data: GetHomePumpListResponse[] }> {
+  const {$api} = useNuxtApp()
+  return $api(`/v1api/v4/tokens/treasure/pump/list`, {
+    method: 'get',
+    query,
+  })
+}
+

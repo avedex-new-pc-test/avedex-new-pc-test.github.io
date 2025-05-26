@@ -72,7 +72,10 @@ function getColor(val: number) {
       v-model:sort="sort"
       :columns="columns"
     />
-    <el-scrollbar :height="scrollbarHeight">
+    <el-scrollbar
+      :height="scrollbarHeight"
+      class="[&&]:h-auto"
+    >
       <NuxtLink
         v-for="(row,$index) in listData"
         :key="$index"

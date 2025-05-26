@@ -4,6 +4,7 @@ import VolFilter from './volFilter.vue'
 import MakersFilter from './makersFilter.vue'
 import MarkerTooltip from './markerTooltip.vue'
 import UserTxsFilterHead from './userTxsFilterHead.vue'
+import type {RowEventHandlerParams} from 'element-plus'
 
 import {filterLanguage} from '~/pages/token/components/kLine/utils'
 import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse, type Profile} from '~/api/token'
@@ -16,9 +17,10 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const {t} = useI18n()
 const {totalHolders, pairAddress, token, pair} = storeToRefs(useTokenStore())
+const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
-const route = useRoute()
+const route = useRoute<{ id: string }>()
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
@@ -308,19 +310,6 @@ async function _getPairTxs() {
         senderProfile: JSON.parse(val.profile || '{}')
       }
     }).reverse()
-    if (process.env.NODE_ENV === 'development') {
-      const tokenDetailStore = useTokenDetailsStore()
-      tokenDetailStore.$patch({
-        drawerVisible: true,
-        tokenInfo: {
-          ...token.value,
-          address: token.value?.token,
-          id: route.params.id,
-        },
-        pairInfo: pair.value,
-        user_address: (res || [])[0].wallet_address
-      })
-    }
   } catch (e) {
     console.log('=>(transactions.vue:62) e', e)
   } finally {
@@ -538,6 +527,29 @@ function setMakerAddress(address: string) {
   tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
 }
 
+function onRowClick({rowData}: RowEventHandlerParams) {
+  const {symbol, logo_url, chain, token: _token} = token.value!
+  const {target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress} = pair.value!
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: route.params.id!,
+      symbol,
+      logo_url,
+      chain,
+      address: _token,
+      remark: rowData.remark!,
+    },
+    pairInfo: {
+      target_token,
+      token0_address,
+      token0_symbol,
+      token1_symbol,
+      pairAddress
+    },
+    user_address: rowData.wallet_address
+  })
+}
 </script>
 
 <template>
@@ -599,7 +611,8 @@ function setMakerAddress(address: string) {
           },
           onMouseleave:()=>{
             isPausedTxs = false
-          }
+          },
+          onClick:onRowClick
         }"
       >
         <template #header-time>

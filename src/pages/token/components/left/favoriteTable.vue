@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FavDialog from '~/pages/token/components/left/favDialog.vue'
+import FavDialog from './favDialog.vue'
 import {
   type GetUserFavoriteGroupsResponse,
   type GetFavListResponse,
@@ -8,7 +8,7 @@ import {
 } from '~/api/fav'
 import TokenImg from '~/components/tokenImg.vue'
 import {formatNumber} from '~/utils/formatNumber'
-import THead from '~/pages/token/components/left/tHead.vue'
+import THead from './tHead.vue'
 
 const {t} = useI18n()
 const props = defineProps({
@@ -116,7 +116,7 @@ async function loadMoreFavorites() {
     listStatus.value.loading = true
     const pageNo = listStatus.value.pageNo
     const res = await getFavoriteList(activeTab.value, pageNo, botStore.evmAddress)
-    if (Array.isArray(res) && res?.length > 0) {
+    if (Array.isArray(res)) {
       const list = res.map(i => ({
         ...i,
         id: i.token + '-' + i.chain,
@@ -140,10 +140,6 @@ async function loadMoreFavorites() {
       if (!listStatus.value.finished) {
         listStatus.value.pageNo++
       }
-    } else {
-      if (listStatus.value.pageNo === 1) {
-        favoritesList.value = []
-      }
     }
   } catch (e) {
     console.log('=>(favoriteTable.vue:106) (e)', (e))
@@ -157,13 +153,13 @@ function resetListStatus() {
   listStatus.value.pageNo = 1
 }
 
-function getColorClass(val: number) {
-  if (val === 0) {
-    return 'color-#848E9C'
-  } else if (val > 0) {
+function getColorClass(val: string) {
+  if (Number(val) > 0) {
     return 'color-#12b886'
-  } else {
+  } else if (Number(val) < 0) {
     return 'color-#ff646d'
+  } else {
+    return 'color-#848E9C'
   }
 }
 </script>

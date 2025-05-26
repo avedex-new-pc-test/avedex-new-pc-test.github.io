@@ -4,7 +4,7 @@
       <Top/>
       <div class="flex gap-4px">
         <Left class="w-292px flex flex-col flex-shrink-0"/>
-        <div class="flex-1 hide-scrollbar">
+        <div class="flex-1 hide-scrollbar min-w-0">
           <el-scrollbar height="calc(100vh - 152px)">
             <KLine />
             <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]"/>

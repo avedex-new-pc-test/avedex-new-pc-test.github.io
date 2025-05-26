@@ -60,3 +60,15 @@ export const MIN_BALANCE = {
   berachain: 0.00001,
   sonic: 0.1
 }
+export const NATIVE_TOKENS = [
+  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+  'So11111111111111111111111111111111111111112',
+  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+  'Am5hwEp5VBqXoeE5pRU47RTW6gYeFQ6ahi1j4ZVVeL2V',
+
+  '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+  '0x55d398326f99059ff775485246999027b3197955',
+  '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+  '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'
+]

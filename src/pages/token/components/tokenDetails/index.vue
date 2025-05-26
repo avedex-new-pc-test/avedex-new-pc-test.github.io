@@ -5,6 +5,9 @@ import {
   type GetTokenDetailMarksResponse,
   type GetTokenDetailsLineResponse
 } from '~/api/token'
+import LineChart from './lineChart.vue'
+import BaseInfo from '~/pages/token/components/tokenDetails/baseInfo.vue'
+import {templateRef} from '@vueuse/core'
 
 const tokenDetailsStore = useTokenDetailsStore()
 const symbol = computed(() => {
@@ -43,6 +46,7 @@ const activeTime = shallowRef<number>(86400)
 
 function switchTimeTab(item: number) {
   activeTime.value = item
+  init()
 }
 
 type  TMark = (GetTokenDetailMarksResponse & { count?: number; coordY?: number; })
@@ -51,11 +55,14 @@ const lineChartList = shallowRef<GetTokenDetailsLineResponse[]>([])
 const marks = shallowRef<TMark[]>([])
 const loadingMark = ref(false)
 
+const baseRef = templateRef('baseRef')
 watch(() => tokenDetailsStore.drawerVisible, val => {
   if (val) {
     init()
     setTimeout(() => {
-      // baseref.init
+      if (baseRef.value) {
+        baseRef.value.init()
+      }
     }, 20)
   }
 })
@@ -157,7 +164,7 @@ async function _getTokenDetailMarks(type: string) {
     style="--el-drawer-bg-color:transparent"
   >
     <div
-      class="absolute left-0 right-0 top-0 bottom-0 z-3012 bg-[--d-222-l-FFF] rounded-tl-10px rounded-bl-10px flex justify-end"
+      class="absolute left-0 right-0 top-0 bottom-0 z-3012 bg-[--d-222-l-FFF] rounded-tl-10px rounded-bl-10px flex flex-col"
     >
       <div
         class="flex-1 max-w-480px overflow-y-auto overflow-x-hidden"
@@ -193,8 +200,18 @@ async function _getTokenDetailMarks(type: string) {
           </div>
 
           <div
-            class="relative h-200px"
-          />
+            class="relative h-200px mb-22px"
+          >
+            <LineChart
+              v-loading="loadingLineChart"
+              :active-time="activeTime"
+              :marks="marks"
+              :show-series="[true,true]"
+              :data-list="lineChartList"
+            />
+          </div>
+
+          <BaseInfo ref="baseRef"/>
         </div>
       </div>
     </div>
