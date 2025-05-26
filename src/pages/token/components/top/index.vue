@@ -23,20 +23,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        >
+        />
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -97,10 +97,10 @@
                 lazy
               >
                 <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
                 </template>
                 <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
                 </template>
               </el-image>
               <span
@@ -443,8 +443,11 @@
       >
       <span
         class="block mt-4px"
-        :class="priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`"
-        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange, 2) }}%</span
+        :class="
+          priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`
+        "
+        >{{ priceChange > 0 ? '+' : ''
+        }}{{ formatNumber(priceChange, 2) }}%</span
       >
     </div>
 
@@ -497,32 +500,51 @@
         />
         <img
           v-else-if="
-            !statistics_risk_store && !statistics_warning_store && !statistics_unknown_store
+            !statistics_risk_store &&
+            !statistics_warning_store &&
+            !statistics_unknown_store
           "
           :width="12"
           class="icon-svg1"
           src="@/assets/images/安全.svg"
         />
 
-        <img v-else class="icon-svg1" :width="12" src="@/assets/images/zhuyi1.svg" />
+        <img
+          v-else
+          class="icon-svg1"
+          :width="12"
+          src="@/assets/images/zhuyi1.svg"
+        />
         <span
-          v-if="statistics_risk_store || statistics_warning_store || statistics_unknown_store"
+          v-if="
+            statistics_risk_store ||
+            statistics_warning_store ||
+            statistics_unknown_store
+          "
           class="ml-5px"
           style="font-weight: 600"
           :style="{ color: getRiskColor(token) }"
         >
           {{
-            statistics_risk_store || statistics_warning_store || statistics_unknown_store || ''
+            statistics_risk_store ||
+            statistics_warning_store ||
+            statistics_unknown_store ||
+            ''
           }}
         </span>
       </div>
       <Check v-model="showCheck" />
     </div>
     <div class="item ml-24px">
-      <span>跑路</span>
-      <Run :v-model="showRun" :obj="rugPull"/>
+      <span @click="showRun= !showRun"
+        >跑路
+        <Icon
+          name="material-symbols:arrow-forward-ios-rounded"
+          class="text-12px"
+        />
+      </span>
+      <Run :v-model="showRun" />
     </div>
-
   </div>
 </template>
 
@@ -538,7 +560,7 @@ import {
   formatIconSwap,
   isJSON,
   formatIconTag,
-  getAddressAndChainFromId
+  getAddressAndChainFromId,
 } from '@/utils/index'
 import {
   type GetUserFavoriteGroupsResponse,
@@ -579,7 +601,11 @@ const rugPull = shallowRef(null)
 
 const loadingRun = shallowRef(false)
 
-const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(useCheckStore())
+const {
+  statistics_risk_store,
+  statistics_warning_store,
+  statistics_unknown_store,
+} = storeToRefs(useCheckStore())
 const token = computed(() => {
   return tokenStore.token
 })
@@ -622,7 +648,7 @@ const currentGroup = computed(() => {
     : userFavoriteGroups.value?.find((i) => i.group_id == groupId.value)?.name
 })
 const chain = computed(() => {
-  const { chain } = getAddressAndChainFromId(id,0)
+  const { chain } = getAddressAndChainFromId(id, 0)
   return chain
 })
 // const tokenInfo = computed(() => {
@@ -637,7 +663,7 @@ onMounted(() => {
     getTokenUserFavoriteGroups() //获取分组数组
   }
   useCheckStore().getContractCheckResult(id, evmAddress)
-  if (chain.value  == 'solana') {
+  if (chain.value == 'solana') {
     getRugPull()
   }
 })
@@ -946,35 +972,42 @@ function getRiskColor(token?: Token | null) {
     return '#e74e54'
   } else if (statistics_warning_store ?? 0 > 0) {
     return '#f8be46'
-  } else if (!statistics_risk_store && !statistics_warning_store && !statistics_unknown_store) {
+  } else if (
+    !statistics_risk_store &&
+    !statistics_warning_store &&
+    !statistics_unknown_store
+  ) {
     return '#81c54e'
   } else {
     return '#507eef'
   }
 }
 
-function  getRugPull () {
-      loadingRun.value = true
-      _getRugPull(id)
-        .then(res => {
-          rugPull.value = res
-          rugPull.value.all_tag_rate = rugPull.value.rates?.rateList?.filter(i => i.icon == 'icon_all_tag_rate')?.[0].rate
-          rugPull.value.all_tag_rate = rugPull.value.all_tag_rate?.toFixed(1) || 0
-          rugPull.value.rateList = rugPull.value?.rates?.rateList?.filter(i => i.icon !== 'icon_all_tag_rate')
-          rugPull.value.rateList = rugPull.value.rateList?.map(i => ({
-            ...i,
-            rate: Number(i.rate?.toFixed(1) || 0)
-          }))
-          console.log('-----getRugPull------', res)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-        .finally(() => {
-          loadingRun.value = false
-        })
-    }
-
+function getRugPull() {
+  loadingRun.value = true
+  _getRugPull(id)
+    .then((res) => {
+      rugPull.value = res
+      rugPull.value.all_tag_rate = rugPull.value.rates?.rateList?.filter(
+        (i) => i.icon == 'icon_all_tag_rate'
+      )?.[0].rate
+      rugPull.value.all_tag_rate = rugPull.value.all_tag_rate?.toFixed(1) || 0
+      rugPull.value.rateList = rugPull.value?.rates?.rateList?.filter(
+        (i) => i.icon !== 'icon_all_tag_rate'
+      )
+      rugPull.value.rateList = rugPull.value.rateList?.map((i) => ({
+        ...i,
+        rate: Number(i.rate?.toFixed(1) || 0),
+      }))
+      console.log('-----getRugPull------', res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+    .finally(() => {
+      loadingRun.value = false
+    })
+}
 </script>
 
 <style scoped lang="scss">
