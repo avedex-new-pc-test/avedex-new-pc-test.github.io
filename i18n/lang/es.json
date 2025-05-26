@@ -116,5 +116,9 @@
   "estimatedGas": "Gas estimado",
   "unknownRisk": "Riesgo desconocido",
   "buy1": "Comprar",
-  "sell1": "Vender"
+  "sell1": "Vender",
+  "address": "Direción",
+  "plsEnterAmount": "Por favor ingrese la cantidad",
+  "plsEnterAddress": "Por favor, ingresa la dirección.",
+  "pleaseEnterCorrectAddress": "Ingrese la dirección correcta"
 }
