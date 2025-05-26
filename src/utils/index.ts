@@ -109,7 +109,7 @@ export function getTimezone() {
   }
 }
 
-export function getAddressAndChainFromId(id: string, type?: 1): [string, string]
+export function getAddressAndChainFromId(id: string, type: 1): [string, string]
 export function getAddressAndChainFromId(
   id: string,
   type?: number

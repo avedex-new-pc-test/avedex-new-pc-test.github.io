@@ -3,7 +3,7 @@ import {type GetHomePumpListResponse, homePumpList} from '~/api/token'
 import THead from './tHead.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 defineProps({
   scrollbarHeight: {
@@ -12,9 +12,9 @@ defineProps({
   }
 })
 const {t} = useI18n()
-const tokenStore = useTokenStore()
+// const tokenStore = useTokenStore()
 const sort = ref({})
-const isVolUSDT = ref(true)
+// const isVolUSDT = ref(true)
 const tabList = shallowRef([{
   label: '新内盘',
   value: 'pump_in_new',
@@ -166,15 +166,14 @@ async function _getHomePumpList() {
                 </template>
               </TimerCount>
               <span v-else class="color-[--d-999-l-666]">
-            {{
-                  dayjs(row.created_at).fromNow()
-                }}
-          </span>
-              <span class="color-[--d-999-l-666] ml-8px"
-                    v-if="progressVisible"
+                {{ dayjs(row.created_at).fromNow()}}
+              </span>
+              <span
+                v-if="progressVisible"
+                class="color-[--d-999-l-666] ml-8px"
               >
               {{ formatNumber(row.progress, 1) }}%
-            </span>
+              </span>
             </div>
           </div>
         </div>
