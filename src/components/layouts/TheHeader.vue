@@ -27,12 +27,16 @@
     <div class="flex-1" />
     <el-button
       v-if="!botStore.evmAddress"
-      class="ml-10px bg-[var(--d-222-l-F2F2F2)] rounded-4px text-[var(--d-F5F5F5-l-333)]"
+      text
+      type=""
+      bg
+      color="bg-[var(--d-222-l-F2F2F2)]"
+      class="ml-10px  rounded-4px text-[var(--d-F5F5F5-l-333)]!"
       @click="openConnect"
     >
       {{ $t('connectWallet') }}
     </el-button>
-    <el-popover v-else placement="bottom" trigger="click">
+    <!-- <el-popover v-else placement="bottom" trigger="click">
       <template #reference>
         <el-button class="ml-10px">{{
           botStore.userInfo?.name || ''
@@ -41,7 +45,8 @@
       <div class="text-center clickable" @click.stop="botStore.logout">
         退出登录
       </div>
-    </el-popover>
+    </el-popover> -->
+    <wallet v-else/>
     <a
       class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
       href=""
@@ -98,6 +103,7 @@
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
 import connectWallet from '@/components/header/connectWallet/index.vue'
+import wallet from '@/components/header/wallet/index.vue'
 // const connectWallet = defineAsyncComponent(() => import('~/components/header/connectWallet/index.vue'))
 const { locales } = useI18n()
 const themeStore = useThemeStore()

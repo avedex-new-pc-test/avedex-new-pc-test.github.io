@@ -215,7 +215,7 @@ export function confirmAuthSetting(data: {
 }
 
 // 查询是否已绑定authenticator(登录态之后，getUserInfoByGuid 用这个接口可以立即获取邮箱绑定)
-export function getUserInfoByGuid(guid: string): Promise<{
+export function bot_getUserInfoByGuid(guid: string): Promise<{
   guid: string
   emailAddress: string // 已绑定的email address
   authSetting: boolean //  已绑定google验证器, false -> 未绑定google验证器
@@ -413,8 +413,23 @@ export const bot_getApprove = createCacheRequest(function(params: {
   })
 }, 500)
 
+export const bot_getChainsTokenBalance = createCacheRequest(function(params) {
+  const { $api } = useNuxtApp()
+  return  $api('/botapi/swap/getChainsTokenBalance', {
+    method: 'post',
+    body: params
+  })
+}, 500)
 
-
+// 查询sol bundle是否可用
+// /swap/getBundleAvailable GET
+export function bot_getBundleAvailable() {
+  const { $api } = useNuxtApp()
+  return  $api('/botapi/swap/getBundleAvailable', {
+    method: 'get',
+    query: {}
+  })
+}
 // 预授权代币
 export function bot_approve(data: {
   tokenAddress: string
@@ -487,6 +502,7 @@ export function bot_createSwapEvmTx(params: {
   slippage: number
 }) {
   const { $api } = useNuxtApp()
+  const botStore = useBotStore()
   return $api('/botapi/swap/createSwapEvmTx', {
     method: 'post',
     body: {
@@ -494,6 +510,7 @@ export function bot_createSwapEvmTx(params: {
       source: 'web',
       autoSell: false,
       preApprove: true,
+      tgUid: botStore.userInfo?.tgUid,
       channelRef: Cookies.get('refCode') || undefined,
       ...params,
     }
@@ -562,4 +579,57 @@ export function bot_createEvmLimitTx(params: {
     }
   })
 }
-
+// 创建安全转账交易
+// swap/transfer
+// {
+//     "batchId":"111546",
+//     "chain":"solana",
+//     "creatorAddress":"FSFB1mQqXc3cC57DHaKijHzcqMsnYHsueCWnLt97ePbD",
+//     "tokenAddress":"7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+//     "tgUid":"6097411603",
+//     "amount":"1000000000",
+//     "transferTo":"3SBB1mQqXc3cC57DHaKijHzcqMsnYHsueCWnLt97ePbD",
+//     "gasTip":0,
+//     "memo":"1234342342",
+//     "source":"web",  //枚举 web，app。不传的话默认 app
+//     "emailCode":"123321", //如果不使用邮箱验证， ""即可
+//     "authCode":"123321", //如果不使用Authenticator验证， ""即可
+//     "autoGas": 2; // 0: 关闭, 1: 低速， 2：中速， 3：高速
+// }
+export function bot_createSafeTransferTx(params: {
+  chain: 'eth' | 'base' | 'bsc' | 'solana'
+  creatorAddress: string
+  tokenAddress: string
+  tgUid: string
+  amount: string
+  transferTo: string
+  gasTip: number
+  memo: string
+  source: 'web'|'app'
+  emailCode?: string
+  authCode?: string
+  autoGas?: 0 | 1 | 2 | 3
+}) {
+  const { $api } = useNuxtApp()
+  const { gasTip = 0, source = 'web', ...rest } = params
+  return $api('/botapi/swap/transferBySafeCheck', {
+    method: 'post',
+    body: {
+      batchId: Date.now().toString(),
+      gasTip,
+      source,
+      ...rest,
+    }
+  })
+}
+// 转账主币GasFee
+// url: /swap/getTransferGasFee GET
+// 校验：双token
+// 请求参数: chain -> 当前支持 eth, base, bsc
+export function bot_getTransferGasFee(params: { chain: 'eth' | 'base' | 'bsc' | 'solana'} | undefined) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/getTransferGasFee', {
+    method: 'get',
+    query: params
+  })
+}

@@ -159,5 +159,12 @@
   "checkRemark": "Sözleşme tespiti sadece tek taraflıdır ve bazı yeni Pixiu'lar tespit edilemeyebilir. K-line trendi, pozisyon değişiklikleri, sermaye akışı gibi daha fazla boyutu birleştirerek analiz yapmak gerekir.\n\n\n\n\n\n",
   "connectWalletFirst": "Lütfen önce cüzdanınızı bağlayın",
   "audit": "Denetim raporu",
-  "audit1": "Denetim"
+  "audit1": "Denetim",
+  "unknownRisk": "Bilinmeyen risk",
+  "buy1": "Al",
+  "sell1": "Sat",
+  "address": "Adres",
+  "plsEnterAmount": "Lütfen tutarı giriniz",
+  "plsEnterAddress": "Lütfen adres girin",
+  "pleaseEnterCorrectAddress": "Lütfen doğru adresi girin"
 }

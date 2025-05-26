@@ -16,7 +16,7 @@
   }
 }
 .search-dialog.el-dialog {
-  background: var(--d-222-l-fff);
+  background: var(--d-222-l-FFF);
   .search-input {
     .el-input__wrapper {
       background-color: var(--d-333-l-F2F2F2);
@@ -29,4 +29,34 @@
       }
     }
   }
+}
+
+.flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-around {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }

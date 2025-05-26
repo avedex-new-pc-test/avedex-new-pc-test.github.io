@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Transactions from './transactions/transactions.vue'
+import OneClick from '../right/botSwap/oneClick.vue'
 
 const {t} = useI18n()
 const activeTab = shallowRef<keyof typeof components>('Transactions')
@@ -39,6 +40,7 @@ const Component = computed(() => {
       >
         {{ item.name }}
       </a>
+      <OneClick />
     </div>
     <component :is="Component"/>
   </div>

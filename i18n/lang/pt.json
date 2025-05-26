@@ -161,5 +161,12 @@
   "checkRemark": "A detecção de contratos é apenas uma verificação unilateral, alguns novos Pixiu podem não ser detectados. É necessário combinar mais dimensões para análise, como a tendência de K-line, mudanças de posição, fluxo de capital, entre outros.",
   "connectWalletFirst": "Por favor, conecte sua carteira primeiro ",
   "audit": "Auditoria",
-  "audit1": "AUDITORIA"
+  "audit1": "AUDITORIA",
+  "unknownRisk": "Risco Desconhecido",
+  "buy1": "Comprar",
+  "sell1": "Vender",
+  "address": "Endereço",
+  "plsEnterAmount": "Por favor, insira a quantidade",
+  "plsEnterAddress": "Por favor, insira o endereço",
+  "pleaseEnterCorrectAddress": "Digite o endereço correto "
 }

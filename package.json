@@ -29,6 +29,7 @@
     "lodash-es": "^4.17.21",
     "nuxt": "^3.16.2",
     "pinia": "^3.0.2",
+    "qr-code-with-logo": "^1.1.0",
     "sass": "^1.87.0",
     "tonweb": "^0.0.66",
     "tronweb": "^6.0.3",

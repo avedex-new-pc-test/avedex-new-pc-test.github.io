@@ -97,7 +97,7 @@ const tooltipDirective: Directive<HTMLElementDirective, TooltipValue> = {
         e.stopPropagation()
         el?.__tooltipHandlers?.showTooltip?.()
       },
-       onMouseLeave: (e: MouseEvent) => {
+      onMouseLeave: (e: MouseEvent) => {
         e.stopPropagation()
         tooltip.hide()
       }

@@ -168,15 +168,17 @@ const emit = defineEmits(['update:slippage', 'onSubmit'])
 
 const { t } = useI18n()
 const botSwapStore = useBotSwapStore()
-const themeStore = useThemeStore()
 
 const slippageList = [5, 9, 20]
 // 获取 uuid
 const key = Math.random().toString(36).slice(-8)
 const show = ref(false)
 const isAuto = ref(false)
+const botSettingStore = useBotSettingStore()
 
 const botSetting = ref(cloneDeep(props.setting ?? {}))
+
+
 const selected = computed(() => botSetting.value.selected)
 
 const slippageValue = ref<number | undefined>()
@@ -240,7 +242,21 @@ function handleCustomSlippage(val: number | undefined) {
 
 
 function confirmSubmit() {
-  emit('onSubmit', botSetting.value)
+  const setting = botSetting.value as typeof botSettingStore.botSettings[string]
+  if (setting?.selected) {
+    if (props.chain === 'solana') {
+      botSettingStore.botSettings = {
+        ...botSettingStore.botSettings,
+        solana: {...setting}
+      }
+    } else {
+      botSettingStore.botSettings = {
+        ...botSettingStore.botSettings,
+        [props.chain]: {...setting}
+      }
+    }
+  }
+  emit('onSubmit', setting)
   show.value = false
 }
 
@@ -389,10 +405,10 @@ function onProtectionChange() {
     opacity: 0.5;
   }
   &:deep() .el-input__wrapper, &:deep() .el-input__inner {
-    background-color: var(--a-bg-7-color);
+    background-color: var(--d-333-l-F2F2F2);
   }
   &:deep() .el-input-number__decrease, &:deep() .el-input-number__increase {
-    background-color: var(--a-bg-7-color);
+    background-color: var(--d-333-l-F2F2F2);
   }
   .input {
     font-size: 14px;
@@ -450,6 +466,7 @@ function onProtectionChange() {
   justify-content: space-between;
   background: var(--d-333-l-F2F2F2);
   color: #999;
+  padding: 2px;
   button {
     display: flex;
     justify-content: center;
@@ -459,12 +476,12 @@ function onProtectionChange() {
     cursor: pointer;
     flex: 1;
     border-radius: 4px;
-    height: 32px;
+    height: 28px;
     font-size: 14px;
     background: transparent;
     &.active {
-      background: var(--d-F5F5F5-l-333);
-      color: var(--d-333-l-F2F2F2);
+      background: var(--d-111-l-FFF);
+      color: var(--d-F5F5F5-l-333);
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog 
+    <el-dialog
       v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
@@ -12,8 +12,8 @@
       <div v-if="emailRegisterType == 'reset'" />
       <template v-else>
         <div class='w-content'>
-          <h3 class="connect-popup-title filterArray-button font-500">
-            <el-icon 
+          <h3 class="connect-popup-title font-500">
+            <el-icon
               v-if="botStore.connectWalletTab !== 0"
               :size="35"
               style="color:var(--d-999-l-222);"
@@ -28,8 +28,8 @@
                 v-show="botStore.connectWalletTab == 0"
                 class="text-14px text-center min-h-200px"
               >
-                <emailRegisterAndLogin 
-                  ref="loginForm" 
+                <emailRegisterAndLogin
+                  ref="loginForm"
                   :cType="emailRegisterType"
                   @update:c-type="(cType) => emailRegisterType = cType">
                   <!-- <template #nav>
@@ -58,6 +58,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 import reset from './reset.vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
+console.log('connectWallet')
 const botStore = useBotStore()
 const {mode} = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
@@ -125,14 +126,8 @@ watch(dialogVisible, (val) => {
     right: 11px;
   }
 
-  &.reset {
-    :deep() header {
-      height: 0;
-    }
-  }
-
   &.light {
-    background: var(--d-131722-l-fff) !important;
+    background: var(--d-131722-l-FFF) !important;
     border-color: #D8D8DC;
   }
 }
@@ -179,7 +174,20 @@ watch(dialogVisible, (val) => {
     }
   }
 }
-
+:deep() .el-input {
+  --el-input-border-color: #444444;
+  --el-input-placeholder-color: var(--d-666-l-999);
+  --el-text-color-placeholder: #999;
+  --el-input-bg-color: var(--d-333-l-F2F2F2)
+}
+:deep()  .el-input__wrapper {
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  &:hover{
+    box-shadow: 0 0 0 1px #3F80F7 inset;
+  }
+}
 .w-content {
   display: inline-block;
 
@@ -187,11 +195,7 @@ watch(dialogVisible, (val) => {
     width: 460px;
     margin: 0 auto;
 
-    :deep() .el-input {
-      --el-input-border-color: #444444;
-      --el-input-placeholder-color: #999;
-      --el-text-color-placeholder: #999;
-    }
+ 
 
     :deep() .el-input.el-input--large {
       height: 48px;

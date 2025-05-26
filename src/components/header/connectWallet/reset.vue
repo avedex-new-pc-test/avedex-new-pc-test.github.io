@@ -63,6 +63,8 @@ import type { FormInstance, FormRules } from 'element-plus'
 import {
   desensitizeEmail
 } from '@/utils/index'
+
+console.log('reset')
 const emit = defineEmits(['update:c-type'])
 const props = defineProps({
   email: {

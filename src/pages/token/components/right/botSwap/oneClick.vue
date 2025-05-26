@@ -1,0 +1,542 @@
+<template>
+  <button class="one-click-btn ml-auto clickable" :class="{ 'active': visible }" @click.stop="visible = !visible">
+    <Icon name="ion:flash" />
+    <span class="ml-5px">{{ $t('oneClick') }}</span>
+  </button>
+  <div v-if="botStore.isSupportChains?.includes(chain) && visible" class="fixed-one-click">
+    <div class="flex-between">
+      <div class="flex-start">
+        <span>{{ $t('oneClick') }}</span>
+        <div class="tabs-1 ml-5px">
+          <button
+            v-for="item in ['s1', 's2', 's3']" :key="item"
+            :class="{ 'active': item === botSettings?.[chain]?.selected }" type="button"
+            @click.stop="botSettings[chain as string]!.selected = item">{{ item.toUpperCase() }}</button>
+        </div>
+        <SlippageSetMarket :chain="chain" />
+      </div>
+      <Icon class="text-14px clickable color-[--d-999-l-666]" name="ri:close-large-fill" @click.stop="visible = false"  />
+    </div>
+    <div class="content">
+      <div class="flex-between mt-10px">
+        <span class="">{{ $t('buy1') }}</span>
+        <span class="color-#999 ml-auto">{{ $t('balance1') }}: {{ formatNumber(tokenStore.swap.native?.balance || 0)
+          }}&nbsp;{{ getChainInfo(chain)?.main_name }}</span>
+        <RefreshBalance class="color-#999" :type="0" />
+      </div>
+      <div class="mt-10px tabs">
+        <el-button
+          v-for="(item, $index) in botSettings?.[chain as string]![selected as 's1' | 's2' | 's3']?.buyValueList" :key="$index"
+          class="one-click-button green clickable" :loading="loadingSwapBuy[$index]" :disabled="loadingSwapBuy[$index]"
+          @click.stop.prevent="submitBotSwap(item, 'buy', $index)">{{ !loadingSwapBuy[$index] ? item : '' }}</el-button>
+      </div>
+      <div class="flex-between mt-15px">
+        <span class="">{{ $t('sell1') }}</span>
+        <span class="color-#999 ml-auto">{{ $t('balance1') }}: {{ formatNumber(tokenStore.swap.token?.balance || 0)
+          }}&nbsp;{{ tokenStore.token?.symbol || '' }}</span>
+        <RefreshBalance class="color-#999" :type="1" />
+      </div>
+      <div class="mt-10px tabs">
+        <el-button
+          v-for="(item, $index) in botSettings?.[chain as string]![selected as 's1' | 's2' | 's3']?.sellPerList" :key="$index"
+          class="one-click-button red clickable" :loading="loadingSwapSell[$index]" :disabled="loadingSwapSell[$index]"
+          @click.stop.prevent="handleSellAmount(item, $index)">{{ !loadingSwapSell[$index] ? item + '%' : ''
+          }}</el-button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang='ts'>
+import { formatNumber } from '@/utils/formatNumber'
+import { getChainInfo, isEvmChain } from '@/utils'
+import { useLocalStorage } from '@vueuse/core'
+import { ElNotification } from 'element-plus'
+import BigNumber from 'bignumber.js'
+import { NATIVE_TOKEN } from '@/utils/constants'
+import { formatBotGasTips } from '@/utils/bot'
+import { useBotSwap } from '~/composables/botSwap'
+import { bot_createSolTx, bot_createSwapEvmTx } from '@/api/bot'
+import RefreshBalance from './refreshBalance.vue'
+import SlippageSetMarket from './slippageSetMarket.vue'
+const botStore = useBotStore()
+const tokenStore = useTokenStore()
+const botSettingStore = useBotSettingStore()
+const botSwapStore = useBotSwapStore()
+const { botSettings } = storeToRefs(botSettingStore)
+const wsStore = useWSStore()
+const route = useRoute()
+const { t } = useI18n()
+const loadingSwapBuy = ref([false, false, false, false, false])
+const loadingSwapSell = ref([false, false, false, false, false])
+
+const visible = useLocalStorage('oneClickVisible', false)
+const { getTokenBalance, checkApproveAndApprove } = useBotSwap()
+
+const chain = computed(() => {
+  return (getAddressAndChainFromId(route.params?.id as string)?.chain || tokenStore.token?.chain) as string
+})
+
+const selected = computed(() => {
+  return botSettingStore.botSettings?.[chain.value]?.selected || 's1'
+})
+
+
+function getChain() {
+  return (getAddressAndChainFromId(route.params?.id as string)?.chain || tokenStore.token?.chain) || ''
+}
+
+
+async function submitBotSwap(amount1: string | number, type: 'buy' | 'sell', index = 0) {
+  if (!botStore.userInfo?.evmAddress || !botStore.accessToken) {
+    botStore.changeConnectVisible(true)
+    return
+  }
+  const isBuy = type == 'buy' ? true : false
+  if (isBuy) {
+    if (loadingSwapBuy.value?.some(i => i)) {
+      return
+    }
+  } else {
+    if (loadingSwapSell.value?.some(i => i)) {
+      return
+    }
+  }
+  if (new BigNumber(amount1 || 0).lte(0)) {
+    ElNotification({ title: 'Error', type: 'error', message: t('amountMustG0') })
+    return
+  }
+  const fromToken = isBuy ? tokenStore.swap.native : tokenStore.swap.token
+  const toToken = isBuy ? tokenStore.swap.token : tokenStore.swap.native
+  const amount = (new BigNumber(amount1 || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${fromToken?.decimals || 18}})?`))?.[0] || ''
+  if ((Number(amount) || 0) <= 0) {
+    ElNotification({ title: 'Error', type: 'error', message: t('amountTooSmall') })
+    return
+  }
+  if (new BigNumber(amount || 0).gt(fromToken?.balance || 0)) {
+    ElNotification({ title: 'Error', type: 'error', message: t('insufficientBalance') })
+    return
+  }
+  if (isBuy) {
+    loadingSwapBuy.value[index] = true
+  } else {
+    loadingSwapSell.value[index] = true
+  }
+  const chain = getChain()
+  const chainMainToken: Record<string, string> = {
+    solana: 'sol',
+    ton: 'TON',
+  }
+  const native = chainMainToken?.[chain] || NATIVE_TOKEN
+  const walletAddress = botStore.userInfo?.addresses?.find?.(i => i?.chain === chain)?.address
+  if (chain === 'solana') {
+    const botSettings = botSettingStore.botSettings?.solana
+    const selected = botSettings?.selected as 's1' | 's2' | 's3'
+    const botSetting = botSettings?.[selected]
+    const mev = botSetting?.mev
+    const slippage = botSetting?.slippage || '9'
+    const { gasTip1List, gasTip2List } = formatBotGasTips(botSwapStore.gasTip, 'solana')
+    const gasTips = mev ? gasTip1List : gasTip2List
+    const settings = mev ? botSetting?.gas[0] : botSetting?.gas[1]
+    let priorityFee = settings?.customFee || gasTips?.[settings?.level as number] || '0.002'
+    if (mev && new BigNumber(priorityFee).lt('0.002')) {
+      priorityFee = '0.002'
+    }
+    const botPriorityFee = new BigNumber(priorityFee).times(10 ** 9).toFixed(0)
+    const data = {
+      batchId: Date.now().toString(),
+      swapList: [{
+        creatorAddress: walletAddress || '',
+        inAmount: new BigNumber(amount || 0).times(10 ** (fromToken?.decimals || 0)).toFixed(0),
+      }],
+      inTokenAddress: (isBuy ? native : fromToken.address) || '',
+      outTokenAddress: (isBuy ? toToken.address : native) || '',
+      swapType: (isBuy ? 1 : 2) as 1 | 2,
+      isPrivate: mev || false,
+      priorityFee: botPriorityFee, // botPriorityFee
+      autoSell: isBuy ? botSetting?.autoSell || false : false,
+      slippage: slippage !== 'auto' ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900,
+      autoSlippage: slippage === 'auto'
+    }
+    bot_createSolTx(data).then(res => {
+      if (res) {
+        let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
+          // this.$store.state.bot.historyUpdate++
+          ElNotification({ type: 'success', message: t('transactionsSubmitted') })
+          // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
+          //   this.$store.state.tabActive = 'myBotHistory'
+          // }
+          if (isBuy) {
+            loadingSwapBuy.value[index] = false
+          } else {
+            loadingSwapSell.value[index] = false
+          }
+        }, 500)
+        const unwatch = watch(() => wsStore?.wsResult.tgbot, (subscribeResult) => {
+          const batchId = subscribeResult.batchId
+          if (batchId === data.batchId) {
+            if (Timer) {
+              clearTimeout(Timer)
+              Timer = null
+            }
+            if (subscribeResult?.txList?.[0]?.success) {
+              ElNotification({ type: 'success', message: t('tradeSuccess') })
+              unwatch()
+              setTimeout(() => {
+                getTokenBalance()
+                // this.$store.state.bot.historyUpdate++
+                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
+                //   this.$store.state.tabActive = 'myBotHistory'
+                // }
+              }, 1000)
+            } else {
+              handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
+              unwatch()
+              if (isBuy) {
+                loadingSwapBuy.value[index] = false
+              } else {
+                loadingSwapSell.value[index] = false
+              }
+              setTimeout(() => {
+                // this.getTokenDetails()
+                getTokenBalance()
+                // this.$store.state.bot.historyUpdate++
+              }, 1000)
+            }
+          }
+        })
+      }
+    }).catch(err => {
+      handleBotError(err || 'swap error')
+      if (isBuy) {
+        loadingSwapBuy.value[index] = false
+      } else {
+        loadingSwapSell.value[index] = false
+      }
+    })
+  } else if (isEvmChain(chain)) {
+    const botSettings = botSettingStore.botSettings?.[chain]
+    const selected = botSettings?.selected
+    const botSetting = botSettings?.[selected as 's1' | 's2' | 's3']
+    const mev = botSetting?.mev
+    const slippage = botSetting?.slippage || '9'
+    const { gasTip1List, gasTip2List } = formatBotGasTips(botSwapStore.gasTip, chain)
+    const gasTips = mev ? gasTip1List : gasTip2List
+    const settings = mev ? botSetting?.gas[0] : botSetting?.gas[1]
+    const gasPrice = !settings?.customFee ? '0' : (settings?.customFee || gasTips?.[settings?.level] || '3')
+    const gasTip = Number(new BigNumber(gasPrice).times(10 ** 9).toFixed(0))
+    const data = {
+      batchId: Date.now().toString(),
+      chain: chain,
+      swapList: [{
+        creatorAddress: walletAddress || '',
+        inAmount: new BigNumber(amount || 0).times(10 ** (fromToken?.decimals || 0)).toFixed(0),
+      }],
+      inTokenAddress: (isBuy ? native : fromToken.address) || '',
+      outTokenAddress: (isBuy ? toToken.address : native) || '',
+      swapType: (isBuy ? 1 : 2) as 1 | 2,
+      contractType: 0 as 0 | 1,
+      isPrivate: mev || false,
+      gasTip: gasTip,
+      autoSell: isBuy ? botSetting?.autoSell || false : false,
+      preApprove: true,
+      slippage: slippage !== 'auto' ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900,
+      autoSlippage: slippage === 'auto'
+    }
+    bot_createSwapEvmTx(data).then(res => {
+      if (res) {
+        let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
+          // this.$store.state.bot.historyUpdate++
+          ElNotification({ type: 'success', message: t('transactionsSubmitted') })
+          // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
+          //   this.$store.state.tabActive = 'myBotHistory'
+          // }
+          if (isBuy) {
+            loadingSwapBuy.value[index] = false
+          } else {
+            loadingSwapSell.value[index] = false
+          }
+          // this.dialogVisibleSwap = false
+        }, 500)
+        const unwatch = watch(() => wsStore?.wsResult.tgbot, (subscribeResult) => {
+          const batchId = subscribeResult.batchId
+          if (batchId === data.batchId) {
+            if (Timer) {
+              clearTimeout(Timer)
+              Timer = null
+            }
+            if (subscribeResult?.txList?.[0]?.success) {
+              ElNotification({ type: 'success', message: t('tradeSuccess') })
+              unwatch()
+              setTimeout(() => {
+                getTokenBalance()
+                // this.$store.state.bot.historyUpdate++
+                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
+                //   this.$store.state.tabActive = 'myBotPosition'
+                // }
+              }, 1000)
+            } else {
+              handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
+              unwatch()
+              if (isBuy) {
+                loadingSwapBuy.value[index] = false
+              } else {
+                loadingSwapSell.value[index] = false
+              }
+            }
+          }
+        })
+      }
+    }).catch(err => {
+      handleBotError(err || 'swap error')
+      if (isBuy) {
+        loadingSwapBuy.value[index] = false
+      } else {
+        loadingSwapSell.value[index] = false
+      }
+    })
+  }
+}
+
+async function handleSellAmount(item: string, index: number) {
+  if (!botStore.userInfo?.evmAddress || !botStore.accessToken) {
+    botStore.changeConnectVisible(true)
+    return
+  }
+  const p = new BigNumber(item).div(100).toFixed()
+  const token = tokenStore.swap.token
+  let amount: string | number = token.balance || 0
+  if (p) {
+    const decimals = token.decimals || 0
+    amount = new BigNumber(amount).times(p).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${decimals}})?`))?.[0] || ''
+    if (Number(amount) === 0) {
+      amount = ''
+    }
+  } else {
+    amount = ''
+  }
+  amount = Number(amount) < 0 ? 0 : amount
+  if (loadingSwapSell.value?.some(i => i)) {
+    return
+  }
+  const chain = getChain()
+  const walletAddress = botStore.userInfo?.addresses?.find?.(i => i?.chain === chain)?.address
+  loadingSwapSell.value[index] = true
+  await checkApproveAndApprove({
+    token: token.address,
+    chain: chain,
+    owner: walletAddress
+  }).finally(() => {
+    loadingSwapSell.value[index] = false
+  })
+  submitBotSwap(amount, 'sell', index)
+}
+
+function enableDragScroll() {
+  const label = document.querySelector('.fixed-one-click') as HTMLElement
+  if(!label) return
+  label.style.position = 'fixed'
+  // 初始化位置
+  const position = JSON.parse(localStorage.getItem('fixed-one-click-position') || '{}') || { top: '180px', left: '115px' }
+  // label.style.top = '180px'
+  // label.style.left = '115px'
+  label.style.top = position.top
+  label.style.left = position.left
+  label.style.cursor = 'grab'
+  label.style.zIndex = '3014'
+  let isDragging = false
+  let startX = 0
+  let startY = 0
+  let initialLeft = 0
+  let initialTop = 0
+  // 遮罩层
+  const mask = document.createElement('div')
+  mask.style.background = 'rgba(0, 0, 0, 0)'
+  mask.classList.add('drag-mask-s')
+  mask.style.position = 'fixed'
+  mask.style.top = '0'
+  mask.style.left = '0'
+  mask.style.right = '0'
+  mask.style.bottom = '0'
+  mask.style.zIndex = '3013'
+
+  // 获取窗口宽度和高度
+  function getWindowBounds() {
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight
+    }
+  }
+
+  // 鼠标按下事件
+  label.onmousedown = (e) => {
+    isDragging = true
+    startX = e.clientX
+    startY = e.clientY
+    initialLeft = label.offsetLeft
+    initialTop = label.offsetTop
+    label.style.cursor = 'grabbing' // 更改鼠标样式
+    e.preventDefault()
+  }
+
+  // 鼠标移动事件
+  window.onmousemove = (e) => {
+    if (!isDragging) return
+    const deltaX = e.clientX - startX
+    const deltaY = e.clientY - startY
+    // 计算新的位置
+    const newLeft = initialLeft + deltaX
+    const newTop = initialTop + deltaY
+    const bounds = getWindowBounds()
+    // 防止拖动到屏幕外
+    label.style.left = `${Math.min(Math.max(newLeft, 0), bounds.width - label.offsetWidth)}px`
+    label.style.top = `${Math.min(Math.max(newTop, 0), bounds.height - label.offsetHeight)}px`
+      // 记录移动后的位置到localStorage
+    label.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.2)'
+    label.style.opacity = '0.9'
+    // 背面加一个遮罩层，防止鼠标移动过快导致鼠标失焦
+    document.body.appendChild(mask)
+  }
+
+  // 鼠标松开事件
+  window.onmouseup = () => {
+    isDragging = false
+    label.style.cursor = 'grab' // 恢复鼠标样式
+    label.style.boxShadow = 'none'
+    label.style.opacity = '1'
+    // 移除遮罩层
+    mask?.remove?.()
+    // 记录移动后的位置到localStorage
+    localStorage.setItem('fixed-one-click-position', JSON.stringify({
+      top: label.style.top,
+      left: label.style.left
+    }))
+  }
+}
+
+function disableDragScroll() {
+  // 移除事件
+  const label = document.querySelector('.fixed-one-click') as HTMLElement
+  if (!label) {
+    return
+  }
+  label.onmousedown = null
+  window.onmousemove = null
+  window.onmouseup = null
+}
+
+onMounted(() => {
+  enableDragScroll()
+})
+
+onUnmounted(() => {
+  disableDragScroll()
+})
+
+</script>
+
+<style lang="scss" scoped>
+.flex-between {
+  --uno: flex items-center justify-between;
+}
+
+.flex-start {
+  --uno: flex items-center;
+}
+
+.one-click-btn {
+  color: var(--primary-color);
+  background: rgba($color: #3F80F7, $alpha: 0.1);
+  display: flex;
+  align-items: center;
+  border: none;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 4px;
+
+  &.active {
+    background: var(--primary-color);
+    color: #fff;
+  }
+}
+
+.fixed-one-click {
+  position: fixed;
+  z-index: 3;
+  color: var(--d-F5F5F5-l-333);
+  font-size: 12px;
+  background: var(--d-222-l-F2F2F2);
+  border-radius: 8px;
+  min-width: 240px;
+  padding: 12px;
+  top: 210px;
+  left: 350px;
+
+  .icon-shezhi {
+    color: #696E7C;
+    font-size: 12px;
+  }
+
+  .content {
+    .tabs {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .one-click-button {
+        font-size: 12px;
+        min-width: 48px;
+        height: 24px;
+        padding: 3px 8px;
+        margin-right: 8px;
+        flex: 1;
+        text-align: center;
+        background: transparent;
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        &.green {
+          color: #12b886;
+          border: 1px solid #12b886;
+        }
+
+        &.red {
+          color: #ff646d;
+          border: 1px solid #ff646d;
+        }
+      }
+    }
+  }
+
+  .tabs-1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // background: var(--a-btn-bg-3-color);
+    padding: 1px;
+    border-radius: 4px;
+    font-size: 12px;
+
+    button {
+      border: none;
+      color: var(--d-999-l-666);
+      letter-spacing: 0;
+      font-weight: 400;
+      cursor: pointer;
+      border-radius: 4px;
+      background: transparent;
+      min-width: 24px;
+      padding: 3px 3px;
+      text-align: center;
+
+      &.active {
+        // color: var(--custom-font-4-color);
+        color: var(--d-F5F5F5-l-333);
+        background: var(--d-333-l-FFF);
+      }
+    }
+  }
+}
+</style>
