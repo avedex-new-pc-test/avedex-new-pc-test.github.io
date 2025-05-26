@@ -1,9 +1,194 @@
 <script setup lang="ts">
+import {type GetHomePumpListResponse, homePumpList} from '~/api/token'
+import THead from './tHead.vue'
+import {formatNumber} from '~/utils/formatNumber'
+import TokenImg from '~/components/tokenImg.vue'
+import dayjs from "dayjs";
 
+defineProps({
+  scrollbarHeight: {
+    type: Number,
+    required: true
+  }
+})
+const {t} = useI18n()
+const tokenStore = useTokenStore()
+const sort = ref({})
+const isVolUSDT = ref(true)
+const tabList = shallowRef([{
+  label: '新内盘',
+  value: 'pump_in_new',
+  progressVisible: true
+}, {
+  label: '即将打满',
+  value: 'pump_in_almost',
+  progressVisible: true
+}, {
+  label: '外盘',
+  value: 'pump_out_new',
+  progressVisible: false
+}, {
+  label: '热外盘',
+  value: 'pump_out_hot',
+  progressVisible: false
+}])
+const activeTab = ref('pump_in_new')
+const progressVisible = computed(() => {
+  return tabList.value.find(el => el.value === activeTab.value)?.progressVisible
+})
+const query = ref({
+  pageNO: 1,
+  pageSize: 20
+})
+const listStatus = ref({
+  finished: false,
+  loading: false,
+  error: false
+})
+const listData = shallowRef<GetHomePumpListResponse[]>([])
+const columns = computed(() => {
+  return [{
+    label: t('token') + '/' + t('progress'),
+    value: 'mcap',
+    flex: 'flex-1',
+    sort: true
+  }, {
+    label: t('amountB') + '/TXs',
+    value: 'current_price_usd',
+    flex: 'w-78px justify-end',
+    sort: false
+  }, {
+    label: t('mCap'),
+    value: 'price_change',
+    flex: 'w-78px justify-end',
+    sort: true
+  }]
+})
+
+onMounted(() => {
+  _getHomePumpList()
+})
+
+function setActiveTab(tab: any) {
+  activeTab.value = tab
+  resetListStatus()
+  _getHomePumpList()
+}
+
+function resetListStatus() {
+  query.value.pageNO = 1
+  listStatus.value.finished = false
+  listStatus.value.error = false
+}
+
+async function _getHomePumpList() {
+  try {
+    listStatus.value.loading = true
+    const res = await homePumpList({
+      chain: 'solana',
+      category: activeTab.value,
+      ...query.value
+    })
+    const {pageNO} = query.value
+    if (Array.isArray(res?.data)) {
+      if (pageNO === 1) {
+        listData.value = res?.data
+      } else {
+        listData.value = listData.value.concat(res?.data)
+      }
+      listStatus.value.finished = res?.data.length < query.value.pageSize
+      if (!listStatus.value.finished) {
+        query.value.pageNO++
+      }
+    }
+  } catch (e) {
+    console.log('=>(pump.vue:28) e', e)
+  } finally {
+    listStatus.value.loading = true
+  }
+}
 </script>
 
 <template>
-
+  <div v-loading="listStatus.loading && query.pageNO===1">
+    <div
+      class="mt-12px  px-12px mb-16px flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
+        <span
+          v-for="(item,index) in tabList"
+          :key="index"
+          :class="`text-12px cursor-pointer ${activeTab===item.value?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
+          @click="setActiveTab(item.value)"
+        >
+        {{ item.label }}
+        </span>
+    </div>
+    <THead
+      v-model:sort="sort"
+      :columns="columns"
+    />
+    <el-scrollbar
+      :height="scrollbarHeight"
+      class="[&&]:h-auto"
+    >
+      <NuxtLink
+        v-for="(row,$index) in listData"
+        :key="$index"
+        class="px-10px flex items-center min-h-35px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
+        :to="`/token/${row.token0_address}-${row.chain}`"
+      >
+        <div class="flex-[2] flex items-center">
+          <TokenImg
+            :row="{
+            chain:row.chain,
+            logo_url:row.token0_logo_url
+          }"
+          />
+          <div class="ml-6px">
+            <div class="flex">
+              <span class="color-[--d-F5F5F5-l-333]">{{ row.token0_symbol }}</span>
+            </div>
+            <div class="mt-2px color-[--d-999-l-666] text-10px">
+              <TimerCount
+                v-if="row.created_at && Number(formatTimeFromNow(dayjs(row.created_at).unix(),true)) < 60"
+                :key="dayjs(row.created_at).unix()"
+                :timestamp="dayjs(row.created_at).unix()"
+                :end-time="60"
+              >
+                <template #default="{seconds}">
+              <span class="color-[--d-999-l-666]">
+                <template v-if="seconds<60">
+                  {{ seconds }}{{ $t('ss') }}
+                </template>
+                <template v-else>
+                  {{ dayjs(row.created_at).fromNow() }}
+                </template>
+              </span>
+                </template>
+              </TimerCount>
+              <span v-else class="color-[--d-999-l-666]">
+            {{
+                  dayjs(row.created_at).fromNow()
+                }}
+          </span>
+              <span class="color-[--d-999-l-666] ml-8px"
+                    v-if="progressVisible"
+              >
+              {{ formatNumber(row.progress, 1) }}%
+            </span>
+            </div>
+          </div>
+        </div>
+        <div class="w-78px flex-col flex items-end">
+          <span>${{ formatNumber(row.volume_u_24h, 2) }}</span>
+          <span class="color-[--d-666-l-999]">{{ formatNumber(row.tx_24h_count) }}</span>
+        </div>
+        <div class="w-78px flex-col flex items-end">
+          <span>${{ formatNumber(row.market_cap, 2) }}</span>
+          <span class="color-[--d-666-l-999]">{{ formatNumber(row.price_change_24h, 1) }}%</span>
+        </div>
+      </NuxtLink>
+    </el-scrollbar>
+  </div>
 </template>
 
 <style scoped>

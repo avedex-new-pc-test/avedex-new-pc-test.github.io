@@ -168,5 +168,10 @@
   "address": "Endereço",
   "plsEnterAmount": "Por favor, insira a quantidade",
   "plsEnterAddress": "Por favor, insira o endereço",
-  "pleaseEnterCorrectAddress": "Digite o endereço correto "
+  "pleaseEnterCorrectAddress": "Digite o endereço correto ",
+  "walletTotalBalance": "Saldo total da carteira",
+  "noWalletTip": "Por favor, conecte sua carteira para usar esta função",
+  "profit": "Lucro",
+  "totalBuy": "Total Comprado",
+  "totalSell": "Total Vendido"
 }

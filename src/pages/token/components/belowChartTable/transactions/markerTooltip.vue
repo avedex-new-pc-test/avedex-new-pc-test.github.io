@@ -59,12 +59,12 @@ async function _getTxsUserBrief() {
 }
 
 function getColorClass(val: string) {
-  if (Number(val) === 0) {
-    return 'color-#848E9C'
-  } else if (Number(val) > 0) {
+  if (Number(val) > 0) {
     return 'color-#12b886'
-  } else {
+  } else if (Number(val) < 0) {
     return 'color-#ff646d'
+  } else {
+    return 'color-#848E9C'
   }
 }
 </script>
