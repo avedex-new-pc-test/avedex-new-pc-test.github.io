@@ -542,8 +542,10 @@ onBeforeMount(() => {
 
 onMounted(() => {
   initChart()
-  useWidgetVisibilityRefresh(() => _widget)
-
+  useVisibilityChange(() => {
+    _widget?.resetCache?.()
+    _widget?.activeChart?.().resetData?.()
+  })
 })
 
 </script>

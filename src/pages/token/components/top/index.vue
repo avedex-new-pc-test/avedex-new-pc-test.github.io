@@ -23,20 +23,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        />
+        >
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -97,16 +97,16 @@
                 lazy
               >
                 <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
                 <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
               </el-image>
               <span
                 v-if="i?.showText"
                 :style="{
-                  color: i?.color == 'green' ? upColor : downColor,
+                  color: i?.color == 'green' ? upColor[0] : downColor[0],
                 }"
                 class="text-10px ml-4px"
               >
@@ -442,9 +442,9 @@
         ${{ formatNumber(price || 0) }}</span
       >
       <span
-        class="block mt-4px color-[--d-F5F5F5-l-333]"
-        :class="priceChange > 0 ? `color-${upColor}` : `color-${downColor}`"
-        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange) }}%</span
+        class="block mt-4px"
+        :class="priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`"
+        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange, 2) }}%</span
       >
     </div>
 

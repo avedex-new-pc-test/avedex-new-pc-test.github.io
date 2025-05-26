@@ -34,7 +34,7 @@ export const useTokenStore = defineStore('token', () => {
   const tokenPriceChange = shallowRef(0)
   const totalHolders = shallowRef<GetTotalHoldersResponse[]>([])
   const price = computed(() => tokenPrice.value || token.value?.current_price_usd)
-  const priceChange = computed(() => tokenPriceChange.value || token.value?.price_change)
+  const priceChange = computed(() => tokenPriceChange.value || pair.value?.price_change || token.value?.price_change)
 
   const swap = reactive<{
     native: Token
