@@ -1,17 +1,20 @@
 <template>
-  <!-- 
+  <!--
       v-model:visible="tgWalletVisible"
     -->
-  <el-popover v-model:visible="tgWalletVisible" placement="bottom-end" :width="360" trigger="click"
+  <el-popover
+    v-model:visible="tgWalletVisible" placement="bottom-end" :width="360" trigger="click"
     :popper-style="`--el-popover-padding: 0; --el-bg-color-overlay: ${mode === 'dark' ? '#222222' : '#ffffff'}`">
     <template #reference>
       <div
         class="flex text-12px clickable-btn text-[--d-E9E9E9-l-222] h-32px cursor-pointer flex items-center bg-[--d-222-l-F2F2F2] border-rd-4px px-10px py-0 min-w-80px  ml-8px">
         <!-- <img src="@/assets/images/tg-1.svg" class="mr-5px" height="16" alt="" srcset=""> -->
-        <img class="border-rd-[50%] mr-5px" height="16" :src="generateAvatarIcon(botStore?.userInfo?.name || '')"
+        <img
+          class="border-rd-[50%] mr-5px" height="16" :src="generateAvatarIcon(botStore?.userInfo?.name || '')"
           alt="">
         <span>{{ botStore?.userInfo?.name || '' }}</span>
-        <Icon name="i-mdi:menu-down"
+        <Icon
+          name="i-mdi:menu-down"
           :class="['font-size-28px cursor-pointer ml--5px transition-all duration-0.4s', !!tgWalletVisible && 'rotate-z-180 origin-center']" />
       </div>
     </template>
@@ -19,16 +22,19 @@
       <div v-show="showVisible === 0" class="tg-wallet-list">
         <div class="flex-start text-16px tg-wallet-list_title" @click.stop="showVisible = 1">
           <div class="flex-start clickable">
-            <img style="border-radius: 50%;margin-right: 5px;" height="40"
+            <img
+              style="border-radius: 50%;margin-right: 5px;" height="40"
               :src="generateAvatarIcon(botStore?.userInfo?.name || '')" alt="">
             <span style="margin-right: 8px;">{{ botStore?.userInfo?.name || '' }}</span>
-            <Icon name="i-mdi:menu-down"
+            <Icon
+              name="i-mdi:menu-down"
               :class="['font-size-28px cursor-pointer ml--5px transition-all duration-0.4s']" />
           </div>
         </div>
         <ul class="tg-wallet-list_content">
           <el-scrollbar :max-height="300">
-            <li v-for="(item, index) in botStore?.userInfo?.addresses || []" :key="index" class="clickable"
+            <li
+              v-for="(item, index) in botStore?.userInfo?.addresses || []" :key="index" class="clickable"
               @click.stop="$router.push({ name: 'Balance', params: { chain: item.chain, userAddress: item.address } }); tgWalletVisible = false">
               <img :src="`${token_logo_url}chain/${item.chain}.png`" class="mr-5px border-rd-[50%]" height="32" alt="">
               <div>
@@ -40,12 +46,12 @@
                 </div>
               </div>
               <div class="text-right" style="margin-left: auto;">
-                <div class="text-14px">{{ formatNumberS(item?.balance || 0, 5) }} {{
+                <div class="text-14px">{{ formatNumber(item?.balance || 0, 5) }} {{
                   getChainInfo(item.chain)?.main_name }}</div>
-                <div class="text-12px color-[--d-999-l-959A9F] mt-5px ">$ {{ formatNumberS((item?.price || 0) *
+                <div class="text-12px color-[--d-999-l-959A9F] mt-5px ">$ {{ formatNumber((item?.price || 0) *
                   Number(item?.balance
                     ||
-                  0)) }}</div>
+                  0), 1) }}</div>
               </div>
             </li>
           </el-scrollbar>
@@ -58,7 +64,8 @@
             <el-button style="flex: 1; margin-left: 8px;" size="large" color="#333333" @click.stop="showVisible = 3">{{
               t('withdraw') }}</el-button>
           </div>
-          <el-button style="width: 100%;margin-top: 8px; color: #959A9F;" size="large" color="#333333"
+          <el-button
+            style="width: 100%;margin-top: 8px; color: #959A9F;" size="large" color="#333333"
             @click.stop="botStore.logout(); tgWalletVisible = false">{{ t('logout') }}</el-button>
         </div>
       </div>
@@ -72,10 +79,12 @@
         <ul class="tg-wallet-list_content">
           <el-scrollbar :max-height="300">
             <!-- $store.dispatch('bot_switchWallet', item); -->
-            <li v-for="(item, index) in botStore.walletList" :key="index"
+            <li
+              v-for="(item, index) in botStore.walletList" :key="index"
               :class="{ active: item.name === botStore?.userInfo?.name }"
               @click.stop="switchWallet(item)">
-              <img style="border-radius: 50%;margin-right: 5px;" height="32" :src="generateAvatarIcon(item?.name || '')"
+              <img
+                style="border-radius: 50%;margin-right: 5px;" height="32" :src="generateAvatarIcon(item?.name || '')"
                 alt="">
               <span style="margin-right: auto;">{{ item.name || '' }}</span>
             </li>
@@ -91,16 +100,20 @@
         </div>
         <div class="tg-wallet-list_content">
           <div style="padding: 15px 20px;">
-            <el-select v-model="depositChain" class="chains-select" placeholder="Select" size="large"
+            <el-select
+              v-model="depositChain" class="chains-select" placeholder="Select" size="large"
               style="width: 100%" :teleported="false" suffix-icon="ArrowDownBold">
               <template #prefix>
-                <img v-if="depositChain" height="24" class="mr-5px border-rd-[50%]"
+                <img
+                  v-if="depositChain" height="24" class="mr-5px border-rd-[50%]"
                   :src="`${token_logo_url}chain/${depositChain}.png`" style="" alt="" srcset="">
               </template>
-              <el-option v-for="item in botStore?.userInfo?.addresses || []" :key="item.chain"
+              <el-option
+                v-for="item in botStore?.userInfo?.addresses || []" :key="item.chain"
                 :label="getChainInfo(item.chain)?.name" :value="item.chain">
                 <div class="flex-start">
-                  <img v-if="item.chain" height="24" class="mr-5px border-rd-[50%]"
+                  <img
+                    v-if="item.chain" height="24" class="mr-5px border-rd-[50%]"
                     :src="`${token_logo_url}chain/${item.chain}.png`" style="" alt="" srcset="">
                   <span>{{ getChainInfo(item.chain)?.name || '' }}</span>
                 </div>
@@ -108,12 +121,14 @@
             </el-select>
             <div class="flex-center mt-30px flex-col">
               <canvas id="qr-chain-canvas" />
-              <div class="text-12px"
+              <div
+                class="text-12px"
                 style="display: flex; align-items: center; word-break: break-all; line-height: 1.2; padding: 20px 20px 40px; color: var(--d-999-l-222);">
                 <span>{{ depositChainInfo?.address || '' }}</span>
                 <!-- <i v-if="depositChainInfo?.address" v-copy="depositChainInfo?.address" class="iconfont icon-copy ml-5px"
                   style="font-size: 16px; cursor: pointer;" /> -->
-                <Icon v-if="depositChainInfo?.address" v-copy="depositChainInfo?.address" name="bxs:copy"
+                <Icon
+                  v-if="depositChainInfo?.address" v-copy="depositChainInfo?.address" name="bxs:copy"
                   class="ml-5px mb--1px clickable" @click.stop />
               </div>
             </div>
@@ -127,21 +142,26 @@
           </el-icon>
           <span class="ml-5px">{{ t('withdraw') }}</span>
         </div>
-        <el-form ref="withdrawFormRef" :model="withdrawForm" :rules="rules" hide-required-asterisk
+        <el-form
+          ref="withdrawFormRef" :model="withdrawForm" :rules="rules" hide-required-asterisk
           class="tg-wallet-list_content" size="large" @submit.prevent="handleWithdraw">
           <div style="padding: 15px 20px 20px;">
             <el-form-item label="" label-position="top">
-              <el-select v-model="withdrawForm.chain" class="chains-select" placeholder="Select" size="large"
+              <el-select
+                v-model="withdrawForm.chain" class="chains-select" placeholder="Select" size="large"
                 style="width: 100%" :teleported="false" :suffix-icon="ArrowDownBold"
                 @change="handleWithdrawChainChange">
                 <template #prefix>
-                  <img v-if="withdrawForm.chain" height="24" class="mr-5px border-rd-[50%]"
+                  <img
+                    v-if="withdrawForm.chain" height="24" class="mr-5px border-rd-[50%]"
                     :src="`${token_logo_url}chain/${withdrawForm.chain}.png`" style="" alt="" srcset="">
                 </template>
-                <el-option v-for="item in botStore?.userInfo?.addresses || []" :key="item.chain"
+                <el-option
+                  v-for="item in botStore?.userInfo?.addresses || []" :key="item.chain"
                   :label="getChainInfo(item.chain)?.name" :value="item.chain">
                   <div class="flex-start">
-                    <img v-if="item.chain" height="24" class="mr-5px border-rd-[50%]"
+                    <img
+                      v-if="item.chain" height="24" class="mr-5px border-rd-[50%]"
                       :src="`${token_logo_url}chain/${item.chain}.png`" style="" alt="" srcset="">
                     <span>{{ getChainInfo(item.chain)?.name || '' }}</span>
                   </div>
@@ -149,12 +169,14 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="t('plsEnterAddress')" label-position="top" prop="address">
-              <el-input v-model="withdrawForm.address"
+              <el-input
+                v-model="withdrawForm.address"
                 style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;"
                 clearable placeholder="" />
             </el-form-item>
             <el-form-item :label="t('plsEnterAmount')" label-position="top" prop="amount">
-              <el-input v-model="withdrawForm.amount"
+              <el-input
+                v-model="withdrawForm.amount"
                 style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;"
                 inputmode="decimal" clearable placeholder="0.00"
                 @input="value => withdrawForm.amount = value.replace(/\-|[^\d.]/g, '')">
@@ -162,10 +184,11 @@
                   <span class="color-text-1">{{ getChainInfo(withdrawForm.chain)?.main_name }}</span>
                 </template>
               </el-input>
-              <div class="text-12px color-[--d-999-l-959A9F] text-right"
+              <div
+                class="text-12px color-[--d-999-l-959A9F] text-right"
                 style="width: 100%; line-height: 1; margin-top: 5px;position: absolute; right: 0; top: 100%;">
                 <span class="clickable" @click.stop="handleMax">{{ t('balance1') }}: {{
-                  formatNumberS(withdrawChainInfo?.balance || 0, 5) }} {{
+                  formatNumber(withdrawChainInfo?.balance || 0, 5) }} {{
                     getChainInfo(withdrawForm.chain)?.main_name
                   }}</span>
               </div>
@@ -176,14 +199,16 @@
                 style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;"
                 clearable placeholder="" />
             </el-form-item> -->
-            <el-button native-type="submit" style="width: 100%; margin-top: 25px" size="large"
+            <el-button
+              native-type="submit" style="width: 100%; margin-top: 25px" size="large"
               :color="mode === 'dark' ? '#f5f5f5' : '#333333'" :loading="loadingWithdraw">{{ t('withdraw')
               }}</el-button>
           </div>
         </el-form>
 
       </div>
-      <double-check v-if="showVisible === 4" v-model:showVisible="showVisible" :visible="tgWalletVisible"
+      <double-check
+        v-if="showVisible === 4" v-model:showVisible="showVisible" :visible="tgWalletVisible"
         @action="handleWithdraw2" @update:emailCode="(code: string) => emailCode = code"
         @update:authCode="(code: string) => authCode = code" />
     </div>
@@ -197,10 +222,10 @@ import BigNumber from 'bignumber.js'
 import QrCodeWithLogo from 'qr-code-with-logo'
 import { bot_createSafeTransferTx, bot_getTransferGasFee } from '@/api/bot'
 import { NATIVE_TOKEN } from '@/utils/constants'
-import { throttle } from 'lodash'
+import { throttle } from 'lodash-es'
 import { generateAvatarIcon, getChainInfo, isValidAddress, evm_utils as utils } from '@/utils'
 import { formatBotError, handleBotError } from '@/utils/bot'
-import { formatNumberS } from '@/utils/formatNumber'
+import { formatNumber } from '@/utils/formatNumber'
 import doubleCheck from './doubleCheck.vue'
 import { ElMessage, ElMessageBox, ElNotification as ElNotify, type FormInstance } from 'element-plus'
 
@@ -354,7 +379,7 @@ async function setChainQr() {
       src: `${token_logo_url.value}chain/${depositChain.value}.png`,
       logoRadius: 8
     }
-  }).catch(err => {
+  }).catch((err: any) => {
     console.log('QrCodeWithLogo error', err)
   })
 }
