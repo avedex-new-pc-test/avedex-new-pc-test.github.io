@@ -242,7 +242,7 @@
                       min-width: 70px;
                       --el-button-font-weight: 400;
                     "
-                    @click.stop="confirmEditRemark(remark2, id)"
+                    @click.stop="confirmEditRemark(id,remark2)"
                   >
                     {{ $t('confirm') }}
                   </el-button>
@@ -665,7 +665,9 @@ function getTokenFavoriteCheck() {
   getFavoriteCheck(id, evmAddress)
     .then((res) => {
       console.log('------getFavoriteCheck---------', res, typeof res)
-      collected.value = res == true ? true : false
+      collected.value = res?.address ? true : false
+      remark.value = res?.remark || ''
+      remark2.value = res?.remark || ''
     })
     .catch((err) => {
       console.log(err)
@@ -740,7 +742,7 @@ function getTokenCheckFavoriteGroup() {
     .finally(() => {})
 }
 
-function confirmSwitchGroup(tokenId, id, evmAddress) {
+function confirmSwitchGroup(tokenId:string, id: number, evmAddress: string) {
   if (!evmAddress) {
     return
   }
@@ -771,29 +773,29 @@ function handleReset() {
     selectedGroup.value = groupId.value
   }
   if (editableRemark.value) {
-    editable2 = false
+    editableRemark.value = false
     remark2.value = remark.value
   }
 }
-function confirmEditRemark(remark, tokenId, evmAddress) {
-  if (evmAddress) {
+function confirmEditRemark(tokenId: string, remark2: string) {
+  console.log('-------evmAddress-----',evmAddress)
+  if (!evmAddress) {
     return
   }
-  if (remark?.length > 50) {
-    return this.$message.error(t('maximum10characters'))
+  if (remark2?.length > 50) {
+    return ElMessage.error(t('maximum10characters'))
   }
-  editTokenFavRemark(tokenId, remark, evmAddress)
+  editTokenFavRemark(tokenId, remark2, evmAddress)
     .then(() => {
       ElMessage.success(t('success'))
-      remark2.value = remark
+      remark.value = remark2
       topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
-      tElMessage.error(t('fail'))
+      ElMessage.error(t('fail'))
     })
     .finally(() => {
-      this.editableRemark = false
     })
 }
 
