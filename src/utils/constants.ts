@@ -75,5 +75,5 @@ export const NATIVE_TOKENS = [
 
 export const BusEventType = {
   TOP_FAV_CHANGE: 'top-favorite-change',
-  LEFT_TOP_FAV_CHANGE: 'left-top-favorite-change',
+  FAV_DIALOG: 'fav-dialog',
 }

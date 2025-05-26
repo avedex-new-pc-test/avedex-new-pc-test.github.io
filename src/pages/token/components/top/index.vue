@@ -580,9 +580,13 @@ const showRun = shallowRef(false)
 const rugPull = shallowRef(null)
 
 const loadingRun = shallowRef(false)
-const leftTopEventBus = useEventBus(BusEventType.LEFT_TOP_FAV_CHANGE)
-leftTopEventBus.on(() => {
-  getTokenCheckFavoriteGroup()
+const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
+favDialogEvent.on((key) => {
+  if (key === 'confirmSwitchGroup') {
+    getTokenCheckFavoriteGroup()
+  } else if (key === 'remark') {
+    getTokenFavoriteCheck()
+  }
 })
 const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
 

@@ -17,7 +17,7 @@ defineProps({
     default: () => []
   },
 })
-const leftTopEventBus = useEventBus(BusEventType.LEFT_TOP_FAV_CHANGE)
+const favDialogEvent = useEventBus(BusEventType.FAV_DIALOG)
 const {t} = useI18n()
 const {evmAddress} = useBotStore()
 const tokenStore = useTokenStore()
@@ -83,7 +83,7 @@ async function confirmSwitchGroup(row: GetFavListResponse, id: number) {
     _getFavoriteList()
     const {token} = tokenStore
     if (token && token.token + '-' + token.chain === tokenId) {
-      leftTopEventBus.emit()
+      favDialogEvent.emit('confirmSwitchGroup')
     }
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:76) e', e)
@@ -155,7 +155,7 @@ async function confirmEditRemark(remark: string, tokenId: string) {
     ElMessage.success(t('success'))
     const {token} = tokenStore
     if (token && token.token + '-' + token.chain === tokenId) {
-      leftTopEventBus.emit()
+      favDialogEvent.emit('remark')
     }
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:149) e', e)
