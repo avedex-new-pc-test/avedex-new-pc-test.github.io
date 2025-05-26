@@ -481,5 +481,8 @@
   "totalBuy": "总买入",
   "totalSell": "总卖出",
   "avgBuyPrice": "买入成本价",
-  "avgSellPrice": "卖出成本价"
+  "avgSellPrice": "卖出成本价",
+  "mine": "我的",
+  "bought": "买入",
+  "sold": "卖出"
 }

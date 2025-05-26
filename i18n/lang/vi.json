@@ -286,5 +286,8 @@
   "totalBuy": "Tổng mua",
   "totalSell": "Tổng bán",
   "avgBuyPrice": "Giá mua trung bình",
-  "avgSellPrice": "Giá bán trung bình"
+  "avgSellPrice": "Giá bán trung bình",
+  "mine": "Của tôi",
+  "bought": "Đã mua",
+  "sold": "Đã bán"
 }
