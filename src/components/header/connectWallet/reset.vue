@@ -64,7 +64,6 @@ import {
   desensitizeEmail
 } from '@/utils/index'
 
-console.log('reset')
 const emit = defineEmits(['update:c-type'])
 const props = defineProps({
   cType: {
@@ -136,7 +135,9 @@ watch([()=>userStore.email,()=>props.cType], (val) => {
     form.email = userStore.email
   }
 })
-
+onMounted(() => {
+    console.log('reset')
+})
 onUnmounted(() => {
   if (timer.value) {
     clearInterval(timer.value)

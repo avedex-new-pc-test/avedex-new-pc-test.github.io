@@ -1,21 +1,19 @@
 <template>
   <div>
-    <el-dialog
-      v-model="dialogVisible" modal-class="dialog-connect-bg" width="500" height='630'
+    <el-dialog v-model="dialogVisible" modal-class="dialog-connect-bg" width="500" height='630'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
-        <img v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97" loading="lazy">
+        <img v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97"
+          loading="lazy">
         <img v-else src="@/assets/images/logo2-83.29x21.97.png" alt="logo" height="21.97" loading="lazy">
         <!-- <span>{{ $t('campaignTitle') }}</span> -->
       </div>
       <!-- <reset v-if="emailRegisterType == 'reset'" @update:c-type="(cType: string) => emailRegisterType = cType"/> -->
-      <component :is="lazyComponent" v-show="emailRegisterType == 'reset'" :cType="emailRegisterType" @update:c-type="(cType: string) => emailRegisterType = cType"/>
+      <component :is="lazyComponent" v-show="emailRegisterType == 'reset'" :cType="emailRegisterType"
+        @update:c-type="(cType: string) => emailRegisterType = cType" />
       <div v-show="emailRegisterType !== 'reset'" class='w-content'>
         <h3 class="connect-popup-title font-500">
-          <el-icon
-            v-if="botStore.connectWalletTab !== 0"
-            :size="35"
-            style="color:var(--d-999-l-222);"
+          <el-icon v-if="botStore.connectWalletTab !== 0" :size="35" style="color:var(--d-999-l-222);"
             @click="botStore.connectWalletTab = 0">
             <ArrowLeft />
           </el-icon>
@@ -23,13 +21,8 @@
         </h3>
         <div class="m-content">
           <div>
-            <div
-              v-show="botStore.connectWalletTab == 0"
-              class="text-14px text-center min-h-200px"
-            >
-              <emailRegisterAndLogin
-                ref="loginForm"
-                :cType="emailRegisterType"
+            <div v-show="botStore.connectWalletTab == 0" class="text-14px text-center min-h-200px">
+              <emailRegisterAndLogin ref="loginForm" :cType="emailRegisterType"
                 @update:c-type="(cType) => emailRegisterType = cType">
                 <!-- <template #nav>
                   <ul class="tabs">
@@ -67,7 +60,7 @@ const loadComponent = async () => {
 console.log('connectWallet')
 
 const botStore = useBotStore()
-const {mode} = storeToRefs(useGlobalStore())
+const { mode } = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
 
 const props = defineProps({
@@ -103,8 +96,14 @@ const title = computed(() => {
   }
 })
 
+// onMounted(() => {
+//   setTimeout(() => {
+//     if ((emailRegisterType.value !== 'reset') && !botStore.evmAddress) {
+//       loadComponent()
+//     }
+//   }, 3000)
+// })
 // Watchers
-
 watch(() => emailRegisterType.value, (val) => {
   if (val === 'reset') {
     loadComponent()
@@ -187,20 +186,24 @@ watch(dialogVisible, (val) => {
     }
   }
 }
+
 :deep() .el-input {
   --el-input-border-color: #444444;
   --el-input-placeholder-color: var(--d-666-l-999);
   --el-text-color-placeholder: #999;
   --el-input-bg-color: var(--d-333-l-F2F2F2)
 }
-:deep()  .el-input__wrapper {
+
+:deep() .el-input__wrapper {
   border: none;
   border-radius: 6px;
   box-shadow: none;
-  &:hover{
+
+  &:hover {
     box-shadow: 0 0 0 1px #3F80F7 inset;
   }
 }
+
 .w-content {
   display: inline-block;
 

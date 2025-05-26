@@ -138,6 +138,13 @@ watch(
 const openConnect = () => {
   botStore.changeConnectVisible(true)
 }
+onMounted(() => {
+  setTimeout(() => {
+    if (!botStore.connectVisible && !botStore.evmAddress) {
+      loadComponent()
+    }
+  }, 3000)
+})
 </script>
 <style lang="scss" scoped>
 header {
