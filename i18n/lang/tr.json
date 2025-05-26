@@ -166,5 +166,10 @@
   "address": "Adres",
   "plsEnterAmount": "Lütfen tutarı giriniz",
   "plsEnterAddress": "Lütfen adres girin",
-  "pleaseEnterCorrectAddress": "Lütfen doğru adresi girin"
+  "pleaseEnterCorrectAddress": "Lütfen doğru adresi girin",
+  "walletTotalBalance": "Cüzdan Toplam Bakiyesi",
+  "noWalletTip": "Bu işlevi kullanmak için lütfen cüzdanınızı bağlayın",
+  "profit": "Kazanç",
+  "totalBuy": "Toplam Alış",
+  "totalSell": "Toplam Satış"
 }

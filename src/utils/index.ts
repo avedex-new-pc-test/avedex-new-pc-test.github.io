@@ -7,8 +7,7 @@ import { TronWeb } from 'tronweb'
 import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
-import { JsonRpcProvider} from 'ethers'
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie'
 import { JsonRpcProvider, formatUnits, parseUnits,FixedNumber, ethers } from 'ethers'
 
 export function isJSON(str: string) {
