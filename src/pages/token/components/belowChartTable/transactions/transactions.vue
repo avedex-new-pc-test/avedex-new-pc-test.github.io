@@ -20,7 +20,7 @@ const {totalHolders, pairAddress, token, pair} = storeToRefs(useTokenStore())
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
-const route = useRoute<{ id: string }>()
+const route = useRoute()
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {

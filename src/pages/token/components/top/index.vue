@@ -23,20 +23,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        />
+        >
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -97,16 +97,16 @@
                 lazy
               >
                 <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
                 <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
               </el-image>
               <span
                 v-if="i?.showText"
                 :style="{
-                  color: i?.color == 'green' ? upColor : downColor,
+                  color: i?.color == 'green' ? upColor[0] : downColor[0],
                 }"
                 class="text-10px ml-4px"
               >
@@ -442,9 +442,9 @@
         ${{ formatNumber(price || 0) }}</span
       >
       <span
-        class="block mt-4px color-[--d-F5F5F5-l-333]"
-        :class="priceChange > 0 ? `color-${upColor}` : `color-${downColor}`"
-        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange) }}%</span
+        class="block mt-4px"
+        :class="priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`"
+        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange, 2) }}%</span
       >
     </div>
 
@@ -504,10 +504,10 @@
           src="@/assets/images/安全.svg"
         />
 
-        <img v-else class="icon-svg1" src="@/assets/images/zhuyi1.svg" />
+        <img v-else class="icon-svg1" :width="12" src="@/assets/images/zhuyi1.svg" />
         <span
           v-if="statistics_risk_store || statistics_warning_store || statistics_unknown_store"
-          class="ml-5"
+          class="ml-5px"
           style="font-weight: 600"
           :style="{ color: getRiskColor(token) }"
         >
@@ -515,7 +515,6 @@
             statistics_risk_store || statistics_warning_store || statistics_unknown_store || ''
           }}
         </span>
-        <!-- __{{ checkStore?.statistics_risk_store || checkStore?.statistics_warning_store || checkStore?.statistics_unknown_store || ''}} -->
       </div>
       <Check v-model="showCheck" />
     </div>
@@ -580,11 +579,7 @@ const rugPull = shallowRef(null)
 
 const loadingRun = shallowRef(false)
 
-const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
-  useCheckStore()
-)
-const checkStore  = useCheckStore()
-
+const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(useCheckStore())
 const token = computed(() => {
   return tokenStore.token
 })

@@ -1584,7 +1584,7 @@ const statistics_risk = computed(() => {
       }
     })
   }
-  checkStore.statistics_risk_store =  checkResult?.value?.audit_pass_by ? 0 : num
+
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
 
@@ -1621,7 +1621,6 @@ const statistics_unknown = computed(() => {
     num = num + 1
   }
   num = num + riskList?.value?.filter((i) => i[0] == 0.6)?.length
-  checkStore.statistics_unknown_store =  checkResult?.value?.audit_pass_by ? 0 : num
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
 const statistics_warning = computed(() => {
@@ -1664,10 +1663,17 @@ const statistics_warning = computed(() => {
       }
     })
   }
-  checkStore.statistics_warning_store =  checkResult?.value?.audit_pass_by ? 0 : num
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
-
+watch(statistics_risk, (val) => {
+  checkStore.statistics_risk_store =  val
+})
+watch(statistics_warning, (val) => {
+  checkStore.statistics_warning_store =  val
+})
+watch(statistics_unknown, (val) => {
+  checkStore.statistics_unknown_store =  val
+})
 onMounted(() => {
     getVote()
 })
