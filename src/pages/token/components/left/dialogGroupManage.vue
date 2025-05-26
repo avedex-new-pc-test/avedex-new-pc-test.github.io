@@ -109,10 +109,11 @@ async function _confirmChangeName() {
 </script>
 
 <template>
-  <div class="w-full px-5px">
+  <div class="w-full px-5px [&&]:text-12px">
     <el-table
       v-loading="loading"
       :data="currentList"
+      class="[--el-font-size-base:12px]"
     >
       <el-table-column :label="$t('groupName')" prop="name"/>
       <el-table-column :label="$t('rename')" align="center">
@@ -160,7 +161,7 @@ async function _confirmChangeName() {
     </el-table>
     <span
       class="mt-20px cursor-pointer px-26px py-12px text-14px font-500 radius-6px block text-center
-        color-[var(--d-3F80F7-l-EAECEF)] bg-[var(--d-1D2232-l-3F80F7)] hover:opacity-80
+        color-[--d-F5F5F5-l-333] bg-[--d-3F80F7-l-EAECEF] hover:opacity-80
       "
       @click="_confirmChangeName">
       {{ t('newGroup') }}

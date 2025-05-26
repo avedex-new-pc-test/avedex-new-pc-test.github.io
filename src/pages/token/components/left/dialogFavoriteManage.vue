@@ -8,6 +8,8 @@ import {
   changeFavoritesIndex, editTokenFavRemark
 } from '~/api/fav'
 import TokenImg from '~/components/tokenImg.vue'
+import {useEventBus} from '@vueuse/core'
+import {BusEventType} from '~/utils/constants'
 
 defineProps({
   list: {
@@ -15,8 +17,10 @@ defineProps({
     default: () => []
   },
 })
+const leftTopEventBus = useEventBus(BusEventType.LEFT_TOP_FAV_CHANGE)
 const {t} = useI18n()
 const {evmAddress} = useBotStore()
+const tokenStore = useTokenStore()
 const activeTab = shallowRef(0)
 const favoritesList = shallowRef<GetFavListResponse[]>([])
 const listStatus = shallowRef({
@@ -71,11 +75,16 @@ async function _getFavoriteList() {
 
 async function confirmSwitchGroup(row: GetFavListResponse, id: number) {
   try {
+    const tokenId = row.token + '-' + row.chain
     await moveFavoriteGroup(
-      row.token + '-' + row.chain, id, evmAddress
+      tokenId, id, evmAddress
     )
     ElMessage.success(t('success'))
     _getFavoriteList()
+    const {token} = tokenStore
+    if (token && token.token + '-' + token.chain === tokenId) {
+      leftTopEventBus.emit()
+    }
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:76) e', e)
     ElMessage.error(t('fail'))
@@ -144,6 +153,10 @@ async function confirmEditRemark(remark: string, tokenId: string) {
     await editTokenFavRemark(tokenId, remark, evmAddress)
     _getFavoriteList()
     ElMessage.success(t('success'))
+    const {token} = tokenStore
+    if (token && token.token + '-' + token.chain === tokenId) {
+      leftTopEventBus.emit()
+    }
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:149) e', e)
   }
@@ -152,15 +165,17 @@ async function confirmEditRemark(remark: string, tokenId: string) {
 
 <template>
   <div>
-    <a
-      v-for="(item, $index) in list"
-      :key="$index" href="javascript:;"
-      :class="`decoration-none inline-block text-14px  px-4px h-44px lh-44px
-              ${item.group_id === activeTab?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
-      @click.stop.prevent="setActiveTab(item.group_id)"
-    >
-      {{ item.name }}
-    </a>
+    <div class="flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide mb-12px">
+      <a
+        v-for="(item,index) in list"
+        :key="index" href="javascript:;"
+        :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+         ${activeTab===item.group_id ? 'bg-[--d-333-l-F2F2F2] color-[--d-F5F5F5-l-333]':''}`"
+        @click="setActiveTab(item.group_id)"
+      >
+        {{ item.name }}
+      </a>
+    </div>
     <el-table
       id="table_fav"
       ref="table_ref"
@@ -172,7 +187,7 @@ async function confirmEditRemark(remark: string, tokenId: string) {
       :infinite-scroll-immediate="false"
       :data="favoritesList"
       height="350px"
-      class="w-full table-container"
+      class="w-full table-container [&&]:text-12px"
       highlight-current-row
     >
       <el-table-column
@@ -184,7 +199,7 @@ async function confirmEditRemark(remark: string, tokenId: string) {
               class="mr-8px"
               :row="row"
             />
-            <span class="token-symbol">{{ row.symbol }}</span>
+            <span class="[&&]:color-[--d-F5F5F5-l-333]">{{ row.symbol }}</span>
           </div>
         </template>
       </el-table-column>
@@ -251,7 +266,7 @@ async function confirmEditRemark(remark: string, tokenId: string) {
     </el-table>
     <div
       v-if="listStatus.pageNo!==1 && listStatus.loading"
-      class="flex justify-center items-center py-15px text-14px">
+      class="flex justify-center items-center py-15px text-12px">
       <span>{{ $t('loading') }}</span>
     </div>
   </div>

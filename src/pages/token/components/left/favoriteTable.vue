@@ -9,8 +9,34 @@ import {
 import TokenImg from '~/components/tokenImg.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import THead from './tHead.vue'
+import type {IPRICEV2Response} from '~/api/types/ws'
+import {useEventBus} from '@vueuse/core'
+import {BusEventType} from '~/utils/constants'
 
+const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
+topEventBus.on(() => {
+  resetListStatus()
+  loadMoreFavorites()
+})
 const {t} = useI18n()
+const wsStore = useWSStore()
+const priceV2Store = usePriceV2Store()
+watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPRICEV2Response) => {
+  favoritesList.value = favoritesList.value.map(i => {
+    const item = val.prices.find(j => {
+      return i.token === j.token && i.chain === j.chain
+    })
+    if (item) {
+      return {
+        ...i,
+        current_price_usd: item.uprice,
+        price_change: item.price_change,
+      }
+    }
+    return i
+  })
+  triggerRef(favoritesList)
+})
 const props = defineProps({
   height: {
     type: [Number, String],
@@ -35,7 +61,8 @@ const sort = shallowRef<{
 const listStatus = ref({
   finished: false,
   loading: false,
-  pageNo: 1
+  pageNo: 1,
+  error: false
 })
 const favoritesList = shallowRef<GetFavListResponse[]>([])
 const columns = computed(() => {
@@ -124,7 +151,6 @@ async function loadMoreFavorites() {
         network: i.chain,
         price_change: i?.price_change ? i?.price_change : 0,
         current_price_usd: i?.current_price_usd || 0,
-        collected: true
       }))
         .filter(i => (i?.chain !== 'brc20'
           && i?.chain !== 'runes'
@@ -136,6 +162,8 @@ async function loadMoreFavorites() {
       } else {
         favoritesList.value = favoritesList.value.concat(list)
       }
+      priceV2Store.setMultiPriceParams('favorite', favoritesList.value.map(el => el.id))
+      priceV2Store.sendPriceWs()
       listStatus.value.finished = res?.length === 0
       if (!listStatus.value.finished) {
         listStatus.value.pageNo++
@@ -143,6 +171,7 @@ async function loadMoreFavorites() {
     }
   } catch (e) {
     console.log('=>(favoriteTable.vue:106) (e)', (e))
+    listStatus.value.error = true
   } finally {
     listStatus.value.loading = false
   }
@@ -165,7 +194,7 @@ function getColorClass(val: string) {
 </script>
 
 <template>
-  <div>
+  <div v-loading="listStatus.pageNo===1&&listStatus.loading">
     <div class="flex items-center justify-between pr-15px pl-12px mt-10px">
       <div
         class="flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
@@ -203,7 +232,7 @@ function getColorClass(val: string) {
           <NuxtLink
             v-for="(row, $index) in sortedFavList"
             :key="$index"
-            class="px-10px flex items-center min-h-35px cursor-pointer hover:bg-[var(--d-1D2232-l-F5F5F5)]"
+            class="px-10px flex items-center h-50px cursor-pointer hover:bg-[var(--d-1D2232-l-F5F5F5)]"
             :to="`/token/${row.token}-${row.chain}`"
           >
             <div class="flex items-center flex-1">
@@ -212,7 +241,13 @@ function getColorClass(val: string) {
                 :row="row"
                 token-class="w-20px h-20px"
               />
-              <span class="text-12px">{{ row.symbol }}</span>
+              <div class="flex flex-col items-start">
+                <span class="text-12px">{{ row.symbol }}</span>
+                <span
+                  v-if="row.remark"
+                  class="mt-2px border-solid border-0.5px border-#286dff color-#286dff rounded-4px text-10px px-4px py-1px"
+                >{{ row.remark }}</span>
+              </div>
             </div>
             <div class="flex-1 text-12px text-right">
               <div>
@@ -222,7 +257,7 @@ function getColorClass(val: string) {
               </div>
               <div
                 :class="`flex-1 text-right text-12px
-                ${getColorClass(Number(row.price_change))}
+                ${getColorClass(row.price_change)}
             `">
                 <template v-if="Number(row.price_change) === 0">0</template>
                 <template v-else-if="row.price_change === '--'">--</template>
@@ -236,7 +271,7 @@ function getColorClass(val: string) {
           </NuxtLink>
         </div>
         <div
-          v-if="listStatus.loading"
+          v-if="listStatus.loading&&listStatus.pageNo>1"
           class="color-#959a9f text-12px text-center"
         >
           {{ $t('loading') }}

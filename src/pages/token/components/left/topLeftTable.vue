@@ -27,7 +27,7 @@ const Component = computed(() => {
 
 <template>
   <div
-    :class="`bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px
+    :class="`color-[var(--d-F5F5F5-l-333)] bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px
     `">
     <div class="flex items-center px-12px gap-20px">
       <a

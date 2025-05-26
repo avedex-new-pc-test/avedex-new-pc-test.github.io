@@ -553,10 +553,11 @@ import {
 } from '@/api/fav'
 import { _getRugPull } from '@/api/run'
 import type { Token } from '@/api/types/token'
-import { upColor, downColor } from '@/utils/constants'
+import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
+import {useEventBus} from "@vueuse/core";
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = useBotStore()
@@ -579,6 +580,11 @@ const showRun = shallowRef(false)
 const rugPull = shallowRef(null)
 
 const loadingRun = shallowRef(false)
+const leftTopEventBus = useEventBus(BusEventType.LEFT_TOP_FAV_CHANGE)
+leftTopEventBus.on(() => {
+  getTokenCheckFavoriteGroup()
+})
+const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
 
 const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
   useCheckStore()
@@ -673,6 +679,7 @@ function addTokenFavorite() {
     .then(() => {
       ElMessage.success('收藏成功！')
       collected.value = true
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -687,6 +694,7 @@ function removeTokenFavorite() {
     .then(() => {
       ElMessage.success('已取消收藏！')
       collected.value = false
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -742,6 +750,7 @@ function confirmSwitchGroup(tokenId, id, evmAddress) {
       .then(() => {
         ElMessage.success(t('success'))
         getTokenCheckFavoriteGroup()
+        topEventBus.emit()
       })
       .catch((err) => {
         console.log(err)
@@ -771,16 +780,17 @@ function confirmEditRemark(remark, tokenId, evmAddress) {
     return
   }
   if (remark?.length > 50) {
-    return this.$message.error(this.$t('maximum10characters'))
+    return this.$message.error(t('maximum10characters'))
   }
   editTokenFavRemark(tokenId, remark, evmAddress)
     .then(() => {
-      ElMessage.success(this.$t('success'))
+      ElMessage.success(t('success'))
       remark2.value = remark
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
-      tElMessage.error(this.$t('fail'))
+      tElMessage.error(t('fail'))
     })
     .finally(() => {
       this.editableRemark = false

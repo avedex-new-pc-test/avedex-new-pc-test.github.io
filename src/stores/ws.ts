@@ -45,8 +45,10 @@ export const useWSStore = defineStore('ws', () => {
         const tx: WSTx = data?.tx
         // 更新价格 交易数和交易额
         updatePriceFromTx(tx)
+        wsResult[event] = data
       } else if (event === WSEventType.PRICEV2) {
         botSwapStore.onmessageNativePrice(data)
+        wsResult[event] = data
       } else {
         wsResult[event] = data
       }

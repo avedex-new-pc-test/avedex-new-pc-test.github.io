@@ -133,7 +133,7 @@ async function _getHomePumpList() {
       <NuxtLink
         v-for="(row,$index) in listData"
         :key="$index"
-        class="px-10px flex items-center min-h-35px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
+        class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
         :to="`/token/${row.token0_address}-${row.chain}`"
       >
         <div class="flex-[2] flex items-center">
