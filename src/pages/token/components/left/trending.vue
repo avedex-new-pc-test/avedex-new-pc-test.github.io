@@ -67,7 +67,7 @@ function getColor(val: number) {
 </script>
 
 <template>
-  <div>
+  <div class="color-[var(--d-F5F5F5-l-333)]">
     <THead
       v-model:sort="sort"
       :columns="columns"
@@ -79,7 +79,7 @@ function getColor(val: number) {
       <NuxtLink
         v-for="(row,$index) in listData"
         :key="$index"
-        class="px-10px flex items-center min-h-35px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
+        class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
         :to="`/token/${row.token}-${row.chain}`"
       >
         <div class="flex-1 flex items-center">

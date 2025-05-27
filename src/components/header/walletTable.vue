@@ -223,8 +223,8 @@
     </el-scrollbar>
     <div v-if="!isLoading && !tokens?.length" class="empty">
       <div>
-        <img :src="themeStore.theme === 'light' ? emptyWhite : emptyDark" />
-        <br />
+        <img :src="themeStore.theme === 'light' ? emptyWhite : emptyDark" >
+        <br >
         <span>{{ $t('noSearchResults') }}</span>
       </div>
     </div>

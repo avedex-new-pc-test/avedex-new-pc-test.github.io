@@ -10,13 +10,13 @@
 <script setup lang='ts'>
 import type { IChartingLibraryWidget, ResolutionString, Timezone, SeriesFormat, VisiblePlotsSet, LanguageCode, ChartingLibraryFeatureset } from '~/types/tradingview/charting_library'
 import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, getWSMessage } from '@/utils'
-import { getKlineHistoryData, getUserKlineTxTags } from '@/api/token'
-import { getTotalHolders } from '@/api/stats'
+import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
-import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useWidgetVisibilityRefresh, useLimitPriceLine } from './utils'
+import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx } from './types'
 import BigNumber from 'bignumber.js'
+import { useKlineMarks } from './mark'
 
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
@@ -72,7 +72,7 @@ const price = 0
 const wsStore = useWSStore()
 const localeStore = useLocaleStore()
 
-const marks = shallowRef([{ id: 'trade', name: '我的' }])
+// const marks = shallowRef([{ id: 'trade', name: '我的' }])
 
 let lastBar: null | {
   close: number
@@ -86,7 +86,7 @@ let lastBar: null | {
 // const LLJEFFY_#_240
 const listenerGuidMap = new Map()
 
-const resolution = shallowRef('15')
+const resolution = shallowRef(localStorage.getItem('tv_resolution') || '15')
 const themeStore = useThemeStore()
 let _widget: null | IChartingLibraryWidget = null
 
@@ -125,17 +125,6 @@ function resetChart() {
   initChart()
 }
 
-
-
-function _getTotalHolders() {
-  getTotalHolders(token.value).then(res => {
-    console.log(res)
-    marks.value = [{ id: 'trade', name: '我的' }].concat(res?.map((i) => ({
-      id: i.type,
-      name: i?.[filterLanguage(localeStore.locale)] + (i.type !== '31' ? `(${i?.total_address})` : '')
-    })))
-  })
-}
 
 function saveStudy() {
   if (_widget?.activeChart) {
@@ -184,6 +173,9 @@ function createToggleButton() {
   updateButtonContent()
 }
 
+
+const { createMarkButton, getMarks } = useKlineMarks()
+
 async function initChart() {
   const symbolUp = symbol.value?.toUpperCase?.() || '-'
   // const widget = (window as any).TradingView.widget as ChartingLibraryWidgetConstructor
@@ -222,6 +214,10 @@ async function initChart() {
     charts_storage_api_version: '1.1',
     timezone: getTimezone() as Timezone,
     time_frames: [],
+    // loading_screen: {
+    //   backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    //   foregroundColor: '#3F80F7'
+    // },
     custom_css_url: `${location.origin}/tv_custom.css`,
     // format: (showMarket.value ? 'volume' : 'price') as SeriesFormat,
     custom_formatters: {
@@ -447,18 +443,28 @@ async function initChart() {
       getMarks: (symbolInfo, from, to, onDataCallback, resolution) => {
         console.log(`[getMarks] ${symbolInfo.name} from ${from} to ${to}, resolution: ${resolution}`)
         const interval = switchResolution(resolution)
-        getUserKlineTxTags({
+        getMarks({
           from,
           to,
           interval,
-          pair: pair.value + '-' + chain.value,
-          token_address: token.value,
-          user_address: user.value
-        }).then(res => {
-          console.log('getUserKlineTxTags', res)
-          const marks = formatToMarks(res, interval)
-          onDataCallback(marks || [])
+          pair: pair.value,
+          token: token.value,
+          chain: chain.value || '',
+          user: user.value,
+          onDataCallback
         })
+        // getUserKlineTxTags({
+        //   from,
+        //   to,
+        //   interval,
+        //   pair: pair.value + '-' + chain.value,
+        //   token_address: token.value,
+        //   user_address: user.value
+        // }).then(res => {
+        //   console.log('getUserKlineTxTags', res)
+        //   const marks = formatToMarks(res, interval)
+        //   onDataCallback(marks || [])
+        // })
       }
     }
   })
@@ -486,6 +492,7 @@ async function initChart() {
   _widget?.headerReady().then(() => {
     // 创建 市值/价格 切换按钮
     createToggleButton()
+    createMarkButton(_widget)
   })
   // onMarkClick
   _widget?.subscribe('onMarkClick', (markId) => {
@@ -542,8 +549,10 @@ onBeforeMount(() => {
 
 onMounted(() => {
   initChart()
-  useWidgetVisibilityRefresh(() => _widget)
-
+  useVisibilityChange(() => {
+    _widget?.resetCache?.()
+    _widget?.activeChart?.().resetData?.()
+  })
 })
 
 </script>

@@ -23,20 +23,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        />
+        >
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -97,16 +97,16 @@
                 lazy
               >
                 <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
                 <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
               </el-image>
               <span
                 v-if="i?.showText"
                 :style="{
-                  color: i?.color == 'green' ? upColor : downColor,
+                  color: i?.color == 'green' ? upColor[0] : downColor[0],
                 }"
                 class="text-10px ml-4px"
               >
@@ -242,7 +242,7 @@
                       min-width: 70px;
                       --el-button-font-weight: 400;
                     "
-                    @click.stop="confirmEditRemark(remark2, id)"
+                    @click.stop="confirmEditRemark(id,remark2)"
                   >
                     {{ $t('confirm') }}
                   </el-button>
@@ -442,9 +442,9 @@
         ${{ formatNumber(price || 0) }}</span
       >
       <span
-        class="block mt-4px color-[--d-F5F5F5-l-333]"
-        :class="priceChange > 0 ? `color-${upColor}` : `color-${downColor}`"
-        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange) }}%</span
+        class="block mt-4px"
+        :class="priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`"
+        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange, 2) }}%</span
       >
     </div>
 
@@ -553,10 +553,11 @@ import {
 } from '@/api/fav'
 import { _getRugPull } from '@/api/run'
 import type { Token } from '@/api/types/token'
-import { upColor, downColor } from '@/utils/constants'
+import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
+import {useEventBus} from "@vueuse/core";
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = useBotStore()
@@ -579,6 +580,15 @@ const showRun = shallowRef(false)
 const rugPull = shallowRef(null)
 
 const loadingRun = shallowRef(false)
+const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
+favDialogEvent.on((key) => {
+  if (key === 'confirmSwitchGroup') {
+    getTokenCheckFavoriteGroup()
+  } else if (key === 'remark') {
+    getTokenFavoriteCheck()
+  }
+})
+const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
 
 const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
   useCheckStore()
@@ -659,7 +669,9 @@ function getTokenFavoriteCheck() {
   getFavoriteCheck(id, evmAddress)
     .then((res) => {
       console.log('------getFavoriteCheck---------', res, typeof res)
-      collected.value = res == true ? true : false
+      collected.value = res?.address ? true : false
+      remark.value = res?.remark || ''
+      remark2.value = res?.remark || ''
     })
     .catch((err) => {
       console.log(err)
@@ -673,6 +685,7 @@ function addTokenFavorite() {
     .then(() => {
       ElMessage.success('收藏成功！')
       collected.value = true
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -687,6 +700,7 @@ function removeTokenFavorite() {
     .then(() => {
       ElMessage.success('已取消收藏！')
       collected.value = false
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -732,7 +746,7 @@ function getTokenCheckFavoriteGroup() {
     .finally(() => {})
 }
 
-function confirmSwitchGroup(tokenId, id, evmAddress) {
+function confirmSwitchGroup(tokenId:string, id: number, evmAddress: string) {
   if (!evmAddress) {
     return
   }
@@ -742,6 +756,7 @@ function confirmSwitchGroup(tokenId, id, evmAddress) {
       .then(() => {
         ElMessage.success(t('success'))
         getTokenCheckFavoriteGroup()
+        topEventBus.emit()
       })
       .catch((err) => {
         console.log(err)
@@ -762,28 +777,29 @@ function handleReset() {
     selectedGroup.value = groupId.value
   }
   if (editableRemark.value) {
-    editable2 = false
+    editableRemark.value = false
     remark2.value = remark.value
   }
 }
-function confirmEditRemark(remark, tokenId, evmAddress) {
-  if (evmAddress) {
+function confirmEditRemark(tokenId: string, remark2: string) {
+  console.log('-------evmAddress-----',evmAddress)
+  if (!evmAddress) {
     return
   }
-  if (remark?.length > 50) {
-    return this.$message.error(this.$t('maximum10characters'))
+  if (remark2?.length > 50) {
+    return ElMessage.error(t('maximum10characters'))
   }
-  editTokenFavRemark(tokenId, remark, evmAddress)
+  editTokenFavRemark(tokenId, remark2, evmAddress)
     .then(() => {
-      ElMessage.success(this.$t('success'))
-      remark2.value = remark
+      ElMessage.success(t('success'))
+      remark.value = remark2
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
-      tElMessage.error(this.$t('fail'))
+      ElMessage.error(t('fail'))
     })
     .finally(() => {
-      this.editableRemark = false
     })
 }
 

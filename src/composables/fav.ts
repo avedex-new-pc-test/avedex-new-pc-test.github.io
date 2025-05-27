@@ -1,25 +1,25 @@
-import {addFavoriteGroup} from "~/api/fav";
+import {addFavoriteGroup} from '~/api/fav'
 
 function confirmChangeName(type = 'add') {
   const {$i18n} = useNuxtApp()
   return new Promise((resolve, reject) => {
     ElMessageBox.prompt('', $i18n.t('enterGroupName'), {
-      confirmButtonText: $i18n.t("confirm1"),
-      cancelButtonText: $i18n.t("cancel"),
+      confirmButtonText: $i18n.t('confirm1'),
+      cancelButtonText: $i18n.t('cancel'),
       inputValidator: (value) => {
         if (!value) {
           reject()
-          return $i18n.t("enterGroupName")
+          return $i18n.t('enterGroupName')
         }
         if (value?.length > 20) {
           reject()
-          return $i18n.t("maximum10characters")
+          return $i18n.t('maximum10characters')
         }
-        return true;
+        return true
       },
     }).then(({value}) => {
-      if (type === "add") {
-        addTokenFavoriteGroup(value, resolve, reject);
+      if (type === 'add') {
+        addTokenFavoriteGroup(value, resolve, reject)
       } else {
         resolve(value)
       }

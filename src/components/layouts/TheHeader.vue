@@ -2,7 +2,7 @@
   <header
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
-    <NuxtLink to="/"><img src="~/assets/images/logo.svg" /></NuxtLink>
+    <NuxtLink to="/"><img src="~/assets/images/logo.svg" ></NuxtLink>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
         <NuxtLink :to="item.src" :class="{ active: item.id == route?.name }">

@@ -108,6 +108,39 @@ export function getUserKlineTxTags(data: {
   })
 }
 
+export function getKlineProfilingTags(data: {
+  interval: string
+  from: number
+  to: number
+  type: string
+  pair: string
+}): Promise<Array<{
+  sell?: {
+    amount: number
+    txns: number
+    volume: number
+  }
+  buy?: {
+    amount: number
+    txns: number
+    volume: number
+  }
+  time: number
+}>> {
+  if (!data?.pair) {
+    return Promise.resolve([])
+  }
+  const { $api } = useNuxtApp()
+  return $api(`/v1api/v4/pairs/${data?.pair}/kline_profiling_tags`, {
+    method: 'get',
+    query: {
+      ...data,
+    }
+  }).catch(() => {
+    return Promise.resolve([])
+  })
+}
+
 export interface GetHotTokensResponse {
   token: string;
   chain: string;
@@ -321,7 +354,7 @@ export function getTxsUserBrief(query: {
 
 export function getUserTxs(token_id: string, address: string) {
   const {$api} = useNuxtApp()
-  return $api(`/v1api/v2/pairs/userMergedTxs`, {
+  return $api('/v1api/v2/pairs/userMergedTxs', {
     method: 'get',
     params: {
       token_id: token_id,
@@ -459,7 +492,7 @@ export function getTokenStatistics(query: {
   chain: string;
 }): Promise<GetTokenStatisticsResponse> {
   const {$api} = useNuxtApp()
-  return $api(`/v2api/token/v1/user/analysis`, {
+  return $api('/v2api/token/v1/user/analysis', {
     method: 'get',
     query,
   })
@@ -519,7 +552,7 @@ export interface GetTokenDetailsListResponse {
 // 个人Token详情列表
 export function getTokenDetailsList(query: GetTokenDetailsListReq): Promise<GetTokenDetailsListResponse[]> {
   const {$api} = useNuxtApp()
-  return $api(`/v2api/token/v1/user/events`, {
+  return $api('/v2api/token/v1/user/events', {
     method: 'get',
     query,
   })
@@ -560,7 +593,7 @@ export function homePumpList(query: {
   self_address?: string;
 }): Promise<{ data: GetHomePumpListResponse[] }> {
   const {$api} = useNuxtApp()
-  return $api(`/v1api/v4/tokens/treasure/pump/list`, {
+  return $api('/v1api/v4/tokens/treasure/pump/list', {
     method: 'get',
     query,
   })

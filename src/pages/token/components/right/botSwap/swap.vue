@@ -178,6 +178,7 @@ import { useBotSwap } from '~/composables/botSwap'
 import { bot_createSolTx, bot_createSwapEvmTx, bot_createSolLimitTx, bot_createEvmLimitTx } from '@/api/bot'
 import RefreshBalance from './refreshBalance.vue'
 import { formatDec, formatNumber } from '@/utils/formatNumber'
+import { useEventBus } from '@vueuse/core'
 
 interface Token {
   address?: string
@@ -1014,8 +1015,7 @@ watch(() => tokenStore.price, (val) => {
 })
 
 function botTopUp(chain?: string) {
-  //
-  console.log(chain)
+  useEventBus<string>('botTopUp').emit(chain)
 }
 
 const now = Date.now()

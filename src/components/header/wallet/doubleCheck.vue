@@ -137,7 +137,8 @@
               <el-form-item size="small" class="h-20px lh-20px">
                 <el-checkbox v-model="form.agree" class="text-[#999] w-[100%]">
                   {{ $t("startFooter1") }}&nbsp;
-                  <el-link type="primary" :href="!lang?.includes?.('zh')
+                  <el-link
+                    type="primary" :href="!lang?.includes?.('zh')
                     ? 'https://doc.ave.ai/cn/yong-hu-xie-yi'
                     : 'https://doc.ave.ai/ave.ai-user-agreement'
                     " target="_blank">&nbsp;{{ $t("startFooter2") }}</el-link>

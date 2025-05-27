@@ -10,8 +10,7 @@ const themeStore = useThemeStore()
     <img
       v-else
       src="@/assets/images/empty-white.svg" alt="">
-    <slot>
-    </slot>
+    <slot/>
   </div>
 </template>
 

@@ -396,8 +396,8 @@ function attention() {
         @update:modelValue="resetListStatus"
       />
       <div
-        class="mt-20px text-14px text-center color-[--d-999-l-666]"
-        v-if="listStatus.loading&&listQuery.pageNO!==1">
+        v-if="listStatus.loading&&listQuery.pageNO!==1"
+        class="mt-20px text-14px text-center color-[--d-999-l-666]">
         {{ $t('loading') }}
       </div>
     </div>

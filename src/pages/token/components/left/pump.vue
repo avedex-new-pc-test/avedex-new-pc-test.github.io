@@ -3,7 +3,7 @@ import {type GetHomePumpListResponse, homePumpList} from '~/api/token'
 import THead from './tHead.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 defineProps({
   scrollbarHeight: {
@@ -12,9 +12,9 @@ defineProps({
   }
 })
 const {t} = useI18n()
-const tokenStore = useTokenStore()
+// const tokenStore = useTokenStore()
 const sort = ref({})
-const isVolUSDT = ref(true)
+// const isVolUSDT = ref(true)
 const tabList = shallowRef([{
   label: '新内盘',
   value: 'pump_in_new',
@@ -133,7 +133,7 @@ async function _getHomePumpList() {
       <NuxtLink
         v-for="(row,$index) in listData"
         :key="$index"
-        class="px-10px flex items-center min-h-35px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
+        class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
         :to="`/token/${row.token0_address}-${row.chain}`"
       >
         <div class="flex-[2] flex items-center">
@@ -166,15 +166,14 @@ async function _getHomePumpList() {
                 </template>
               </TimerCount>
               <span v-else class="color-[--d-999-l-666]">
-            {{
-                  dayjs(row.created_at).fromNow()
-                }}
-          </span>
-              <span class="color-[--d-999-l-666] ml-8px"
-                    v-if="progressVisible"
+                {{ dayjs(row.created_at).fromNow()}}
+              </span>
+              <span
+                v-if="progressVisible"
+                class="color-[--d-999-l-666] ml-8px"
               >
               {{ formatNumber(row.progress, 1) }}%
-            </span>
+              </span>
             </div>
           </div>
         </div>
