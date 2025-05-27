@@ -84,7 +84,7 @@
               name="material-symbols:search-rounded"
             />
           </a>
-          <template v-if="getTags(pair)?.normal_tag?.length > 0">
+          <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
             <div
               v-for="(i, index) in getTags(pair)?.normal_tag"
               :key="index"
@@ -269,7 +269,7 @@
             class="ml-5px hover:color-[--d-F5F5F5-l-333]"
             >{{ dayjs(pair?.created_at * 1000).fromNow() }}</span
           >
-          <template v-if="getTags(pair)?.signal_arr?.length > 0">
+          <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
             <div
               v-for="(i, index) in getTags(pair)?.signal_arr?.slice(0, 3)"
               :key="index"
@@ -302,15 +302,15 @@
               <div
                 v-if="
                   (i?.tag == 'smarter_buy' || i?.tag == 'smarter_sell') &&
-                  (pair?.smart_money_buy_count_24h > 0 ||
-                    pair?.smart_money_sell_count_24h > 0)
+                  ((pair?.smart_money_buy_count_24h??0) > 0 ||
+                    (pair?.smart_money_sell_count_24h??0 > 0))
                 "
                 class="ml-2"
                 style="color: #959a9f"
               >
                 <span
                   :style="{
-                    color: pair?.smart_money_buy_count_24h > 0 ? upColor : '',
+                    color: (pair?.smart_money_buy_count_24h??0) > 0 ? upColor[0] : '',
                   }"
                 >
                   {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
@@ -319,7 +319,7 @@
                 <span
                   :style="{
                     color:
-                      pair?.smart_money_sell_count_24h > 0 ? downColor : '',
+                      (pair?.smart_money_sell_count_24h??0) > 0 ? downColor[0] : '',
                   }"
                 >
                   {{ formatNumber(pair?.smart_money_sell_count_24h || 0, 0) }}
@@ -329,7 +329,7 @@
               <span
                 class="ml-2"
                 :style="{
-                  color: i.color == 'green' ? upColor : downColor,
+                  color: i.color == 'green' ? upColor[0] : downColor[0],
                 }"
               >
                 <template v-if="i.tag">
@@ -350,19 +350,19 @@
           </template>
           <div
             v-if="
-              getTags(pair)?.signal_arr?.findIndex(
-                (i) => i.tag == 'smarter_buy'
+              pair && getTags(pair)?.signal_arr?.findIndex(
+                (i) => i?.tag === 'smarter_buy'
               ) == -1 &&
               getTags(pair)?.signal_arr?.findIndex(
-                (i) => i.tag == 'smarter_sell'
+                (i) => i?.tag == 'smarter_sell'
               ) == -1 &&
-              (pair?.smart_money_buy_count_24h > 0 ||
-                pair?.smart_money_sell_count_24h)
+              ((pair?.smart_money_buy_count_24h??0) > 0 ||
+                (pair?.smart_money_sell_count_24h??0) >0 )
             "
             v-tooltip="
               getTagTooltip({
-                smart_money_buy_count_24h: pair?.smart_money_buy_count_24h,
-                smart_money_sell_count_24h: pair?.smart_money_sell_count_24h,
+                smart_money_buy_count_24h: pair?.smart_money_buy_count_24h || 0,
+                smart_money_sell_count_24h: pair?.smart_money_sell_count_24h || 0,
               })
             "
             class="minor flex-end color-text-2 tag-btn signal cursor-pointer ml-4px"
@@ -375,8 +375,8 @@
             <span
               :style="{
                 color:
-                  pair?.smart_money_buy_count_24h > 0
-                    ? upColor
+                  (pair?.smart_money_buy_count_24h??0) > 0
+                    ? upColor[0]
                     : 'var(--custom-text-3-color)',
               }"
             >
@@ -386,8 +386,8 @@
             <span
               :style="{
                 color:
-                  pair?.smart_money_sell_count_24h > 0
-                    ? downColor
+                  (pair?.smart_money_sell_count_24h??0) > 0
+                    ? downColor[0]
                     : 'var(--custom-text-3-color)',
               }"
             >
@@ -584,6 +584,7 @@ import {
   isJSON,
   formatIconTag,
   getAddressAndChainFromId,
+  getTagTooltip
 } from '@/utils/index'
 import {
   type GetUserFavoriteGroupsResponse,
@@ -596,19 +597,21 @@ import {
   editTokenFavRemark,
 } from '@/api/fav'
 import { _getRugPull, type ResultRugPull } from '@/api/run'
-import type { Token } from '@/api/types/token'
+import type { Token, Pair } from '@/api/types/token'
 import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
-import {useEventBus} from "@vueuse/core";
+import { useEventBus } from "@vueuse/core"
+import { verifyLogin } from '@/utils'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
-const { evmAddress } = useBotStore()
+const { evmAddress } = storeToRefs(useBotStore())
 const { theme } = useThemeStore()
 const { t } = useI18n()
 const route = useRoute()
-const id = route.params?.id as string
+
+
 const editableGroup = shallowRef(false)
 const groupId = shallowRef(0)
 const selectedGroup = shallowRef(0)
@@ -621,15 +624,18 @@ const remark = shallowRef('')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
-const rugPull = shallowRef<ResultRugPull>({
+const rugPull = ref<ResultRugPull>({
   all_tag_rate: 0,
+  rates: {
+    rugged_rate: 0
+  }
 })
 
 const loadingRun = shallowRef(false)
 const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
 favDialogEvent.on((key) => {
   if (key === 'confirmSwitchGroup') {
-    getTokenCheckFavoriteGroup()
+    getTokenFavoriteCheck()
   } else if (key === 'remark') {
     getTokenFavoriteCheck()
   }
@@ -641,6 +647,9 @@ const {
   statistics_warning_store,
   statistics_unknown_store,
 } = storeToRefs(useCheckStore())
+// const id = route.params?.id as string
+const id = computed(() => route.params.id as string)
+
 const token = computed(() => {
   return tokenStore.token
 })
@@ -658,8 +667,7 @@ const marketCap = computed(() => {
 })
 
 const volume24 = computed(() => {
-  // console.log('-------tokenInfoExtra---------', tokenStore.tokenInfoExtra)
-  return tokenStore.tokenInfoExtra?.volume_24 || 0
+  return tokenStore.pair?.volume_u || tokenStore.tokenInfoExtra?.volume_24 || 0
 })
 const appendix = computed(() => {
   if (token.value?.appendix && isJSON(token.value?.appendix)) {
@@ -683,7 +691,7 @@ const currentGroup = computed(() => {
     : userFavoriteGroups.value?.find((i) => i.group_id == groupId.value)?.name
 })
 const chain = computed(() => {
-  const { chain } = getAddressAndChainFromId(id, 0)
+  const { chain } = getAddressAndChainFromId(id.value, 0)
   return chain
 })
 // const tokenInfo = computed(() => {
@@ -692,32 +700,55 @@ const chain = computed(() => {
 // console.log('-------tokenInfo---------', tokenInfo)
 // console.log('-------token---------', token)
 onMounted(() => {
-  if (evmAddress) {
+  if (evmAddress.value) {
     getTokenFavoriteCheck()
-    getTokenCheckFavoriteGroup() //获取当前分组
     getTokenUserFavoriteGroups() //获取分组数组
   }
-  useCheckStore().getContractCheckResult(id, evmAddress)
+  useCheckStore().getContractCheckResult(id.value, evmAddress?.value)
   if (chain.value == 'solana') {
     getRugPull()
   }
 })
 watch(
-  () => evmAddress,
+  evmAddress,
+  (val) => {
+    if (val) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    } else {
+      collected.value =  false
+      remark.value =  ''
+      remark2.value = ''
+      groupId.value =  0
+      selectedGroup.value = 0
+    }
+  }
+)
+watch(
+  () => route.params.id,
   () => {
-    getTokenUserFavoriteGroups()
+    if (evmAddress.value) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    }
+    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
+    if (chain.value == 'solana') {
+      getRugPull()
+    }
   }
 )
 const collected = shallowRef(false)
 const loading = shallowRef(false)
 
 function getTokenFavoriteCheck() {
-  getFavoriteCheck(id, evmAddress)
+  getFavoriteCheck(id.value, evmAddress.value)
     .then((res) => {
       console.log('------getFavoriteCheck---------', res, typeof res)
       collected.value = res?.address ? true : false
       remark.value = res?.remark || ''
       remark2.value = res?.remark || ''
+      groupId.value = res?.group_id ||  0
+      selectedGroup.value = res?.group_id ||  0
     })
     .catch((err) => {
       console.log(err)
@@ -727,7 +758,7 @@ function getTokenFavoriteCheck() {
 
 function addTokenFavorite() {
   loading.value = true
-  addFavorite(id, evmAddress)
+  addFavorite(id.value, evmAddress.value)
     .then(() => {
       ElMessage.success('收藏成功！')
       collected.value = true
@@ -742,7 +773,7 @@ function addTokenFavorite() {
 }
 function removeTokenFavorite() {
   loading.value = true
-  removeFavorite(id, evmAddress)
+  removeFavorite(id.value, evmAddress.value)
     .then(() => {
       ElMessage.success('已取消收藏！')
       collected.value = false
@@ -756,20 +787,20 @@ function removeTokenFavorite() {
     })
 }
 function collect() {
-  if (evmAddress) {
+  if (evmAddress.value) {
     if (collected.value) {
       removeTokenFavorite()
     } else {
       addTokenFavorite()
     }
   } else {
-    ElMessage.error('请链接钱包')
+    verifyLogin()
   }
 }
 async function getTokenUserFavoriteGroups() {
   try {
     loadingGroup.value = true
-    const res = await getUserFavoriteGroups(evmAddress)
+    const res = await getUserFavoriteGroups(evmAddress.value)
     userFavoriteGroups.value = (res || []).filter(
       (el) => !!el.name && el.type === 'token'
     )
@@ -780,17 +811,17 @@ async function getTokenUserFavoriteGroups() {
   }
 }
 //获取用户当前分组
-function getTokenCheckFavoriteGroup() {
-  getCheckFavoriteGroup(id, evmAddress)
-    .then((res) => {
-      groupId.value = typeof res == 'number' ? res : 0
-      selectedGroup.value = typeof res == 'number' ? res : 0
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-    .finally(() => {})
-}
+// function getTokenCheckFavoriteGroup() {
+//   getCheckFavoriteGroup(id.value, evmAddress)
+//     .then((res) => {
+//       groupId.value = typeof res == 'number' ? res : 0
+//       selectedGroup.value = typeof res == 'number' ? res : 0
+//     })
+//     .catch((err) => {
+//       console.log(err)
+//     })
+//     .finally(() => {})
+// }
 
 function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
   if (!evmAddress) {
@@ -801,7 +832,7 @@ function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
     moveFavoriteGroup(tokenId, id, evmAddress)
       .then(() => {
         ElMessage.success(t('success'))
-        getTokenCheckFavoriteGroup()
+        getTokenFavoriteCheck()
         topEventBus.emit()
       })
       .catch((err) => {
@@ -828,14 +859,14 @@ function handleReset() {
   }
 }
 function confirmEditRemark(tokenId: string, remark2: string) {
-  console.log('-------evmAddress-----', evmAddress)
-  if (!evmAddress) {
+  if (!evmAddress.value) {
+    verifyLogin()
     return
   }
   if (remark2?.length > 50) {
     return ElMessage.error(t('maximum10characters'))
   }
-  editTokenFavRemark(tokenId, remark2, evmAddress)
+  editTokenFavRemark(tokenId, remark2, evmAddress.value)
     .then(() => {
       ElMessage.success(t('success'))
       remark.value = remark2
@@ -848,13 +879,25 @@ function confirmEditRemark(tokenId: string, remark2: string) {
     .finally(() => {})
 }
 
-function getTags(i) {
-  let signal_arr = []
-  let normal_tag = []
+function getTags(i: Pair) {
+  type Signal = {
+    tag: string
+    color: string
+    n: string
+    timestamp: number
+  }
+  type Normal = {
+    tag: string,
+    color: string,
+    showText?: boolean
+  }
+  let signal_arr: Array<Signal>  = []
+  let normal_tag: Array<Normal> = []
+  let normal_str:Array<string> = []
   if (i?.dynamic_tag) {
     const tag_arr = JSON.parse(i?.dynamic_tag) || []
-    signal_arr = tag_arr?.filter((i) => i?.startsWith('signal'))
-    signal_arr = signal_arr?.map((y) => ({
+    const signal_str = tag_arr?.filter((i:string) => i?.startsWith('signal'))
+    signal_arr = signal_str?.map((y: string) => ({
       tag:
         y?.split('-')[5] &&
         (y?.split('-')[1] == 'whale_sell' || y?.split('-')[1] == 'whale_buy')
@@ -898,15 +941,15 @@ function getTags(i) {
       ?.concat(whale_arr)
       ?.concat(other_arr)
     signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
-    normal_tag = tag_arr.filter((i) => !i?.startsWith('signal'))
+    normal_str = tag_arr.filter((i: string) => !i?.startsWith('signal'))
   }
   if (i?.tag) {
     const tag = i.tag?.split(',') || []
     const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
-    normal_tag = tag1.concat(normal_tag)
+    normal_str = tag1.concat(normal_str)
   }
   normal_tag =
-    normal_tag?.map((i) => ({
+  normal_str?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
@@ -917,7 +960,7 @@ function getTags(i) {
   const is_shit_coins =
     signal_arr?.some((i) => new RegExp('shitcoin', 'gi').test(i?.tag)) ||
     normal_tag?.some((i) => new RegExp('shitcoin', 'gi').test(i.tag))
-  if (i?.risk_score >= 100 && i?.chain == 'solana') {
+  if ((i?.risk_score??0)  >= 100 && i?.chain == 'solana') {
     i.lp_locked_percent = 0
     signal_arr = []
     normal_tag = [
@@ -952,12 +995,12 @@ function getTags(i) {
   if (token?.value?.tag) {
     const tagti = token?.value?.tag?.split(',') || []
     let tag_t = tagti?.filter((i) => i !== '' && i !== 'newcommunity')
-    tag_t = tag_t?.map((i) => ({
+    let tag_t1: Array<Normal>= tag_t?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
     }))
-    normal_tag = tag_t.concat(normal_tag)
+    normal_tag = tag_t1.concat(normal_tag)
   }
   const extra_tag = token?.value?.tag?.split(',') || []
   const newcommunity = extra_tag?.includes?.('newcommunity')
@@ -985,29 +1028,11 @@ function getTags(i) {
     signal_arr,
   }
 }
-function getTagTooltip(i) {
-  if (!i.tag) {
-    if (i.smart_money_buy_count_24h > 0 || i.smart_money_sell_count_24h > 0) {
-      return t('smart_money_tips', {
-        b: i.smart_money_buy_count_24h,
-        s: i.smart_money_sell_count_24h,
-      })
-    }
-    return ''
-  }
-  const tips = {
-    kol_sell: t('kol_sell_tips'),
-    kol_buy: t('kol_buy_tips'),
-    smarter_buy: t('smarter_buy_tips'),
-    smarter_sell: t('smarter_sell_tips'),
-  }
-  return tips?.[i.tag] || t(i.tag)
-}
 function getRiskColor(token?: Token | null) {
   if (
     (token?.risk_level ?? 0) == -1 ||
     (token?.risk_score ?? 0) >= 60 ||
-    statistics_risk_store > 0
+    statistics_risk_store?.value > 0
   ) {
     return '#e74e54'
   } else if (statistics_warning_store ?? 0 > 0) {
@@ -1025,7 +1050,7 @@ function getRiskColor(token?: Token | null) {
 
 function getRugPull() {
   loadingRun.value = true
-  _getRugPull(id)
+  _getRugPull(id.value)
     .then((res) => {
       rugPull.value.dev = res?.dev || ''
       rugPull.value.all_tag_rate = res?.rates?.rateList?.find(

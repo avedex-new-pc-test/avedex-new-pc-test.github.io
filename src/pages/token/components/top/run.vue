@@ -370,7 +370,8 @@ const finished = ref(false)
 
 const route = useRoute()
 const router = useRouter()
-const id = route.params.id
+const id = computed(() => route.params.id as string)
+
 
 const localeStore = useLocaleStore()
 const language = computed(() => {
@@ -383,7 +384,6 @@ const chain = computed(() => {
   return 'solana'
 })
 const rugPull = computed(() => {
-  console.log('----rugPull------',rugPull)
   return props.obj
 })
 const ruggedColor = computed(() => {
@@ -402,7 +402,7 @@ const ruggedColor = computed(() => {
 })
 
 watch(
-  () => id,
+  () => route.params.id,
   (val) => {
     if (val) {
       tableList.value = []
@@ -460,7 +460,7 @@ function formatUrl(url: string) {
   }
   return "https://" + url;
 }
- function getMedias(appendix: string) {
+function getMedias(appendix: string) {
   if (!appendix) return [];
   let obj :MediaAppendix= {};
   if (typeof appendix === "string" && isJSON(appendix)) {
@@ -489,11 +489,12 @@ function formatUrl(url: string) {
   return arr;
 }
 async function getRugPullList() {
+  if(!visible.value) return
   if (loadingRun.value) return
   loadingRun.value = true
   try {
     const data = {
-      token_id: id,
+      token_id: id.value,
       pageNO: pageNO.value,
       pageSize: pageSize.value,
     }

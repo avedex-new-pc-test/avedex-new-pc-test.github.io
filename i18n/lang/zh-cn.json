@@ -495,6 +495,8 @@
   "mine": "我的",
   "bought": "买入",
   "sold": "卖出",
+  "seemsNoProblem": "看起来没有问题",
+  "possibleRisks": "可能存在风险",
   "netInflow": "净流入",
   "netOutflow": "净流出",
   "inflow": "总买入",

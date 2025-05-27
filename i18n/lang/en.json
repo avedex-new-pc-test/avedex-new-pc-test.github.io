@@ -493,6 +493,8 @@
   "mine": "Mine",
   "bought": "Bought",
   "sold": "Sold",
+  "seemsNoProblem": "Seems to be no problem",
+  "possibleRisks": "Possible risks",
   "netInflow": "Net Inflow",
   "netOutflow": "Net Outflow",
   "inflow": "Inflow",

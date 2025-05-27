@@ -5,7 +5,7 @@
     placement="bottom"
     popper-class="chains-table-filter"
     title=""
-    :width="325"
+    :width="370"
     trigger="hover"
   >
     <template #reference>
@@ -40,7 +40,6 @@
           }}</span>
           <el-tooltip
             v-if="list[0]?.tag == 'early'"
-            effect="customized"
             placement="top"
           >
             <template #content>{{ t('top50TitleTip') }}</template>
@@ -55,7 +54,6 @@
             <div v-for="(item, $index) in list" :key="$index">
               <el-tooltip
                 v-if="filterTag(item.tag_type)"
-                effect="customized"
                 placement="top"
                 :hide-after="0"
               >
@@ -171,16 +169,17 @@ import { _getEarlyholders, type EarlyHolders } from '@/api/top50'
 import { formatNewTags } from '@/utils/index'
 const { t } = useI18n()
 const route = useRoute()
-const id = route.params?.id as string
 const show = shallowRef(false)
-const list = shallowRef<EarlyHolders>([])
-// watch(id, () => {
-//   getEarlyhidolders()
-// })
+const list = shallowRef<Array<EarlyHolders>>([])
+
+const id = computed(()=> route.params?.id as string)
 onMounted(() => {
   getEarlyholders()
 })
 
+watch(()=>route.params.id, () => {
+  getEarlyholders()
+})
 function jumpBalance() {
   //   const { chain } =
   //     this.$f.getAddressAndChainFromId(this.$route.params.id) ||
@@ -192,8 +191,13 @@ function jumpBalance() {
   //   })
   //   window.open(targetRoute.href, '_blank')
 }
-function filterTag(type) {
-  const obj = {
+function filterTag(type:number) {
+  interface TagInfo {
+    color: string;
+    icon: string;
+    text: string;
+  }
+  const obj: Record<number, TagInfo> = {
     1: {
       color: '#12B886',
       icon: 'custom-top50-holders',
@@ -214,17 +218,17 @@ function filterTag(type) {
       icon: 'custom-top50-partial',
       text: t('top50PartialSale'),
     },
-  }
+  } as const
   return obj[type] || ''
 }
 function getEarlyholders() {
-  _getEarlyholders(id)
+  _getEarlyholders(id.value)
     .then((res) => {
       const a = Array.isArray(res) ? res?.slice(0, 50) : []
       list.value = a?.map((i) => ({
         ...i,
         new_tags: i.new_tags?.filter(
-          (y) => y.type == 25 || y.type == 30 || y.type == 31
+          (y) => ['25', '30', '31'].includes(y?.type ?? '')
         ),
       }))
       console.log('------list------', list)

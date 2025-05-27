@@ -300,6 +300,8 @@
   "mine": "Мои",
   "bought": "Куплено",
   "sold": "Продано",
+  "seemsNoProblem": "Проблем не обнаружено",
+  "possibleRisks": "Возможные риски",
   "netInflow": "Чистый приток",
   "netOutflow": "Чистый отток",
   "inflow": "Приток",
