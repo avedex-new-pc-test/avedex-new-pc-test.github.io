@@ -493,5 +493,11 @@
   "bought": "買入",
   "sold": "賣出",
   "seemsNoProblem": "看起來沒有問題",
-  "possibleRisks": "可能存在風險"
+  "possibleRisks": "可能存在風險",
+  "netInflow": "淨流入",
+  "netOutflow": "淨流出",
+  "inflow": "總買入",
+  "campaignBuyAvg": "買入均價",
+  "outflow": "總賣出",
+  "campaignSellAvg": "賣出均價"
 }

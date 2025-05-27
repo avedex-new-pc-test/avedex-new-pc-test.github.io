@@ -173,5 +173,6 @@
   "totalBuy": "Toplam Alış",
   "totalSell": "Toplam Satış",
   "seemsNoProblem": "Sorun görünmüyor",
-  "possibleRisks": "Olası riskler"
+  "possibleRisks": "Olası riskler",
+  "netInflow": "Net Giriş"
 }

@@ -301,5 +301,11 @@
   "bought": "Куплено",
   "sold": "Продано",
   "seemsNoProblem": "Проблем не обнаружено",
-  "possibleRisks": "Возможные риски"
+  "possibleRisks": "Возможные риски",
+  "netInflow": "Чистый приток",
+  "netOutflow": "Чистый отток",
+  "inflow": "Приток",
+  "campaignBuyAvg": "Цена покупки",
+  "outflow": "Отток",
+  "campaignSellAvg": "Цена продажи"
 }

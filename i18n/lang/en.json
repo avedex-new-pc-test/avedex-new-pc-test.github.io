@@ -494,5 +494,11 @@
   "bought": "Bought",
   "sold": "Sold",
   "seemsNoProblem": "Seems to be no problem",
-  "possibleRisks": "Possible risks"
+  "possibleRisks": "Possible risks",
+  "netInflow": "Net Inflow",
+  "netOutflow": "Net Outflow",
+  "inflow": "Inflow",
+  "campaignBuyAvg": "Buy Price",
+  "outflow": "Outflow",
+  "campaignSellAvg": "Sell Price"
 }

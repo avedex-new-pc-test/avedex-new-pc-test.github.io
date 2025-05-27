@@ -176,5 +176,6 @@
   "totalSell": "Total Vendido",
   "noMore": "Não mais",
   "seemsNoProblem": "Parece não haver problemas\n",
-  "possibleRisks": "Riscos possíveis"
+  "possibleRisks": "Riscos possíveis",
+  "netInflow": "Fluxo Líquido"
 }

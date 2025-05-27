@@ -60,14 +60,17 @@ watch(pair, (val) => {
     resolution.value = initTradingViewIntervals(resolution.value, isSupportSecChains)
     if (_widget) {
       _widget?.resetCache?.()
+      _widget?.activeChart?.()?.clearMarks?.()
       _widget?.setSymbol?.(symbol.value + '---' + val, resolution.value as ResolutionString, () => {
         isReadyLine = true
+        // createHeaderButton()
       })
     } else {
       initChart()
     }
   }
 })
+
 const price = 0
 const wsStore = useWSStore()
 const localeStore = useLocaleStore()
@@ -109,6 +112,7 @@ watch(() => themeStore.theme, (val) => {
 watch(() => localeStore.locale, () => {
   resetChart()
 })
+
 
 // const documentVisible = inject<Ref<boolean>>('documentVisible') as Ref<boolean>
 
@@ -152,6 +156,17 @@ function createStudy() {
   }
 }
 
+
+let headerBtns: HTMLElement[] = []
+function createHeaderButton() {
+  headerBtns.forEach(i => {
+    _widget?.removeButton?.(i)
+  })
+  headerBtns = []
+  createToggleButton()
+  createMarkButton(_widget, headerBtns)
+}
+
 // 创建 市值/价格 切换按钮
 function createToggleButton() {
   const btn = _widget?.createButton()
@@ -171,10 +186,16 @@ function createToggleButton() {
     resetChart()
   }
   updateButtonContent()
+  headerBtns.push(btn)
 }
 
 
-const { createMarkButton, getMarks } = useKlineMarks()
+const { createMarkButton, getMarks, marksTabs } = useKlineMarks()
+
+watch(marksTabs, () => {
+  if (!isReady) return
+  createHeaderButton()
+})
 
 async function initChart() {
   const symbolUp = symbol.value?.toUpperCase?.() || '-'
@@ -491,8 +512,7 @@ async function initChart() {
 
   _widget?.headerReady().then(() => {
     // 创建 市值/价格 切换按钮
-    createToggleButton()
-    createMarkButton(_widget)
+    createHeaderButton()
   })
   // onMarkClick
   _widget?.subscribe('onMarkClick', (markId) => {
