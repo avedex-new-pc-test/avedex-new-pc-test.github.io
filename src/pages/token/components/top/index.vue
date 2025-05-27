@@ -302,15 +302,15 @@
               <div
                 v-if="
                   (i?.tag == 'smarter_buy' || i?.tag == 'smarter_sell') &&
-                  (pair?.smart_money_buy_count_24h > 0 ||
-                    pair?.smart_money_sell_count_24h > 0)
+                  ((pair?.smart_money_buy_count_24h??0) > 0 ||
+                    (pair?.smart_money_sell_count_24h??0 > 0))
                 "
                 class="ml-2"
                 style="color: #959a9f"
               >
                 <span
                   :style="{
-                    color: pair?.smart_money_buy_count_24h > 0 ? upColor : '',
+                    color: (pair?.smart_money_buy_count_24h??0) > 0 ? upColor[0] : '',
                   }"
                 >
                   {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
@@ -319,7 +319,7 @@
                 <span
                   :style="{
                     color:
-                      pair?.smart_money_sell_count_24h > 0 ? downColor : '',
+                      (pair?.smart_money_sell_count_24h??0) > 0 ? downColor[0] : '',
                   }"
                 >
                   {{ formatNumber(pair?.smart_money_sell_count_24h || 0, 0) }}
@@ -329,7 +329,7 @@
               <span
                 class="ml-2"
                 :style="{
-                  color: i.color == 'green' ? upColor : downColor,
+                  color: i.color == 'green' ? upColor[0] : downColor[0],
                 }"
               >
                 <template v-if="i.tag">
@@ -351,13 +351,13 @@
           <div
             v-if="
               getTags(pair)?.signal_arr?.findIndex(
-                (i) => i.tag == 'smarter_buy'
+                (i) => i?.tag === 'smarter_buy'
               ) == -1 &&
               getTags(pair)?.signal_arr?.findIndex(
-                (i) => i.tag == 'smarter_sell'
+                (i) => i?.tag == 'smarter_sell'
               ) == -1 &&
-              (pair?.smart_money_buy_count_24h > 0 ||
-                pair?.smart_money_sell_count_24h)
+              ((pair?.smart_money_buy_count_24h??0) > 0 ||
+                (pair?.smart_money_sell_count_24h??0) >0 )
             "
             v-tooltip="
               getTagTooltip({
@@ -375,8 +375,8 @@
             <span
               :style="{
                 color:
-                  pair?.smart_money_buy_count_24h > 0
-                    ? upColor
+                  (pair?.smart_money_buy_count_24h??0) > 0
+                    ? upColor[0]
                     : 'var(--custom-text-3-color)',
               }"
             >
@@ -386,8 +386,8 @@
             <span
               :style="{
                 color:
-                  pair?.smart_money_sell_count_24h > 0
-                    ? downColor
+                  (pair?.smart_money_sell_count_24h??0) > 0
+                    ? downColor[0]
                     : 'var(--custom-text-3-color)',
               }"
             >
@@ -584,6 +584,7 @@ import {
   isJSON,
   formatIconTag,
   getAddressAndChainFromId,
+  getTagTooltip
 } from '@/utils/index'
 import {
   type GetUserFavoriteGroupsResponse,
@@ -596,12 +597,12 @@ import {
   editTokenFavRemark,
 } from '@/api/fav'
 import { _getRugPull, type ResultRugPull } from '@/api/run'
-import type { Token } from '@/api/types/token'
+import type { Token, Pair } from '@/api/types/token'
 import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
-import {useEventBus} from "@vueuse/core";
+import { useEventBus } from "@vueuse/core";
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = useBotStore()
@@ -848,13 +849,25 @@ function confirmEditRemark(tokenId: string, remark2: string) {
     .finally(() => {})
 }
 
-function getTags(i) {
-  let signal_arr = []
-  let normal_tag = []
+function getTags(i: Pair) {
+  type Signal = {
+    tag: string
+    color: string
+    n: string
+    timestamp: number
+  }
+  type Normal = {
+    tag: string,
+    color: string,
+    showText?: boolean
+  }
+  let signal_arr: Array<Signal>  = []
+  let normal_tag: Array<Normal> = []
+  let normal_str:Array<string> = []
   if (i?.dynamic_tag) {
     const tag_arr = JSON.parse(i?.dynamic_tag) || []
-    signal_arr = tag_arr?.filter((i) => i?.startsWith('signal'))
-    signal_arr = signal_arr?.map((y) => ({
+    const signal_str = tag_arr?.filter((i:string) => i?.startsWith('signal'))
+    signal_arr = signal_str?.map((y: string) => ({
       tag:
         y?.split('-')[5] &&
         (y?.split('-')[1] == 'whale_sell' || y?.split('-')[1] == 'whale_buy')
@@ -898,15 +911,15 @@ function getTags(i) {
       ?.concat(whale_arr)
       ?.concat(other_arr)
     signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
-    normal_tag = tag_arr.filter((i) => !i?.startsWith('signal'))
+    normal_str = tag_arr.filter((i: string) => !i?.startsWith('signal'))
   }
   if (i?.tag) {
     const tag = i.tag?.split(',') || []
     const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
-    normal_tag = tag1.concat(normal_tag)
+    normal_str = tag1.concat(normal_str)
   }
   normal_tag =
-    normal_tag?.map((i) => ({
+  normal_str?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
@@ -917,7 +930,7 @@ function getTags(i) {
   const is_shit_coins =
     signal_arr?.some((i) => new RegExp('shitcoin', 'gi').test(i?.tag)) ||
     normal_tag?.some((i) => new RegExp('shitcoin', 'gi').test(i.tag))
-  if (i?.risk_score >= 100 && i?.chain == 'solana') {
+  if ((i?.risk_score??0)  >= 100 && i?.chain == 'solana') {
     i.lp_locked_percent = 0
     signal_arr = []
     normal_tag = [
@@ -952,12 +965,12 @@ function getTags(i) {
   if (token?.value?.tag) {
     const tagti = token?.value?.tag?.split(',') || []
     let tag_t = tagti?.filter((i) => i !== '' && i !== 'newcommunity')
-    tag_t = tag_t?.map((i) => ({
+    let tag_t1: Array<Normal>= tag_t?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
     }))
-    normal_tag = tag_t.concat(normal_tag)
+    normal_tag = tag_t1.concat(normal_tag)
   }
   const extra_tag = token?.value?.tag?.split(',') || []
   const newcommunity = extra_tag?.includes?.('newcommunity')
@@ -985,29 +998,11 @@ function getTags(i) {
     signal_arr,
   }
 }
-function getTagTooltip(i) {
-  if (!i.tag) {
-    if (i.smart_money_buy_count_24h > 0 || i.smart_money_sell_count_24h > 0) {
-      return t('smart_money_tips', {
-        b: i.smart_money_buy_count_24h,
-        s: i.smart_money_sell_count_24h,
-      })
-    }
-    return ''
-  }
-  const tips = {
-    kol_sell: t('kol_sell_tips'),
-    kol_buy: t('kol_buy_tips'),
-    smarter_buy: t('smarter_buy_tips'),
-    smarter_sell: t('smarter_sell_tips'),
-  }
-  return tips?.[i.tag] || t(i.tag)
-}
 function getRiskColor(token?: Token | null) {
   if (
     (token?.risk_level ?? 0) == -1 ||
     (token?.risk_score ?? 0) >= 60 ||
-    statistics_risk_store > 0
+    statistics_risk_store?.value > 0
   ) {
     return '#e74e54'
   } else if (statistics_warning_store ?? 0 > 0) {

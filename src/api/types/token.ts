@@ -92,6 +92,7 @@ export interface Pair {
   smart_money_buy_count_24h: number
   smart_money_sell_count_24h: number
   progress: number
+  risk_score: number
 }
 
 export interface Token {
