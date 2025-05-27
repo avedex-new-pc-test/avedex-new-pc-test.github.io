@@ -231,19 +231,9 @@ const emit = defineEmits(['close'])
 const $router = useRouter()
 const { token_logo_url } = useConfigStore()
 const tokens1 = computed(() => {
-  // const list = hotStore.hotList?.map(i => ({ ...i, current_price_usd: 0, opening_at: 1747466626 }))
-  // console.log('------list--------',list)
-  return (
-    props.tokens
-    // props.tokens?.filter?.((i) => !(i.risk_level < 0 || i.risk_score > 55)) || []
-  )
+  return props.tokens
 })
-const tokens2 = computed(() => {
-  return (
-    []
-    // props.tokens?.filter?.((i) => i.risk_level < 0 || i.risk_score > 55) || []
-  )
-})
+
 const isLoading = computed(() => {
   return props.loading
 })

@@ -23,11 +23,10 @@
                   class=" text-20px ml-5px"
                   name="custom:back"
                   color="#999"
-
-                ></Icon>
+                />
               </a>
             </div>
-            <div class="mt-20px flex items-center justify-between" v-if="rugPull?.all_tag_rate > 0">
+            <div v-if="rugPull?.all_tag_rate > 0" class="mt-20px flex items-center justify-between">
               <span class="text-14px font-500">
                 {{ $t('abnormalChips') }}：{{
                   formatNumber(rugPull?.all_tag_rate || 0, 1)
@@ -39,16 +38,15 @@
                   class=" text-14px ml-5px"
                   name="mi:circle-warning"
                   color="#959a9f"
-
-                ></Icon>
+                />
               </el-tooltip>
             </div>
-            <el-row :gutter="10" v-if="rugPull?.all_tag_rate > 0">
+            <el-row v-if="rugPull?.all_tag_rate > 0" :gutter="10">
               <el-col
-                :span="12"
-                class="mt-10px"
                 v-for="(item, $index) in rugPull?.rateList"
                 :key="$index"
+                :span="12"
+                class="mt-10px"
               >
                 <div class="item flex-start flex items-center justify-start">
                   <span
@@ -59,7 +57,7 @@
                       style="width: 12px; margin-right: 2px"
                       :src="formatNewTags(item.icon)"
                       alt=""
-                    />
+                    >
                     {{
                       item?.title?.[
                         firstCharacterToupperCase(
@@ -105,7 +103,7 @@
                   >
                 </template>
               </span>
-              <div class="flex-end" v-if="rugPull?.dev">
+              <div v-if="rugPull?.dev" class="flex-end">
                 <span class="color-#999 text-12px">{{ $t('devAddress') }}：</span>
                 <span
                   class="color-#999 text-12px"
@@ -137,22 +135,22 @@
                   @click.self="isShowDate=!isShowDate"
                 />
               </div>
-              <span></span>
+              <span/>
             </div>
           </div>
           <div class="relative">
             <ul
-              class="content"
               v-infinite-scroll="getRugPullList"
               :infinite-scroll-disabled="loadingRun || finished"
               :infinite-scroll-distance="500"
               :infinite-scroll-delay="10"
               :infinite-scroll-immediate="true"
+              class="content"
             >
               <li
                 v-for="(row, $index) in tableList"
-                class="flex"
                 :key="$index"
+                class="flex"
                 @click.stop="tableRowClick(row)"
               >
                 <div
@@ -210,7 +208,7 @@
                       alt=""
                       onerror="this.src='/icon-default.png'"
                       srcset=""
-                    />
+                    >
                   </div>
                   <div @click.stop>
                     <div class="flex-start">
@@ -228,12 +226,12 @@
                         :href="`https://x.com/search?q=($${row.Symbol} OR ${row.token})&src=typed_query&f=live`"
                         target="_blank"
                       >
-                        <i class="iconfont icon-search font_10"></i>
+                        <i class="iconfont icon-search font_10"/>
                       </a>
 
                       <div
-                        class="media-list flex-start text-12px"
                         v-if="row?.medias?.length > 0"
+                        class="media-list flex-start text-12px"
                         @click.stop
                       >
                         <template
@@ -241,11 +239,11 @@
                           :key="index"
                         >
                           <div
-                            class="ml-2px"
                             v-if="item.url"
                             v-tooltip="item.url"
+                            class="ml-2px"
                           >
-                            <span class="media-item" v-if="item.name === 'QQ'">
+                            <span v-if="item.name === 'QQ'" class="media-item">
                               <!-- <i class="iconfont icon-QQ text-12px"></i> -->
                               <Icon
                                 :name="`custom:${item.icon}`"
@@ -254,10 +252,10 @@
                             </span>
 
                             <a
+                              v-else
                               class="media-item text-12px"
                               :href="item.url"
                               target="_blank"
-                              v-else
                             >
                               <!-- <i
                                 class="iconfont text-12px"
@@ -303,7 +301,7 @@
                     href=""
                     @click.stop.prevent="goLink(row)"
                   >
-                    <i class="iconfont icon-a-sol-dark font-16"></i>
+                    <i class="iconfont icon-a-sol-dark font-16"/>
                   </a>
                 </div>
               </li>
@@ -324,7 +322,7 @@
               v-if="(!tableList || tableList?.length === 0) && !loadingRun"
               :image-size="100"
               :image="themeStore.theme === 'light' ? emptyWhite : emptyDark"
-            ></el-empty>
+            />
           </div>
         </div>
       </div>
@@ -346,7 +344,10 @@ import dayjs from 'dayjs'
 const {token_logo_url} = useConfigStore()
 const props = defineProps({
   modelValue: Boolean,
-  obj: Object,
+  obj: {
+    type: Object,
+    default: () => {},
+  },
 })
 
 const $emit = defineEmits(['update:modelValue'])
@@ -380,8 +381,7 @@ const language = computed(() => {
 })
 
 const chain = computed(() => {
-  // const { chain } = getAddressAndChainFromId(id)
-  return 'solana'
+  return getAddressAndChainFromId(route.params.id as string)?.chain || ''
 })
 const rugPull = computed(() => {
   return props.obj
@@ -448,45 +448,46 @@ function jumpBalance() {
   })
   window.open(targetRoute.href, '_blank')
 }
+
 function formatUrl(url: string) {
   if (!url) {
-    return "";
+    return ''
   }
   // if (/^http(s?):\/\//.test(url)) {
   //   return url
   // }
-  if (url?.includes("://")) {
-    return url;
+  if (url?.includes('://')) {
+    return url
   }
-  return "https://" + url;
+  return 'https://' + url
 }
 function getMedias(appendix: string) {
-  if (!appendix) return [];
-  let obj :MediaAppendix= {};
-  if (typeof appendix === "string" && isJSON(appendix)) {
-    obj = JSON.parse(appendix);
-  } else if (typeof appendix === "object") {
-    obj = appendix;
+  if (!appendix) return []
+  let obj :MediaAppendix= {}
+  if (typeof appendix === 'string' && isJSON(appendix)) {
+    obj = JSON.parse(appendix)
+  } else if (typeof appendix === 'object') {
+    obj = appendix
   }
-  let arr = [];
+  const arr = []
   if (obj?.website)
     arr.push({
-      name: t("website"),
-      icon: "web",
+      name: t('website'),
+      icon: 'web',
       url: formatUrl(obj.website),
-    });
+    })
   if (obj?.btok)
-    arr.push({ name: "Btok", icon: "btok", url: formatUrl(obj.btok) });
-  if (obj?.qq) arr.push({ name: "QQ", icon: "qq", url: obj.qq });
+    arr.push({ name: 'Btok', icon: 'btok', url: formatUrl(obj.btok) })
+  if (obj?.qq) arr.push({ name: 'QQ', icon: 'qq', url: obj.qq })
   if (obj?.telegram)
-    arr.push({ name: "Telegram", icon: "tg", url: formatUrl(obj.telegram) });
+    arr.push({ name: 'Telegram', icon: 'tg', url: formatUrl(obj.telegram) })
   if (obj?.twitter)
     arr.push({
-      name: "Twitter",
-      icon: "twitter",
+      name: 'Twitter',
+      icon: 'twitter',
       url: formatUrl(obj.twitter),
-    });
-  return arr;
+    })
+  return arr
 }
 async function getRugPullList() {
   if(!visible.value) return

@@ -78,7 +78,7 @@
                       class="mr-3"
                       :src="formatNewTags(item.new_tags[0]?.icon)"
                       alt=""
-                    />
+                    >
                   </div>
                 </a>
               </el-tooltip>
@@ -153,7 +153,7 @@
             height="17"
             alt=""
             srcset=""
-          />
+          >
           <span class="ml-5px font-14">Ave.ai</span>
         </div>
         <span class="mt_5px block" style="font-size: 10px; color: #959a9f">

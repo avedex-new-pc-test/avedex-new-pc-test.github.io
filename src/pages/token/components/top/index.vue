@@ -23,20 +23,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        />
+        >
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -97,10 +97,10 @@
                 lazy
               >
                 <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
                 <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
                 </template>
               </el-image>
               <span
@@ -290,13 +290,13 @@
                   <img
                     class="token-icon-signal-tag h-16px"
                     src="/icon-default.png"
-                  />
+                  >
                 </template>
                 <template #placeholder>
                   <img
                     class="token-icon-signal-tag h-16px"
                     src="/icon-default.png"
-                  />
+                  >
                 </template>
               </el-image>
               <div
@@ -425,7 +425,7 @@
             :src="formatIconSwap(pair?.amm)"
             onerror="this.src='/icon-default.png'"
             height="16"
-          />
+          >
         </a>
       </div>
       <el-progress
@@ -491,13 +491,13 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/risk-gaoliang.svg"
-        />
+        >
         <img
           v-else-if="statistics_warning_store > 0"
           :width="12"
           class="icon-svg1"
           src="@/assets/images/yichang1-gaoliang.svg"
-        />
+        >
         <img
           v-else-if="
             !statistics_risk_store &&
@@ -507,14 +507,14 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/安全.svg"
-        />
+        >
 
         <img
           v-else
           class="icon-svg1"
           :width="12"
           src="@/assets/images/zhuyi1.svg"
-        />
+        >
         <span
           v-if="
             statistics_risk_store ||
@@ -592,7 +592,6 @@ import {
   addFavorite,
   removeFavorite,
   getUserFavoriteGroups,
-  getCheckFavoriteGroup,
   moveFavoriteGroup,
   editTokenFavRemark,
 } from '@/api/fav'
@@ -602,7 +601,7 @@ import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
-import { useEventBus } from "@vueuse/core"
+import { useEventBus } from '@vueuse/core'
 import { verifyLogin } from '@/utils'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
@@ -810,18 +809,6 @@ async function getTokenUserFavoriteGroups() {
     loadingGroup.value = false
   }
 }
-//获取用户当前分组
-// function getTokenCheckFavoriteGroup() {
-//   getCheckFavoriteGroup(id.value, evmAddress)
-//     .then((res) => {
-//       groupId.value = typeof res == 'number' ? res : 0
-//       selectedGroup.value = typeof res == 'number' ? res : 0
-//     })
-//     .catch((err) => {
-//       console.log(err)
-//     })
-//     .finally(() => {})
-// }
 
 function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
   if (!evmAddress) {
@@ -994,8 +981,8 @@ function getTags(i: Pair) {
 
   if (token?.value?.tag) {
     const tagti = token?.value?.tag?.split(',') || []
-    let tag_t = tagti?.filter((i) => i !== '' && i !== 'newcommunity')
-    let tag_t1: Array<Normal>= tag_t?.map((i) => ({
+    const tag_t = tagti?.filter((i) => i !== '' && i !== 'newcommunity')
+    const tag_t1: Array<Normal>= tag_t?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,

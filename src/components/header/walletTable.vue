@@ -59,7 +59,7 @@
                   style="display: inline-flex; align-items: center"
                   class="mt-2"
                 >
-                  <!-- <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo"></UserRemark> -->
+                  <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" />
                   <!-- <a
                     href=""
                     class="ml-8 fav_address a-gray"
@@ -236,7 +236,7 @@
 import emptyWhite from '@/assets/images/empty-white.svg'
 import emptyDark from '@/assets/images/empty-black.svg'
 import { formatNumber } from '@/utils/formatNumber'
-import UserAvatar from '@/components/header/userAvatar.vue'
+import UserAvatar from '@/components/userAvatar.vue'
 import type { SearchWalletInfo } from '@/api/types/search'
 import { getRemarkByAddress } from '@/utils/index'
 

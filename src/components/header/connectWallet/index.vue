@@ -1,19 +1,23 @@
 <template>
   <div>
-    <el-dialog v-model="dialogVisible" modal-class="dialog-connect-bg" width="500" height='630'
+    <el-dialog
+      v-model="dialogVisible" modal-class="dialog-connect-bg" width="500" height='630'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
-        <img v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97"
+        <img
+          v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97"
           loading="lazy">
         <img v-else src="@/assets/images/logo2-83.29x21.97.png" alt="logo" height="21.97" loading="lazy">
         <!-- <span>{{ $t('campaignTitle') }}</span> -->
       </div>
       <!-- <reset v-if="emailRegisterType == 'reset'" @update:c-type="(cType: string) => emailRegisterType = cType"/> -->
-      <component :is="lazyComponent" v-show="emailRegisterType == 'reset'" :cType="emailRegisterType"
+      <component
+        :is="lazyComponent" v-show="emailRegisterType == 'reset'" :cType="emailRegisterType"
         @update:c-type="(cType: string) => emailRegisterType = cType" />
       <div v-show="emailRegisterType !== 'reset'" class='w-content'>
         <h3 class="connect-popup-title font-500">
-          <el-icon v-if="botStore.connectWalletTab !== 0" :size="35" style="color:var(--d-999-l-222);"
+          <el-icon
+            v-if="botStore.connectWalletTab !== 0" :size="35" style="color:var(--d-999-l-222);"
             @click="botStore.connectWalletTab = 0">
             <ArrowLeft />
           </el-icon>
@@ -22,7 +26,8 @@
         <div class="m-content">
           <div>
             <div v-show="botStore.connectWalletTab == 0" class="text-14px text-center min-h-200px">
-              <emailRegisterAndLogin ref="loginForm" :cType="emailRegisterType"
+              <emailRegisterAndLogin
+                ref="loginForm" :cType="emailRegisterType"
                 @update:c-type="(cType) => emailRegisterType = cType">
                 <!-- <template #nav>
                   <ul class="tabs">

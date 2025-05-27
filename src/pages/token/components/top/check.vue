@@ -1505,9 +1505,11 @@ const lp_remark = computed(() => {
 const holder_remark = computed(() => {
   return ave_remarks?.value.holder_remark || ''
 })
+
 const tx_liq_remark = computed(() => {
   return ave_remarks?.value.tx_liq_remark || ''
 })
+
 const risk_remark = computed(() => {
   return ave_remarks?.value.risk_remark || ''
 })
@@ -1675,20 +1677,11 @@ watch(statistics_unknown, (val) => {
   checkStore.statistics_unknown_store =  val
 })
 onMounted(() => {
-  if (visible && evmAddress) {
-    getVote()
-  }
+  getVote()
 })
-watch(
-  () => evmAddress,
-  () => {
-    if (visible && evmAddress) {
-      getVote()
-    } else {
-
-    }
-  }
-)
+watch(evmAddress, () => {
+  getVote()
+})
 function formatRisk(checkResult?: Check) {
   if (!showResult || !checkResult?.risk_score) {
     return []
@@ -2013,7 +2006,7 @@ function voteSupport() {
   const support = () => {
     const tokenId = route.params.id as string
     loadingVote.value = true
-    _voteSupport(tokenId,user.value)
+    _voteSupport(tokenId, user)
       .then(() => {
         if (checkResult?.value?.my_vote === 0) {
           ElMessage.success(t('voteSuccess'))
@@ -2080,6 +2073,7 @@ function voteAgainst() {
         .catch(() => {})
     }
 function getVote() {
+  if (!(visible.value && evmAddress.value)) return
   const tokenId = route.params.id as string
   _getVote(tokenId, evmAddress.value).then(res => {
       Object.keys(res).forEach(i => {
