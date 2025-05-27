@@ -492,5 +492,7 @@
   "unKnown1": "Unknown",
   "mine": "Mine",
   "bought": "Bought",
-  "sold": "Sold"
+  "sold": "Sold",
+  "seemsNoProblem": "Seems to be no problem",
+  "possibleRisks": "Possible risks"
 }

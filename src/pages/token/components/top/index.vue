@@ -84,7 +84,7 @@
               name="material-symbols:search-rounded"
             />
           </a>
-          <template v-if="getTags(pair)?.normal_tag?.length > 0">
+          <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
             <div
               v-for="(i, index) in getTags(pair)?.normal_tag"
               :key="index"
@@ -269,7 +269,7 @@
             class="ml-5px hover:color-[--d-F5F5F5-l-333]"
             >{{ dayjs(pair?.created_at * 1000).fromNow() }}</span
           >
-          <template v-if="getTags(pair)?.signal_arr?.length > 0">
+          <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
             <div
               v-for="(i, index) in getTags(pair)?.signal_arr?.slice(0, 3)"
               :key="index"
@@ -350,7 +350,7 @@
           </template>
           <div
             v-if="
-              getTags(pair)?.signal_arr?.findIndex(
+              pair && getTags(pair)?.signal_arr?.findIndex(
                 (i) => i?.tag === 'smarter_buy'
               ) == -1 &&
               getTags(pair)?.signal_arr?.findIndex(
@@ -361,8 +361,8 @@
             "
             v-tooltip="
               getTagTooltip({
-                smart_money_buy_count_24h: pair?.smart_money_buy_count_24h,
-                smart_money_sell_count_24h: pair?.smart_money_sell_count_24h,
+                smart_money_buy_count_24h: pair?.smart_money_buy_count_24h || 0,
+                smart_money_sell_count_24h: pair?.smart_money_sell_count_24h || 0,
               })
             "
             class="minor flex-end color-text-2 tag-btn signal cursor-pointer ml-4px"
@@ -602,14 +602,16 @@ import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
-import { useEventBus } from "@vueuse/core";
+import { useEventBus } from "@vueuse/core"
+import { verifyLogin } from '@/utils'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
-const { evmAddress } = useBotStore()
+const { evmAddress } = storeToRefs(useBotStore())
 const { theme } = useThemeStore()
 const { t } = useI18n()
 const route = useRoute()
-const id = route.params?.id as string
+
+
 const editableGroup = shallowRef(false)
 const groupId = shallowRef(0)
 const selectedGroup = shallowRef(0)
@@ -622,15 +624,18 @@ const remark = shallowRef('')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
-const rugPull = shallowRef<ResultRugPull>({
+const rugPull = ref<ResultRugPull>({
   all_tag_rate: 0,
+  rates: {
+    rugged_rate: 0
+  }
 })
 
 const loadingRun = shallowRef(false)
 const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
 favDialogEvent.on((key) => {
   if (key === 'confirmSwitchGroup') {
-    getTokenCheckFavoriteGroup()
+    getTokenFavoriteCheck()
   } else if (key === 'remark') {
     getTokenFavoriteCheck()
   }
@@ -642,6 +647,9 @@ const {
   statistics_warning_store,
   statistics_unknown_store,
 } = storeToRefs(useCheckStore())
+// const id = route.params?.id as string
+const id = computed(() => route.params.id as string)
+
 const token = computed(() => {
   return tokenStore.token
 })
@@ -659,8 +667,7 @@ const marketCap = computed(() => {
 })
 
 const volume24 = computed(() => {
-  // console.log('-------tokenInfoExtra---------', tokenStore.tokenInfoExtra)
-  return tokenStore.tokenInfoExtra?.volume_24 || 0
+  return tokenStore.pair?.volume_u || tokenStore.tokenInfoExtra?.volume_24 || 0
 })
 const appendix = computed(() => {
   if (token.value?.appendix && isJSON(token.value?.appendix)) {
@@ -684,7 +691,7 @@ const currentGroup = computed(() => {
     : userFavoriteGroups.value?.find((i) => i.group_id == groupId.value)?.name
 })
 const chain = computed(() => {
-  const { chain } = getAddressAndChainFromId(id, 0)
+  const { chain } = getAddressAndChainFromId(id.value, 0)
   return chain
 })
 // const tokenInfo = computed(() => {
@@ -693,32 +700,55 @@ const chain = computed(() => {
 // console.log('-------tokenInfo---------', tokenInfo)
 // console.log('-------token---------', token)
 onMounted(() => {
-  if (evmAddress) {
+  if (evmAddress.value) {
     getTokenFavoriteCheck()
-    getTokenCheckFavoriteGroup() //获取当前分组
     getTokenUserFavoriteGroups() //获取分组数组
   }
-  useCheckStore().getContractCheckResult(id, evmAddress)
+  useCheckStore().getContractCheckResult(id.value, evmAddress?.value)
   if (chain.value == 'solana') {
     getRugPull()
   }
 })
 watch(
-  () => evmAddress,
+  evmAddress,
+  (val) => {
+    if (val) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    } else {
+      collected.value =  false
+      remark.value =  ''
+      remark2.value = ''
+      groupId.value =  0
+      selectedGroup.value = 0
+    }
+  }
+)
+watch(
+  () => route.params.id,
   () => {
-    getTokenUserFavoriteGroups()
+    if (evmAddress.value) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    }
+    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
+    if (chain.value == 'solana') {
+      getRugPull()
+    }
   }
 )
 const collected = shallowRef(false)
 const loading = shallowRef(false)
 
 function getTokenFavoriteCheck() {
-  getFavoriteCheck(id, evmAddress)
+  getFavoriteCheck(id.value, evmAddress.value)
     .then((res) => {
       console.log('------getFavoriteCheck---------', res, typeof res)
       collected.value = res?.address ? true : false
       remark.value = res?.remark || ''
       remark2.value = res?.remark || ''
+      groupId.value = res?.group_id ||  0
+      selectedGroup.value = res?.group_id ||  0
     })
     .catch((err) => {
       console.log(err)
@@ -728,7 +758,7 @@ function getTokenFavoriteCheck() {
 
 function addTokenFavorite() {
   loading.value = true
-  addFavorite(id, evmAddress)
+  addFavorite(id.value, evmAddress.value)
     .then(() => {
       ElMessage.success('收藏成功！')
       collected.value = true
@@ -743,7 +773,7 @@ function addTokenFavorite() {
 }
 function removeTokenFavorite() {
   loading.value = true
-  removeFavorite(id, evmAddress)
+  removeFavorite(id.value, evmAddress.value)
     .then(() => {
       ElMessage.success('已取消收藏！')
       collected.value = false
@@ -757,20 +787,20 @@ function removeTokenFavorite() {
     })
 }
 function collect() {
-  if (evmAddress) {
+  if (evmAddress.value) {
     if (collected.value) {
       removeTokenFavorite()
     } else {
       addTokenFavorite()
     }
   } else {
-    ElMessage.error('请链接钱包')
+    verifyLogin()
   }
 }
 async function getTokenUserFavoriteGroups() {
   try {
     loadingGroup.value = true
-    const res = await getUserFavoriteGroups(evmAddress)
+    const res = await getUserFavoriteGroups(evmAddress.value)
     userFavoriteGroups.value = (res || []).filter(
       (el) => !!el.name && el.type === 'token'
     )
@@ -781,17 +811,17 @@ async function getTokenUserFavoriteGroups() {
   }
 }
 //获取用户当前分组
-function getTokenCheckFavoriteGroup() {
-  getCheckFavoriteGroup(id, evmAddress)
-    .then((res) => {
-      groupId.value = typeof res == 'number' ? res : 0
-      selectedGroup.value = typeof res == 'number' ? res : 0
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-    .finally(() => {})
-}
+// function getTokenCheckFavoriteGroup() {
+//   getCheckFavoriteGroup(id.value, evmAddress)
+//     .then((res) => {
+//       groupId.value = typeof res == 'number' ? res : 0
+//       selectedGroup.value = typeof res == 'number' ? res : 0
+//     })
+//     .catch((err) => {
+//       console.log(err)
+//     })
+//     .finally(() => {})
+// }
 
 function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
   if (!evmAddress) {
@@ -802,7 +832,7 @@ function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
     moveFavoriteGroup(tokenId, id, evmAddress)
       .then(() => {
         ElMessage.success(t('success'))
-        getTokenCheckFavoriteGroup()
+        getTokenFavoriteCheck()
         topEventBus.emit()
       })
       .catch((err) => {
@@ -829,14 +859,14 @@ function handleReset() {
   }
 }
 function confirmEditRemark(tokenId: string, remark2: string) {
-  console.log('-------evmAddress-----', evmAddress)
-  if (!evmAddress) {
+  if (!evmAddress.value) {
+    verifyLogin()
     return
   }
   if (remark2?.length > 50) {
     return ElMessage.error(t('maximum10characters'))
   }
-  editTokenFavRemark(tokenId, remark2, evmAddress)
+  editTokenFavRemark(tokenId, remark2, evmAddress.value)
     .then(() => {
       ElMessage.success(t('success'))
       remark.value = remark2
@@ -1020,7 +1050,7 @@ function getRiskColor(token?: Token | null) {
 
 function getRugPull() {
   loadingRun.value = true
-  _getRugPull(id)
+  _getRugPull(id.value)
     .then((res) => {
       rugPull.value.dev = res?.dev || ''
       rugPull.value.all_tag_rate = res?.rates?.rateList?.find(

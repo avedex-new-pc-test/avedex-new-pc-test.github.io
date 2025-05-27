@@ -174,5 +174,7 @@
   "profit": "Lucro",
   "totalBuy": "Total Comprado",
   "totalSell": "Total Vendido",
-  "noMore": "Não mais"
+  "noMore": "Não mais",
+  "seemsNoProblem": "Parece não haver problemas\n",
+  "possibleRisks": "Riscos possíveis"
 }

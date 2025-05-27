@@ -1440,7 +1440,7 @@ const showRiskList = shallowRef(false)
 const buy_tax_list_show = shallowRef(true)
 const sell_tax_list_show = shallowRef(true)
 // const activeTab = shallowRef(1)
-const { evmAddress } = useBotStore()
+const { evmAddress } = storeToRefs(useBotStore())
 
 const riskStatus: Record<number, string> = {
   0: 'normal1',
@@ -1675,8 +1675,20 @@ watch(statistics_unknown, (val) => {
   checkStore.statistics_unknown_store =  val
 })
 onMounted(() => {
+  if (visible && evmAddress) {
     getVote()
+  }
 })
+watch(
+  () => evmAddress,
+  () => {
+    if (visible && evmAddress) {
+      getVote()
+    } else {
+
+    }
+  }
+)
 function formatRisk(checkResult?: Check) {
   if (!showResult || !checkResult?.risk_score) {
     return []
@@ -1989,7 +2001,7 @@ function formatVoteP(checkResult: Check | null) {
 }
 
 function voteSupport() {
-  const user = evmAddress
+  const user = evmAddress.value
   if (!user) {
     ElMessage.error(t('connectWalletFirst'))
     return
@@ -2001,7 +2013,7 @@ function voteSupport() {
   const support = () => {
     const tokenId = route.params.id as string
     loadingVote.value = true
-    _voteSupport(tokenId,user)
+    _voteSupport(tokenId,user.value)
       .then(() => {
         if (checkResult?.value?.my_vote === 0) {
           ElMessage.success(t('voteSuccess'))
@@ -2028,7 +2040,7 @@ function voteSupport() {
     .catch(() => {})
 }
 function voteAgainst() {
-      const user = evmAddress
+      const user = evmAddress.value
       if (!user) {
         ElMessage.error(t('connectWalletFirst'))
         return
@@ -2069,12 +2081,13 @@ function voteAgainst() {
     }
 function getVote() {
   const tokenId = route.params.id as string
-  _getVote(tokenId, evmAddress).then(res => {
-    if (checkResult.value) {
+  _getVote(tokenId, evmAddress.value).then(res => {
       Object.keys(res).forEach(i => {
-        checkResult.value[i] = res[i]
+        if (checkResult.value) {
+            checkResult.value[i as keyof Check] = res[i]
+        }
       })
-    }
+
   })
 }
 // const checkResult1 = computed(() => {

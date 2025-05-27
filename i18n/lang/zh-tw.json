@@ -491,5 +491,7 @@
   "unKnown1": "未知",
   "mine": "我的",
   "bought": "買入",
-  "sold": "賣出"
+  "sold": "賣出",
+  "seemsNoProblem": "看起來沒有問題",
+  "possibleRisks": "可能存在風險"
 }

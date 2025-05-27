@@ -6,8 +6,8 @@
     >
       <div :id="id"></div>
     </div>
-    <div v-if="progress > 0 && big" class="checking-tips" :style="{ color: riskColor.value[0] }">
-      <span>{{ riskColor.value[1] }}</span>
+    <div v-if="progress > 0 && big" class="checking-tips" :style="{ color: riskColor[0] }">
+      <span>{{ riskColor[1] }}</span>
       <slot></slot>
     </div>
   </div>
@@ -53,7 +53,7 @@ const props = defineProps({
         default: '12px'
     },
     colorList: {
-      type: Array,
+      type: Array<string>,
       default: ()=>['#eaecef', '#81c54e', '#f8be46', '#e74e54']
     }
 })
