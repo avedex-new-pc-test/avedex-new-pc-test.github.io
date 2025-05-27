@@ -174,5 +174,6 @@
   "profit": "Lucro",
   "totalBuy": "Total Comprado",
   "totalSell": "Total Vendido",
-  "noMore": "Não mais"
+  "noMore": "Não mais",
+  "netInflow": "Fluxo Líquido"
 }

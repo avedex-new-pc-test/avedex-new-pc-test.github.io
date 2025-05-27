@@ -20,10 +20,11 @@ export function useKlineMarks() {
   const { t } = useI18n()
   const tokenStore = useTokenStore()
   const localeStore = useLocaleStore()
+  const botStore = useBotStore()
 
   // 创建打点数据
   const marksTabs = computed(() => {
-    const arr = [{ id: 'trade', name: t('mine') }]
+    const arr = botStore.accessToken ? [{ id: 'trade', name: t('mine') }] : []
     return arr.concat(tokenStore.totalHolders?.filter?.(i => i?.total_address > 0 && ['16','19','25','30','31']?.includes(i.type))?.map?.((i) => ({
       id: i.type,
       name: i?.[filterLanguage(localeStore.locale)] + (i.type !== '31' ? `(${i?.total_address})` : '')
@@ -40,7 +41,7 @@ export function useKlineMarks() {
   })
 
   // 创建 打点 切换按钮
-  function createMarkButton(_widget: IChartingLibraryWidget | null) {
+  function createMarkButton(_widget: IChartingLibraryWidget | null, headerBtns: HTMLElement[]) {
     // const _widget = getWidget()
     const btn = _widget?.createButton()
     if (!btn) return
@@ -62,21 +63,23 @@ export function useKlineMarks() {
         if (markTabsChecked.value[i.id]) {
           markTabsChecked.value[i.id] = false
           b1.style.color = 'inherit'
+          _widget?.activeChart?.()?.clearMarks?.()
         } else {
           markTabsChecked.value[i.id] = true
           b1.style.color = '#3F80F7'
         }
-        _widget?.activeChart?.()?.clearMarks?.()
         _widget?.activeChart?.()?.refreshMarks?.()
       }
     })
+    headerBtns.push(btn)
   }
 
   const marksMap: Map<string, Mark[]> = new Map()
 
-  watch(() => tokenStore.pairAddress, () => {
+  watch(() => tokenStore.token?.token, () => {
     marksMap.clear()
   })
+
 
   function getMarks({from, to, interval, onDataCallback, pair, chain, token, user}: {
     from: number
@@ -89,12 +92,12 @@ export function useKlineMarks() {
     user: string;
   }) {
     marksTabs.value.forEach((v) => {
+      const id = pair + '-' + chain + '-' + user + '-' + from + '-' + to + '-' + interval + '-' + v.id
+      if (marksMap.has(id) && markTabsChecked.value?.[v.id]) {
+        onDataCallback(marksMap.get(id) || [])
+        return
+      }
       if (v.id === 'trade' && markTabsChecked.value?.[v.id]) {
-        const id = pair + '-' + chain + '-' + user + '-' + from + '-' + to + '-' + interval + '-' + v.id
-        if (marksMap.has(id)) {
-          onDataCallback(marksMap.get(id) || [])
-          return
-        }
         getUserKlineTxTags({
           from,
           to,
@@ -108,11 +111,6 @@ export function useKlineMarks() {
           onDataCallback(marks || [])
         })
       } else if (markTabsChecked.value?.[v.id]) {
-        const id = pair + '-' + chain + '-' + user + '-' + from + '-' + to + '-' + interval + '-' + v.id
-        if (marksMap.has(id)) {
-          onDataCallback(marksMap.get(id) || [])
-          return
-        }
         getKlineProfilingTags({
           from,
           to,
@@ -136,29 +134,45 @@ export function useKlineMarks() {
   ): Mark[] {
     // const t = getGlobalT()
     const result: Mark[] = []
-    const bucketMap: Record<string, { time: number; side: 'buy' | 'sell'; amount: number; txns: number; volume: number }> = {}
+    const bucketMap: Record<string, { time: number; side: 'buy' | 'sell'; amount: number; txns: number; volume: number; buyAmount?: number; sellAmount?: number; buyTxns?: number; sellTxns?: number; buyVolume?: number; sellVolume?: number }> = {}
     const urlPrefix = useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
     // First pass: Aggregate data into buckets
     const interval1 = Number(interval)
     for (const item of data) {
       const bucketTime = Math.floor(item.time / interval1) * interval1
+      if (Number(type) === 30) {
+        // 算出净流入(buy - sell)/净流出(sell - buy)
+        const bV = item?.buy?.volume || 0
+        const sV = item?.sell?.volume || 0
+        const key = `${bucketTime}-${bV > sV ? 'buy' : 'sell'}`
+        const entry = bucketMap[key] ??= { time: bucketTime, side: bV > sV ? 'buy' : 'sell', amount: 0, txns: 0, volume: 0, buyAmount: 0, sellAmount: 0, buyTxns: 0 }
+        entry.buyAmount = item?.buy?.amount || 0
+        entry.sellAmount = item?.sell?.amount || 0
+        entry.amount = Math.abs(entry.buyAmount - entry.sellAmount)
+        entry.buyTxns = item?.buy?.txns || 0
+        entry.sellTxns = item?.sell?.txns || 0
+        entry.txns = entry.buyTxns + entry.sellTxns
+        entry.volume = Math.abs(bV - sV)
+        entry.buyVolume = item?.buy?.volume || 0
+        entry.sellVolume = item?.sell?.volume || 0
+      } else {
+        // Aggregating buy data
+        if (item.buy) {
+          const key = `${bucketTime}-buy`
+          const entry = bucketMap[key] ??= { time: bucketTime, side: 'buy', amount: 0, txns: 0, volume: 0 }
+          entry.amount += item.buy.amount
+          entry.txns += item.buy.txns
+          entry.volume += item.buy.volume
+        }
 
-      // Aggregating buy data
-      if (item.buy) {
-        const key = `${bucketTime}-buy`
-        const entry = bucketMap[key] ??= { time: bucketTime, side: 'buy', amount: 0, txns: 0, volume: 0 }
-        entry.amount += item.buy.amount
-        entry.txns += item.buy.txns
-        entry.volume += item.buy.volume
-      }
-
-      // Aggregating sell data
-      if (item.sell) {
-        const key = `${bucketTime}-sell`
-        const entry = bucketMap[key] ??= { time: bucketTime, side: 'sell', amount: 0, txns: 0, volume: 0 }
-        entry.amount += item.sell.amount
-        entry.txns += item.sell.txns
-        entry.volume += item.sell.volume
+        // Aggregating sell data
+        if (item.sell) {
+          const key = `${bucketTime}-sell`
+          const entry = bucketMap[key] ??= { time: bucketTime, side: 'sell', amount: 0, txns: 0, volume: 0 }
+          entry.amount += item.sell.amount
+          entry.txns += item.sell.txns
+          entry.volume += item.sell.volume
+        }
       }
     }
 
@@ -195,8 +209,28 @@ export function useKlineMarks() {
     side: 'buy' | 'sell'
     amount: number
     txns: number
+    buyAmount?: number
+    sellAmount?: number
+    buyTxns?: number
+    sellTxns?: number
+    buyVolume?: number
+    sellVolume?: number
   }, type: keyof typeof markTabsChecked.value, name: string) {
     const isBuy = entry.side === 'buy'
+    if (Number(type) === 30) {
+      const swapType = isBuy ? t('netInflow') : t('netOutflow')
+      const { buyVolume, sellVolume, buyTxns, sellTxns, volume } = entry
+      const buyT = (buyVolume || 0) > 0 ? `
+${t('inflow')}: ${formatNumber(buyVolume || 0, 2)}(${formatNumber(buyTxns || 0, 0)})
+${t('campaignBuyAvg')}: $${formatNumber((buyVolume || 0) / (entry.buyAmount || 1), 2)}` : ''
+      const sellT = (sellVolume || 0) > 0 ? `
+${t('outflow')}: $${formatNumber(sellVolume || 0, 4)}(${formatNumber(sellTxns || 0, 0)})
+${t('campaignSellAvg')}: $${formatNumber((sellVolume || 0) / (entry.sellAmount || 1), 2)}`  : ''
+     return`${name?.replace(/\(.*\)$/, '')} ${swapType}${buyT}${sellT}
+${isBuy ? t('netInflow') : t('netOutflow')}: ${formatNumber(volume, 2)}
+${formatDate(entry.time, 'YYYY-MM-DD HH:mm')}
+`
+    }
     const swapType = isBuy ? t('bought') : t('sold')
     const { amount, txns, volume } = entry
     return`${name?.replace(/\(.*\)$/, '')} ${swapType}

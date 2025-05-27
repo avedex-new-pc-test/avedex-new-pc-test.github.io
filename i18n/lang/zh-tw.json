@@ -491,5 +491,11 @@
   "unKnown1": "未知",
   "mine": "我的",
   "bought": "買入",
-  "sold": "賣出"
+  "sold": "賣出",
+  "netInflow": "淨流入",
+  "netOutflow": "淨流出",
+  "inflow": "總買入",
+  "campaignBuyAvg": "買入均價",
+  "outflow": "總賣出",
+  "campaignSellAvg": "賣出均價"
 }

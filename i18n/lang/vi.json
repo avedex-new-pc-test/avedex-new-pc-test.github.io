@@ -299,5 +299,11 @@
   "unKnown1": "Không xác định",
   "mine": "Của tôi",
   "bought": "Đã mua",
-  "sold": "Đã bán"
+  "sold": "Đã bán",
+  "netInflow": "Dòng vào ròng",
+  "netOutflow": "Dòng ra ròng",
+  "inflow": "Dòng vào",
+  "campaignBuyAvg": "Giá mua",
+  "outflow": "Dòng ra",
+  "campaignSellAvg": "Giá bán"
 }

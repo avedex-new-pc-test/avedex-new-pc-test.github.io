@@ -492,5 +492,11 @@
   "unKnown1": "Unknown",
   "mine": "Mine",
   "bought": "Bought",
-  "sold": "Sold"
+  "sold": "Sold",
+  "netInflow": "Net Inflow",
+  "netOutflow": "Net Outflow",
+  "inflow": "Inflow",
+  "campaignBuyAvg": "Buy Price",
+  "outflow": "Outflow",
+  "campaignSellAvg": "Sell Price"
 }

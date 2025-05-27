@@ -174,5 +174,6 @@
   "profit": "Ganancia",
   "totalBuy": "Compra Total",
   "totalSell": "Venta Total",
-  "noMore": "No más"
+  "noMore": "No más",
+  "netInflow": "Entrada neta"
 }

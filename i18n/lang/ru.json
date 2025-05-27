@@ -299,5 +299,11 @@
   "unKnown1": "Неизвестно",
   "mine": "Мои",
   "bought": "Куплено",
-  "sold": "Продано"
+  "sold": "Продано",
+  "netInflow": "Чистый приток",
+  "netOutflow": "Чистый отток",
+  "inflow": "Приток",
+  "campaignBuyAvg": "Цена покупки",
+  "outflow": "Отток",
+  "campaignSellAvg": "Цена продажи"
 }
