@@ -36,6 +36,9 @@ export const useTokenStore = defineStore('token', () => {
   const price = computed(() => tokenPrice.value || token.value?.current_price_usd)
   const priceChange = computed(() => tokenPriceChange.value || pair.value?.price_change || token.value?.price_change)
 
+  const placeOrderUpdate = ref(0)
+  const registrationNum = ref(0)
+
   const swap = reactive<{
     native: Token
     token: Token
@@ -97,7 +100,9 @@ export const useTokenStore = defineStore('token', () => {
     switchPair,
     _getTotalHolders,
     totalHolders,
-    swap
+    swap,
+    placeOrderUpdate,
+    registrationNum,
   }
 })
 
