@@ -34,7 +34,7 @@ export const useBotStore = defineStore('bot', () => {
 
   const connectVisible = ref(false)
   const connectWalletTab = ref(0)
-  const walletList = shallowRef<Awaited<ReturnType<typeof bot_getWalletsAllChain>>>([])
+  const walletList = ref<Awaited<ReturnType<typeof bot_getWalletsAllChain>>>([])
   const botSwapStore = useBotSwapStore()
   const wsStore = useWSStore()
   const userInfo = computed(() => {

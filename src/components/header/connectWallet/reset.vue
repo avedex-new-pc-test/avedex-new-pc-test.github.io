@@ -48,7 +48,7 @@
       </el-result>
       <el-form-item>
         <el-button 
-          :color="mode == 'dark' ? '#F5F5F5' : '#222222'" :class="['btn', (step === 3) && 'step3']"
+          :color="'#3F80F7'" :class="['btn', (step === 3) && 'step3']"
           size="large" :loading="loading" style="width: 100%" @click="submitForm">{{ startSubmitText }}</el-button>
       </el-form-item>
       <p v-if="step === 2" class="tip">{{ $t('startResetTip') }}</p>
@@ -64,13 +64,15 @@ import {
   desensitizeEmail
 } from '@/utils/index'
 
-console.log('reset')
 const emit = defineEmits(['update:c-type'])
 const props = defineProps({
-  email: {
+  cType: {
     type: String,
-    default: ''
-  }
+    required: true,
+    validator: (value: string) => {
+      return ['login', 'register', 'reset'].includes(value)
+    },
+  },
 })
 const userStore = useUserStore()
 const { mode, lang } = storeToRefs(useGlobalStore())
@@ -126,10 +128,16 @@ const rules = computed<FormRules<RuleForm>>(() => {
   }
 })
 
-watch(() => props.email, (newVal) => {
-  form.email = newVal
+watch([()=>userStore.email,()=>props.cType], (val) => {
+  console.log('watch userStore.email', val)
+  // form.email = newVal
+  if(props.cType==='reset'){
+    form.email = userStore.email
+  }
 })
-
+onMounted(() => {
+    console.log('reset')
+})
 onUnmounted(() => {
   if (timer.value) {
     clearInterval(timer.value)
