@@ -14,8 +14,11 @@
         <template #default="{ row }">
           <div class="flex items-center justify-start">
             <div class="icon-token-container mr-5px">
-              <el-image class="w-32px h-32px"
-                :src="getSymbolDefaultIcon(!row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)">
+              <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+                chain: row?.chain,
+                symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
+                logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
+              })">
                 <template #error>
                   <img class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)" alt=""

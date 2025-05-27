@@ -14,8 +14,11 @@
         <template #default="{ row }">
           <div class="flex items-center justify-start">
             <div class="icon-token-container mr-5px">
-              <el-image class="w-32px h-32px"
-                :src="getSymbolDefaultIcon(row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl)">
+              <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+                chain: row?.chain,
+                symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
+                logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
+              })">
                 <template #error>
                   <img class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol)"
@@ -32,7 +35,7 @@
             </div>
             <span class="token-symbol">{{ row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol :
               row.outTokenSymbol
-            }}</span>
+              }}</span>
           </div>
         </template>
       </el-table-column>
@@ -119,14 +122,14 @@
         <template #default="{ row }">
           <div class="text-[var(--d-999-l-959A9F)] text-right">
             <span v-if="row.status === 'confirmed'" style="color: var(--custom-text-2-color);">{{ t('completed')
-              }}</span>
+            }}</span>
             <span v-else-if="row.status === 'error'" style="color: var(--color-red-500);word-break: break-all;">{{
               t('failed') }}<template v-if="row?.errorLog">({{ formatBotError(row?.errorLog) }})</template></span>
             <span v-else-if="row.status === 'cancelled'" style="color: var(--custom-text-2-color);">{{ t('cancelled1')
-              }}</span>
+            }}</span>
             <span v-else-if="row.status === 'auto_cancelled'" style="color: var(--custom-text-2-color);">{{
               t('autoCancelled')
-              }}</span>
+            }}</span>
             <span v-else style="color: var(--custom-text-1-color);">{{ t('pending') }}</span>
           </div>
         </template>
@@ -135,7 +138,7 @@
       <el-table-column :label="t('CreateTime')" align="right">
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">{{ formatDate(row.createTime, 'YYYY/MM/DD HH:mm')
-          }}</span>
+            }}</span>
         </template>
       </el-table-column>
 

@@ -99,6 +99,7 @@ const userAddress = computed(() => {
 
 function setActiveTab(val: string) {
   activeTab.value = val
+  getWalletTxData()
 }
 function toggleCurrentToken() {
   botOrderOnlyCurrentToken.value = !botOrderOnlyCurrentToken.value
@@ -123,11 +124,33 @@ const getWalletTxData = async () => {
   console.log(txInfo, "txInfo")
 }
 
+let timer: any
+let lastUpdateTime = 0
+const maxUpdateNum = 6
+
 watch([() => tokenStore.placeOrderUpdate], () => {
   getWalletTxData()
+  if (!timer) {
+    timer = setInterval(() => {
+      if (lastUpdateTime >= maxUpdateNum) {
+        clearInterval(timer)
+        timer = null
+        lastUpdateTime = 0
+        return
+      }
+      getWalletTxData()
+      lastUpdateTime += 1
+    }, 5000)
+  } else {
+    lastUpdateTime = 0
+  }
 })
 
 onMounted(() => {
+  const chain = String(route.params.id).split('-')[1]
+  if (tabs.value.find(i => i?.chain === chain)) {
+    activeTab.value = chain
+  }
   getWalletTxData()
 })
 </script>

@@ -8,6 +8,7 @@ import { cancelAllLimitOrdersByGuid } from "@/api/token"
 
 const botStore = useBotStore()
 const { t } = useI18n()
+const route = useRoute()
 
 const unifiedRef = ref<any>()
 const activeTab = ref('solana')
@@ -51,6 +52,13 @@ function toggleCancelAll() {
       unifiedRef.value.getUserPendingTx()
     }).catch(() => { })
 }
+
+onMounted(() => {
+  const chain = String(route.params.id).split('-')[1]
+  if (tabs.value.find(i => i?.chain === chain)) {
+    activeTab.value = chain
+  }
+})
 </script>
 
 <template>
