@@ -1,12 +1,55 @@
 <template>
-  <div></div>
+  <div class="flex-center text-12px clickable-btn tg-name-box" @click="visible = true">
+    <span class="left-num">{{holderNum}}</span>
+    <span>{{ $t('positions') }}</span>
+  </div>
+  <component :is="lazyComponent" v-model="visible" :tableFilter="tableFilter" @update:table-filter="tableFilter = $event"/>
 </template>
 
-<script setup lang='ts'>
+<script setup lang='tsx'>
+import {getUserBalance} from '~/api/swap'
 
-defineProps<{
-  msg: string
-}>()
+const botStore = useBotStore()
+let userIds: string[] = []
+const tableFilter = ref({
+  hide_risk: 1,
+  hide_small: 0,
+  user_ids: userIds
+})
+const visible=ref(false)
+const holderNum = ref(0)
+const fetchHolderNum = async () => {
+  try {
+    const res = await getUserBalance(tableFilter.value)
+    console.log('fetchHolderNum', res)
+    holderNum.value = res.total
+  } catch (e) {
+    console.error('Error fetching user balance:', e)
+    holderNum.value = 0
+  }
+}
+const lazyComponent = shallowRef<Component | null>(null)
+const loadComponent = async () => {
+  const component = await import('./positionsTable.vue')
+  lazyComponent.value = component.default
+}
+watch(() => visible.value, (newValue) => {
+  if (newValue) {
+    loadComponent()
+  }
+})
+watch(() => botStore.userInfo, (newValue) => {
+  if (newValue) {
+    userIds = newValue.addresses.map(({address, chain}) => address + '-' + chain)
+    tableFilter.value.user_ids = userIds
+    fetchHolderNum()
+  }
+}, { immediate: true })
+
+onMounted(() => {
+  // fetchHolderNum()
+  console.log('mounted positions')
+})
 
 onMounted(() => {
   console.log('mounted')
@@ -15,19 +58,39 @@ onMounted(() => {
 </script>
 
 <style scoped lang='scss'>
-a {
-  color: #42b983;
-}
-
-label {
-  margin: 0 0.5em;
-  font-weight: bold;
-}
-
-code {
-  background-color: #eee;
-  padding: 2px 4px;
+.tg-name-box {
+  margin-right: 10px;
+  color: var(--d-E9E9E9-l-222);
+  height: 36px;
+  cursor: pointer;
+  background: var(--d-222-l-F2F2F2);
   border-radius: 4px;
-  color: #304455;
+  padding: 0 10px;
+  min-width: 60px;
+  .left-num {
+    background: transparent;
+    border: 1px solid;
+    border-radius: 4px;
+    height: 20px;
+    line-height: 20px;
+    min-width: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+  }
+}
+.bot-position {
+  --custom-bg-1-color: transparent;
+}
+.clickable-btn {
+  cursor: pointer;
+  &:active {
+    opacity: 0.5;
+  }
+  &:hover {
+    opacity: 0.8;
+  }
 }
 </style>

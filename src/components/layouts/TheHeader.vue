@@ -46,7 +46,10 @@
         退出登录
       </div>
     </el-popover> -->
-    <wallet v-else/>
+    <template v-else>
+      <positions/>
+      <wallet/>
+    </template>
     <a
       class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
       href=""
@@ -103,6 +106,7 @@
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
 import wallet from '@/components/header/wallet/index.vue'
+import positions from '@/components/header/positions/index.vue'
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()

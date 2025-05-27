@@ -482,5 +482,9 @@
   "avgSellPrice": " Avg Sell Price",
   "mine": "Mine",
   "bought": "Bought",
-  "sold": "Sold"
+  "sold": "Sold",
+  "myPosition1": "My Position",
+  "costPrice": "Cost Price",
+  "currentPrice": "Current Price",
+  "PnLTips": "Only count the unrealized PnL of buy transactions within the last 7 days."
 }

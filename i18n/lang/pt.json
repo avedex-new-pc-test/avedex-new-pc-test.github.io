@@ -173,5 +173,6 @@
   "noWalletTip": "Por favor, conecte sua carteira para usar esta função",
   "profit": "Lucro",
   "totalBuy": "Total Comprado",
-  "totalSell": "Total Vendido"
+  "totalSell": "Total Vendido",
+  "myPosition1": "Minha Posição"
 }

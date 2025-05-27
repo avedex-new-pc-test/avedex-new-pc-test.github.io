@@ -289,5 +289,9 @@
   "avgSellPrice": "Giá bán trung bình",
   "mine": "Của tôi",
   "bought": "Đã mua",
-  "sold": "Đã bán"
+  "sold": "Đã bán",
+  "myPosition1": "Vị thế của tôi",
+  "costPrice": "Giá vốn",
+  "currentPrice": "Giá hiện tại",
+  "PnLTips": "Chỉ tính lãi/lỗ chưa thực hiện của giao dịch mua trong 7 ngày"
 }

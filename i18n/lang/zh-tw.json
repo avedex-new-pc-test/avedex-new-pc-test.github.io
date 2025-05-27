@@ -481,5 +481,9 @@
   "avgSellPrice": "賣出成本價",
   "mine": "我的",
   "bought": "買入",
-  "sold": "賣出"
+  "sold": "賣出",
+  "myPosition1": "我的持倉",
+  "costPrice": "成本價",
+  "currentPrice": "目前價格",
+  "PnLTips": "僅統計7日內買進交易的浮動盈虧"
 }
