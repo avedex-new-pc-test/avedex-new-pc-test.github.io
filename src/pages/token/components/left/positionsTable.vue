@@ -67,7 +67,7 @@ const listData = shallowRef<(GetUserBalanceResponse & { index: string })[]>([])
 onMounted(() => {
   _getUserBalance()
 })
-watch(() => backendSort, () => {
+watch(() => [backendSort.value, tableFilter.value.hide_risk, tableFilter.value.hide_small], () => {
   _getUserBalance()
 })
 
@@ -105,6 +105,7 @@ async function _getUserBalance() {
     console.log('=>(favoriteTable.vue:106) (e)', (e))
   } finally {
     listStatus.value.loading = false
+    triggerRef(listStatus)
   }
 }
 
@@ -173,7 +174,7 @@ function getColor(val: number) {
 </script>
 
 <template>
-  <div>
+  <div v-loading="listStatus.loading && listStatus.pageNo===1">
     <div class="flex justify-between items-center mt-10px pr-15px">
       <el-checkbox
         v-model="tableFilter['hide_risk']"
@@ -262,6 +263,8 @@ function getColor(val: number) {
                 v-if="botStore.evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
                 size="small"
                 :loading="loadingSwap[row.index]"
+                class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2]"
+                style="padding:4px"
               >
                 {{ $t('sellAll') }}
               </el-button>
@@ -270,7 +273,7 @@ function getColor(val: number) {
           </div>
         </div>
         <div
-          v-if="listStatus.loading"
+          v-if="listStatus.loading&&listStatus.pageNo!==1"
           class="color-#959a9f text-12px text-center"
         >
           {{ $t('loading') }}

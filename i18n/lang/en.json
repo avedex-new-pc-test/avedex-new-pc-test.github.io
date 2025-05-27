@@ -489,5 +489,8 @@
   "noMore": "No more",
   "shitcoin": "Remove",
   "unKnown": "Dump",
-  "unKnown1": "Unknown"
+  "unKnown1": "Unknown",
+  "mine": "Mine",
+  "bought": "Bought",
+  "sold": "Sold"
 }
