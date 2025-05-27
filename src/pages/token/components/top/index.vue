@@ -23,20 +23,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        >
+        />
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -97,10 +97,10 @@
                 lazy
               >
                 <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
                 </template>
                 <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
+                  <img class="token-icon-tag h-16px" src="/icon-default.png" />
                 </template>
               </el-image>
               <span
@@ -242,7 +242,7 @@
                       min-width: 70px;
                       --el-button-font-weight: 400;
                     "
-                    @click.stop="confirmEditRemark(id,remark2)"
+                    @click.stop="confirmEditRemark(id, remark2)"
                   >
                     {{ $t('confirm') }}
                   </el-button>
@@ -443,8 +443,11 @@
       >
       <span
         class="block mt-4px"
-        :class="priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`"
-        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange, 2) }}%</span
+        :class="
+          priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`
+        "
+        >{{ priceChange > 0 ? '+' : ''
+        }}{{ formatNumber(priceChange, 2) }}%</span
       >
     </div>
 
@@ -497,33 +500,74 @@
         />
         <img
           v-else-if="
-            !statistics_risk_store && !statistics_warning_store && !statistics_unknown_store
+            !statistics_risk_store &&
+            !statistics_warning_store &&
+            !statistics_unknown_store
           "
           :width="12"
           class="icon-svg1"
           src="@/assets/images/安全.svg"
         />
 
-        <img v-else class="icon-svg1" src="@/assets/images/zhuyi1.svg" />
+        <img
+          v-else
+          class="icon-svg1"
+          :width="12"
+          src="@/assets/images/zhuyi1.svg"
+        />
         <span
-          v-if="statistics_risk_store || statistics_warning_store || statistics_unknown_store"
-          class="ml-5"
+          v-if="
+            statistics_risk_store ||
+            statistics_warning_store ||
+            statistics_unknown_store
+          "
+          class="ml-5px"
           style="font-weight: 600"
           :style="{ color: getRiskColor(token) }"
         >
           {{
-            statistics_risk_store || statistics_warning_store || statistics_unknown_store || ''
+            statistics_risk_store ||
+            statistics_warning_store ||
+            statistics_unknown_store ||
+            ''
           }}
         </span>
-        <!-- __{{ checkStore?.statistics_risk_store || checkStore?.statistics_warning_store || checkStore?.statistics_unknown_store || ''}} -->
       </div>
       <Check v-model="showCheck" />
     </div>
-    <div class="item ml-24px">
-      <span>跑路</span>
-      <Run :v-model="showRun" :obj="rugPull"/>
-    </div>
+    <div class="item ml-24px" v-if="chain === 'solana'">
+      <span class="cursor-pointer" @click="showRun = !showRun"
+        >{{ t('flag_rug_pull') }}
+        <Icon
+          v-if="
+            (rugPull?.rates?.rugged_rate ?? 0) > 0 ||
+            (rugPull?.rates?.rugged_rate ?? 0) == -1
+          "
+          name="material-symbols:arrow-forward-ios-rounded"
+          class="text-12px"
+        />
+      </span>
+      <div
+        class="color-text-1 mt-5px font-500 flex-start text-12px"
+        :style="{
+          color:
+            (rugPull?.rates?.rugged_rate ?? 0) > 60 ? '#F6465D' : '#959A9F',
+        }"
+      >
+        <!-- <i class="iconfont icon-rug font-12 mr-2px"></i> -->
+        <Icon
 
+          name="custom:rug"
+          class="text-12px mr-2px"
+        />
+        {{
+          rugPull?.rates?.rugged_rate == -1
+            ? t('unKnown1')
+            : formatNumber(rugPull?.rates?.rugged_rate || 0, 2) + '%'
+        }}
+      </div>
+      <Run v-model="showRun" :obj="rugPull" />
+    </div>
   </div>
 </template>
 
@@ -539,7 +583,7 @@ import {
   formatIconSwap,
   isJSON,
   formatIconTag,
-  getAddressAndChainFromId
+  getAddressAndChainFromId,
 } from '@/utils/index'
 import {
   type GetUserFavoriteGroupsResponse,
@@ -551,7 +595,7 @@ import {
   moveFavoriteGroup,
   editTokenFavRemark,
 } from '@/api/fav'
-import { _getRugPull } from '@/api/run'
+import { _getRugPull, type ResultRugPull } from '@/api/run'
 import type { Token } from '@/api/types/token'
 import {upColor, downColor, BusEventType} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
@@ -577,7 +621,9 @@ const remark = shallowRef('')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
-const rugPull = shallowRef(null)
+const rugPull = shallowRef<ResultRugPull>({
+  all_tag_rate: 0,
+})
 
 const loadingRun = shallowRef(false)
 const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
@@ -590,11 +636,11 @@ favDialogEvent.on((key) => {
 })
 const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
 
-const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
-  useCheckStore()
-)
-const checkStore  = useCheckStore()
-
+const {
+  statistics_risk_store,
+  statistics_warning_store,
+  statistics_unknown_store,
+} = storeToRefs(useCheckStore())
 const token = computed(() => {
   return tokenStore.token
 })
@@ -637,7 +683,7 @@ const currentGroup = computed(() => {
     : userFavoriteGroups.value?.find((i) => i.group_id == groupId.value)?.name
 })
 const chain = computed(() => {
-  const { chain } = getAddressAndChainFromId(id,0)
+  const { chain } = getAddressAndChainFromId(id, 0)
   return chain
 })
 // const tokenInfo = computed(() => {
@@ -652,7 +698,7 @@ onMounted(() => {
     getTokenUserFavoriteGroups() //获取分组数组
   }
   useCheckStore().getContractCheckResult(id, evmAddress)
-  if (chain.value  == 'solana') {
+  if (chain.value == 'solana') {
     getRugPull()
   }
 })
@@ -746,7 +792,7 @@ function getTokenCheckFavoriteGroup() {
     .finally(() => {})
 }
 
-function confirmSwitchGroup(tokenId:string, id: number, evmAddress: string) {
+function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
   if (!evmAddress) {
     return
   }
@@ -782,7 +828,7 @@ function handleReset() {
   }
 }
 function confirmEditRemark(tokenId: string, remark2: string) {
-  console.log('-------evmAddress-----',evmAddress)
+  console.log('-------evmAddress-----', evmAddress)
   if (!evmAddress) {
     return
   }
@@ -799,8 +845,7 @@ function confirmEditRemark(tokenId: string, remark2: string) {
       console.log(err)
       ElMessage.error(t('fail'))
     })
-    .finally(() => {
-    })
+    .finally(() => {})
 }
 
 function getTags(i) {
@@ -967,35 +1012,44 @@ function getRiskColor(token?: Token | null) {
     return '#e74e54'
   } else if (statistics_warning_store ?? 0 > 0) {
     return '#f8be46'
-  } else if (!statistics_risk_store && !statistics_warning_store && !statistics_unknown_store) {
+  } else if (
+    !statistics_risk_store &&
+    !statistics_warning_store &&
+    !statistics_unknown_store
+  ) {
     return '#81c54e'
   } else {
     return '#507eef'
   }
 }
 
-function  getRugPull () {
-      loadingRun.value = true
-      _getRugPull(id)
-        .then(res => {
-          rugPull.value = res
-          rugPull.value.all_tag_rate = rugPull.value.rates?.rateList?.filter(i => i.icon == 'icon_all_tag_rate')?.[0].rate
-          rugPull.value.all_tag_rate = rugPull.value.all_tag_rate?.toFixed(1) || 0
-          rugPull.value.rateList = rugPull.value?.rates?.rateList?.filter(i => i.icon !== 'icon_all_tag_rate')
-          rugPull.value.rateList = rugPull.value.rateList?.map(i => ({
-            ...i,
-            rate: Number(i.rate?.toFixed(1) || 0)
-          }))
-          console.log('-----getRugPull------', res)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-        .finally(() => {
-          loadingRun.value = false
-        })
-    }
-
+function getRugPull() {
+  loadingRun.value = true
+  _getRugPull(id)
+    .then((res) => {
+      rugPull.value.dev = res?.dev || ''
+      rugPull.value.all_tag_rate = res?.rates?.rateList?.find(
+        (i) => i?.icon == 'icon_all_tag_rate'
+      )?.rate
+      rugPull.value.all_tag_rate =
+        Number(rugPull.value.all_tag_rate?.toFixed(1) || 0) || 0
+      rugPull.value.rates = res?.rates
+      rugPull.value.rateList = res?.rates?.rateList?.filter(
+        (i) => i.icon !== 'icon_all_tag_rate'
+      )
+      rugPull.value.rateList = rugPull.value?.rateList?.map((i) => ({
+        ...i,
+        rate: Number(i.rate?.toFixed(1) || 0),
+      }))
+      console.log('-----getRugPull------', rugPull.value)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+    .finally(() => {
+      loadingRun.value = false
+    })
+}
 </script>
 
 <style scoped lang="scss">
