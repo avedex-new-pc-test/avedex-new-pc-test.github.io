@@ -97,15 +97,12 @@
       />
     </a>
     <dialog-search v-model="dialogVisible_search" />
-    <!-- <connect-wallet v-model="botStore.connectVisible" /> -->
     <component :is="lazyComponent" v-model="botStore.connectVisible"/>
   </header>
 </template>
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
-// import connectWallet from '@/components/header/connectWallet/index.vue'
 import wallet from '@/components/header/wallet/index.vue'
-// const connectWallet = shallowRef<Component | null>(null)
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()
@@ -120,7 +117,6 @@ const list = shallowRef([
 ])
 const dialogVisible_search = shallowRef(false)
 
-// const {lazyComponent:connectWallet,loadComponent:loadConnectComponent}  = useLazyComponent('@/components/header/connectWallet/index.vue')
 const lazyComponent = shallowRef<Component | null>(null)
 const loadComponent = async () => {
   const component = await import('@/components/header/connectWallet/index.vue')
