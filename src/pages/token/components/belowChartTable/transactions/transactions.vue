@@ -540,7 +540,7 @@ function onRowClick({rowData}: RowEventHandlerParams) {
   tokenDetailSStore.$patch({
     drawerVisible: true,
     tokenInfo: {
-      id: route.params.id!,
+      id: route.params.id! as string,
       symbol,
       logo_url,
       chain,

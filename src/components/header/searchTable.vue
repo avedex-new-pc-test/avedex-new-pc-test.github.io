@@ -214,7 +214,7 @@ import {
   getChainDefaultIcon,
   formatDate,
 } from '@/utils/index'
-import CountDown from './countDown.vue'
+// import CountDown from './countDown.vue'
 import type { SearchHot } from '@/api/types/search'
 const themeStore = useThemeStore()
 const props = defineProps({
