@@ -638,13 +638,11 @@ onUnmounted(() => {
   favDialogEvent.off(handleFavDialogEvent)
 })
 
-function handleFavDialogEvent({type, tokenId}: IFavDialogEventArgs) {
-  if (tokenId === id.value) {
-    if (type === 'confirmSwitchGroup') {
-      getTokenUserFavoriteGroups()
-    } else if (type === 'remark') {
-      getTokenFavoriteCheck()
-    }
+function handleFavDialogEvent({tokenId, type}: IFavDialogEventArgs) {
+  if (type === 'changeFavoriteGroupName') {
+    getTokenUserFavoriteGroups()
+  } else if (tokenId === id.value) {
+    getTokenFavoriteCheck()
   }
 }
 

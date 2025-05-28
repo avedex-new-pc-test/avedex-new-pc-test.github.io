@@ -47,7 +47,7 @@ function drag(e: MouseEvent) {
         <Icon name="custom:drag" class="text-4px color-#959A9F"/>
       </div>
     </div>
-    <BottomLeftTable :height="height - topLeftHeight - 240"/>
+    <BottomLeftTable :height="height - topLeftHeight"/>
   </div>
 </template>
 

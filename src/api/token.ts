@@ -573,7 +573,7 @@ export interface GetHomePumpListResponse {
   reserve1: number;
   token1_logo_url: string;
   current_price_usd: number;
-  price_change_24h: number;
+  price_change_24h: string;
   tx_24h_count: number;
   volume_u_24h: number;
   makers_24h: number;
@@ -591,6 +591,8 @@ export function homePumpList(query: {
   pageSize: number;
   category: string;
   self_address?: string;
+  sort?: string;
+  sort_dir?: string;
 }): Promise<{ data: GetHomePumpListResponse[] }> {
   const {$api} = useNuxtApp()
   return $api('/v1api/v4/tokens/treasure/pump/list', {
@@ -599,3 +601,17 @@ export function homePumpList(query: {
   })
 }
 
+export function getUserBalances(token_id: string, user_ids: string[]): Promise<{
+  user_id: string;
+  decimals: number;
+  value: number;
+  current_price_usd: number;
+}[]> {
+  const {$api} = useNuxtApp()
+  return $api('/v1api/v3/users/balance/users', {
+    method: 'post',
+    body: {
+      token_id, user_ids
+    }
+  })
+}

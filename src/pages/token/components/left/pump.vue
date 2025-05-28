@@ -13,7 +13,10 @@ defineProps({
 })
 const {t} = useI18n()
 // const tokenStore = useTokenStore()
-const sort = ref({})
+const sort = ref({
+  sortBy: undefined,
+  activeSort: 0
+})
 // const isVolUSDT = ref(true)
 const tabList = shallowRef([{
   label: '新内盘',
@@ -49,7 +52,7 @@ const listData = shallowRef<GetHomePumpListResponse[]>([])
 const columns = computed(() => {
   return [{
     label: t('token') + '/' + t('progress'),
-    value: 'mcap',
+    value: 'progress',
     flex: 'flex-1',
     sort: true
   }, {
@@ -59,7 +62,7 @@ const columns = computed(() => {
     sort: false
   }, {
     label: t('mCap'),
-    value: 'price_change',
+    value: 'market_cap',
     flex: 'w-78px justify-end',
     sort: true
   }]
@@ -71,6 +74,11 @@ onMounted(() => {
 
 function setActiveTab(tab: any) {
   activeTab.value = tab
+  resetListStatus()
+  _getHomePumpList()
+}
+
+function sortChange() {
   resetListStatus()
   _getHomePumpList()
 }
@@ -87,7 +95,12 @@ async function _getHomePumpList() {
     const res = await homePumpList({
       chain: 'solana',
       category: activeTab.value,
-      ...query.value
+      ...query.value,
+      sort: sort.value.sortBy,
+      sort_dir: ({
+        1: 'asc',
+        '-1': 'desc'
+      })[sort.value.activeSort]
     })
     const {pageNO} = query.value
     if (Array.isArray(res?.data)) {
@@ -110,7 +123,7 @@ async function _getHomePumpList() {
 </script>
 
 <template>
-  <div v-loading="listStatus.loading && query.pageNO===1">
+  <div v-loading="listStatus.loading && query.pageNO===1&&listData.length===0">
     <div
       class="mt-12px  px-12px mb-16px flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
         <span
@@ -125,6 +138,7 @@ async function _getHomePumpList() {
     <THead
       v-model:sort="sort"
       :columns="columns"
+      @update:sort="sortChange"
     />
     <el-scrollbar
       :height="scrollbarHeight"
@@ -183,7 +197,7 @@ async function _getHomePumpList() {
         </div>
         <div class="w-78px flex-col flex items-end">
           <span>${{ formatNumber(row.market_cap, 2) }}</span>
-          <span class="color-[--d-666-l-999]">{{ formatNumber(row.price_change_24h, 1) }}%</span>
+          <span :class="getColorClass(row.price_change_24h)">{{ formatNumber(row.price_change_24h, 1) }}%</span>
         </div>
       </NuxtLink>
     </el-scrollbar>

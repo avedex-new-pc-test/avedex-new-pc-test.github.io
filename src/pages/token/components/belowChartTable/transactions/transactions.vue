@@ -8,7 +8,7 @@ import type {RowEventHandlerParams} from 'element-plus'
 
 import {filterLanguage} from '~/pages/token/components/kLine/utils'
 import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse, type Profile} from '~/api/token'
-import {formatDate, getAddressAndChainFromId, getChainInfo, getWSMessage} from '~/utils'
+import {formatDate, getAddressAndChainFromId, getChainInfo} from '~/utils'
 import dayjs from 'dayjs'
 import {useThrottleFn} from '@vueuse/core'
 
@@ -58,7 +58,6 @@ const tabs = computed(() => {
 })
 const activeTab = shallowRef('all')
 const isPausedTxs = shallowRef(false)
-const documentVisible = inject<Ref<boolean>>('documentVisible')
 
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
@@ -70,14 +69,14 @@ const columns = computed(() => {
     {
       key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative'
     },
-    {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right'},
+    {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 120},
     {
       key: 'SOLBalance',
       dataKey: 'SOLBalance',
       title: t('makers') + ' SOL',
       align: 'right',
       hidden: !visible,
-      width: 100
+      width: 86
     },
     {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', width: 70}]
     .filter(el => !el.hidden)
@@ -196,63 +195,42 @@ useVisibilityChange(() => {
   _getPairTxs()
   _getPairLiq()
 })
-// if (documentVisible) {
-//   watch(() => documentVisible.value, (val) => {
-//     if (val) {
-//       txCount.value = {}
-//       wsPairCache.value.length = 0
-//       wsLiqCache.value.length = 0
-//       _getPairTxs()
-//       _getPairLiq()
-//     }
-//   })
-// }
 
-onMounted(() => {
-  onTxsLiqMessage()
+watch(() => wsStore.wsResult[WSEventType.TX], data => {
+  if (!data || listStatus.value.loadingTxs) {
+    return
+  }
+  const {wallet_address} = data.tx
+  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  const {topN, wallet_tag} = getWalletTag(data.tx)
+  const item = {
+    ...data.tx,
+    topN, wallet_tag,
+    senderProfile: JSON.parse(data.tx.profile || '{}'),
+    count: txCount.value[wallet_address]
+  }
+  wsPairCache.value.unshift(item)
+  if (!isPausedTxs.value) {
+    updatePairTxs()
+  }
 })
-
-onUnmounted(() => {
-  wsStore.getWSInstance()?.offMessage('tx_history')
+watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
+  if (!data || listStatus.value.loadingLiq) {
+    return
+  }
+  const {wallet_address} = data.liq
+  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  wsLiqCache.value.unshift({
+    ...data.liq,
+    count: txCount.value[wallet_address]
+  })
+  if (!isPausedTxs.value) {
+    updateLiqList()
+  }
+  if (pairLiq.value.length > 300) {
+    pairLiq.value.pop()
+  }
 })
-
-function onTxsLiqMessage() {
-  wsStore.getWSInstance()?.onmessage(e => {
-    const msg = getWSMessage(e)
-    if (!msg || (documentVisible && !documentVisible.value)) {
-      return
-    }
-    const {event, data} = msg
-    if (event == WSEventType.TX && !listStatus.value.loadingTxs) {
-      const {wallet_address} = data.tx
-      txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
-      const {topN, wallet_tag} = getWalletTag(data.tx)
-      const item = {
-        ...data.tx,
-        topN, wallet_tag,
-        senderProfile: JSON.parse(data.tx.profile || '{}'),
-        count: txCount.value[wallet_address]
-      }
-      wsPairCache.value.unshift(item)
-      if (!isPausedTxs.value) {
-        updatePairTxs()
-      }
-    } else if (event === WSEventType.LIQ && !listStatus.value.loadingLiq) {
-      const {wallet_address} = data.liq
-      txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
-      wsLiqCache.value.unshift({
-        ...data.liq,
-        count: txCount.value[wallet_address]
-      })
-      if (!isPausedTxs.value) {
-        updateLiqList()
-      }
-      if (pairLiq.value.length > 300) {
-        pairLiq.value.pop()
-      }
-    }
-  }, 'tx_history')
-}
 
 function subscribeTxsAndLiq(pair: string, oldPair?: string) {
   if (oldPair) {
