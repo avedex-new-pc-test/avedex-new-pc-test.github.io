@@ -7,7 +7,7 @@
     <div class="flex justify-between items-center pt-0 pb-0 pl-0 pr-15px mt-10px w-320px">
      <el-checkbox
          v-model="tableFilter['hide_risk']"
-         class="ml-12px"
+         class="h-24px"
          :style="{
            marginRight:0
          }"

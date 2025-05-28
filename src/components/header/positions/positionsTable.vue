@@ -27,8 +27,8 @@
                 <div>{{ row?.symbol }}</div>
               </div>
             </template>
-            <span v-else-if="row[col.prop] === '--'">--</span>
-            <span v-else-if="row[col.prop] === 0">0</span>
+            <span v-else-if="row[col.prop] === '--'" :class="col?.getClassName ? col.getClassName(row) : ''">--</span>
+            <span v-else-if="row[col.prop] === 0" :class="col?.getClassName ? col.getClassName(row) : ''">0</span>
             <span v-else :class="col?.getClassName ? col.getClassName(row) : ''">{{ col.formatter ? col.formatter(row) :row[col.prop] }}</span>
             <!-- <Icon v-if="col?.prop === 'total_profit_ratio'" name="circum:share-1" class="text-12px ml-4px" @click.stop = "handleShare(row)"/> -->
             <share v-if="col?.prop === 'total_profit_ratio'" :address="row.address" :statistics="row" :chain="row.chain" type="topHolder"/>
@@ -207,6 +207,28 @@ onMounted(() => {
 }
 </style>
 <style scoped lang="scss">
+.table-position.el-table{
+  --el-table-tr-bg-color:transparent;
+  --el-table-header-bg-color:transparent;
+  --el-table-header-text-color:var(--d-999-l-666);
+  --el-table-text-color:var(--d-F5F5F5-l-222);
+  :deep() thead{
+    font-size: 10px;
+    tr{
+      th{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 14px;
+      }
+    }
+  }
+  :deep() .cell{
+    padding: 0;
+  }
+ 
+}
 /* .table-position.el-table {
   --el-table-tr-bg-color: var(--custom-bg-1-color);
   // --el-bg-color: var(--custom-primary-lighter-0-color);
