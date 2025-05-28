@@ -631,12 +631,6 @@ const rugPull = ref<ResultRugPull>({
 })
 
 const loadingRun = shallowRef(false)
-const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
-favDialogEvent.on((key) => {
-  if (key === 'confirmSwitchGroup') {
-    getTokenFavoriteCheck()
-  } else if (key === 'remark') {
-    getTokenFavoriteCheck()
 const favDialogEvent = useEventBus<IFavDialogEventArgs>(BusEventType.FAV_DIALOG)
 favDialogEvent.on(handleFavDialogEvent)
 const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
@@ -645,9 +639,9 @@ onUnmounted(() => {
 })
 
 function handleFavDialogEvent({type, tokenId}: IFavDialogEventArgs) {
-  if (tokenId === id) {
+  if (tokenId === id.value) {
     if (type === 'confirmSwitchGroup') {
-      getTokenCheckFavoriteGroup()
+      getTokenUserFavoriteGroups()
     } else if (type === 'remark') {
       getTokenFavoriteCheck()
     }
