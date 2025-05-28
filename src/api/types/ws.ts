@@ -1,4 +1,4 @@
-export interface IPRICEV2Response {
+export interface IPriceV2Response {
   event: string;
   prices: {
     chain: string;
@@ -20,3 +20,22 @@ export interface IPRICEV2Response {
     token: string;
   }[];
 }
+
+export interface IAssetResponse {
+  client_address: string;
+  event: string;
+  swap: {
+    type: '0' | '1';
+    chain: string;
+    token: string;
+    token_name: string;
+    logo_url: string;
+    time: number;
+    rule_id: number;
+    amount: string;
+    amm: string;
+    eth_price: string;
+    price: string;
+  };
+}
+

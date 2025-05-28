@@ -9,19 +9,28 @@ import {
 import TokenImg from '~/components/tokenImg.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import THead from './tHead.vue'
-import type {IPRICEV2Response} from '~/api/types/ws'
+import type {IPriceV2Response} from '~/api/types/ws'
 import {useEventBus} from '@vueuse/core'
-import {BusEventType} from '~/utils/constants'
+import {BusEventType, type IFavDialogEventArgs} from '~/utils/constants'
 
 const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
-topEventBus.on(() => {
+topEventBus.on(refresh)
+const favDialogEvent = useEventBus<IFavDialogEventArgs>(BusEventType.FAV_DIALOG)
+favDialogEvent.on(refresh)
+onUnmounted(() => {
+  topEventBus.off(refresh)
+  favDialogEvent.off(refresh)
+})
+
+function refresh() {
   resetListStatus()
   loadMoreFavorites()
-})
+}
+
 const {t} = useI18n()
 const wsStore = useWSStore()
 const priceV2Store = usePriceV2Store()
-watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPRICEV2Response) => {
+watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
   favoritesList.value = favoritesList.value.map(i => {
     const item = val.prices.find(j => {
       return i.token === j.token && i.chain === j.chain
@@ -64,7 +73,9 @@ const listStatus = ref({
   pageNo: 1,
   error: false
 })
-const favoritesList = shallowRef<GetFavListResponse[]>([])
+const favoritesList = shallowRef<(GetFavListResponse & {
+  id: string
+})[]>([])
 const columns = computed(() => {
   return [{
     label: t('token'),
@@ -91,9 +102,9 @@ const sortedFavList = computed(() => {
   }
   return favoritesList.value.toSorted((a: any, b: any) => {
     if (sort.value.sortBy === 'symbol') {
-      const codeB = b[sort.value.sortBy][0].toLowerCase().charCodeAt(0) || 0
-      const codeA = a[sort.value.sortBy][0].toLowerCase().charCodeAt(0) || 0
-      return codeB - codeA
+      const codeB = b.symbol[0].toLowerCase().charCodeAt(0) || 0
+      const codeA = a.symbol[0].toLowerCase().charCodeAt(0) || 0
+      return (codeB - codeA) * sort.value.activeSort
     } else {
       return ((b[sort.value.sortBy!] || 0) - (a[sort.value.sortBy!] || 0)) * sort.value.activeSort
     }
@@ -146,11 +157,7 @@ async function loadMoreFavorites() {
     if (Array.isArray(res)) {
       const list = res.map(i => ({
         ...i,
-        id: i.token + '-' + i.chain,
-        address: i.token,
-        network: i.chain,
-        price_change: i?.price_change ? i?.price_change : 0,
-        current_price_usd: i?.current_price_usd || 0,
+        id: i.token + '-' + i.chain
       }))
         .filter(i => (i?.chain !== 'brc20'
           && i?.chain !== 'runes'
@@ -181,16 +188,6 @@ function resetListStatus() {
   listStatus.value.finished = false
   listStatus.value.pageNo = 1
 }
-
-function getColorClass(val: string) {
-  if (Number(val) > 0) {
-    return 'color-#12b886'
-  } else if (Number(val) < 0) {
-    return 'color-#ff646d'
-  } else {
-    return 'color-#848E9C'
-  }
-}
 </script>
 
 <template>
@@ -208,8 +205,8 @@ function getColorClass(val: string) {
         </span>
       </div>
       <Icon
-        name="custom:edit"
-        class="text-14px mr-0 cursor-pointer color-#80838b hover:color-#286DFF"
+        name="custom:remark"
+        class="text-12px mr-0 cursor-pointer color-#80838b hover:color-#286DFF"
         @click.self="onEdit"
       />
     </div>
@@ -259,8 +256,8 @@ function getColorClass(val: string) {
                 :class="`flex-1 text-right text-12px
                 ${getColorClass(row.price_change)}
             `">
-                <template v-if="Number(row.price_change) === 0">0</template>
-                <template v-else-if="row.price_change === '--'">--</template>
+                <template v-if="Number(row.price_change) === 0">0%</template>
+                <template v-else-if="!row.price_change || row.price_change === '--'">--</template>
                 <template v-else>
                   {{
                     Number(row.price_change) > 0 ? '+' : '-'

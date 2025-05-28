@@ -83,7 +83,10 @@ async function confirmSwitchGroup(row: GetFavListResponse, id: number) {
     _getFavoriteList()
     const {token} = tokenStore
     if (token && token.token + '-' + token.chain === tokenId) {
-      favDialogEvent.emit('confirmSwitchGroup')
+      favDialogEvent.emit({
+        type: 'confirmSwitchGroup',
+        tokenId
+      })
     }
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:76) e', e)
@@ -96,13 +99,18 @@ async function tokenSetTop(item: GetFavListResponse, index: number) {
     return
   }
   try {
+    const tokenId = item.token + '-' + item.chain
     await changeFavoritesTop(
-      item.token + '-' + item.chain,
+      tokenId,
       activeTab.value,
       evmAddress
     )
     ElMessage.success(t('success'))
     resetAndGet()
+    favDialogEvent.emit({
+      type: 'order',
+      tokenId
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:94) e', e)
     ElMessage.error(t('fail'))
@@ -121,6 +129,10 @@ async function _changeFavoritesIndex(item: GetFavListResponse, index: number, di
     await changeFavoritesIndex(id, id1, activeTab.value, evmAddress)
     ElMessage.success(t('success'))
     resetAndGet()
+    favDialogEvent.emit({
+      type: 'order',
+      tokenId: id
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:114) e', e)
     ElMessage.error(t('fail'))
@@ -153,10 +165,10 @@ async function confirmEditRemark(remark: string, tokenId: string) {
     await editTokenFavRemark(tokenId, remark, evmAddress)
     _getFavoriteList()
     ElMessage.success(t('success'))
-    const {token} = tokenStore
-    if (token && token.token + '-' + token.chain === tokenId) {
-      favDialogEvent.emit('remark')
-    }
+    favDialogEvent.emit({
+      type: 'remark',
+      tokenId
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:149) e', e)
   }

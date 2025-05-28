@@ -189,17 +189,24 @@ watch(() => pairAddress.value, () => {
   immediate: true
 })
 
-if (documentVisible) {
-  watch(() => documentVisible.value, (val) => {
-    if (val) {
-      txCount.value = {}
-      wsPairCache.value.length = 0
-      wsLiqCache.value.length = 0
-      _getPairTxs()
-      _getPairLiq()
-    }
-  })
-}
+useVisibilityChange(() => {
+  txCount.value = {}
+  wsPairCache.value.length = 0
+  wsLiqCache.value.length = 0
+  _getPairTxs()
+  _getPairLiq()
+})
+// if (documentVisible) {
+//   watch(() => documentVisible.value, (val) => {
+//     if (val) {
+//       txCount.value = {}
+//       wsPairCache.value.length = 0
+//       wsLiqCache.value.length = 0
+//       _getPairTxs()
+//       _getPairLiq()
+//     }
+//   })
+// }
 
 onMounted(() => {
   onTxsLiqMessage()
