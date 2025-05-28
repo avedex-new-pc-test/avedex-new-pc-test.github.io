@@ -114,7 +114,7 @@ export interface GetHotTokensResponse {
   symbol: string;
   holders: number;
   current_price_usd: number | string;
-  price_change: number | string;
+  price_change: string;
   is_adv: number;
   is_showasadv: number;
   token_index: number;

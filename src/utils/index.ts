@@ -563,7 +563,7 @@ export function getColorClass(val: string) {
   } else if (Number(val) < 0) {
     return 'color-#ff646d'
   } else {
-    return 'color-[--d-F5F5F5-l-333]'
+    return 'color-#959a9f'
   }
 }
 export function desensitizeEmail(email: string) {

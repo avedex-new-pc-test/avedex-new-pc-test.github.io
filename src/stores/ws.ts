@@ -20,7 +20,8 @@ export const useWSStore = defineStore('ws', () => {
     [WSEventType.LIQ]: null,
     [WSEventType.KLINE]: null,
     [WSEventType.PRICEV2]: null,
-    [WSEventType.TGBOT]: null
+    [WSEventType.TGBOT]: null,
+    [WSEventType.ASSET]: null
   })
 
   // 将 createWebSocket 重命名为 init

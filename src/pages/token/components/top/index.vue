@@ -553,7 +553,7 @@ import {
 } from '@/api/fav'
 import { _getRugPull } from '@/api/run'
 import type { Token } from '@/api/types/token'
-import {upColor, downColor, BusEventType} from '@/utils/constants'
+import {upColor, downColor, BusEventType, type IFavDialogEventArgs} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
@@ -580,15 +580,22 @@ const showRun = shallowRef(false)
 const rugPull = shallowRef(null)
 
 const loadingRun = shallowRef(false)
-const favDialogEvent = useEventBus<'confirmSwitchGroup' | 'remark'>(BusEventType.BusEventType)
-favDialogEvent.on((key) => {
-  if (key === 'confirmSwitchGroup') {
-    getTokenCheckFavoriteGroup()
-  } else if (key === 'remark') {
-    getTokenFavoriteCheck()
-  }
-})
+const favDialogEvent = useEventBus<IFavDialogEventArgs>(BusEventType.FAV_DIALOG)
+favDialogEvent.on(handleFavDialogEvent)
 const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
+onUnmounted(() => {
+  favDialogEvent.off(handleFavDialogEvent)
+})
+
+function handleFavDialogEvent({type, tokenId}: IFavDialogEventArgs) {
+  if (tokenId === id) {
+    if (type === 'confirmSwitchGroup') {
+      getTokenCheckFavoriteGroup()
+    } else if (type === 'remark') {
+      getTokenFavoriteCheck()
+    }
+  }
+}
 
 const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
   useCheckStore()

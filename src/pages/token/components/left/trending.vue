@@ -4,6 +4,7 @@ import {getHotTokens, type GetHotTokensResponse} from '~/api/token'
 import THead from './tHead.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
+import type {IPriceV2Response} from '~/api/types/ws'
 
 defineProps({
   scrollbarHeight: {
@@ -20,7 +21,28 @@ const sort = shallowRef({
   activeSort: 0,
   sortBy: ''
 })
-const listData = shallowRef<GetHotTokensResponse[]>([])
+const wsStore = useWSStore()
+const priceV2Store = usePriceV2Store()
+
+interface IListItem extends GetHotTokensResponse {
+  mcap: string;
+}
+
+const listData = shallowRef<IListItem[]>([])
+const sortedHotList = computed(() => {
+  if (sort.value.activeSort === 0 || !sort.value.sortBy) {
+    return listData.value
+  }
+  return listData.value.toSorted((a: any, b: any) => {
+    if (sort.value.sortBy === 'symbol') {
+      const codeB = b.symbol[0].toLowerCase().charCodeAt(0) || 0
+      const codeA = a.symbol[0].toLowerCase().charCodeAt(0) || 0
+      return (codeB - codeA) * sort.value.activeSort
+    } else {
+      return ((b[sort.value.sortBy!] || 0) - (a[sort.value.sortBy!] || 0)) * sort.value.activeSort
+    }
+  })
+})
 const columns = computed(() => {
   return [{
     label: t('token') + '/' + t('mcap'),
@@ -40,10 +62,36 @@ const columns = computed(() => {
   }]
 })
 
+watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
+  const idToPriceMap: { [key: string]: IPriceV2Response['prices'][0] } = {}
+  val.prices.forEach((item) => {
+    idToPriceMap[item.token + '-' + item.chain] = item
+  })
+  listData.value = listData.value.map(el => {
+    const current = idToPriceMap[el.token + '-' + el.chain]
+    if (current) {
+      return {
+        ...el,
+        current_price_usd: current.uprice,
+        price_change: current.price_change,
+        mcap: getMcap(el)
+      }
+    }
+    return {
+      ...el,
+      mcap: ''
+    }
+  })
+})
+
 async function _getHotTokens() {
   try {
     const res = await getHotTokens()
-    listData.value = res || []
+    listData.value = (res || []).map(el => {
+      return {...el, mcap: getMcap(el)}
+    })
+    priceV2Store.setMultiPriceParams('trending', listData.value.map(el => el.token + '-' + el.chain))
+    priceV2Store.sendPriceWs()
   } catch (e) {
     console.log('=>(trending.vue:15) e', e)
 
@@ -53,16 +101,6 @@ async function _getHotTokens() {
 function getMcap(row: GetHotTokensResponse) {
   const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
   return formatNumber(amount.multipliedBy(row.current_price_usd).toString(), 1)
-}
-
-function getColor(val: number) {
-  if (val === 0 || isNaN(val)) {
-    return 'color-#959a9f'
-  } else if (val > 0) {
-    return 'color-#12B886'
-  } else {
-    return 'color-#F6465D'
-  }
 }
 </script>
 
@@ -77,7 +115,7 @@ function getColor(val: number) {
       class="[&&]:h-auto"
     >
       <NuxtLink
-        v-for="(row,$index) in listData"
+        v-for="(row,$index) in sortedHotList"
         :key="$index"
         class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
         :to="`/token/${row.token}-${row.chain}`"
@@ -98,7 +136,7 @@ function getColor(val: number) {
               <template v-if="row.current_price_usd === 0">0</template>
               <template v-else-if="row.current_price_usd === '--'">--</template>
               <template v-else>
-                {{ getMcap(row) }}
+                {{ row.mcap }}
               </template>
             </div>
           </div>
@@ -111,7 +149,7 @@ function getColor(val: number) {
               ${{ formatNumber(row.current_price_usd, 2) }}
             </template>
           </div>
-          <div :class="getColor(Number(row.price_change))">
+          <div :class="getColorClass(row.price_change)">
             <template v-if="Number(row.price_change) === 0">0</template>
             <template v-else-if="row.price_change === '--'">--</template>
             <template v-else>

@@ -42,7 +42,9 @@ const Component = computed(() => {
       </a>
       <OneClick />
     </div>
-    <component :is="Component"/>
+    <KeepAlive>
+      <component :is="Component"/>
+    </KeepAlive>
   </div>
 </template>
 
