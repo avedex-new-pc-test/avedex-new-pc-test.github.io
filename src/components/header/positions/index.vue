@@ -3,7 +3,31 @@
     <span class="left-num">{{holderNum}}</span>
     <span>{{ $t('positions') }}</span>
   </div>
-  <component :is="lazyComponent" v-model="visible" :tableFilter="tableFilter" @update:table-filter="tableFilter = $event"/>
+  <component :is="lazyComponent" v-model="visible" :tableFilter="tableFilter">
+    <div class="flex justify-between items-center pt-0 pb-0 pl-0 pr-15px mt-10px w-320px">
+     <el-checkbox
+         v-model="tableFilter['hide_risk']"
+         class="ml-12px"
+         :style="{
+           marginRight:0
+         }"
+         size="small" :true-value="1" :false-value="0"
+       >
+         {{ $t('hideRiskTokenShort') }}
+       </el-checkbox>
+       <el-checkbox
+         v-model="tableFilter['hide_small']"
+         size="small" :true-value="1" :false-value="0"
+       >
+         {{ $t('hideSmallAssets1') + '<1USD' }}
+       </el-checkbox>
+       <NetSelect
+         v-if="botStore.evmAddress"
+         v-model:userIds="tableFilter.user_ids"
+        @update:user-ids="handleChange"
+       />
+   </div>
+  </component>
 </template>
 
 <script setup lang='tsx'>
@@ -20,7 +44,7 @@ const visible=ref(false)
 const holderNum = ref(0)
 const fetchHolderNum = async () => {
   try {
-    const res = await getUserBalance(tableFilter.value)
+    const res = await getUserBalance({pageNO: 1, pageSize: 1, ...tableFilter.value})
     console.log('fetchHolderNum', res)
     holderNum.value = res.total
   } catch (e) {
@@ -33,6 +57,19 @@ const loadComponent = async () => {
   const component = await import('./positionsTable.vue')
   lazyComponent.value = component.default
 }
+
+// Add handleChange method to handle user-ids update
+function handleChange(newUserIds: string[]) {
+  console.log('handleChange userIds', newUserIds)
+  tableFilter.value.user_ids = newUserIds
+  // fetchHolderNum()
+}
+
+watch(tableFilter, (val) => {
+  console.log('tableFilter changed', val)
+  fetchHolderNum()
+}, { deep: true })
+
 watch(() => visible.value, (newValue) => {
   if (newValue) {
     loadComponent()

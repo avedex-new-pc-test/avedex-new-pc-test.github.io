@@ -77,3 +77,10 @@ export const BusEventType = {
   TOP_FAV_CHANGE: 'top-favorite-change',
   FAV_DIALOG: 'fav-dialog',
 }
+
+export const defaultPaginationParams = {
+  pageNO: 1,
+  pageSize: 10,
+  loaded: false,
+  finished: false,
+}

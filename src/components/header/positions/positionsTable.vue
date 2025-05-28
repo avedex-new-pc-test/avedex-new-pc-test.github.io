@@ -1,6 +1,8 @@
 <template>
   <el-dialog v-model="dialogVisible" class="dialog-position" :title="$t('myPosition1')" width="680" append-to-body>
-    <el-table class="table-position w-100%" :data="dataSource" stripe :height="400" @row-click="() => { }">
+    <slot/>
+    <el-table class="table-position w-100%" :data="dataSource" stripe :height="400" @row-click="tableRowClick
+  ">
       <el-table-column 
         v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
         :align="col.align">
@@ -20,7 +22,7 @@
         <template #default="{ row }">
           <div>
             <template v-if="col?.prop === 'token'">
-              <div class="flex items-center gap-8px">
+              <div class="flex items-center gap-8px clickable flex-nowrap">
                 <TokenImg :row="row" class="w-24px h-24px" />
                 <div>{{ row?.symbol }}</div>
               </div>
@@ -33,6 +35,18 @@
           </div>
         </template>
       </el-table-column>
+      <template #append>
+        <div 
+          v-infinite-scroll="fetchTable"
+          class="text-0 lh-0 h-0"
+          :infinite-scroll-disabled="paginationParams.loaded || paginationParams.finished"
+          :infinite-scroll-distance="0"
+          :infinite-scroll-delay="100"
+          :infinite-scroll-immediate="true"
+        />
+          <div v-if="paginationParams.loaded && dataSource?.length > 0"  style="text-align: center; padding:  15px 0 10px; font-size: 12px; color: #959a9f;">{{ $t('loading') }} </div>
+          <div v-else-if="paginationParams.finished && dataSource?.length > 0"  style="text-align: center; padding: 15px 0 10px; font-size: 12px; color: #959a9f;">{{ $t('noMore') }}</div>
+      </template>
     </el-table>
   </el-dialog>
 </template>
@@ -42,9 +56,11 @@
 import { QuestionFilled } from '@element-plus/icons-vue'
 import TokenImg from '@/components/tokenImg.vue'
 import { getUserBalance ,type GetUserBalanceResponse} from '~/api/swap'
-import { upColor, downColor } from '@/utils/constants'
+import { upColor, downColor ,defaultPaginationParams} from '@/utils/constants'
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
+const $router = useRouter()
+
 
 const columns = computed(() => {
   return [
@@ -78,7 +94,7 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       formatter: (row: any) => {
-        return `${formatNumber(row.average_purchase_price_usd, 4)}`
+        return `$${formatNumber(row.average_purchase_price_usd, 4)}`
       }
     },
     {
@@ -87,7 +103,7 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       formatter: (row: any) => {
-        return `${formatNumber(row.current_price_usd, 4)}`
+        return `$${formatNumber(row.current_price_usd, 4)}`
       }
     },
     {
@@ -103,9 +119,9 @@ const columns = computed(() => {
     },
   ]
 })
-
+type rowProps = GetUserBalanceResponse & { index: string }
 // If you have a type for GetUserBalanceResponse, use it here. Otherwise, use any[].
-const dataSource = shallowRef<GetUserBalanceResponse[]>([])
+const dataSource = shallowRef<(rowProps)[]>([])
 
 const props = defineProps({
   modelValue: Boolean,
@@ -118,42 +134,67 @@ const props = defineProps({
     })
   },
 })
-const emit = defineEmits(['update:modelValue', 'update:tableFilter'])
+const emit = defineEmits(['update:modelValue'])
 
-const tableParams = computed(() => {
-  return {
-    pageNO: 1,
-    pageSize: 10,
-    loaded: false,
-    finished: false,
-    ...props.tableFilter
-  }
-})
+const paginationParams = ref({...defaultPaginationParams})
+
 const dialogVisible = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value)
 })
-console.log('positions')
-
-// Add handleShare method
-const handleShare = (row: any) => {
-  // Implement your share logic here, e.g., open a share dialog or copy info
-  console.log('Share clicked for row:', row)
+function tableRowClick(row: rowProps) {
+  $router.push({
+    name: 'token-id',
+    params: { id: row?.index },
+  })
+  dialogVisible.value=false
 }
-
 const fetchTable = async () => {
+  if (paginationParams.value.loaded) return
+  paginationParams.value.loaded = true
+  const pageNO = paginationParams.value.pageNO
+  const pageSize = paginationParams.value.pageSize
+  console.log('fetchTable', {pageNO,pageSize})
+  let res,data
   try {
-    const res = await getUserBalance(tableParams.value)
-    console.log('fetchTable', res)
-    dataSource.value = res.data
+    res = await getUserBalance({pageNO, pageSize,...props.tableFilter})
+    data=res?.data||[]
+    if (Array.isArray(data) && data?.length > 0) {
+      if(pageNO === 1) {
+        dataSource.value = data?.map(i => ({ ...i, index: `${i.token}-${i.chain}` }))
+      }else{
+        dataSource.value = [...dataSource.value].concat(data.filter?.(i => dataSource.value?.every?.(j => j.index !== `${i.token}-${i.chain}`))?.map(i => ({ ...i, index: `${i.token}-${i.chain}` })))
+      }
+      paginationParams.value.finished = data?.length < pageSize
+      if (!paginationParams.value.finished) {
+        paginationParams.value.pageNO++
+      }
+    }else{
+      if(pageNO === 1) {
+        dataSource.value = []
+      }
+    }
   } catch (e) {
     console.error('Error fetching user balance:', e)
-    dataSource.value = []
+    // dataSource.value = []
   }
+  setTimeout(() => {
+    paginationParams.value.loaded = false
+  }, 200)
 }
+watch(props.tableFilter, () => {
+  paginationParams.value={...defaultPaginationParams}
+  fetchTable()
+})
+
+
 watch(() => dialogVisible.value, (val) => {
-  if(val) fetchTable()
+  if(val){
+     paginationParams.value={...defaultPaginationParams}
+     fetchTable() 
+  }
 }, { immediate: true })
+
 onMounted(() => {
   // fetchTable()
   console.log('mounted positionsTable')
