@@ -96,9 +96,9 @@ onMounted(() => {
 
 <style scoped lang='scss'>
 .tg-name-box {
-  margin-right: 10px;
+  margin-left: 10px;
   color: var(--d-E9E9E9-l-222);
-  height: 36px;
+  height: 32px;
   cursor: pointer;
   background: var(--d-222-l-F2F2F2);
   border-radius: 4px;
