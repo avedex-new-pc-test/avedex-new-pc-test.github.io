@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="dialogVisible" class="dialog-position" :title="$t('myPosition1')" width="680" append-to-body>
     <slot/>
-    <el-table class="table-position w-100%" :data="dataSource" stripe :height="400" @row-click="tableRowClick
+    <el-table class="table-position w-100%" :data="dataSource" :height="400" @row-click="tableRowClick
   ">
       <el-table-column 
         v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
@@ -212,6 +212,7 @@ onMounted(() => {
   --el-table-header-bg-color:transparent;
   --el-table-header-text-color:var(--d-999-l-666);
   --el-table-text-color:var(--d-F5F5F5-l-222);
+  --el-table-border: 0.5px solid var(--d-33353D-l-F5F5F5);
   :deep() thead{
     font-size: 10px;
     tr{

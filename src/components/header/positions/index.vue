@@ -4,7 +4,7 @@
     <span>{{ $t('positions') }}</span>
   </div>
   <component :is="lazyComponent" v-model="visible" :tableFilter="tableFilter">
-    <div class="flex justify-between items-center pt-0 pb-0 pl-0 pr-15px mt-10px w-320px">
+    <div class="flex justify-between items-center pt-0 pb-0 pl-0 pr-15px w-320px">
      <el-checkbox
          v-model="tableFilter['hide_risk']"
          class="h-24px"
