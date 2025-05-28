@@ -16,6 +16,10 @@ const tabs = shallowRef([
   {name: t('trending'), component: 'Trending' as const},
   {name: 'Pump', component: 'Pump' as const},
 ])
+const tabsToHeight = {
+  Trending: 240,
+  Pump: 290
+}
 const components = {
   Trending,
   Pump: defineAsyncComponent(() => import('./pump.vue'))
@@ -50,7 +54,7 @@ const Component = computed(() => {
       <component
         :is="Component"
         class="flex-1 relative"
-        :scrollbarHeight="height"/>
+        :scrollbarHeight="height - tabsToHeight[activeTab]"/>
     </KeepAlive>
   </div>
 </template>

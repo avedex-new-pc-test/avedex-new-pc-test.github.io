@@ -167,7 +167,7 @@ async function confirmEditRemark(remark: string, tokenId: string) {
     ElMessage.success(t('success'))
     favDialogEvent.emit({
       type: 'remark',
-      tokenId
+      tokenId,
     })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:149) e', e)

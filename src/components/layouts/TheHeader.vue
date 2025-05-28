@@ -49,7 +49,7 @@
     <wallet v-else/>
     <a
       class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
-      href=""
+      href="javascript:;"
     >
       <Icon
         class="text-20px text-[--d-999-l-666]"

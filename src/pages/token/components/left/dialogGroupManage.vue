@@ -5,9 +5,12 @@ import {
   type GetUserFavoriteGroupsResponse, removeFavoriteGroup,
 } from '~/api/fav'
 import {confirmChangeName} from '~/composables/fav'
+import {useEventBus} from "@vueuse/core";
+import {BusEventType} from "~/utils/constants";
 
 const {t} = useI18n()
 const {evmAddress} = useBotStore()
+const favDialogEvent = useEventBus(BusEventType.FAV_DIALOG)
 const props = defineProps({
   list: {
     type: Array<GetUserFavoriteGroupsResponse>,
@@ -44,6 +47,9 @@ async function _changeFavoriteGroupName(name: string, id: number) {
     await changeFavoriteGroupName(name, id, evmAddress)
     ElMessage.success(t('success'))
     props.getData()
+    favDialogEvent.emit({
+      type: 'changeFavoriteGroupName'
+    })
   } catch (e) {
     console.log('=>(dialogGroupManage.vue:31) e', e)
   }
