@@ -1,5 +1,3 @@
-import Cookies from 'js-cookie'
-
 interface GetUserBalanceResponse {
   address: string
   token: string

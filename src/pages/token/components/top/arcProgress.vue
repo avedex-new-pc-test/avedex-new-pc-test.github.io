@@ -4,11 +4,11 @@
       class="progress-container"
       :style="{ height: big ? '140px !important' : `${height}px !important`, 'justify-content': end ? 'flex-end' : 'center' }"
     >
-      <div :id="id"></div>
+      <div :id="id"/>
     </div>
-    <div v-if="progress > 0 && big" class="checking-tips" :style="{ color: riskColor.value[0] }">
-      <span>{{ riskColor.value[1] }}</span>
-      <slot></slot>
+    <div v-if="progress > 0 && big" class="checking-tips" :style="{ color: riskColor[0] }">
+      <span>{{ riskColor[1] }}</span>
+      <slot/>
     </div>
   </div>
 </template>
@@ -53,7 +53,7 @@ const props = defineProps({
         default: '12px'
     },
     colorList: {
-      type: Array,
+      type: Array<string>,
       default: ()=>['#eaecef', '#81c54e', '#f8be46', '#e74e54']
     }
 })
@@ -62,7 +62,7 @@ const props = defineProps({
 const { t } = useI18n()
 // const store = useStore()
 
-const id = `progress-container`
+const id = 'progress-container'
 const arcProgress = ref<any>(null)
 
 const w = computed(() => Math.round(props.width / 2))
@@ -118,12 +118,6 @@ const init = () => {
       ? [{ text: t('riskAssessment'), size: '14px', color: '#aaa', x: w.value, y: 120 }]
       : [{ text: '', size: '12px', color: '#aaa', x: w.value, y: 0 }],
     lineCap: 'round',
-    observer: (e: any, t: any) => {
-      // observer callback
-    },
-    animationEnd: (e: any) => {
-      // animation end callback
-    }
   })
 }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
-import {getPairTxs, type GetPairTxsResponse} from '~/api/token'
+import {getPairTxs, type GetPairTxsResponse, getUserBalances} from '~/api/token'
 
 const props = defineProps({
   makerAddress: {
@@ -38,8 +38,13 @@ const props = defineProps({
 })
 
 const tokenStore = useTokenStore()
+const botStore = useBotStore()
+const route = useRoute()
 const pairTxs = shallowRef<GetPairTxsResponse[]>([])
-const balanceAmount = shallowRef('0')
+const balance = shallowRef({
+  amount: 0,
+  value: ''
+})
 const totalBuySell = computed(() => {
   let buyUSD = 0
   let sellUSD = 0
@@ -98,34 +103,22 @@ async function _getPairTxs() {
   }
 }
 
-// async function _getTokenBalance() {
-//   try {
-//     const tokenAddress = tokenStore.token?.token
-//     if (tokenAddress) {
-//       const res = await getTokenBalance({
-//         chain: props.chain,
-//         walletAddress: props.makerAddress,
-//         tokens: [tokenAddress]
-//       })
-//       if (Array.isArray(res) && res.length > 0) {
-//         balanceAmount.value = res[0]
-//           ? new BigNumber(res[0].balance).div(new BigNumber(10).pow(res[0].decimals)).toString()
-//           : '0'
-//       }
-//     }
-//   } catch (e) {
-//     console.log('=>(userTxsFilterHead.vue:83) e', e)
-//
-//   }
-// }
+async function _getTokenBalance() {
+  try {
+    const id = route.params.id as string
+    if (id) {
+      const {chain} = getAddressAndChainFromId(id)
+      const res = await getUserBalances(id, [props.makerAddress + '-' + chain])
+      if (res && res[0]) {
+        const {current_price_usd, value} = res[0]
+        balance.value.amount = value
+        balance.value.value = BigNumber(value).multipliedBy(current_price_usd).toString()
+        triggerRef(balance)
+      }
+    }
 
-function getColorClass(val: string) {
-  if (Number(val) > 0) {
-    return 'color-#12b886'
-  } else if (Number(val) < 0) {
-    return 'color-#ff646d'
-  } else {
-    return 'color-#848E9C'
+  } finally {
+    //
   }
 }
 </script>
@@ -134,13 +127,13 @@ function getColorClass(val: string) {
   <div class="px-12px lh-20px flex justify-between items-center mb-12px text-13px">
     <div>
       <span class="color-#959A9F">{{ $t('balance1') }}:</span>
-      <span class="ml-4px">{{ balanceAmount }}</span>
-      <span class="ml-4px">${{ balanceAmount }}</span>
+      <span class="ml-4px">{{ formatNumber(balance.amount, 3) }}</span>
+      <span class="ml-4px">${{ formatNumber(balance.value, 3) }}</span>
     </div>
     <div>
       <span class="color-#959A9F">{{ $t('profit') }}:</span>
-      <span :class="`ml-4px ${getColorClass(profit)}`">{{ formatNumber(profit, 2) }}</span>
-      <span :class="`ml-4px ${getColorClass(profitChange)}`">{{ formatNumber(profitChange * 100, 1) }}%</span>
+      <span :class="`ml-4px ${getColorClass(String(profit))}`">{{ formatNumber(profit, 2) }}</span>
+      <span :class="`ml-4px ${getColorClass(String(profitChange))}`">{{ formatNumber(profitChange * 100, 1) }}%</span>
     </div>
     <div>
       <span class="color-#959A9F">{{ $t('totalBuy') }}:</span>

@@ -212,12 +212,12 @@ export function getSwapInfo(
 
 export function getTagTooltip(i: {
   tag?: string
-  smart_money_buy_count_24h: number
-  smart_money_sell_count_24h: number
+  smart_money_buy_count_24h?: number
+  smart_money_sell_count_24h?: number
 }) {
   const $t = getGlobalT()
   if (!i.tag) {
-    if (i.smart_money_buy_count_24h > 0 || i.smart_money_sell_count_24h > 0) {
+    if ((i.smart_money_buy_count_24h??0) > 0 || (i.smart_money_sell_count_24h??0) > 0) {
       return $t('smart_money_tips', {
         b: i.smart_money_buy_count_24h,
         s: i.smart_money_sell_count_24h,
@@ -563,7 +563,7 @@ export function getColorClass(val: string) {
   } else if (Number(val) < 0) {
     return 'color-#ff646d'
   } else {
-    return 'color-[--d-F5F5F5-l-333]'
+    return 'color-#959a9f'
   }
 }
 export function desensitizeEmail(email: string) {

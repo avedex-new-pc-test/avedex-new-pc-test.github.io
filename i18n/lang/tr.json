@@ -172,5 +172,9 @@
   "profit": "Kazanç",
   "totalBuy": "Toplam Alış",
   "totalSell": "Toplam Satış",
-  "download": "İndir"
+  "download": "İndir",
+  "seemsNoProblem": "Sorun görünmüyor",
+  "possibleRisks": "Olası riskler",
+  "netInflow": "Net Giriş",
+  "limitPrice": "Limit emir fiyatı"
 }

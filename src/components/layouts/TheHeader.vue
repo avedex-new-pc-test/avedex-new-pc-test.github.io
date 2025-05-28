@@ -12,16 +12,16 @@
     </ul>
     <div class="flex-1" />
     <a
-      class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px w-320px flex no-underline"
+      class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px w-320px flex items-center no-underline"
       href=""
       @click.stop.prevent="dialogVisible_search = !dialogVisible_search"
     >
       <Icon
-        class="text-20px text-[var(--d-666-l-999)]"
-        name="material-symbols:search-rounded"
+        class="text-16px text-[var(--d-666-l-999)]"
+        name="ep:search"
       />
       <span class="text-12px font-500 ml-4px text-[var(--d-666-l-999)]">
-        Search Token Name/Contract
+        {{ $t('enterAddress/token') }}
       </span>
     </a>
     <div class="flex-1" />
@@ -52,7 +52,7 @@
     </template>
     <a
       class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
-      href=""
+      href="javascript:;"
     >
       <Icon
         class="text-20px text-[--d-999-l-666]"

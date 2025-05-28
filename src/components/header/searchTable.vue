@@ -184,7 +184,7 @@
               </count-down> -->
 
               <div v-if="row.opening_at > 0">
-                <count-down />
+                <!-- <count-down /> -->
               </div>
 
               <template v-else>
@@ -193,195 +193,6 @@
               </template>
             </div>
           </a>
-        </li>
-        <li
-          v-for="(row, $index) in tokens2"
-          v-show="isShowHighRisk"
-          :key="$index"
-        >
-          <a
-            href=""
-            class="flex no-underline"
-            @click.stop.prevent="tableRowClick(row.id)"
-          >
-            <div>
-              {{
-                tokens1?.length + $index < 9
-                  ? '0' + Number(tokens1?.length + $index + 1)
-                  : tokens1?.length + $index + 1
-              }}
-            </div>
-            <div class="token-info">
-              <div
-                v-if="getSymbolDefaultIcon(row)"
-                class="icon-token-container"
-              >
-                <el-image
-                  class="token-icon"
-                  :src="getSymbolDefaultIcon(row)"
-                  lazy
-                >
-                  <template #error>
-                    <img
-                      class="token-icon"
-                      :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    >
-                  </template>
-                  <template #placeholder>
-                    <img
-                      class="token-icon"
-                      :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    >
-                  </template>
-                </el-image>
-                <img
-                  v-if="row?.network || row?.chain"
-                  class="icon-svg icon-symbol"
-                  :src="`${token_logo_url}chain/${
-                    row?.network || row?.chain
-                  }.png`"
-                  alt=""
-                  srcset=""
-                >
-              </div>
-              <div style="margin-left: 5px">
-                <div>
-                  <span class="token-symbol">
-                    {{ row.symbol }}
-                  </span>
-                  <div
-                    v-if="row?.is_adv === 1 && row?.is_showasadv === 1"
-                    class="ad-tag"
-                  >
-                    AD
-                  </div>
-                  <span
-                    v-if="row.risk_level < 0 || row?.risk_score > 55"
-                    class="risk-status high"
-                  >
-                    {{ $t('highRisk') }}
-                  </span>
-                  <template v-if="row?.hot_rank">
-                    <svg
-                      class="icon-svg"
-                      aria-hidden="true"
-                      style="margin-left: 3px; width: 12px"
-                    >
-                      <use xlink:href="#icon-huoyan" />
-                    </svg>
-                  </template>
-                </div>
-                <div class="text-12px color-text-2">
-                  {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
-                </div>
-              </div>
-            </div>
-            <template v-if="row.current_price_usd > 0">
-              <div>
-                <div v-html="'$' + formatNumber(row.current_price_usd || 0)" />
-                <div class="text-12px">
-                  <span
-                    v-if="row.current_price_usd > 0"
-                    style="color: #12b886; padding: 10px 0"
-                  />
-                  <span
-                    v-if="row.current_price_usd == 0"
-                    style="color: #848e9c; padding: 10px 0"
-                  >
-                    0%
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div>${{ formatNumber(row?.tx_volume_u_24h || 0, 2) }}</div>
-                <div class="text-12px color-text-2">
-                  ${{ formatNumber(row?.pool_size || 0, 2) }}
-                </div>
-              </div>
-              <div>
-                <div>{{ formatNumber(row?.holders || 0) }}</div>
-                <div class="text-12px color-text-2">
-                  {{ formatNumber(row?.tx_count_24h || 0) }}
-                </div>
-              </div>
-              {{ Number(row.risk_score) || 0 }}
-            </template>
-            <div v-else>
-              <!-- <count-down
-                v-if="showTime"
-                class="count-down mt-8"
-                :time="time"
-                format="DD:HH:mm:ss"
-                @finish="finishTime"
-              >
-                <template #default="timeData">
-                  <span class="block">
-                    {{
-                      timeData.days < 10 ? '0' + timeData.days : timeData.days
-                    }}
-                  </span>
-                  <span class="block ml-3">
-                    {{
-                      timeData.hours < 10
-                        ? '0' + timeData.hours
-                        : timeData.hours
-                    }}
-                  </span>
-                  <span class="colon">:</span>
-                  <span class="block">
-                    {{
-                      timeData.minutes < 10
-                        ? '0' + timeData.minutes
-                        : timeData.minutes
-                    }}
-                  </span>
-                  <span class="colon">:</span>
-                  <span class="block">
-                    {{
-                      timeData.seconds < 10
-                        ? '0' + timeData.seconds
-                        : timeData.seconds
-                    }}
-                  </span>
-                </template>
-              </count-down> -->
-              <span v-if="row.opening_at > 0"> 倒计时 </span>
-              <template v-else>
-                <img src="@/assets/images/icon-unknown.png" alt="" >
-                {{ $t('unknownRisk') }}
-              </template>
-            </div>
-          </a>
-        </li>
-        <li
-          v-show="tokens2?.length > 0"
-          class="text-12px justify-center p-20px"
-          style="display: flex; margin-top: 20px"
-        >
-          <div
-            style="cursor: pointer"
-            @click.stop="isShowHighRisk = !isShowHighRisk"
-          >
-            <Icon
-              class="text-20px text-#F6465D"
-              name="ri:error-warning-fill"
-            />
-            <span class="ml-5px mr-5px" style="color: #848e9c"
-              >{{
-                isShowHighRisk ? $t('hiddenHighToken') : $t('showHighToken')
-              }}({{ tokens2?.length }})</span
-            >
-            <Icon
-              v-if="!isShowHighRisk"
-              class="text-20px text-#848e9c"
-              name="solar:round-arrow-down-bold"
-            />
-            <Icon
-              v-else
-              class="text-20px text-#848e9c"
-              name="solar:round-arrow-up-bold"
-            />
-          </div>
         </li>
       </ul>
     </el-scrollbar>
@@ -403,7 +214,7 @@ import {
   getChainDefaultIcon,
   formatDate,
 } from '@/utils/index'
-import CountDown from './countDown.vue'
+// import CountDown from './countDown.vue'
 import type { SearchHot } from '@/api/types/search'
 const themeStore = useThemeStore()
 const props = defineProps({
@@ -420,17 +231,9 @@ const emit = defineEmits(['close'])
 const $router = useRouter()
 const { token_logo_url } = useConfigStore()
 const tokens1 = computed(() => {
-  // const list = hotStore.hotList?.map(i => ({ ...i, current_price_usd: 0, opening_at: 1747466626 }))
-  // console.log('------list--------',list)
-  return (
-    props.tokens?.filter?.((i) => !(i.risk_level < 0 || i.risk_score > 55)) || []
-  )
+  return props.tokens
 })
-const tokens2 = computed(() => {
-  return (
-    props.tokens?.filter?.((i) => i.risk_level < 0 || i.risk_score > 55) || []
-  )
-})
+
 const isLoading = computed(() => {
   return props.loading
 })

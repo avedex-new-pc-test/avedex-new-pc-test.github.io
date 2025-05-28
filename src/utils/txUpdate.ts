@@ -1,6 +1,7 @@
 import type { WSTx } from '~/pages/token/components/kLine/types'
 import BigNumber from 'bignumber.js'
 import { formatNumber } from './formatNumber'
+import type { Profile } from '~/api/token'
 export function updatePriceFromTx(tx: WSTx) {
   const tokenStore = useTokenStore()
   if (tx.to_address !== tokenStore.token?.token && tx.from_address !== tokenStore.token?.token) return
@@ -78,6 +79,18 @@ export function updatePriceFromTx(tx: WSTx) {
       pair.price_change_5m = calcNewChange(pair.price_change_5m, price, currentPrice)
     }
   })
+
+  // 更新 holders
+  if (tx.profile) {
+    const profile: Profile = JSON.parse(tx.profile)
+    const token = tokenStore.token.token.toLowerCase()
+    if ((profile.token0Address.toLowerCase() === token && profile.token0HasNewAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasNewAccount)) {
+      tokenStore.token.holders = tokenStore.token.holders + 1
+    }
+    if ((profile.token0Address.toLowerCase() === token && profile.token0HasClearedAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasClearedAccount)) {
+      tokenStore.token.holders = tokenStore.token.holders - 1
+    }
+  }
 }
 
 function calcNewChange(

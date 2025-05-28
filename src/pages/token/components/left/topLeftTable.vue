@@ -40,11 +40,12 @@ const Component = computed(() => {
         {{ item.name }}
       </a>
     </div>
-    <component
-      :is="Component"
-      v-if="botStore.evmAddress"
-      :height="height"
-    />
+    <KeepAlive v-if="botStore.evmAddress">
+      <component
+        :is="Component"
+        :height="height"
+      />
+    </KeepAlive>
     <AveEmpty
       v-else
       :style="{height:`${height}px`}"

@@ -48,7 +48,7 @@ function formatNumUnit(n: number | string, decimals = 3, unit = 1000000000) {
   const locale = localStorage.getItem('language')
   if (locale === 'zh-cn') {
     if (n1 >= 10 ** 28) {
-      return new BigNumber(n1).toPrecision(decimals+1)
+      return new BigNumber(n1).toPrecision(decimals + 1)
     }
     if (n1 >= 10 ** 24 && n1 >= unit) {
       n1 = n1 / 10 ** 24
@@ -160,13 +160,29 @@ function formatNumShort(n: string | number, l = 4) {
 export function formatPercent(n: number, decimals = 2) {
   return Math.round(n * 10 ** (2 + decimals)) / 10 ** decimals + '%'
 }
-function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0) {
+
+export function formatNumberS(n: string | number, config: any = {}) {
+  let config1 = config
+  if (typeof config === 'number') {
+    config1 = {
+      decimals: config,
+    }
+  }
+  let { decimals, l } = config1
+  const { limit } = config1
+  decimals = decimals ?? 1
+  l = l || 4
+  const unit = limit ? 10 ** limit : 10000
+  return formatNumber2(n, decimals, l, unit)
+}
+
+export function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0) {
   const n1 = Number(n)
   if (
     !isNaN(n1) &&
-   n1 <
-      0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 &&
-      n1 > 0
+    n1 <
+    0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 &&
+    n1 > 0
   ) {
     return '0'
   }
@@ -174,7 +190,7 @@ function formatNumber2(n: string | number, decimals = 4, l = 4, unit: number = 0
 }
 
 export function formatNumber(n: string | number, config: { decimals?: number; l?: number; limit?: number } | number = {}) {
-  let config1: { decimals?: number; l?: number; limit?: number }  = {}
+  let config1: { decimals?: number; l?: number; limit?: number } = {}
   if (typeof config === 'number') {
     config1 = {
       decimals: config,

@@ -1,8 +1,5 @@
 // plugins/app-meta.client.ts
 export default defineNuxtPlugin(() => {
-  const tokenLogoUrl =
-    JSON.parse(localStorage.getItem('ave_globalConfig') || '{}')?.token_logo_url ||
-    'https://www.iconaves.com/'
   const config = useRuntimeConfig()
   const GA = config.public.ga
   useHead({
@@ -55,11 +52,6 @@ export default defineNuxtPlugin(() => {
         `,
         type: 'text/javascript',
       },
-      // { src: '/vemachine.js' },
-      // {
-      //   src: tokenLogoUrl + 'charting_library/charting_library.standalone.js',
-      //   defer: true,
-      // },
     ],
   })
 
