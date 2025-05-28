@@ -488,5 +488,13 @@
   "myPosition1": "我的持仓",
   "costPrice": "成本价",
   "currentPrice": "当前价格",
-  "PnLTips": "仅统计7日内买入交易的浮动盈亏"
+  "PnLTips": "仅统计7日内买入交易的浮动盈亏",
+  "share": "分享",
+  "campaignSubTitle": "邀请注册，交易返佣",
+  "campaignDesc": "上Ave.ai挖百倍金狗",
+  "campaignScan": "扫码下载",
+  "download": "下载",
+  "RIO": "收益率",
+  "balance2": "持仓",
+  "lastPrice1": "最新价"
 }

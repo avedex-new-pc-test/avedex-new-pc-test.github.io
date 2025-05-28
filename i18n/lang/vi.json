@@ -293,5 +293,13 @@
   "myPosition1": "Vị thế của tôi",
   "costPrice": "Giá vốn",
   "currentPrice": "Giá hiện tại",
-  "PnLTips": "Chỉ tính lãi/lỗ chưa thực hiện của giao dịch mua trong 7 ngày"
+  "PnLTips": "Chỉ tính lãi/lỗ chưa thực hiện của giao dịch mua trong 7 ngày",
+  "share": "Chia sẻ",
+  "campaignSubTitle": "Mời bạn bè ngay",
+  "campaignDesc": "Lên Ave.ai đào Golden Dog 100x",
+  "campaignScan": "Quét để tải",
+  "download": "Tải về",
+  "RIO": "Lãi/lỗ",
+  "balance2": "Số dư",
+  "lastPrice1": "Giá cuối"
 }

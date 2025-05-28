@@ -174,5 +174,7 @@
   "profit": "Lucro",
   "totalBuy": "Total Comprado",
   "totalSell": "Total Vendido",
-  "myPosition1": "Minha Posição"
+  "myPosition1": "Minha Posição",
+  "download": "Baixar ",
+  "lastPrice1": "Último preço"
 }

@@ -486,5 +486,13 @@
   "myPosition1": "My Position",
   "costPrice": "Cost Price",
   "currentPrice": "Current Price",
-  "PnLTips": "Only count the unrealized PnL of buy transactions within the last 7 days."
+  "PnLTips": "Only count the unrealized PnL of buy transactions within the last 7 days.",
+  "share": "Share",
+  "campaignSubTitle": "Invite Your Friends Now",
+  "campaignDesc": "Go to Ave.ai to mine 1000X Alpha",
+  "campaignScan": "Scan to download",
+  "download": "Download",
+  "RIO": "PnL",
+  "balance2": "Balance",
+  "lastPrice1": "Last Price"
 }

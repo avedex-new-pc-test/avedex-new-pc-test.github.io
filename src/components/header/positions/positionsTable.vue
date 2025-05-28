@@ -28,7 +28,8 @@
             <span v-else-if="row[col.prop] === '--'">--</span>
             <span v-else-if="row[col.prop] === 0">0</span>
             <span v-else :class="col?.getClassName ? col.getClassName(row) : ''">{{ col.formatter ? col.formatter(row) :row[col.prop] }}</span>
-            <Icon v-if="col?.prop === 'total_profit_ratio'" name="circum:share-1" class="text-12px ml-4px" />
+            <!-- <Icon v-if="col?.prop === 'total_profit_ratio'" name="circum:share-1" class="text-12px ml-4px" @click.stop = "handleShare(row)"/> -->
+            <share v-if="col?.prop === 'total_profit_ratio'" :address="row.address" :statistics="row" :chain="row.chain" type="topHolder"/>
           </div>
         </template>
       </el-table-column>
@@ -133,6 +134,13 @@ const dialogVisible = computed({
   set: (value) => emit('update:modelValue', value)
 })
 console.log('positions')
+
+// Add handleShare method
+const handleShare = (row: any) => {
+  // Implement your share logic here, e.g., open a share dialog or copy info
+  console.log('Share clicked for row:', row)
+}
+
 const fetchTable = async () => {
   try {
     const res = await getUserBalance(tableParams.value)
