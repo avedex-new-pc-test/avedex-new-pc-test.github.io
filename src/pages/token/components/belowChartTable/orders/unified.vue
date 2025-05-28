@@ -1,37 +1,42 @@
 <template>
   <div>
-    <el-table :data="txOrder" fit stripe max-height="700" v-loading="loading && !txOrder?.length"
+    <el-table
+      v-loading="loading && !txOrder?.length" :data="txOrder" fit stripe max-height="700"
       style="width: 100%; min-height: 450px;" @row-click="tableRowClick">
       <template #empty>
-        <div class="flex flex-col items-center justify-center py-30px" v-if="!loading">
-          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg" />
-          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" />
+        <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
+          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg" >
+          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" >
           <span>{{ t('emptyNoData') }}</span>
         </div>
-        <span v-else></span>
+        <span v-else/>
       </template>
       <el-table-column :label="t('token')" align="left">
         <template #default="{ row }">
           <div class="flex items-center justify-start">
             <div class="icon-token-container mr-5px">
-              <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+              <el-image
+                class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
                 chain: row?.chain,
                 symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
                 logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
               })">
                 <template #error>
-                  <img class="w-32px h-32px"
+                  <img
+                    class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)" alt=""
                     srcset="">
                 </template>
                 <template #placeholder>
-                  <img class="w-32px h-32px"
+                  <img
+                    class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)" alt=""
                     srcset="">
                 </template>
               </el-image>
-              <img v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
-                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="" />
+              <img
+                v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
+                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="" >
             </div>
             <span class="token-symbol">{{ !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol }}</span>
           </div>
@@ -42,7 +47,7 @@
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
-            <i class="iconify i-custom:filter text-10px color-[--d-666-l-999] cursor-pointer text-10px"></i>
+            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -66,12 +71,12 @@
           <span>{{ t('price') }}</span>
         </template>
         <template #default="{ row }">
-          <span class="text-[var(--d-999-l-959A9F)]">${{ formatNumber2(row?.PriceLimit || 0) }}</span>
+          <span class="text-[var(--d-999-l-959A9F)]">${{ formatNumber(row?.PriceLimit || 0) }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="t('volume4')" align="right">
         <template #default="{ row }">
-          <span class="text-[var(--d-999-l-959A9F)]">{{ formatNumberS(Number(row?.inValue) || 0, 2) }}</span>
+          <span class="text-[var(--d-999-l-959A9F)]">{{ formatNumber(Number(row?.inValue) || 0, 2) }}</span>
         </template>
       </el-table-column>
 
@@ -86,17 +91,14 @@
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)]">
             <template v-if="!row?.isBuy">
-              {{ !!Number(row?.inAmount) ? formatNumber2(utils.formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0),
-                row.inTokenDecimals || 0) as number, 4) : '--' }}
-
-              <span class="color-[--d-999-l-666]" v-if="isUnit">
+              {{ !!Number(row?.inAmount) ? formatNumber(new BigNumber(row?.inAmount || 0).div(new BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) : '--' }}
+              <span v-if="isUnit" class="color-[--d-999-l-666]">
                 &nbsp;{{ getChainInfo(row.chain)?.main_name }}
               </span>
             </template>
             <template v-else>
-              {{ !!Number(row?.outputAmount) ? formatNumber2(utils.formatUnits(new BigNumber(row?.outputAmount ||
-                0).toFixed(0), row.outTokenDecimals || 0) as number, 4) : '--' }}
-              <span class="color-[--d-999-l-666]" v-if="isUnit">
+              {{ !!Number(row?.outputAmount) ? formatNumber(new BigNumber(row?.outputAmount || 0).div(new BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) : '--' }}
+              <span v-if="isUnit" class="color-[--d-999-l-666]">
                 &nbsp;{{ getChainInfo(row.chain)?.main_name }}
               </span>
             </template>
@@ -141,7 +143,8 @@
       </el-table-column>
       <el-table-column :label="t('operate')" align="right">
         <template #default="{ row }">
-          <div v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
+          <div
+            v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
             @click.stop="handleCancelOrder(row)">
             {{ t('cancel') }}
           </div>
@@ -156,9 +159,9 @@
 <script setup lang="ts">
 // import { useStorage } from '@vueuse/core'
 import BigNumber from 'bignumber.js'
-import { evm_utils as utils, formatDate, getChainDefaultIcon, formatExplorerUrl } from '~/utils'
-import { formatNumber2, formatNumberS } from '~/utils/formatNumber'
-import { bot_getUserPendingTx, bot_cancelLimitOrdersByBatch } from "@/api/token"
+import { formatDate, getChainDefaultIcon, formatExplorerUrl } from '~/utils'
+import { formatNumber } from '~/utils/formatNumber'
+import { bot_getUserPendingTx, bot_cancelLimitOrdersByBatch } from '@/api/token'
 
 import { ref } from 'vue'
 

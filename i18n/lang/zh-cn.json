@@ -519,8 +519,6 @@
   "completed": "已成交",
   "failed": "失败",
   "autoCancelled": "自动取消",
-  "campaignBuyAvg": "买入均价",
-  "campaignSellAvg": "卖出均价",
   "campaignBuyTime": "买入时间",
   "campaignSellTime": "卖出时间",
   "campaignSubTitle": "邀请注册，交易返佣",

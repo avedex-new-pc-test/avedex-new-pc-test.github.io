@@ -516,8 +516,6 @@
   "completed": "已成交",
   "failed": "失敗",
   "autoCancelled": "自動取消",
-  "campaignBuyAvg": "買入均價",
-  "campaignSellAvg": "賣出均價",
   "campaignBuyTime": "買入時間",
   "campaignSellTime": "賣出時間",
   "campaignSubTitle": "邀請註冊，交易返傭",

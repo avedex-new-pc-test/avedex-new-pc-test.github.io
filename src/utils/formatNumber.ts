@@ -163,7 +163,7 @@ export function formatPercent(n: number, decimals = 2) {
 
 export function formatNumberS(n: string | number, config: any = {}) {
   let config1 = config
-  if (typeof config === "number") {
+  if (typeof config === 'number') {
     config1 = {
       decimals: config,
     }

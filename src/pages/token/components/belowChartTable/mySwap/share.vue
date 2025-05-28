@@ -7,9 +7,8 @@ import { getCampaignToken } from '~/api/token'
 
 import up1 from '@/assets/images/share/up_1.webp'
 import down1 from '@/assets/images/share/down_1.webp'
-import { getTextWidth, getChainDefaultIcon, formatExplorerUrl, formatDate } from '~/utils'
+import { getTextWidth, getChainDefaultIcon, formatDate } from '~/utils'
 import { templateRef } from '@vueuse/core'
-import { formatNumberS, formatNumber2 } from '~/utils/formatNumber'
 
 const props = defineProps({
   statistics: {
@@ -133,8 +132,7 @@ function getColorClass(val: string) {
 
 <template>
   <slot>
-    <Icon name="custom:share" class="text-12px color-[--d-999-l-666] ml-6px cursor-pointer"
-      @click.self.stop="openDialog" />
+    <Icon name="custom:share" class="text-12px color-[--d-999-l-666] ml-6px cursor-pointer" @click.self.stop="openDialog" />
   </slot>
   <el-dialog v-model="dialogVisible" :title="$t('share')" width="628" append-to-body>
     <div>
@@ -155,23 +153,27 @@ function getColorClass(val: string) {
 
         <div class="flex items-center justify-start mt-40px">
           <div class="icon-token-container share" style="margin-right: 10px">
-            <el-image class="token-icon token-logo"
-              :src="formatExplorerUrl({ logo_url: shareItem.swapType === 2 ? shareItem?.inTokenLogoUrl : shareItem.outTokenLogoUrl, chain: shareItem.chain }, shareItem.swapType === 2 ? shareItem?.inTokenSymbol : statistics.outTokenSymbol)">
+            <el-image
+              class="token-icon token-logo"
+              :src="getSymbolDefaultIcon({ logo_url: shareItem.swapType === 2 ? shareItem?.inTokenLogoUrl : shareItem.outTokenLogoUrl, chain: shareItem.chain, symbol: shareItem.swapType === 2 ? shareItem?.inTokenSymbol : shareItem.outTokenSymbol })">
               <template #error>
-                <img class="token-icon"
+                <img
+                  class="token-icon"
                   :src="getChainDefaultIcon(shareItem?.chain, shareItem.swapType === 2 ? shareItem?.inTokenSymbol : shareItem.outTokenSymbol)"
                   alt="" srcset="">
               </template>
               <template #placeholder>
-                <img class="token-icon"
+                <img
+                  class="token-icon"
                   :src="getChainDefaultIcon(shareItem?.chain, shareItem.swapType === 2 ? shareItem?.inTokenSymbol : shareItem.outTokenSymbol)"
                   alt="" srcset="">
               </template>
             </el-image>
 
-            <img v-if="shareItem?.chain" class="w-12px h-12px relative left-[-7px]"
+            <img
+              v-if="shareItem?.chain" class="w-12px h-12px relative left-[-7px]"
               :src="`${configStore.token_logo_url}chain/${shareItem.chain}.png`" alt=""
-              onerror="this.src='/icon-default.png'" srcset="" />
+              onerror="this.src='/icon-default.png'" srcset="" >
           </div>
           <span class="text-20px">{{ shareItem.swapType === 2 ? shareItem?.inTokenSymbol : shareItem.outTokenSymbol
           }}</span>
@@ -182,10 +184,11 @@ function getColorClass(val: string) {
         </span>
         <div class="mt-15px">
           <span class="text-[#999]">{{ $t('RIO') }}</span>
-          <div class="mt-5px" style="font-size: 40px; font-weight: 700;" v-if="shareItem?.profitRate"
+          <div
+            v-if="shareItem?.profitRate" class="mt-5px" style="font-size: 40px; font-weight: 700;"
             :style="{ color: shareItem?.profitRate > 0 ? '#12B886' : '#ff646d' }">{{
-              shareItem?.profitRate > 0 ? '+' : '' }}{{ formatNumberS(shareItem?.profitRate || 0) }}%</div>
-          <div class="mt-5px" style="font-size: 40px; font-weight: 700;" v-else :style="{ color: '#999' }">--</div>
+              shareItem?.profitRate > 0 ? '+' : '' }}{{ formatNumber(shareItem?.profitRate || 0, 1) }}%</div>
+          <div v-else class="mt-5px" style="font-size: 40px; font-weight: 700;" :style="{ color: '#999' }">--</div>
         </div>
         <table class="mt-20px share-table">
           <tbody>
@@ -194,7 +197,7 @@ function getColorClass(val: string) {
               </td>
               <td>
                 <template v-if="shareItem?.avg_buy_price > 0">
-                  ${{ formatNumber2(shareItem?.avg_buy_price || 0) }}
+                  ${{ formatNumber(shareItem?.avg_buy_price || 0) }}
                 </template>
                 <span v-else :style="{ color: '#999' }">--</span>
               </td>
@@ -204,7 +207,7 @@ function getColorClass(val: string) {
               </td>
               <td>
                 <template v-if="shareItem?.avg_sell_price > 0">
-                  ${{ formatNumber2(shareItem?.avg_sell_price || 0) }}
+                  ${{ formatNumber(shareItem?.avg_sell_price || 0) }}
                 </template>
                 <span v-else :style="{ color: '#999' }">--</span>
               </td>
