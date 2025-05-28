@@ -184,7 +184,7 @@
               </count-down> -->
 
               <div v-if="row.opening_at > 0">
-                <count-down />
+                <!-- <count-down /> -->
               </div>
 
               <template v-else>

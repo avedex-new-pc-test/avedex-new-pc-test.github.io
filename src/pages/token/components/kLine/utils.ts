@@ -206,12 +206,22 @@ export function buildOrUpdateLastBarFromTx(
   // ✅ 时间过滤：必须 >= 当前 bar 的时间段起始时间
   if (lastBar && txTimeMs < lastBar.time) return null
 
-  if (!lastBar || lastBar.time !== barStartTime) {
+  if (!lastBar) {
     return {
       time: barStartTime,
       open: price,
       high: price,
       low: price,
+      close: price,
+      volume
+    }
+  }
+  if (lastBar.time < barStartTime) {
+    return {
+      time: barStartTime,
+      open: lastBar.close,
+      high: Math.max(lastBar.high, price),
+      low: Math.min(lastBar.low, price),
       close: price,
       volume
     }

@@ -178,12 +178,12 @@ const addressAndChain = computed(() => {
     chain: token.value?.chain || ''
   }
 })
-watch(() => pairAddress.value, () => {
+watch(() => pairAddress.value, (pair, oldPair) => {
   if (pairAddress.value) {
     txCount.value = {}
     _getPairTxs()
     _getPairLiq()
-    subscribeTxsAndLiq()
+    subscribeTxsAndLiq(pair, oldPair)
   }
 }, {
   immediate: true
@@ -254,20 +254,24 @@ function onTxsLiqMessage() {
   }, 'tx_history')
 }
 
-function subscribeTxsAndLiq() {
-  const liqParams = {
-    jsonrpc: '2.0',
-    params: ['liq', pairAddress.value],
-    id: 1
+function subscribeTxsAndLiq(pair: string, oldPair?: string) {
+  if (oldPair) {
+    wsStore.send({
+      jsonrpc: '2.0',
+      params: ['liq', oldPair],
+      id: 1,
+      method: 'unsubscribe'
+    })
   }
-  wsStore.send({
-    ...liqParams,
-    method: 'unsubscribe'
-  })
-  wsStore.send({
-    ...liqParams,
-    method: 'subscribe'
-  })
+
+  setTimeout(() => {
+    wsStore.send({
+      jsonrpc: '2.0',
+      params: ['liq', pair],
+      id: 1,
+      method: 'subscribe'
+    })
+  }, 20)
 }
 
 const updatePairTxs = useThrottleFn(() => {

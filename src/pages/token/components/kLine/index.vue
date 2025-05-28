@@ -71,6 +71,13 @@ watch(pair, (val) => {
   }
 })
 
+watch(user, () => {
+  if (isReady && route.name === 'token-id') {
+    _widget?.activeChart?.()?.clearMarks?.()
+    _widget?.activeChart?.()?.refreshMarks?.()
+  }
+})
+
 const price = 0
 const wsStore = useWSStore()
 const localeStore = useLocaleStore()
@@ -433,6 +440,9 @@ async function initChart() {
               const interval = switchResolution(resolution)
               const t = token.value?.replace?.(/-.*$/, '')
               const newBar = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
+              if (newBar) {
+                lastBar = {...newBar}
+              }
               if (showMarket.value && newBar) {
                 newBar.open = new BigNumber(newBar.open || 0).times(tokenStore?.circulation || 0).toNumber()
                 newBar.high = new BigNumber(newBar.high || 0).times(tokenStore?.circulation || 0).toNumber()
@@ -453,9 +463,15 @@ async function initChart() {
           if (subscribeParams?.params?.[1] === tokenAddress.value) {
             return
           }
-          subscribeParams.method = 'unsubscribe'
-          wsStore.send(subscribeParams)
-          listenerGuidMap?.delete?.(token.value)
+          listenerGuidMap.forEach(i => {
+            if (i?.params?.[1] !== tokenAddress.value) {
+              wsStore.send({
+                ...i,
+                method: 'unsubscribe'
+              })
+            }
+          })
+          listenerGuidMap?.clear()
         }
       },
       searchSymbols: (userInput, exchange, symbolType, onResult) => {
