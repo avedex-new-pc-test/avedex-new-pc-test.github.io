@@ -28,6 +28,7 @@
             <span v-else-if="row[col.prop] === '--'">--</span>
             <span v-else-if="row[col.prop] === 0">0</span>
             <span v-else :class="col?.getClassName ? col.getClassName(row) : ''">{{ col.formatter ? col.formatter(row) :row[col.prop] }}</span>
+            <Icon v-if="col?.prop === 'total_profit_ratio'" name="circum:share-1" class="text-12px ml-4px" />
           </div>
         </template>
       </el-table-column>
