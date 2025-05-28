@@ -96,7 +96,44 @@
       {{ checkAmountMessage() }}
         {{ checkAmountMessage() || (activeTab === 'buy' ? $t('buy') : $t('sell')) }}
       </el-button>
-      <ul class="swap-label">
+      <div class="mt-10px flex items-center text-11px color-[--d-F5F5F5-l-333]">
+        <Icon v-tooltip="$t('slippage')" name="custom:slippage" class="text-12px color-[--d-666-l-999] mr-4px cursor-pointer" />
+        <span v-if="botSettings?.[chain || '']?.[selected]?.slippage !== 'auto'">{{ botSettings?.[chain || '']?.[selected]?.slippage }}%</span>
+        <span v-else>{{ $t('auto') }}</span>
+        <template v-if="isEvmChain(chain || '')">
+          <Icon v-tooltip="$t('estimatedGas')" name="custom:gas" class="text-12px color-[--d-666-l-999] ml-auto mr-4px cursor-pointer" />
+          <span>${{ getEstimatedGas() }}</span>
+        </template>
+        <template v-if="chain === 'solana'">
+          <Icon v-tooltip="$t('priorityFee')" name="custom:gas" class="text-12px color-[--d-666-l-999] ml-auto mr-4px cursor-pointer" />
+          <span>{{ botPriorityFee }} SOL</span>
+        </template>
+        <!-- <template v-if="activeTab === 'buy' && swapType === 'market' && botSettings?.[chain || '']">
+          <span class="mr-4px ml-auto color-[--d-666-l-999]">{{ $t('autoSellHalf') }}</span>
+          <el-switch
+            v-model="botSettings[chain as string]![botSettings[chain as string]!.selected as 's1' | 's2' | 's3'].autoSell"
+            size="small"
+            style="--el-switch-on-color: #3c6cf6;zoom: 0.9;height: 14px;"
+          />
+        </template> -->
+        <template v-if="botSettings[chain || ''] && isCanMev">
+          <span class="ml-auto color-[--d-666-l-999] mr-4px cursor-pointer">{{ $t('mev') }}</span>
+          <el-switch
+            v-if="chain === 'solana'"
+            v-model="botSettings.solana![botSettings.solana!.selected as 's1' | 's2' | 's3']!.mev"
+            style="--el-switch-on-color: #3c6cf6;zoom: 0.9;height: 14px;"
+            size="small"
+            :before-change="solanaMevBeforeChange"
+          />
+          <el-switch
+            v-else-if="isEvmChain(chain || '')"
+            v-model="botSettings[chain as string]![botSettings[chain as string]!.selected as 's1' | 's2' | 's3'].mev"
+            style="--el-switch-on-color: #3c6cf6;zoom: 0.9;height: 14px"
+            size="small"
+          />
+        </template>
+      </div>
+      <!-- <ul class="swap-label">
         <li v-if="activeTab === 'buy' && swapType === 'market' && botSettings?.[chain || '']" class="slippage-container">
           <span class="mr-auto color-[--d-666-l-999]">{{ $t('autoSellHalf') }}</span>
           <el-switch
@@ -142,7 +179,7 @@
             size="small"
           />
         </li>
-      </ul>
+      </ul> -->
     </template>
 
     <div v-else-if="!botStore?.userInfo?.evmAddress" class="connect-wallet-btn">

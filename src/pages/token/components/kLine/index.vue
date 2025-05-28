@@ -29,6 +29,7 @@ const klinePair = ref('')
 
 let isReady = false
 let isReadyLine = false
+let isHeaderReady = false
 
 const chain = computed(() => {
   return getAddressAndChainFromId(token.value)?.chain || tokenStore?.token?.chain
@@ -140,6 +141,7 @@ watch(() => localeStore.locale, () => {
 // })
 function resetChart() {
   isReadyLine = false
+  isHeaderReady = false
   resetLimitPriceLineId()
   _widget?.remove?.()
   initChart()
@@ -175,6 +177,9 @@ function createStudy() {
 
 let headerBtns: HTMLElement[] = []
 function createHeaderButton() {
+  if (!isHeaderReady) {
+    return
+  }
   headerBtns.forEach(i => {
     _widget?.removeButton?.(i)
   })
@@ -413,7 +418,6 @@ async function initChart() {
             to
           }
           getKlineHistoryData(params).then(res => {
-            console.log('getKlineHistoryData', res)
             const bars = res?.kline_data?.map?.(i => ({
               time: i.time * 1000,
               open: showMarket.value ? new BigNumber(i.open || 0).times(tokenStore?.circulation || 0).toNumber() : i.open,
@@ -574,6 +578,7 @@ async function initChart() {
 
   _widget?.headerReady().then(() => {
     // 创建 市值/价格 切换按钮
+    isHeaderReady = true
     createHeaderButton()
   })
   // onMarkClick

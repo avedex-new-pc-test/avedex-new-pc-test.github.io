@@ -500,5 +500,6 @@
   "campaignBuyAvg": "買入均價",
   "outflow": "總賣出",
   "campaignSellAvg": "賣出均價",
-  "limitPrice": "掛單價格"
+  "limitPrice": "掛單價格",
+  "mev": "防夾"
 }

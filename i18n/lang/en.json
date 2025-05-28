@@ -501,5 +501,6 @@
   "campaignBuyAvg": "Buy Price",
   "outflow": "Outflow",
   "campaignSellAvg": "Sell Price",
-  "limitPrice": "Limit order price"
+  "limitPrice": "Limit order price",
+  "mev": "MEV"
 }
