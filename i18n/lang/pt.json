@@ -177,5 +177,6 @@
   "noMore": "Não mais",
   "seemsNoProblem": "Parece não haver problemas\n",
   "possibleRisks": "Riscos possíveis",
-  "netInflow": "Fluxo Líquido"
+  "netInflow": "Fluxo Líquido",
+  "limitPrice": "Preço da ordem de limite"
 }

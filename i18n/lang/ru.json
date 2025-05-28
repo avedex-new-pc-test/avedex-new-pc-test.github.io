@@ -307,5 +307,6 @@
   "inflow": "Приток",
   "campaignBuyAvg": "Цена покупки",
   "outflow": "Отток",
-  "campaignSellAvg": "Цена продажи"
+  "campaignSellAvg": "Цена продажи",
+  "limitPrice": "Цена лимитного ордера"
 }

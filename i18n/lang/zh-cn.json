@@ -502,5 +502,6 @@
   "inflow": "总买入",
   "campaignBuyAvg": "买入均价",
   "outflow": "总卖出",
-  "campaignSellAvg": "卖出均价"
+  "campaignSellAvg": "卖出均价",
+  "limitPrice": "挂单价格"
 }

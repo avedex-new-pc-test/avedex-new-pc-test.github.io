@@ -307,5 +307,6 @@
   "inflow": "Dòng vào",
   "campaignBuyAvg": "Giá mua",
   "outflow": "Dòng ra",
-  "campaignSellAvg": "Giá bán"
+  "campaignSellAvg": "Giá bán",
+  "limitPrice": "Giá lệnh giới hạn"
 }

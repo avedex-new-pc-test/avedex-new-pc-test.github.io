@@ -299,7 +299,7 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
         disableSave: true,
         text: '挂单价格',
         overrides: {
-          linecolor: '#800080',  // 线的颜色
+          linecolor: '#FFBE3C',  // 线的颜色
           linewidth: 1,          // 线的粗细
           linestyle: 2        // 线的样式：0表示实线，1表示虚线 2 长虚线
         }
@@ -307,7 +307,7 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
     )
     isCreating = false
     chart?.getShapeById?.(priceLimitLineId)?.setProperties?.({
-      textcolor: '#800080',
+      textcolor: '#FFBE3C',
       showLabel: true,
       horzLabelsAlign: 'right',
       vertLabelsAlign: 'middle',

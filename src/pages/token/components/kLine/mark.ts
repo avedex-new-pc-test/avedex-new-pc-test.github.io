@@ -3,6 +3,7 @@ import { filterLanguage } from './utils'
 import { useLocalStorage, type RemovableRef } from '@vueuse/core'
 import type { IChartingLibraryWidget, Mark } from '~/types/tradingview/charting_library'
 import { getUserKlineTxTags, getKlineProfilingTags } from '@/api/token'
+import type { WSTx } from './types'
 
 type TradeSide = {
   amount: number
@@ -74,7 +75,7 @@ export function useKlineMarks() {
     headerBtns.push(btn)
   }
 
-  const marksMap: Map<string, Mark[]> = new Map()
+  const marksMap: Map<string, TradeData[]> = new Map()
 
   watch(() => tokenStore.token?.token, () => {
     marksMap.clear()
@@ -92,9 +93,11 @@ export function useKlineMarks() {
     user: string;
   }) {
     marksTabs.value.forEach((v) => {
-      const id = pair + '-' + chain + '-' + user + '-' + from + '-' + to + '-' + interval + '-' + v.id
+      const id = pair + '-' + chain + '-' + user  + '-' + interval + '-' + v.id + '-' + from + '-' + to
       if (marksMap.has(id) && markTabsChecked.value?.[v.id]) {
-        onDataCallback(marksMap.get(id) || [])
+        const res = marksMap.get(id)
+        const marks = formatToMarks(res || [], interval, v.id, v.name)
+        onDataCallback(marks || [])
         return
       }
       if (v.id === 'trade' && markTabsChecked.value?.[v.id]) {
@@ -107,7 +110,7 @@ export function useKlineMarks() {
           user_address: user
         }).then(res => {
           const marks = formatToMarks(res, interval, v.id, v.name)
-          marksMap.set(id, marks || [])
+          marksMap.set(id, res || [])
           onDataCallback(marks || [])
         })
       } else if (markTabsChecked.value?.[v.id]) {
@@ -119,7 +122,7 @@ export function useKlineMarks() {
           type: v.id
         }).then(res => {
           const marks = formatToMarks(res, interval, v.id, v.name)
-          marksMap.set(id, marks || [])
+          marksMap.set(id, res || [])
           onDataCallback(marks || [])
         })
       }
@@ -180,7 +183,7 @@ export function useKlineMarks() {
     for (const entry of Object.values(bucketMap)) {
       const isBuy = entry.side === 'buy'
       result.push({
-        id: `${entry.time}-${entry.side}`,
+        id: `${entry.time}-${entry.side}-${type}`,
         time: entry.time,
         // type: 'trade',
         color: { background: 'transparent', border: 'transparent' },
@@ -242,11 +245,52 @@ ${formatDate(entry.time, 'YYYY-MM-DD HH:mm')}
 `
   }
 
+
+  function wsTxUpdateMarks({
+    tx,
+    interval,
+    user
+  }: {
+    tx: WSTx
+    interval: number
+    user: string
+  }, _widget: IChartingLibraryWidget | null) {
+    const token = tokenStore?.token?.token
+    const chain = tokenStore?.token?.chain
+    const pair = tokenStore?.pairAddress
+    if (!((token === tx.from_address || token === tx.to_address) && tx.wallet_address === user)) return
+    const type =  tokenStore?.token?.token === tx.to_address ? 'buy' : 'sell'
+    const result: TradeData =  {
+      time: tx.time,
+    }
+    if (type === 'buy') {
+      result['buy'] = {
+        amount: Number(tx?.to_amount || 0),
+        txns: 1,
+        volume: Number(tx?.to_price_usd || 0 ) * Number(tx?.to_amount || 0)
+      }
+    }
+    if (type === 'sell') {
+      result['sell'] = {
+        amount: Number(tx?.from_amount || 0),
+        txns: 1,
+        volume: Number(tx?.from_price_usd || 0 ) * Number(tx?.from_amount || 0)
+      }
+    }
+    marksMap.forEach((item, k) => {
+      if (k.startsWith(pair + '-' + chain + '-' + user  + '-' + interval + '-' + 'trade')) {
+        item.push(result)
+      }
+    })
+    _widget?.activeChart?.()?.refreshMarks?.()
+  }
+
   return {
     marksTabs,
     markTabsChecked,
     createMarkButton,
-    getMarks
+    getMarks,
+    wsTxUpdateMarks
   }
 }
 

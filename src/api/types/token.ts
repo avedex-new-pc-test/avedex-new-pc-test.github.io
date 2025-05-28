@@ -1,9 +1,9 @@
 export interface TokenInfo {
   token: Token
   pairs: Pair[]
-  volumes: Volume[]
-  liquidities: Liquidity[]
-  is_audited: boolean
+  // volumes: Volume[]
+  // liquidities: Liquidity[]
+  // is_audited: boolean
 }
 
 export interface Liquidity {
@@ -126,6 +126,7 @@ export interface Token {
   tag: string
   main_pair: string
   cto_flag: number
+  dev_count: number
 }
 
 export interface Volume {

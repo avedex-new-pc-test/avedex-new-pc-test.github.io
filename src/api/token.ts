@@ -2,6 +2,22 @@ import type { TokenInfo, TokenInfoExtra } from './types/token'
 import { getAddressAndChainFromId, getChainInfo } from '@/utils'
 import { NATIVE_TOKEN } from '@/utils/constants'
 
+const testDomain = 'https://0ftrfsdb.xyz'
+
+// export function getTokenInfo(id: string): Promise<null | TokenInfo> {
+//   const {address, chain} = getAddressAndChainFromId(id)
+//   if (!address || !chain) {
+//     return Promise.resolve(null)
+//   }
+//   let id1 = id
+//   if (address === NATIVE_TOKEN) {
+//     const address1 = getChainInfo(chain)?.wmain_wrapper
+//     id1 = address1 + '-' + chain
+//   }
+//   const { $api } = useNuxtApp()
+//   return $api(`/v1api/v3/tokens/${id1}`)
+// }
+
 export function getTokenInfo(id: string): Promise<null | TokenInfo> {
   const {address, chain} = getAddressAndChainFromId(id)
   if (!address || !chain) {
@@ -13,8 +29,15 @@ export function getTokenInfo(id: string): Promise<null | TokenInfo> {
     id1 = address1 + '-' + chain
   }
   const { $api } = useNuxtApp()
-  return $api(`/v1api/v3/tokens/${id1}`)
+  return $api(testDomain + '/v2api/token_info/v1/token/detail', {
+    method: 'get',
+    query: {
+      token_id: id1
+    }
+  })
 }
+
+
 
 export function getTokenInfoExtra(id: string): Promise<null | TokenInfoExtra> {
   const {address, chain} = getAddressAndChainFromId(id)
@@ -31,10 +54,53 @@ export function getTokenInfoExtra(id: string): Promise<null | TokenInfoExtra> {
 }
 
 
+// // 获取 K 线历史数据
+// export function getKlineHistoryData(data: {
+//   interval: string
+//   pair: string
+// }): Promise<{
+//   kline_data: Array<{
+//     close: number
+//     high: number
+//     low: number
+//     open: number
+//     tag: string
+//     time: number
+//     volume: number
+//   }>
+//   extra_data?: {
+//     amount_24: number
+//     exchangeTime_24: number
+//     highestPrice_24: number
+//     lowestPrice_24: number
+//     volume_24: number
+//   }
+// }> {
+//   const [pair, chain] = getAddressAndChainFromId(data.pair, 1)
+//   if (!pair || !chain) {
+//     return Promise.resolve({
+//       kline_data: [],
+//       extra_data: undefined
+//     })
+//   }
+//   const { $api } = useNuxtApp()
+//   return $api(`/v1api/v4/pairs/${data.pair}/kline`, {
+//     method: 'get',
+//     query: {
+//       interval: data.interval,
+//       category: 'u',
+//       count: 800
+//     }
+//   })
+// }
+
 // 获取 K 线历史数据
 export function getKlineHistoryData(data: {
+  token_id?: string
+  pair_id?: string
   interval: string
-  pair: string
+  from: number
+  to: number
 }): Promise<{
   kline_data: Array<{
     close: number
@@ -45,28 +111,40 @@ export function getKlineHistoryData(data: {
     time: number
     volume: number
   }>
-  extra_data?: {
-    amount_24: number
-    exchangeTime_24: number
-    highestPrice_24: number
-    lowestPrice_24: number
-    volume_24: number
-  }
+ pair: string
 }> {
-  const [pair, chain] = getAddressAndChainFromId(data.pair, 1)
-  if (!pair || !chain) {
+  const [pair, chain1] = getAddressAndChainFromId(data?.pair_id || '', 1)
+  const [token, chain2] = getAddressAndChainFromId(data?.token_id || '', 1)
+  if ((!pair || !chain1) && (!token || !chain2)) {
     return Promise.resolve({
       kline_data: [],
-      extra_data: undefined
+      pair: pair || ''
     })
   }
   const { $api } = useNuxtApp()
-  return $api(`/v1api/v4/pairs/${data.pair}/kline`, {
+  return $api(testDomain + '/v2api/token_info/v1/kline', {
     method: 'get',
     query: {
+      token_id: data.token_id,
+      pair_id: data.pair_id,
       interval: data.interval,
+      from: data.from,
+      to: data.to,
       category: 'u',
-      count: 800
+      limit_count: 300
+    }
+  }).then((res) => {
+    return {
+      kline_data: (res?.kline_data || []).map((i: { t: number; o: number; h: number; l: number; c: number; vol: number; tag: string }) => ({
+        time: i.t,
+        open: i.o,
+        high: i.h,
+        low: i.l,
+        close: i.c,
+        volume: i.vol,
+        tag: i.tag
+      })),
+      pair: res?.pair || pair || ''
     }
   })
 }

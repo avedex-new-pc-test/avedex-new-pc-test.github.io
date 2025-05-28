@@ -500,5 +500,6 @@
   "inflow": "Inflow",
   "campaignBuyAvg": "Buy Price",
   "outflow": "Outflow",
-  "campaignSellAvg": "Sell Price"
+  "campaignSellAvg": "Sell Price",
+  "limitPrice": "Limit order price"
 }

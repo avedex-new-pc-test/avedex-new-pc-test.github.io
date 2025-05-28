@@ -471,7 +471,7 @@
     </div>
     <div class="item ml-24px">
       <span>DEV</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">--</span>
+      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{ token?.dev_count }}</span>
     </div>
     <div class="item ml-24px">
       <span class="cursor-pointer" @click="showCheck = !showCheck">
