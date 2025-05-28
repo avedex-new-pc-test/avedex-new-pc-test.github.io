@@ -19,7 +19,7 @@ const testDomain = 'https://0ftrfsdb.xyz'
 // }
 
 export function getTokenInfo(id: string): Promise<null | TokenInfo> {
-  const {address, chain} = getAddressAndChainFromId(id)
+  const { address, chain } = getAddressAndChainFromId(id)
   if (!address || !chain) {
     return Promise.resolve(null)
   }
@@ -40,7 +40,7 @@ export function getTokenInfo(id: string): Promise<null | TokenInfo> {
 
 
 export function getTokenInfoExtra(id: string): Promise<null | TokenInfoExtra> {
-  const {address, chain} = getAddressAndChainFromId(id)
+  const { address, chain } = getAddressAndChainFromId(id)
   if (!address || !chain) {
     return Promise.resolve(null)
   }
@@ -249,7 +249,7 @@ export interface GetHotTokensResponse {
 }
 
 export function getHotTokens(): Promise<GetHotTokensResponse[]> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v1api/v2/tokens/hot', {
     method: 'get',
   })
@@ -303,7 +303,7 @@ export function getPairTxs(query: {
   time_min?: string,
   time_max?: string
 }): Promise<GetPairTxsResponse[]> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api(`/v1api/v5/pairs/${query.pair}/txs`, {
     method: 'get',
     query
@@ -361,7 +361,7 @@ export async function getPairLiq(pair: string, address?: string): Promise<GetPai
   if (!pair || pair.length < 15) {
     return []
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api(`/v1api/v4/pairs/${pair}/liq`, {
     method: 'get',
     params: {
@@ -423,7 +423,7 @@ export function getTxsUserBrief(query: {
   chain: string;
   token: string;
 }): Promise<GetTxsUserBriefResponse> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/token/v1/user/brief', {
     method: 'get',
     query,
@@ -431,7 +431,7 @@ export function getTxsUserBrief(query: {
 }
 
 export function getUserTxs(token_id: string, address: string) {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v1api/v2/pairs/userMergedTxs', {
     method: 'get',
     params: {
@@ -451,7 +451,7 @@ export function getTokensPrice(tokenIds: string[]) {
     return i
   })
   const { $api } = useNuxtApp()
-  return $api('/v1api/v2/tokens/price4h5',{
+  return $api('/v1api/v2/tokens/price4h5', {
     method: 'post',
     body: {
       token_ids: ids
@@ -477,7 +477,7 @@ export function getTokenDetailLine(pair: string, params: {
   to: number;
   interval: number;
 }): Promise<GetTokenDetailsLineResponse[]> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api(`/v1api/v4/pairs/${pair}/sub_kline`, {
     method: 'get',
     // url: `/v1api/v4/pairs/9TapsuZxQjAWWxkF6yVUTkRWophLmh6mbUXPNJ8RK5mc-solana/sub_kline_pair?interval=60&from=1730596000&to=1730796044`,
@@ -505,7 +505,7 @@ export function getTokenDetailMarks(pair: string, query: {
   event_type: string;
   user_address: string;
 }): Promise<GetTokenDetailMarksResponse[]> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api(`/v2api/token/v1/user/${pair}/kline_event_tags`, {
     method: 'get',
     // url: `/v2api/token/v1/user/9TapsuZxQjAWWxkF6yVUTkRWophLmh6mbUXPNJ8RK5mc-solana/kline_event_tags?interval=14400&from=1730596000&to=1730796044&event_type=T_Trading&user_address=2hv3VQHCCkhFKTgH5r5gYfVARZAHhKXftDfKaobg1CMa`,
@@ -569,7 +569,7 @@ export function getTokenStatistics(query: {
   token: string;
   chain: string;
 }): Promise<GetTokenStatisticsResponse> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/token/v1/user/analysis', {
     method: 'get',
     query,
@@ -629,7 +629,7 @@ export interface GetTokenDetailsListResponse {
 
 // 个人Token详情列表
 export function getTokenDetailsList(query: GetTokenDetailsListReq): Promise<GetTokenDetailsListResponse[]> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/token/v1/user/events', {
     method: 'get',
     query,
@@ -672,7 +672,7 @@ export function homePumpList(query: {
   sort?: string;
   sort_dir?: string;
 }): Promise<{ data: GetHomePumpListResponse[] }> {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v1api/v4/tokens/treasure/pump/list', {
     method: 'get',
     query,
@@ -693,3 +693,79 @@ export function getUserBalances(token_id: string, user_ids: string[]): Promise<{
     }
   })
 }
+export async function bot_getUserWalletTxInfo(query: {
+  user_address: string;
+  chain: string;
+  user_token: string
+}) {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/walletinfo/v1/usertx', {
+    method: 'get',
+    query,
+  })
+}
+
+export async function bot_getUserTxHistory1(query: {
+  page: number;
+  pageSize: number;
+  chain: string;
+  walletAddress: string;
+  token: string;
+  timeSort: boolean;
+  tradeVolumeSort: boolean;
+  isSuccess: boolean;
+  status: string;
+  minTradeVolume?: number;
+  maxTradeVolume?: number;
+  isLimit?: number;
+  isBuy?: number;
+  tgUid: string;
+}) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/getUserTxHistory', {
+    method: 'get',
+    query,
+  })
+}
+
+export async function bot_getUserPendingTx(query: {
+  chain: string;
+  token: string;
+  walletAddress: string;
+}) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/getUserPendingTx', {
+    method: 'get',
+    query,
+  })
+}
+
+export function bot_cancelLimitOrdersByBatch(params: any) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/cancelLimitOrdersByBatch', {
+    method: 'post',
+    body: {
+      source: 'web',
+      ...params
+    },
+  })
+}
+
+export function cancelAllLimitOrdersByGuid(params: any) {
+  const { $api } = useNuxtApp()
+  return $api('/botapi/swap/cancelAllLimitOrdersByGuid', {
+    method: 'post',
+    body: {
+      ...params
+    },
+  })
+}
+
+export async function getCampaignToken(query: any) {
+  const { $api } = useNuxtApp()
+  return $api('/campaign/token/v1/chart', {
+    method: 'get',
+    query,
+  })
+}
+

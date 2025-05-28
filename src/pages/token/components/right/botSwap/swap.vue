@@ -657,6 +657,7 @@ async function submitBotSwap() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.historyUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'myBotHistory'
@@ -675,6 +676,7 @@ async function submitBotSwap() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderUpdate++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
@@ -844,6 +846,7 @@ function submitBotLimit() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.limitHistoryUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('limitSubmitted') })
           //  if (!['myBotPosition', 'botLimitOrder']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'botLimitOrder'
@@ -865,6 +868,7 @@ function submitBotLimit() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderUpdate++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
