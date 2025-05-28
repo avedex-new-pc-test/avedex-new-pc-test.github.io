@@ -1,8 +1,8 @@
 export interface WalletLogo {
   followers?: number
-  logo?: string
-  name?: string
-  url?: string
+  logo: string
+  name: string
+  url: string
   vip_logo?: string
 }
 

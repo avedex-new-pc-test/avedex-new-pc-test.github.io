@@ -212,12 +212,12 @@ export function getSwapInfo(
 
 export function getTagTooltip(i: {
   tag?: string
-  smart_money_buy_count_24h: number
-  smart_money_sell_count_24h: number
+  smart_money_buy_count_24h?: number
+  smart_money_sell_count_24h?: number
 }) {
   const $t = getGlobalT()
   if (!i.tag) {
-    if (i.smart_money_buy_count_24h > 0 || i.smart_money_sell_count_24h > 0) {
+    if ((i.smart_money_buy_count_24h??0) > 0 || (i.smart_money_sell_count_24h??0) > 0) {
       return $t('smart_money_tips', {
         b: i.smart_money_buy_count_24h,
         s: i.smart_money_sell_count_24h,

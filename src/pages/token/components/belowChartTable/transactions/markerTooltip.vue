@@ -237,7 +237,7 @@ function getColorClass(val: string) {
             >
               <TokenImg
                 :row="{
-                  logo_url:item.logoUrl,
+                  logo_url: item.logoUrl,
                 }"
                 token-class="w-16px h-16px [&&]:mr-0"
               />

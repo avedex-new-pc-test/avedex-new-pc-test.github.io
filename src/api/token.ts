@@ -108,6 +108,39 @@ export function getUserKlineTxTags(data: {
   })
 }
 
+export function getKlineProfilingTags(data: {
+  interval: string
+  from: number
+  to: number
+  type: string
+  pair: string
+}): Promise<Array<{
+  sell?: {
+    amount: number
+    txns: number
+    volume: number
+  }
+  buy?: {
+    amount: number
+    txns: number
+    volume: number
+  }
+  time: number
+}>> {
+  if (!data?.pair) {
+    return Promise.resolve([])
+  }
+  const { $api } = useNuxtApp()
+  return $api(`/v1api/v4/pairs/${data?.pair}/kline_profiling_tags`, {
+    method: 'get',
+    query: {
+      ...data,
+    }
+  }).catch(() => {
+    return Promise.resolve([])
+  })
+}
+
 export interface GetHotTokensResponse {
   token: string;
   chain: string;

@@ -50,6 +50,10 @@ export const useCheckStore = defineStore('check', () => {
       checkResult.value = m
     })
   }
+
+
+
+
   function formatLock(item: PairHoldersRank | null) {
     return item?.lock || /lock|null|(black hole)/gi.test(item?.mark || '')
   }
