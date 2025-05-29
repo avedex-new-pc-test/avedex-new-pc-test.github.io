@@ -178,5 +178,7 @@
   "seemsNoProblem": "Parece no haber problema",
   "possibleRisks": "Posibles riesgos",
   "netInflow": "Entrada neta",
-  "limitPrice": "Precio de la orden límite"
+  "limitPrice": "Precio de la orden límite",
+  "emptyNoData": "Sin datos",
+  "ratio": "Ratio"
 }

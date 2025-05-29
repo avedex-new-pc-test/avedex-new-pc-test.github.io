@@ -81,3 +81,4 @@ export const BusEventType = {
   TOP_FAV_CHANGE: 'top-favorite-change',
   FAV_DIALOG: 'fav-dialog',
 }
+export const SupportFullDataChain = ['solana', 'bsc']
