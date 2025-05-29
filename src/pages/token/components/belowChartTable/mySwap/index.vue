@@ -177,7 +177,7 @@ onMounted(() => {
     <!-- 顶部交易统计区域 -->
     <div class="transaction-stats">
       <div class="stat-item">
-        <div class="stat-label">{{ t('balance1') }}</div>
+        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('balance1') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(balance, 2) }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">
           {{ formatNumber(walletTxData?.balance_amount || 0, 4) }} {{ tokenSymbol }}
@@ -187,7 +187,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label">{{ t('totalProfit') }}</div>
+        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('totalProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(totalProfit, 2) }}</div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: profitPercentage >= 0 ? '#12B886' : '#ff646d' }">
@@ -195,26 +195,26 @@ onMounted(() => {
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label">{{ t('realizedProfit') }}</div>
+        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('realizedProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(realizedProfit, 2) }}</div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]" :style="{ color: realizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ realizedProfitPercentage >= 0 ? '+' : '' }}{{ formatNumber(realizedProfitPercentage, 2) }}%
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label">{{ t('unrealizedProfit') }}</div>
+        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('unrealizedProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(unrealizedProfit, 2) }}</div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]" :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ unrealizedProfitPercentage >= 0 ? '+' : '' }}{{ formatNumber(unrealizedProfitPercentage, 2) }}%
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label">{{ t('buyPriceWithSlash') }}</div>
+        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('buyPriceWithSlash') }}</div>
         <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ buyTokenAmount }} {{ tokenSymbol }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ buyUsdAmount }}</div>
       </div>
       <div class="stat-item">
-        <div class="stat-label">{{ t('sellPriceWithSlash') }}</div>
+        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('sellPriceWithSlash') }}</div>
         <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ sellTokenAmount }} {{ tokenSymbol }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ sellUsdAmount }}</div>
       </div>
@@ -242,7 +242,7 @@ onMounted(() => {
 
     .stat-label {
       font-size: 12px;
-      color: var(--custom-text-1-color);
+      /* color: var(--custom-text-1-color); */
       margin-bottom: 6px;
     }
 

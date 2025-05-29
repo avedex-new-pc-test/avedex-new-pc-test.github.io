@@ -42,7 +42,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="t('type')" align="right" prop="isBuy">
+      <el-table-column :label="t('type')" align="right" prop="isBuy" width="100px">
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
