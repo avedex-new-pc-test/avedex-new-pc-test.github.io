@@ -1,47 +1,45 @@
+<!-- eslint-disable vue/first-attribute-linebreak -->
 <template>
   <div>
-    <el-table
-      v-loading="loading && !txHistory?.length"
-      :data="txHistory" fit stripe max-height="700"
+    <el-table v-loading="loading && !txHistory?.length" :data="txHistory" fit stripe max-height="700"
       style="width: 100%; min-height: 350px;" @row-click="tableRowClick">
       <template #empty>
         <div class="flex flex-col items-center justify-center py-30px" v-if="!loading">
-          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg" >
-          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" >
+          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
+          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
           <span>{{ t('emptyNoData') }}</span>
         </div>
-        <span v-else/>
+        <span v-else />
       </template>
       <el-table-column :label="t('token')" align="left">
         <template #default="{ row }">
           <div class="flex items-center justify-start">
             <div class="icon-token-container mr-5px">
-              <el-image
-                class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
-                chain: row?.chain,
-                symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
-                logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
-              })">
-                <template #error>
-                  <img
-                    class="w-32px h-32px"
-                    :src="getChainDefaultIcon(row?.chain, row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol)"
-                    alt="" srcset="">
-                </template>
-                <template #placeholder>
-                  <img
-                    class="w-32px h-32px"
-                    :src="getChainDefaultIcon(row?.chain, row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol)"
-                    alt="" srcset="">
-                </template>
-              </el-image>
-              <img
-                v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
-                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="" >
+              <div class="relative">
+                <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+                  chain: row?.chain,
+                  symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
+                  logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
+                })">
+                  <template #error>
+                    <img class="w-32px h-32px"
+                      :src="getChainDefaultIcon(row?.chain, row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol)"
+                      alt="" srcset="">
+                  </template>
+                  <template #placeholder>
+                    <img class="w-32px h-32px"
+                      :src="getChainDefaultIcon(row?.chain, row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol)"
+                      alt="" srcset="">
+                  </template>
+                </el-image>
+                <img v-if="row?.chain" class="w-12px h-12px absolute bottom-3px right-3px"
+                  :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
+              </div>
             </div>
-            <span class="token-symbol">{{ row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol :
+            <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
+              row?.inTokenSymbol :
               row.outTokenSymbol
-              }}</span>
+            }}</span>
           </div>
         </template>
       </el-table-column>
@@ -50,7 +48,7 @@
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px" />
+            <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -63,22 +61,24 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-[#12B886] px-8px rounded-4px">
+          <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ row.swapType === 1 ? t('market') : t('limit') }}/{{ t('buy') }}
           </div>
-          <div v-if="row.swapType === 2 || row.swapType === 6" class="text-13px text-[#F6465D] px-8px rounded-4px">
+          <div v-if="row.swapType === 2 || row.swapType === 6" class="text-13px text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
             {{ row.swapType === 2 ? t('market') : t('limit') }}/{{ t('sell') }}
           </div>
         </template>
       </el-table-column>
       <el-table-column :label="t('price')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ row?.swapType === 1 ? formatNumber(row?.outPrice || 0) : formatNumber(row?.inPrice || 0) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ row?.swapType === 1 ? formatNumber(row?.outPrice ||
+            0) : formatNumber(row?.inPrice || 0) }}</div>
         </template>
       </el-table-column>
       <el-table-column :label="t('volume4')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(Number(row?.inValue) || row?.outValue || 0, 2) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(Number(row?.inValue) || row?.outValue ||
+            0, 2) }}</div>
         </template>
       </el-table-column>
 
@@ -93,10 +93,12 @@
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">
             <template v-if="!row?.isBuy">
-              {{ formatNumber(new BigNumber(row?.inAmount || 0).div(new BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) }} {{ row?.inTokenSymbol }}
+              {{ formatNumber(new BigNumber(row?.inAmount || 0).div(new BigNumber(10).pow(row.inTokenDecimals ||
+                0)).toFixed(), 4) }} {{ row?.inTokenSymbol }}
             </template>
             <template v-else>
-              {{ formatNumber(new BigNumber(row?.outAmount || 0).div(new BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) }} {{ row?.outTokenSymbol }}
+              {{ formatNumber(new BigNumber(row?.outAmount || 0).div(new BigNumber(10).pow(row.outTokenDecimals ||
+                0)).toFixed(), 4) }} {{ row?.outTokenSymbol }}
             </template>
           </span>
         </template>
@@ -106,7 +108,7 @@
         <template #header>
           <span>{{ t('status') }}</span>
           <el-dropdown trigger="click" @command="handleStatusCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px" />
+            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -119,14 +121,14 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">
-            <span v-if="row.status === 'confirmed'" style="color: var(--custom-text-2-color);">{{ t('completed')
+          <div class="text-[var(--d-999-l-959A9F)] text-right truncate">
+            <span v-if="row.status === 'confirmed'">{{ t('completed')
             }}</span>
             <span v-else-if="row.status === 'error'" style="color: var(--color-red-500);word-break: break-all;">{{
               t('failed') }}<template v-if="row?.errorLog">({{ formatBotError(row?.errorLog) }})</template></span>
-            <span v-else-if="row.status === 'cancelled'" style="color: var(--custom-text-2-color);">{{ t('cancelled1')
+            <span v-else-if="row.status === 'cancelled'">{{ t('cancelled1')
             }}</span>
-            <span v-else-if="row.status === 'auto_cancelled'" style="color: var(--custom-text-2-color);">{{
+            <span v-else-if="row.status === 'auto_cancelled'">{{
               t('autoCancelled')
             }}</span>
             <span v-else style="color: var(--custom-text-1-color);">{{ t('pending') }}</span>
@@ -146,7 +148,8 @@
           <template v-if="row.status == 'confirmed' && row.swapType === 2 && row.chain === 'solana'">
             <share :statistics="row" :address="props.userAddress" :chain="row.chain" />
           </template>
-          <Icon name="custom:browser" class="text-16px  ml-8px clickable color-[--d-999-l-666]" @click.stop.prevent="jumpExplorerUrl(row)" />
+          <Icon name="custom:browser" class="text-16px  ml-8px clickable color-[--d-999-l-666]"
+            @click.stop.prevent="jumpExplorerUrl(row)" />
         </template>
       </el-table-column>
     </el-table>
@@ -193,7 +196,7 @@ const txHistory = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate], () => {
+watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderSuccess], () => {
   getTxHistory()
 })
 
@@ -275,6 +278,7 @@ onMounted(() => {
   getTxHistory()
 })
 </script>
+
 <style lang="scss" scoped>
 :deep(.el-dropdown-menu__item) {
   font-size: 12px;
@@ -283,6 +287,36 @@ onMounted(() => {
 
 :deep(.el-dropdown-menu) {
   background-color: var(--custom-bg-1-color);
-  border: 1px solid var(--custom-br-1-color);
+  border: 1px solid var(--d-33353D-l-f5f5f5);
+}
+
+:deep(.el-table) {
+  --el-table-tr-bg-color: #0A0B0D;
+  --el-table-bg-color: #0A0B0D;
+  --el-table-text-color: var(--d-222-l-F2F2F2);
+  --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
+  --el-fill-color-lighter: #0A0B0D;
+  --el-table-header-text-color: var(--d-999-l-666);
+  --el-table-border-color: var(--d-33353D-l-f5f5f5);
+  --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
+  background: #0A0B0D;
+  --el-bg-color: #0A0B0D;
+  --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
+  font-size: 13px;
+
+  th {
+    padding: 6px 0;
+    border-bottom: none !important;
+    height: 32px;
+
+    &.el-table__cell.is-leaf {
+      border-bottom: none;
+    }
+
+    .cell {
+      font-weight: 400;
+      font-size: 12px;
+    }
+  }
 }
 </style>

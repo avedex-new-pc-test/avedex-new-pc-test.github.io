@@ -1,5 +1,6 @@
 :root {
   --primary-color: #3F80F7;
+  --color-red-500: #F6465D;
   &.dark {
     // 规范：颜色相同省略为 3 位，所有都用大写
     --d-333-l-ECECEC: #333;
@@ -41,6 +42,8 @@
     --d-111-l-FFF: #111;
     --d-2A2A2A-l-F2F2F2: #2A2A2A;
     --d-FFFFFF0D-l-F2F2F2: #FFFFFF0D;
+    --d-333333-l-eaecef: #333333;
+    --d-eaecef-l-333333: #eaecef;
   }
 
   &.light {
@@ -89,6 +92,8 @@
     --d-33353D-l-f5f5f5: #F5F5F5;
     --d-2A2A2A-l-F2F2F2: #F2F2F2;
     --d-FFFFFF0D-l-F2F2F2: #F2F2F2;
+    --d-333333-l-eaecef: #eaecef;
+    --d-eaecef-l-333333: #333333;
   }
 }
 
