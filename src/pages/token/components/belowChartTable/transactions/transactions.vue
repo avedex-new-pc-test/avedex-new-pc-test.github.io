@@ -67,7 +67,8 @@ const columns = computed(() => {
     {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), width: 100},
     {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', width: 140},
     {
-      key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative'
+      key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
+      minWidth: 120
     },
     {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 120},
     {
@@ -594,6 +595,7 @@ function onRowClick({rowData}: RowEventHandlerParams) {
     </template>
     <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
       <AveTable
+        fixed
         :data="filterTableList"
         :columns="columns"
         class="h-560px"
@@ -883,9 +885,4 @@ function onRowClick({rowData}: RowEventHandlerParams) {
 </template>
 
 <style>
-.transactions {
-  .el-table-v2__header-wrapper, .el-table-v2__header {
-    --at-apply: overflow-visible;
-  }
-}
 </style>
