@@ -12,7 +12,7 @@ import type { IChartingLibraryWidget, ResolutionString, Timezone, SeriesFormat, 
 import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, getWSMessage } from '@/utils'
 import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
-import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine } from './utils'
+import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine, useAvgPriceLine } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx, KLineBar } from './types'
 import BigNumber from 'bignumber.js'
@@ -64,6 +64,7 @@ watch(pair, (val) => {
 function switchTokenKline() {
   isReadyLine = false
   resetLimitPriceLineId()
+  resetAvgPriceLineId()
   const val = pair.value
   if (isReady && route.name === 'token-id') {
     const isSupportSecChains = (chain.value && supportSecChains.includes(chain.value)) || false
@@ -144,6 +145,7 @@ function resetChart() {
   isHeaderReady = false
   lastBar = null
   resetLimitPriceLineId()
+  resetAvgPriceLineId()
   _widget?.remove?.()
   initChart()
 }
@@ -577,6 +579,8 @@ async function initChart() {
         _widget?.resetCache?.()
       }
     })
+    subscribePriceMove()
+
 
     createStudy()
   })
@@ -633,7 +637,10 @@ function drag(e: MouseEvent) {
   return false
 }
 
-const { resetLimitPriceLineId } = useLimitPriceLine(() => _widget, () => isReadyLine)
+const { resetLimitPriceLineId, subscribePriceMove } = useLimitPriceLine(() => _widget, () => isReadyLine, showMarket)
+
+const { resetAvgPriceLineId } = useAvgPriceLine(() => _widget, () => isReadyLine, showMarket)
+
 
 onBeforeMount(() => {
   // _getTotalHolders()

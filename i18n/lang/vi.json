@@ -333,5 +333,7 @@
   "limitOrderFail": "Giao dịch lệnh giới hạn thất bại số tiền",
   "limitOrderCancel": "Đã hủy lệnh giới hạn số tiền",
   "limitOrderAutoCancel": "Lệnh giới hạn tự động hủy lý do: {f}",
-  "limitOrderSuccess": "Lệnh giới hạn thành công {t} {a} {s} giá trung bình {p}"
+  "limitOrderSuccess": "Lệnh giới hạn thành công {t} {a} {s} giá trung bình {p}",
+  "averagePositionPrice": "Giá trung bình",
+  "pending": "Đang chờ"
 }

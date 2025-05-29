@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref } from 'vue'
 
 import { useBotStore } from '@/stores/bot'
 import { getChainInfo } from '@/utils'
 import unified from './unified.vue'
-import { cancelAllLimitOrdersByGuid } from "@/api/token"
+import { cancelAllLimitOrdersByGuid } from '@/api/token'
 
 const botStore = useBotStore()
 const { t } = useI18n()

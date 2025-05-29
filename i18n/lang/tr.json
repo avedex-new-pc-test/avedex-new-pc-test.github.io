@@ -179,5 +179,6 @@
   "limitPrice": "Limit emir fiyatı",
   "notice": "Bildirim",
   "mCap": "Piyasa değeri",
-  "emptyNoData": "Veri Yok"
+  "emptyNoData": "Veri Yok",
+  "averagePositionPrice": "Ortalama Fiyat"
 }

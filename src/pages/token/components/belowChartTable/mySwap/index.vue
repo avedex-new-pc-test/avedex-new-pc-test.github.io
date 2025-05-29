@@ -81,7 +81,7 @@ const sellTokenAmount = computed(() => {
 
 // 卖出美元金额
 const sellUsdAmount = computed(() => {
-  const avgPrice = walletTxData.value && walletTxData.value.average_sold_price_usd !== "--" ?
+  const avgPrice = walletTxData.value && walletTxData.value.average_sold_price_usd !== '--' ?
     parseFloat(walletTxData.value.average_sold_price_usd || '0') : 0
   return avgPrice > 0 ?
     `$${formatNumber(avgPrice, 8)}` :
@@ -120,7 +120,7 @@ const getWalletTxData = async () => {
   }
   const txInfo = await bot_getUserWalletTxInfo(params)
   walletTxData.value = txInfo[0]
-  console.log(txInfo, "txInfo")
+  console.log(txInfo, 'txInfo')
 }
 
 let timer: any

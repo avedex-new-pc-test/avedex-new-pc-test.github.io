@@ -1,6 +1,7 @@
-import type { TokenInfo, TokenInfoExtra } from './types/token'
+import type { TokenInfo, TokenInfoExtra, WalletTokenInfo } from './types/token'
 import { getAddressAndChainFromId, getChainInfo } from '@/utils'
 import { NATIVE_TOKEN } from '@/utils/constants'
+import { createCacheRequest } from '#imports'
 
 const testDomain = 'https://0ftrfsdb.xyz'
 
@@ -733,17 +734,18 @@ export function getUserBalances(token_id: string, user_ids: string[]): Promise<{
     }
   })
 }
-export async function bot_getUserWalletTxInfo(query: {
+
+export const bot_getUserWalletTxInfo = createCacheRequest(async function(query: {
   user_address: string;
+  user_token: string;
   chain: string;
-  user_token: string
-}) {
+}): Promise<Array<WalletTokenInfo>>  {
   const { $api } = useNuxtApp()
   return $api('/v2api/walletinfo/v1/usertx', {
     method: 'get',
     query,
   })
-}
+}, 2000)
 
 export async function bot_getUserTxHistory1(query: {
   page: number;

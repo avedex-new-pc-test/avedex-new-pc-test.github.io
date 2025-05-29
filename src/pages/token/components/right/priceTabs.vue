@@ -48,9 +48,9 @@ const getColor = (id: string) => {
       cursor: pointer;
       border: none;
       background: var(--d-222-l-F2F2F2);
+      color: var(--d-F5F5F5-l-333);
       flex: 1;
       min-height: 44px;
-      color: var(-d-333-l-F5F5F5);
       &:first-child {
         border-radius: 4px 0 0 4px;
       }
@@ -66,7 +66,6 @@ const getColor = (id: string) => {
       }
       &.active {
         background: var(--d-333-l-DDD);
-        color: var(--custom-text-1-color);
       }
     }
   }
