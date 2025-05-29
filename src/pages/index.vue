@@ -1,5 +1,5 @@
 <template>
-  <div class="text-14px text-center h-screen">
+  <div class="text-14px text-center" style="height:calc(100vh - 100px);">
     <!-- <div class="h-400px w-600px text-[var(--d-333-l-ececec)]">
       <Demo/>
     </div> -->

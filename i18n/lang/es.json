@@ -174,9 +174,12 @@
   "profit": "Ganancia",
   "totalBuy": "Compra Total",
   "totalSell": "Venta Total",
-  "noMore": "No más",
   "seemsNoProblem": "Parece no haber problema",
   "possibleRisks": "Posibles riesgos",
   "netInflow": "Entrada neta",
-  "limitPrice": "Precio de la orden límite"
+  "limitPrice": "Precio de la orden límite",
+  "myPosition1": "Mi Posición",
+  "download": "Descargar",
+  "lastPrice1": "Último precio",
+  "noMore": "No más"
 }

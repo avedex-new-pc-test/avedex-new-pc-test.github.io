@@ -47,7 +47,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import { ref, computed, watch } from 'vue'
 import { ArrowLeft } from '@element-plus/icons-vue'
 // import CryptoJS from 'crypto-js'
@@ -121,7 +121,7 @@ watch(dialogVisible, (val) => {
 })
 </script>
 
-<style lang="scss">
+<style lang='scss'>
 .dialog-connect.el-dialog {
   position: relative;
   border-radius: 15px;
@@ -158,7 +158,7 @@ watch(dialogVisible, (val) => {
 }
 </style>
 
-<style scoped lang="scss">
+<style scoped lang='scss'>
 .w-logo {
   position: absolute;
   display: flex;

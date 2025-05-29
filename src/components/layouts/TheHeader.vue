@@ -46,16 +46,11 @@
         退出登录
       </div>
     </el-popover> -->
-    <wallet v-else/>
-    <a
-      class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
-      href="javascript:;"
-    >
-      <Icon
-        class="text-20px text-[--d-999-l-666]"
-        name="material-symbols:notifications"
-      />
-    </a>
+    <template v-else>
+      <positions/>
+      <wallet/>
+    </template>
+    <Notice/>
     <el-dropdown
       trigger="click"
       placement="bottom"
@@ -97,15 +92,15 @@
       />
     </a>
     <dialog-search v-model="dialogVisible_search" />
-    <!-- <connect-wallet v-model="botStore.connectVisible" /> -->
     <component :is="lazyComponent" v-model="botStore.connectVisible"/>
   </header>
 </template>
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
-// import connectWallet from '@/components/header/connectWallet/index.vue'
 import wallet from '@/components/header/wallet/index.vue'
+import Notice from "~/components/layouts/components/notice.vue";
 // const connectWallet = shallowRef<Component | null>(null)
+import positions from '@/components/header/positions/index.vue'
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()
@@ -120,7 +115,6 @@ const list = shallowRef([
 ])
 const dialogVisible_search = shallowRef(false)
 
-// const {lazyComponent:connectWallet,loadComponent:loadConnectComponent}  = useLazyComponent('@/components/header/connectWallet/index.vue')
 const lazyComponent = shallowRef<Component | null>(null)
 const loadComponent = async () => {
   const component = await import('@/components/header/connectWallet/index.vue')

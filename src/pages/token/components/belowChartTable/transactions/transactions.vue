@@ -711,8 +711,8 @@ function onRowClick({rowData}: RowEventHandlerParams) {
           <div class="flex items-center gap-2px">
             <span>{{ $t('amountU') }}</span>
             <Icon
-              :name="`${tableView.isVolUSDT?'custom:u':'custom:b'}`"
-              class="color-[--d-666-l-999] cursor-pointer"
+              name="custom:price"
+              :class="`${tableView.isVolUSDT ? 'color-#FFF':'color-#666'} cursor-pointer`"
               @click.self="tableView.isVolUSDT=!tableView.isVolUSDT"
             />
             <VolFilter

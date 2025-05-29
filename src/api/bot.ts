@@ -646,3 +646,16 @@ export function bot_getTransferGasFee(params: { chain: 'eth' | 'base' | 'bsc' | 
     query: params
   })
 }
+
+// 查询该代币的全部限价单委托(二期)
+// /swap/getTokenPendingTx GET
+// curl --location 'http://18.166.11.27:8081/v2/swap/getTokenPendingTx?chain=solana&token=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr
+export function bot_getMarketCompletedLimitTx(evmAddress: string) {
+  const {$api} = useNuxtApp()
+  return $api(`/swap/getMarketCompletedLimitTx`, {
+    method: 'get',
+    query: {
+      evmAddress
+    }
+  })
+}

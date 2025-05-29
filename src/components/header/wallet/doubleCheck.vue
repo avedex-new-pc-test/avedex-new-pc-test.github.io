@@ -189,7 +189,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import { Back, Right } from '@element-plus/icons-vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import { ElNotification, type FormInstance, type FormRules } from 'element-plus'

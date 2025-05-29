@@ -118,7 +118,7 @@ function filterType(type) {
 </script>
 
 <template>
-  <div>
+  <div class="min-h-400px">
     <div
       class="flex justify-between items-center py-8px text-10px border-b-0.5px border-b-solid border-b-[--d-333-l-F2F2F2]"
     >

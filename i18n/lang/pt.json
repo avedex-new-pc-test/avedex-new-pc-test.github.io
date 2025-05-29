@@ -178,5 +178,8 @@
   "seemsNoProblem": "Parece não haver problemas\n",
   "possibleRisks": "Riscos possíveis",
   "netInflow": "Fluxo Líquido",
-  "limitPrice": "Preço da ordem de limite"
+  "limitPrice": "Preço da ordem de limite",
+  "myPosition1": "Minha Posição",
+  "download": "Baixar ",
+  "lastPrice1": "Último preço",
 }
