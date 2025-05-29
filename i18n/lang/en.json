@@ -545,5 +545,11 @@
   "notice": "Notice",
   "limitOrder": "Limit Order",
   "T_Trading": "Trade",
-  "mCap": "MC"
+  "mCap": "MC",
+  "limitOrderSuccess": "limit order has been successfully {t} {a} {s}, average price is {p}",
+  "autoCancel": " Auto-cancel",
+  "failReason": "Fail reason",
+  "limitOrderFail": "limit order transaction failed, order amount",
+  "limitOrderCancel": "limit order canceled, order amount",
+  "limitOrderAutoCancel": "Limit order automatically canceled, reason: {f}"
 }

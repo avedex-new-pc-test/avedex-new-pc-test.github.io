@@ -597,7 +597,7 @@ export interface GetTokenDetailsListResponse {
   risk_level: number;
   risk_score: number;
   block_time: number;
-  event_type: string;
+  event_type: 'swap_buy' | 'swap_sell' | 'AUTHORITY' | 'ADD_LIQUIDITY' | 'NEW_COIN' | 'MINT' | 'FREEZE' | 'transfer_in' | 'transfer_out' | 'BURN' | 'NEW_PAIR';
   event_type_id: number;
   volume: string;
   amount: string;

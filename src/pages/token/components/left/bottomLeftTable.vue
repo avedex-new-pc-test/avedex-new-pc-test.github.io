@@ -37,7 +37,7 @@ const Component = computed(() => {
 
 <template>
   <div class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px flex-1 flex flex-col">
-    <div class="flex items-center px-12px gap-20px">
+    <div class="flex items-center px-12px gap-20px border-b-#FFFFFF08">
       <a
         v-for="(item) in tabs"
         :key="item.component" href="javascript:;"

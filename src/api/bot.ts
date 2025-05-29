@@ -647,12 +647,62 @@ export function bot_getTransferGasFee(params: { chain: 'eth' | 'base' | 'bsc' | 
   })
 }
 
+export interface IGetMarketCompletedLimitResponse {
+  id: number;
+  status: string;
+  createTime: Date;
+  updateTime: Date;
+  tgUid: string;
+  batchId: string;
+  chain: string;
+  swapType: number;
+  creatorAddress: string;
+  inTokenAddress: string;
+  inTokenDecimals: number;
+  inTokenSymbol: string;
+  inTokenName: string;
+  outTokenAddress: string;
+  outTokenDecimals: number;
+  outTokenSymbol: string;
+  outTokenName: string;
+  txValue: string;
+  txType: number;
+  txGasTipCap: string;
+  txGasLimit: number;
+  txToAddress: string;
+  txNonce: number;
+  txExtraGas: number;
+  slippage: number;
+  txHash: string;
+  inAmount: string;
+  inPrice: string;
+  outputAmount: string;
+  outPrice: string;
+  outPriceLimit: string;
+  createPrice: string;
+  triggerPrice: string;
+  blockNumber: number;
+  blockTime: number;
+  usePrivate: boolean;
+  inTokenLogoUrl: string;
+  outTokenLogoUrl: string;
+  inValue: string;
+  outValue: string;
+  tradeValueExpected: string;
+  followAddress: string;
+  followHash: string;
+  followType: number;
+  followId: number;
+  errorLog: string;
+  amm: string;
+}
+
 // 查询该代币的全部限价单委托(二期)
 // /swap/getTokenPendingTx GET
 // curl --location 'http://18.166.11.27:8081/v2/swap/getTokenPendingTx?chain=solana&token=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr
-export function bot_getMarketCompletedLimitTx(evmAddress: string) {
+export function bot_getMarketCompletedLimitTx(evmAddress: string): Promise<IGetMarketCompletedLimitResponse[]> {
   const {$api} = useNuxtApp()
-  return $api(`/swap/getMarketCompletedLimitTx`, {
+  return $api(`/botapi/swap/getMarketCompletedLimitTx`, {
     method: 'get',
     query: {
       evmAddress
