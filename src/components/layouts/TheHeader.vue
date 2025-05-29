@@ -98,9 +98,11 @@
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
 import wallet from '@/components/header/wallet/index.vue'
-import Notice from "~/components/layouts/components/notice.vue";
+import Notice from "~/components/layouts/components/notice.vue"
 // const connectWallet = shallowRef<Component | null>(null)
 import positions from '@/components/header/positions/index.vue'
+// import connectWallet from '@/components/header/connectWallet/index.vue'
+// const connectWallet = shallowRef<Component | null>(null)
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()

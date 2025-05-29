@@ -227,7 +227,7 @@
   /> -->
 </template>
 
-<script setup lang='ts'>
+<script setup lang="ts">
 import { ArrowUp, ArrowDown } from '@element-plus/icons-vue'
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'

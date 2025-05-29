@@ -326,5 +326,6 @@
   "notice": "Thông báo",
   "limitOrder": "Lệnh giới hạn",
   "T_Trading": "Giao dịch",
-  "mCap": "Vốn hóa"
+  "mCap": "Vốn hóa",
+  "emptyNoData": "Không có dữ liệu"
 }

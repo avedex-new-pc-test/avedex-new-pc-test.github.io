@@ -676,7 +676,7 @@ async function submitBotSwap() {
               clearTimeout(Timer)
               Timer = null
             }
-            tokenStore.placeOrderUpdate++
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
@@ -868,7 +868,7 @@ function submitBotLimit() {
               clearTimeout(Timer)
               Timer = null
             }
-            tokenStore.placeOrderUpdate++
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
