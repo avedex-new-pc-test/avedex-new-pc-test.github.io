@@ -327,5 +327,11 @@
   "limitOrder": "Lệnh giới hạn",
   "T_Trading": "Giao dịch",
   "mCap": "Vốn hóa",
-  "emptyNoData": "Không có dữ liệu"
+  "emptyNoData": "Không có dữ liệu",
+  "autoCancel": "Tự động hủy",
+  "failReason": "Lý do thất bại",
+  "limitOrderFail": "Giao dịch lệnh giới hạn thất bại số tiền",
+  "limitOrderCancel": "Đã hủy lệnh giới hạn số tiền",
+  "limitOrderAutoCancel": "Lệnh giới hạn tự động hủy lý do: {f}",
+  "limitOrderSuccess": "Lệnh giới hạn thành công {t} {a} {s} giá trung bình {p}"
 }

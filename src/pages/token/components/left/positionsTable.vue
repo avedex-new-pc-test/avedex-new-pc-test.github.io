@@ -51,14 +51,14 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
     return el
   })
 })
-
 watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
+  // 处理 token 交易
   if (val.swap) {
-    const token = ((val?.swap?.token === 'So11111111111111111111111111111111111111112')
-      || (val?.swap?.token === NATIVE_TOKEN))
-      ? NATIVE_TOKEN : val?.swap?.token
-    const chain = val?.swap?.chain
-    const type = val?.swap?.type
+    const token = ((val.swap.token === 'So11111111111111111111111111111111111111112')
+      || (val.swap.token === NATIVE_TOKEN))
+      ? NATIVE_TOKEN : val.swap.token
+    const chain = val.swap.chain
+    const type = val.swap.type
     if (token && chain) {
       const index = listData.value.findIndex(i => i.token === token && i.chain === chain)
       // 买入信号
@@ -83,6 +83,22 @@ watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
           }
         }
       }
+    }
+    //   处理转账
+  } else if (val.transfer) {
+    const chain = val.transfer.chain
+    const token = val.transfer.token
+    const type = val.transfer.type
+    if (token && chain) {
+      const index = listData.value.findIndex(i => i.token === token && i.chain === chain)
+      const isBuy = type === '0'
+      const indexObj = listData.value[index]
+      const balance = Number(indexObj.balance)
+      const price = indexObj.current_price_usd
+      const newBalance = new BigNumber(balance).plus(isBuy ? val.transfer.amount : -val.transfer?.amount)
+      const newBalanceUsd = newBalance.multipliedBy(price)
+      indexObj.balance = newBalance.toString()
+      indexObj.balance_usd = newBalanceUsd.toNumber()
     }
   }
 })
@@ -209,12 +225,13 @@ async function _getUserBalance() {
       if (pageNo === 1) {
         listData.value = res.data.map(i => ({...i, index: `${i.token}-${i.chain}`}))
       } else {
-        listData.value = res.data
+        const list = res.data
           .filter(i => listData.value.every(j => j.index !== `${i.token}-${i.chain}`))
           .map(i => ({
             ...i,
             index: `${i.token}-${i.chain}`
           }))
+        listData.value = listData.value.concat(list)
       }
       listStatus.value.finished = res.data.length < listStatus.value.pageSize
       if (!listStatus.value.finished) {
@@ -225,7 +242,7 @@ async function _getUserBalance() {
         listData.value = []
       }
     }
-    priceV2Store.setMultiPriceParams('favorite', listData.value.map(el => el.address + '-' + el.chain))
+    priceV2Store.setMultiPriceParams('favorite', listData.value.map(el => el.token + '-' + el.chain))
     priceV2Store.sendPriceWs()
   } catch (e) {
     console.log('=>(favoriteTable.vue:106) (e)', (e))
@@ -421,8 +438,12 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
         :infinite-scroll-delay="10"
         :infinite-scroll-immediate="false"
       >
-        <div class="px-10px pb-20px">
-          <div v-for="(row,$index) in listData" :key="$index" class="text-12px flex justify-between py-10px min-h-35px">
+        <div class="pr-10px pb-20px">
+          <NuxtLink
+            v-for="(row,$index) in listData" :key="$index"
+            class="text-12px flex justify-between pl-10px py-10px cursor-pointer hover:bg-[var(--d-1D2232-l-F5F5F5)]"
+            :to="`/token/${row.token}-${row.chain}`"
+          >
             <div class="flex-[1.5] flex items-center">
               <TokenImg
                 :row="row"
@@ -480,7 +501,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
               </el-button>
               <span v-else class="color-[var(--d-EAECEF-l-333)]">--</span>
             </div>
-          </div>
+          </NuxtLink>
         </div>
         <div
           v-if="listStatus.loading&&listStatus.pageNo!==1"
