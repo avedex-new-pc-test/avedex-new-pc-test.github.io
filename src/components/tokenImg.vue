@@ -2,7 +2,7 @@
 const {row} = defineProps({
   row: {
     type: Object as PropType<{
-      chain: string;
+      chain?: string;
       logo_url: string
     }>,
     default: () => ({

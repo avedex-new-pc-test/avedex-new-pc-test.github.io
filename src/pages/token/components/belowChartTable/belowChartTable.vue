@@ -57,8 +57,7 @@ const Component = computed(() => {
 </script>
 
 <template>
-  <div :class="`bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1
-    `">
+  <div class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1">
     <div
       class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-[rgba(255,255,255,.03)] mb-12px">
       <a v-for="(item) in tabsList" :key="item.component" href="javascript:;" :class="`flex items-center decoration-none text-12px lh-16px text-center color-[--d-999-l-666]
@@ -73,7 +72,9 @@ const Component = computed(() => {
       </a>
       <OneClick />
     </div>
-    <component :is="Component" />
+    <KeepAlive>
+      <component :is="Component"/>
+    </KeepAlive>
   </div>
 </template>
 

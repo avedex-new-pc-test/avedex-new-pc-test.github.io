@@ -60,7 +60,7 @@
                       <template #suffix>
                         <a
                           v-copy="googleAuth.secret" href="javascript:void(0)"
-                          :class="`text-14px font-400 lh-20px text-left text-from-font decoration-none text-[#3F80F7]`">Copy</a>
+                          class="text-14px font-400 lh-20px text-left text-from-font decoration-none text-#3F80F7">Copy</a>
                       </template>
                     </el-input>
                     <canvas id="qr-google-canvas" />

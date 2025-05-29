@@ -1,37 +1,43 @@
 <template>
   <div>
-    <el-table :data="txHistory" fit stripe max-height="700" v-loading="loading && !txHistory?.length"
-      style="width: 100%; min-height: 250px;" @row-click="tableRowClick">
+    <el-table
+      v-loading="loading && !txHistory?.length"
+      :data="txHistory" fit stripe max-height="700"
+      style="width: 100%; min-height: 350px;" @row-click="tableRowClick">
       <template #empty>
         <div class="flex flex-col items-center justify-center py-30px" v-if="!loading">
-          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg" />
-          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" />
+          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg" >
+          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" >
           <span>{{ t('emptyNoData') }}</span>
         </div>
-        <span v-else></span>
+        <span v-else/>
       </template>
       <el-table-column :label="t('token')" align="left">
         <template #default="{ row }">
           <div class="flex items-center justify-start">
             <div class="icon-token-container mr-5px">
-              <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+              <el-image
+                class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
                 chain: row?.chain,
                 symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
                 logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
               })">
                 <template #error>
-                  <img class="w-32px h-32px"
+                  <img
+                    class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol)"
                     alt="" srcset="">
                 </template>
                 <template #placeholder>
-                  <img class="w-32px h-32px"
+                  <img
+                    class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol)"
                     alt="" srcset="">
                 </template>
               </el-image>
-              <img v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
-                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="" />
+              <img
+                v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
+                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="" >
             </div>
             <span class="token-symbol">{{ row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol :
               row.outTokenSymbol
@@ -45,7 +51,7 @@
           <div class="flex items-center">
             <span>{{ t('type') }}</span>
             <el-dropdown trigger="click" @command="handleTypeCommand">
-              <i class="iconify i-custom:filter text-10px color-[--d-666-l-999] cursor-pointer text-10px"></i>
+              <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px" />
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -69,15 +75,12 @@
       </el-table-column>
       <el-table-column :label="t('price')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ row?.swapType === 1 ? formatNumber2(row?.outPrice ||
-            0) : formatNumber2(row?.inPrice || 0) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ row?.swapType === 1 ? formatNumber(row?.outPrice || 0) : formatNumber(row?.inPrice || 0) }}</div>
         </template>
       </el-table-column>
       <el-table-column :label="t('volume4')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumberS(Number(row?.inValue) || row?.outValue
-            ||
-            0, 2) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(Number(row?.inValue) || row?.outValue || 0, 2) }}</div>
         </template>
       </el-table-column>
 
@@ -92,14 +95,10 @@
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">
             <template v-if="!row?.isBuy">
-              {{ formatNumber2(utils.formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals ||
-                0), 4)
-              }} {{ row?.inTokenSymbol }}
+              {{ formatNumber(new BigNumber(row?.inAmount || 0).div(new BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) }} {{ row?.inTokenSymbol }}
             </template>
             <template v-else>
-              {{ formatNumber2(utils.formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals ||
-                0), 4)
-              }} {{ row?.outTokenSymbol }}
+              {{ formatNumber(new BigNumber(row?.outAmount || 0).div(new BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) }} {{ row?.outTokenSymbol }}
             </template>
           </span>
         </template>
@@ -110,7 +109,7 @@
           <div class="flex items-center">
             <span>{{ t('status') }}</span>
             <el-dropdown trigger="click" @command="handleStatusCommand">
-              <i class="iconify i-custom:filter text-10px  color-[--d-666-l-999] cursor-pointer text-10px"></i>
+              <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px" />
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -151,8 +150,7 @@
           <template v-if="row.status == 'confirmed' && row.swapType === 2 && row.chain === 'solana'">
             <share :statistics="row" :address="props.userAddress" :chain="row.chain" />
           </template>
-          <i v-if="row.txHash" class="iconify i-custom:browser font-14 ml-8px text-[var(--d-999-l-959A9F)]"
-            style="cursor: pointer; font-size: 16px;" @click.stop.prevent="jumpExplorerUrl(row)"></i>
+          <Icon name="custom:browser" class="text-16px  ml-8px clickable color-[--d-999-l-666]" @click.stop.prevent="jumpExplorerUrl(row)" />
         </template>
       </el-table-column>
     </el-table>
@@ -161,9 +159,9 @@
 <script setup lang="ts">
 // import { useStorage } from '@vueuse/core'
 import BigNumber from 'bignumber.js'
-import { evm_utils as utils, formatDate, getSymbolDefaultIcon, getChainDefaultIcon, formatExplorerUrl } from '~/utils'
-import { formatNumber2, formatNumberS } from '~/utils/formatNumber'
-import { bot_getUserTxHistory1 } from "@/api/token"
+import { formatDate, getSymbolDefaultIcon, getChainDefaultIcon, formatExplorerUrl } from '~/utils'
+import { formatNumber } from '~/utils/formatNumber'
+import { bot_getUserTxHistory1 } from '@/api/token'
 import share from './share.vue'
 
 import { ref } from 'vue'

@@ -14,7 +14,7 @@ function drag(e: MouseEvent) {
     if (!canDrag.value) {
       return
     }
-    if (e.clientY > height.value) {
+    if (e.clientY > height.value - 240) {
       canDrag.value = false
       return
     }
@@ -47,7 +47,7 @@ function drag(e: MouseEvent) {
         <Icon name="custom:drag" class="text-4px color-#959A9F"/>
       </div>
     </div>
-    <BottomLeftTable :topLeftHeight="topLeftHeight"/>
+    <BottomLeftTable :height="height - topLeftHeight"/>
   </div>
 </template>
 

@@ -33,12 +33,45 @@ definePageMeta({
 })
 const route = useRoute()
 const tokenStore = useTokenStore()
+const botStore = useBotStore()
+const addresses = computed(() => {
+  const result = botStore.userInfo?.addresses
+  if (Array.isArray(result)) {
+    return Array.from(new Set(result.map(el => el.address)))
+  }
+  return []
+})
 const wsStore = useWSStore()
 
 
 const documentVisible = shallowRef(true)
 provide('documentVisible', documentVisible)
 const botSwapStore = useBotSwapStore()
+
+watch(() => addresses.value, () => {
+  if (addresses.value?.length) {
+    subBalanceChange()
+  }
+}, {
+  immediate: true
+})
+
+function subBalanceChange() {
+  wsStore.send({
+    jsonrpc: '2.0',
+    method: 'unsubscribe',
+    params: [
+      'asset'
+    ],
+    id: 1
+  })
+  wsStore.send({
+    jsonrpc: '2.0',
+    method: 'subscribe',
+    params: ['asset', addresses.value],
+    id: 1,
+  })
+}
 
 
 function _getTokenInfo() {
@@ -60,7 +93,7 @@ function init() {
   tokenStore.tokenPrice = 0
   _getTokenInfo()
   _getTokenInfoExtra()
-  wsStore.onmessageTxUpdateToken()
+  // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
   botSwapStore.sendNativePriceWs()
 }

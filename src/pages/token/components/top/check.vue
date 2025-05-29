@@ -1440,7 +1440,7 @@ const showRiskList = shallowRef(false)
 const buy_tax_list_show = shallowRef(true)
 const sell_tax_list_show = shallowRef(true)
 // const activeTab = shallowRef(1)
-const { evmAddress } = useBotStore()
+const { evmAddress } = storeToRefs(useBotStore())
 
 const riskStatus: Record<number, string> = {
   0: 'normal1',
@@ -1505,9 +1505,11 @@ const lp_remark = computed(() => {
 const holder_remark = computed(() => {
   return ave_remarks?.value.holder_remark || ''
 })
+
 const tx_liq_remark = computed(() => {
   return ave_remarks?.value.tx_liq_remark || ''
 })
+
 const risk_remark = computed(() => {
   return ave_remarks?.value.risk_remark || ''
 })
@@ -1584,7 +1586,7 @@ const statistics_risk = computed(() => {
       }
     })
   }
-  checkStore.statistics_risk_store =  checkResult?.value?.audit_pass_by ? 0 : num
+
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
 
@@ -1621,7 +1623,6 @@ const statistics_unknown = computed(() => {
     num = num + 1
   }
   num = num + riskList?.value?.filter((i) => i[0] == 0.6)?.length
-  checkStore.statistics_unknown_store =  checkResult?.value?.audit_pass_by ? 0 : num
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
 const statistics_warning = computed(() => {
@@ -1664,12 +1665,22 @@ const statistics_warning = computed(() => {
       }
     })
   }
-  checkStore.statistics_warning_store =  checkResult?.value?.audit_pass_by ? 0 : num
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
-
+watch(statistics_risk, (val) => {
+  checkStore.statistics_risk_store =  val
+})
+watch(statistics_warning, (val) => {
+  checkStore.statistics_warning_store =  val
+})
+watch(statistics_unknown, (val) => {
+  checkStore.statistics_unknown_store =  val
+})
 onMounted(() => {
-    getVote()
+  getVote()
+})
+watch(evmAddress, () => {
+  getVote()
 })
 function formatRisk(checkResult?: Check) {
   if (!showResult || !checkResult?.risk_score) {
@@ -1983,7 +1994,7 @@ function formatVoteP(checkResult: Check | null) {
 }
 
 function voteSupport() {
-  const user = evmAddress
+  const user = evmAddress.value
   if (!user) {
     ElMessage.error(t('connectWalletFirst'))
     return
@@ -1995,7 +2006,7 @@ function voteSupport() {
   const support = () => {
     const tokenId = route.params.id as string
     loadingVote.value = true
-    _voteSupport(tokenId,user)
+    _voteSupport(tokenId, user)
       .then(() => {
         if (checkResult?.value?.my_vote === 0) {
           ElMessage.success(t('voteSuccess'))
@@ -2022,7 +2033,7 @@ function voteSupport() {
     .catch(() => {})
 }
 function voteAgainst() {
-      const user = evmAddress
+      const user = evmAddress.value
       if (!user) {
         ElMessage.error(t('connectWalletFirst'))
         return
@@ -2062,13 +2073,15 @@ function voteAgainst() {
         .catch(() => {})
     }
 function getVote() {
+  if (!(visible.value && evmAddress.value)) return
   const tokenId = route.params.id as string
-  _getVote(tokenId, evmAddress).then(res => {
-    if (checkResult.value) {
+  _getVote(tokenId, evmAddress.value).then(res => {
       Object.keys(res).forEach(i => {
-        checkResult.value[i] = res[i]
+        if (checkResult.value) {
+            checkResult.value[i as keyof Check] = res[i]
+        }
       })
-    }
+
   })
 }
 // const checkResult1 = computed(() => {

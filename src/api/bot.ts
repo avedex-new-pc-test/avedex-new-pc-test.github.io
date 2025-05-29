@@ -453,7 +453,20 @@ export function bot_approve(data: {
   })
 }
 
-
+export interface IBotTxRequest {
+  batchId?: string
+  swapList: Array<{
+    creatorAddress: string
+    inAmount: string
+  }>
+  inTokenAddress: string
+  outTokenAddress: string
+  swapType: 1 | 2
+  isPrivate: boolean
+  priorityFee: string
+  autoSell?: boolean
+  slippage: number
+}
 // 创建 Solana 市价交易
 export function bot_createSolTx(params: {
   batchId?: string

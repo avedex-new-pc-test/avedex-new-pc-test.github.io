@@ -78,7 +78,8 @@ function getColorClass(val: string) {
     virtual-triggering
     trigger="hover"
     raw-content
-    popper-class="[&&]:p-20px"
+    popper-class="[&&]:p-20px [&&]:[--el-text-color-primary:--d-222-l-FFF]"
+    style="--el-text-color-primary:var(--d-222-l-FFF)"
   >
     <template #content>
       <el-skeleton
@@ -237,7 +238,7 @@ function getColorClass(val: string) {
             >
               <TokenImg
                 :row="{
-                  logo_url:item.logoUrl,
+                  logo_url: item.logoUrl,
                 }"
                 token-class="w-16px h-16px [&&]:mr-0"
               />

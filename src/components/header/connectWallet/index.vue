@@ -1,52 +1,48 @@
 <template>
   <div>
     <el-dialog
-      v-model="dialogVisible" modal-class="dialog-connect-bg" width="632" height='718'
+      v-model="dialogVisible" modal-class="dialog-connect-bg" width="500" height='630'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
       <div class="w-logo">
-        <img v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97">
-        <img v-else src="@/assets/images/logo2-83.29x21.97.png" alt="logo" height="21.97">
-        <span>{{ $t('campaignTitle') }}</span>
+        <img
+          v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97"
+          loading="lazy">
+        <img v-else src="@/assets/images/logo2-83.29x21.97.png" alt="logo" height="21.97" loading="lazy">
+        <!-- <span>{{ $t('campaignTitle') }}</span> -->
       </div>
-      <reset v-if="emailRegisterType == 'reset'" @update:c-type="(cType: string) => emailRegisterType = cType"/>
-      <div v-if="emailRegisterType == 'reset'" />
-      <template v-else>
-        <div class='w-content'>
-          <h3 class="connect-popup-title font-500">
-            <el-icon
-              v-if="botStore.connectWalletTab !== 0"
-              :size="35"
-              style="color:var(--d-999-l-222);"
-              @click="botStore.connectWalletTab = 0">
-              <ArrowLeft />
-            </el-icon>
-            {{ title }}
-          </h3>
-          <div class="m-content">
-            <div>
-              <div
-                v-show="botStore.connectWalletTab == 0"
-                class="text-14px text-center min-h-200px"
-              >
-                <emailRegisterAndLogin
-                  ref="loginForm"
-                  :cType="emailRegisterType"
-                  @update:c-type="(cType) => emailRegisterType = cType">
-                  <!-- <template #nav>
-                    <ul class="tabs">
-                      <li v-for="(item, index) in tabs" :key="index" class="filterArray"
-                        :class="{ active: item.value == botStore.connectWalletTab }"
-                        @click="botStore.connectWalletTab = item.value">
-                        <span>{{ item.name }}</span>
-                      </li>
-                    </ul>
-                  </template> -->
-                </emailRegisterAndLogin>
-              </div>
+      <!-- <reset v-if="emailRegisterType == 'reset'" @update:c-type="(cType: string) => emailRegisterType = cType"/> -->
+      <component
+        :is="lazyComponent" v-show="emailRegisterType == 'reset'" :cType="emailRegisterType"
+        @update:c-type="(cType: string) => emailRegisterType = cType" />
+      <div v-show="emailRegisterType !== 'reset'" class='w-content'>
+        <h3 class="connect-popup-title font-500">
+          <el-icon
+            v-if="botStore.connectWalletTab !== 0" :size="35" style="color:var(--d-999-l-222);"
+            @click="botStore.connectWalletTab = 0">
+            <ArrowLeft />
+          </el-icon>
+          {{ title }}
+        </h3>
+        <div class="m-content">
+          <div>
+            <div v-show="botStore.connectWalletTab == 0" class="text-14px text-center min-h-200px">
+              <emailRegisterAndLogin
+                ref="loginForm" :cType="emailRegisterType"
+                @update:c-type="(cType) => emailRegisterType = cType">
+                <!-- <template #nav>
+                  <ul class="tabs">
+                    <li v-for="(item, index) in tabs" :key="index" class="filterArray"
+                      :class="{ active: item.value == botStore.connectWalletTab }"
+                      @click="botStore.connectWalletTab = item.value">
+                      <span>{{ item.name }}</span>
+                    </li>
+                  </ul>
+                </template> -->
+              </emailRegisterAndLogin>
             </div>
           </div>
         </div>
-      </template>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -55,11 +51,21 @@
 import { ref, computed, watch } from 'vue'
 import { ArrowLeft } from '@element-plus/icons-vue'
 // import CryptoJS from 'crypto-js'
-import reset from './reset.vue'
+// import reset from './reset.vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
+
+
+const lazyComponent = shallowRef<Component | null>(null)
+const loadComponent = async () => {
+  const component = await import('./reset.vue')
+  lazyComponent.value = component.default
+}
+
+console.log('connectWallet')
+
 const botStore = useBotStore()
-const {mode} = storeToRefs(useGlobalStore())
+const { mode } = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
 
 const props = defineProps({
@@ -95,7 +101,19 @@ const title = computed(() => {
   }
 })
 
+// onMounted(() => {
+//   setTimeout(() => {
+//     if ((emailRegisterType.value !== 'reset') && !botStore.evmAddress) {
+//       loadComponent()
+//     }
+//   }, 3000)
+// })
 // Watchers
+watch(() => emailRegisterType.value, (val) => {
+  if (val === 'reset') {
+    loadComponent()
+  }
+})
 watch(dialogVisible, (val) => {
   if (!val && (emailRegisterType.value === 'reset' || emailRegisterType.value === 'register')) {
     emailRegisterType.value = 'login'
@@ -107,9 +125,9 @@ watch(dialogVisible, (val) => {
 .dialog-connect.el-dialog {
   position: relative;
   border-radius: 15px;
-  min-width: 632px;
-  min-height: 696px;
-  padding: 70px 86px 60px;
+  min-width: 500px;
+  min-height: 630px;
+  padding: 70px 40px 40px;
   box-sizing: border-box;
   position: absolute;
   top: 50%;
@@ -136,7 +154,7 @@ watch(dialogVisible, (val) => {
 }
 
 .w-selectNet-popup.el-popper {
-  max-width: 460px;
+  max-width: 420px;
 }
 </style>
 
@@ -173,28 +191,30 @@ watch(dialogVisible, (val) => {
     }
   }
 }
+
 :deep() .el-input {
   --el-input-border-color: #444444;
   --el-input-placeholder-color: var(--d-666-l-999);
   --el-text-color-placeholder: #999;
   --el-input-bg-color: var(--d-333-l-F2F2F2)
 }
-:deep()  .el-input__wrapper {
+
+:deep() .el-input__wrapper {
   border: none;
   border-radius: 6px;
   box-shadow: none;
-  &:hover{
+
+  &:hover {
     box-shadow: 0 0 0 1px #3F80F7 inset;
   }
 }
+
 .w-content {
   display: inline-block;
 
   .m-content {
-    width: 460px;
+    width: 420px;
     margin: 0 auto;
-
-
 
     :deep() .el-input.el-input--large {
       height: 48px;

@@ -228,6 +228,7 @@ import { formatBotError, handleBotError } from '@/utils/bot'
 import { formatNumber } from '@/utils/formatNumber'
 import doubleCheck from './doubleCheck.vue'
 import { ElMessage, ElMessageBox, ElNotification as ElNotify, type FormInstance } from 'element-plus'
+import { useEventBus } from '@vueuse/core'
 
 const { mode, token_logo_url } = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
@@ -238,6 +239,14 @@ const botStore = useBotStore()
 const tgWalletVisible = ref(false)
 const showVisible = ref(0)
 const depositChain = ref('solana')
+
+useEventBus<string>('botTopUp').on((val) => {
+  tgWalletVisible.value = true
+  nextTick(() => {
+    showVisible.value = 2
+    depositChain.value = val
+  })
+})
 interface WithdrawFormData {
   amount: string
   address: string

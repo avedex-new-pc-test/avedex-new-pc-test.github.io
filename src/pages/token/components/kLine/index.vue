@@ -10,13 +10,13 @@
 <script setup lang='ts'>
 import type { IChartingLibraryWidget, ResolutionString, Timezone, SeriesFormat, VisiblePlotsSet, LanguageCode, ChartingLibraryFeatureset } from '~/types/tradingview/charting_library'
 import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, getWSMessage } from '@/utils'
-import { getKlineHistoryData, getUserKlineTxTags } from '@/api/token'
-import { getTotalHolders } from '@/api/stats'
+import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
-import { switchResolution, formatLang, formatToMarks, supportSecChains, filterLanguage, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useWidgetVisibilityRefresh, useLimitPriceLine } from './utils'
+import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx } from './types'
 import BigNumber from 'bignumber.js'
+import { useKlineMarks } from './mark'
 
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
@@ -25,8 +25,11 @@ const token = computed(() => {
   return route.params.id as string
 })
 
+const klinePair = ref('')
+
 let isReady = false
 let isReadyLine = false
+let isHeaderReady = false
 
 const chain = computed(() => {
   return getAddressAndChainFromId(token.value)?.chain || tokenStore?.token?.chain
@@ -52,27 +55,44 @@ const amm = computed(() => {
   return tokenStore?.pair?.amm || ''
 })
 
+
 watch(pair, (val) => {
+  if (val === klinePair.value) return
+  switchTokenKline()
+})
+
+function switchTokenKline() {
   isReadyLine = false
   resetLimitPriceLineId()
-  if (val && val !== '-' && isReady && route.name === 'token-id') {
+  const val = pair.value
+  if (isReady && route.name === 'token-id') {
     const isSupportSecChains = (chain.value && supportSecChains.includes(chain.value)) || false
     resolution.value = initTradingViewIntervals(resolution.value, isSupportSecChains)
     if (_widget) {
       _widget?.resetCache?.()
-      _widget?.setSymbol?.(symbol.value + '---' + val, resolution.value as ResolutionString, () => {
+      _widget?.activeChart?.()?.clearMarks?.()
+      _widget?.setSymbol?.(symbol.value + '---' + route.params.id + val, resolution.value as ResolutionString, () => {
         isReadyLine = true
+        // createHeaderButton()
       })
     } else {
       initChart()
     }
   }
+}
+
+watch(user, () => {
+  if (isReady && route.name === 'token-id') {
+    _widget?.activeChart?.()?.clearMarks?.()
+    _widget?.activeChart?.()?.refreshMarks?.()
+  }
 })
+
 const price = 0
 const wsStore = useWSStore()
 const localeStore = useLocaleStore()
 
-const marks = shallowRef([{ id: 'trade', name: '我的' }])
+// const marks = shallowRef([{ id: 'trade', name: '我的' }])
 
 let lastBar: null | {
   close: number
@@ -86,7 +106,7 @@ let lastBar: null | {
 // const LLJEFFY_#_240
 const listenerGuidMap = new Map()
 
-const resolution = shallowRef('15')
+const resolution = shallowRef(localStorage.getItem('tv_resolution') || '15')
 const themeStore = useThemeStore()
 let _widget: null | IChartingLibraryWidget = null
 
@@ -110,6 +130,7 @@ watch(() => localeStore.locale, () => {
   resetChart()
 })
 
+
 // const documentVisible = inject<Ref<boolean>>('documentVisible') as Ref<boolean>
 
 // watch(documentVisible, (val) => {
@@ -120,22 +141,12 @@ watch(() => localeStore.locale, () => {
 // })
 function resetChart() {
   isReadyLine = false
+  isHeaderReady = false
   resetLimitPriceLineId()
   _widget?.remove?.()
   initChart()
 }
 
-
-
-function _getTotalHolders() {
-  getTotalHolders(token.value).then(res => {
-    console.log(res)
-    marks.value = [{ id: 'trade', name: '我的' }].concat(res?.map((i) => ({
-      id: i.type,
-      name: i?.[filterLanguage(localeStore.locale)] + (i.type !== '31' ? `(${i?.total_address})` : '')
-    })))
-  })
-}
 
 function saveStudy() {
   if (_widget?.activeChart) {
@@ -163,6 +174,20 @@ function createStudy() {
   }
 }
 
+
+let headerBtns: HTMLElement[] = []
+function createHeaderButton() {
+  if (!isHeaderReady) {
+    return
+  }
+  headerBtns.forEach(i => {
+    _widget?.removeButton?.(i)
+  })
+  headerBtns = []
+  createToggleButton()
+  createMarkButton(_widget, headerBtns)
+}
+
 // 创建 市值/价格 切换按钮
 function createToggleButton() {
   const btn = _widget?.createButton()
@@ -182,7 +207,19 @@ function createToggleButton() {
     resetChart()
   }
   updateButtonContent()
+  headerBtns.push(btn)
 }
+
+
+const { createMarkButton, getMarks, marksTabs, wsTxUpdateMarks } = useKlineMarks()
+
+watch(marksTabs, () => {
+  if (!isReady) return
+  createHeaderButton()
+})
+
+// 提前拦截 K线 数据 没有更多
+let noData = false
 
 async function initChart() {
   const symbolUp = symbol.value?.toUpperCase?.() || '-'
@@ -222,6 +259,10 @@ async function initChart() {
     charts_storage_api_version: '1.1',
     timezone: getTimezone() as Timezone,
     time_frames: [],
+    // loading_screen: {
+    //   backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    //   foregroundColor: '#3F80F7'
+    // },
     custom_css_url: `${location.origin}/tv_custom.css`,
     // format: (showMarket.value ? 'volume' : 'price') as SeriesFormat,
     custom_formatters: {
@@ -361,27 +402,55 @@ async function initChart() {
         console.log('[getBars]: Method call', symbolInfo, resolution, from, to, firstDataRequest)
         try {
           if (firstDataRequest) {
-            const interval = switchResolution(resolution)
-            getKlineHistoryData({
-              interval: interval,
-              pair: pair.value + '-' + chain.value
-            }).then(res => {
-              console.log('getKlineHistoryData', res)
-              const bars = res?.kline_data?.map?.(i => ({
-                time: i.time * 1000,
-                open: showMarket.value ? new BigNumber(i.open || 0).times(tokenStore?.circulation || 0).toNumber() : i.open,
-                high: showMarket.value ? new BigNumber(i.high || 0).times(tokenStore?.circulation || 0).toNumber() : i.high,
-                low: showMarket.value ? new BigNumber(i.low || 0).times(tokenStore?.circulation || 0).toNumber() : i.low,
-                close: showMarket.value ? new BigNumber(i.close || 0).times(tokenStore?.circulation || 0).toNumber() : i.close,
-                volume: i.volume,
-              })) || []
-              console.log('onResult', bars)
-              lastBar = bars?.[bars?.length - 1] || null
-              onResult(bars, {noData: bars?.length === 0})
-            })
+            noData = false
           } else {
-            onResult([], { noData: true })
+            if (noData) {
+              onResult([], { noData: true })
+              return
+            }
           }
+          const interval = switchResolution(resolution)
+          const params = {
+            interval: interval,
+            pair_id: pair.value + '-' + chain.value,
+            token_id: route.params.id as string,
+            from,
+            to
+          }
+          getKlineHistoryData(params).then(res => {
+            const bars = res?.kline_data?.map?.(i => ({
+              time: i.time * 1000,
+              open: showMarket.value ? new BigNumber(i.open || 0).times(tokenStore?.circulation || 0).toNumber() : i.open,
+              high: showMarket.value ? new BigNumber(i.high || 0).times(tokenStore?.circulation || 0).toNumber() : i.high,
+              low: showMarket.value ? new BigNumber(i.low || 0).times(tokenStore?.circulation || 0).toNumber() : i.low,
+              close: showMarket.value ? new BigNumber(i.close || 0).times(tokenStore?.circulation || 0).toNumber() : i.close,
+              volume: i.volume,
+            })) || []
+            klinePair.value = res?.pair || ''
+            if (firstDataRequest) {
+              lastBar = bars?.[bars?.length - 1] || null
+            }
+            noData = bars?.length < 200
+            onResult(bars, {noData: !bars?.length})
+          })
+          // if (firstDataRequest) {
+          //   getKlineHistoryData(params).then(res => {
+          //     console.log('getKlineHistoryData', res)
+          //     const bars = res?.kline_data?.map?.(i => ({
+          //       time: i.time * 1000,
+          //       open: showMarket.value ? new BigNumber(i.open || 0).times(tokenStore?.circulation || 0).toNumber() : i.open,
+          //       high: showMarket.value ? new BigNumber(i.high || 0).times(tokenStore?.circulation || 0).toNumber() : i.high,
+          //       low: showMarket.value ? new BigNumber(i.low || 0).times(tokenStore?.circulation || 0).toNumber() : i.low,
+          //       close: showMarket.value ? new BigNumber(i.close || 0).times(tokenStore?.circulation || 0).toNumber() : i.close,
+          //       volume: i.volume,
+          //     })) || []
+          //     console.log('onResult', bars)
+          //     lastBar = bars?.[bars?.length - 1] || null
+          //     onResult(bars, {noData: bars?.length === 0})
+          //   })
+          // } else {
+          //   onResult([], { noData: true })
+          // }
         } catch (err) {
           console.log('[getBars]: Get error', err)
           onError(err?.toString?.() || 'getBars err')
@@ -412,10 +481,13 @@ async function initChart() {
           const { event, data } = msg
           if (event === 'tx') {
             const tx: WSTx = data?.tx
+            const interval = switchResolution(resolution)
             if (tx.pair_address === pair.value) {
-              const interval = switchResolution(resolution)
               const t = token.value?.replace?.(/-.*$/, '')
               const newBar = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
+              if (newBar) {
+                lastBar = {...newBar}
+              }
               if (showMarket.value && newBar) {
                 newBar.open = new BigNumber(newBar.open || 0).times(tokenStore?.circulation || 0).toNumber()
                 newBar.high = new BigNumber(newBar.high || 0).times(tokenStore?.circulation || 0).toNumber()
@@ -426,6 +498,11 @@ async function initChart() {
                 onTick(newBar)
               }
             }
+            wsTxUpdateMarks({
+              tx,
+              interval: Number(interval),
+              user: user.value
+            }, _widget)
           }
         }, 'kline')
         listenerGuidMap.set(token.value, data)
@@ -436,9 +513,15 @@ async function initChart() {
           if (subscribeParams?.params?.[1] === tokenAddress.value) {
             return
           }
-          subscribeParams.method = 'unsubscribe'
-          wsStore.send(subscribeParams)
-          listenerGuidMap?.delete?.(token.value)
+          listenerGuidMap.forEach(i => {
+            if (i?.params?.[1] !== tokenAddress.value) {
+              wsStore.send({
+                ...i,
+                method: 'unsubscribe'
+              })
+            }
+          })
+          listenerGuidMap?.clear()
         }
       },
       searchSymbols: (userInput, exchange, symbolType, onResult) => {
@@ -447,18 +530,28 @@ async function initChart() {
       getMarks: (symbolInfo, from, to, onDataCallback, resolution) => {
         console.log(`[getMarks] ${symbolInfo.name} from ${from} to ${to}, resolution: ${resolution}`)
         const interval = switchResolution(resolution)
-        getUserKlineTxTags({
+        getMarks({
           from,
           to,
           interval,
-          pair: pair.value + '-' + chain.value,
-          token_address: token.value,
-          user_address: user.value
-        }).then(res => {
-          console.log('getUserKlineTxTags', res)
-          const marks = formatToMarks(res, interval)
-          onDataCallback(marks || [])
+          pair: pair.value,
+          token: token.value,
+          chain: chain.value || '',
+          user: user.value,
+          onDataCallback
         })
+        // getUserKlineTxTags({
+        //   from,
+        //   to,
+        //   interval,
+        //   pair: pair.value + '-' + chain.value,
+        //   token_address: token.value,
+        //   user_address: user.value
+        // }).then(res => {
+        //   console.log('getUserKlineTxTags', res)
+        //   const marks = formatToMarks(res, interval)
+        //   onDataCallback(marks || [])
+        // })
       }
     }
   })
@@ -485,7 +578,8 @@ async function initChart() {
 
   _widget?.headerReady().then(() => {
     // 创建 市值/价格 切换按钮
-    createToggleButton()
+    isHeaderReady = true
+    createHeaderButton()
   })
   // onMarkClick
   _widget?.subscribe('onMarkClick', (markId) => {

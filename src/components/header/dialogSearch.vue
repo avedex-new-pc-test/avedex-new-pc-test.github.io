@@ -136,6 +136,8 @@ function getSmartTop10() {
 const query = shallowRef('')
 const searchResult = shallowRef<SearchInfo | null>(null)
 function tokenSearch() {
+  if(!query.value)
+  return
   const data = {
     query: query.value,
     self_address: botStore.evmAddress ? botStore.evmAddress : undefined,

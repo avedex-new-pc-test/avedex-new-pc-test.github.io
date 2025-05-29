@@ -171,5 +171,9 @@
   "noWalletTip": "Bu işlevi kullanmak için lütfen cüzdanınızı bağlayın",
   "profit": "Kazanç",
   "totalBuy": "Toplam Alış",
-  "totalSell": "Toplam Satış"
+  "totalSell": "Toplam Satış",
+  "seemsNoProblem": "Sorun görünmüyor",
+  "possibleRisks": "Olası riskler",
+  "netInflow": "Net Giriş",
+  "limitPrice": "Limit emir fiyatı"
 }

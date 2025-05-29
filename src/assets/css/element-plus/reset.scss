@@ -12,7 +12,38 @@
   }
 }
 
+.el-table {
+  &.el-table {
+    --el-table-header-bg-color: var(--d-333-l-F2F2F2);
+    --el-table-border: 0 none;
+    --el-table-text-color: var(--d-F2F2F2-l-333);
+    --el-table-header-text-color: #999;
+  }
 
+  .el-table__inner-wrapper {
+    --el-font-size-base: 12px;
+
+    &:before {
+      content: none;
+    }
+  }
+}
+
+.el-select {
+  --el-border-color: transparent;
+  --el-border-color-hover: transparent;
+  --el-fill-color-blank: var(--d-FFFFFF0D-l-F2F2F2);
+  --el-text-color-regular: var(--d-F5F5F5-l-333);
+  --el-table-text-color: var(--d-F5F5F5-l-333);
+
+  .el-select__wrapper {
+    font-size: 12px;
+  }
+}
+
+.el-dialog {
+  --el-bg-color: var(--d-222-l-FFF);
+}
 .el-dialog__header {
   color: var(--d-F5F5F5-l-333);
   .el-dialog__headerbtn {

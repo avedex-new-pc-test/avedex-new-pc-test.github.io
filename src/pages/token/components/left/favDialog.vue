@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DialogFavoriteManage from './dialogFavoriteManage.vue'
 import type {GetUserFavoriteGroupsResponse} from '~/api/fav'
 
 const props = defineProps({
@@ -33,7 +34,7 @@ const tabs = computed(() => [
   {name: t('groupManage'), id: 'dialogGroupManage'}
 ])
 const components = {
-  dialogFavoriteManage: defineAsyncComponent(() => import('./dialogFavoriteManage.vue')),
+  dialogFavoriteManage: DialogFavoriteManage,
   dialogGroupManage: defineAsyncComponent(() => import('./dialogGroupManage.vue')),
 }
 
@@ -62,13 +63,13 @@ const Component = computed(() => {
       class="flex items-center justify-between"
     >
       <div
-        class="w-full text-left text-16px mt-5px ml-4px"
+        class="w-full text-left text-16px mt-5px mb-12px"
       >
         <a
           v-for="(item, $index) in tabs"
           :key="$index" href="javascript:;"
-          :class="`decoration-none inline-block min-w-88px rounded-20px text-16px  pr-15px
-              ${item.id === activeTab?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
+          :class="`decoration-none inline-block text-16px pb-12px border-b-solid border-b-2px mr-24px text-center
+          ${item.id === activeTab?'color-[var(--d-F5F5F5-l-333)] border-b-[--d-D9D9D9-l-333]':'color-#80838b border-b-transparent'}`"
           @click.stop.prevent="activeTab=item.id"
         >
           {{ item.name }}

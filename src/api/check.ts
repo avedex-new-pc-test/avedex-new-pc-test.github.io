@@ -17,7 +17,7 @@ export interface OwnerTxs {
   method_code?: string
   timestamp?: number
   params?: Array<{
-    name?: string
+    name: string
     type?: string
     value?: any
     is_trader_addr?: any

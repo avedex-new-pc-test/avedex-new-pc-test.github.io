@@ -173,5 +173,10 @@
   "noWalletTip": "Por favor, conecte sua carteira para usar esta função",
   "profit": "Lucro",
   "totalBuy": "Total Comprado",
-  "totalSell": "Total Vendido"
+  "totalSell": "Total Vendido",
+  "noMore": "Não mais",
+  "seemsNoProblem": "Parece não haver problemas\n",
+  "possibleRisks": "Riscos possíveis",
+  "netInflow": "Fluxo Líquido",
+  "limitPrice": "Preço da ordem de limite"
 }
