@@ -24,6 +24,24 @@ const components = {
   MySwap: defineAsyncComponent(() => import('./mySwap/index.vue')),
 }
 
+watch(
+  () => tokenStore.placeOrderUpdate,
+  () => {
+    if (activeTab.value !== 'Orders') {
+      activeTab.value = 'Orders'
+    }
+  }
+)
+
+watch(
+  () => tokenStore.placeOrderSuccess,
+  () => {
+    if (activeTab.value !== 'MySwap') {
+      activeTab.value = 'MySwap'
+    }
+  }
+)
+
 const tabsList = computed(() => {
   return tabs.value.filter(item => {
     if (item.component === 'Orders' && !botStore?.userInfo?.evmAddress) {
@@ -43,11 +61,15 @@ const Component = computed(() => {
     `">
     <div
       class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-[rgba(255,255,255,.03)] mb-12px">
-      <a v-for="(item) in tabsList" :key="item.component" href="javascript:;" :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-999-l-666] b-b-solid b-b-2px
+      <a v-for="(item) in tabsList" :key="item.component" href="javascript:;" :class="`flex items-center decoration-none text-12px lh-16px text-center color-[--d-999-l-666]
          ${activeTab === item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`"
         @click="activeTab = item.component">
-        {{ item.name }}
-        <span v-if="item.component === 'Orders'">[{{ tokenStore.registrationNum }}]</span>
+        <div v-if="item.component === 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"></div>
+        <div
+          :class="`b-b-solid b-b-2px pb-8px ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
+          {{ item.name }}
+          <span v-if="item.component === 'Orders'">({{ tokenStore.registrationNum }})</span>
+        </div>
       </a>
       <OneClick />
     </div>
@@ -55,4 +77,12 @@ const Component = computed(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.light {
+  --custom-br-1-color: #f5f5f5;
+}
+
+.dark {
+  --custom-br-1-color: #33353D;
+}
+</style>

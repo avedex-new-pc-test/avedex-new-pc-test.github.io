@@ -516,5 +516,6 @@
   "volume4": "交易额",
   "sent": "已发送",
   "pendingOrder": "挂单中",
-  "botCancelOrder": "确定取消订单？"
+  "botCancelOrder": "确定取消订单？",
+  "emptyNoData": "暂无数据"
 }

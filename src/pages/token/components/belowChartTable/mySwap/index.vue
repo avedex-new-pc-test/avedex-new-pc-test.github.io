@@ -77,7 +77,7 @@ const buyUsdAmount = computed(() => {
 // 卖出代币数量
 const sellTokenAmount = computed(() => {
   return walletTxData.value && walletTxData.value.total_sold > 0 ?
-    formatNumberS(walletTxData.value.sold || 0, 4) : "0";
+    formatNumberS(walletTxData.value.sold || 0, 4) : "0"
 })
 
 // 卖出美元金额
@@ -128,7 +128,7 @@ let timer: any
 let lastUpdateTime = 0
 const maxUpdateNum = 6
 
-watch([() => tokenStore.placeOrderUpdate], () => {
+watch([() => tokenStore.placeOrderSuccess], () => {
   getWalletTxData()
   if (!timer) {
     timer = setInterval(() => {
@@ -177,8 +177,8 @@ onMounted(() => {
     <div class="transaction-stats">
       <div class="stat-item">
         <div class="stat-label">{{ t('balance1') }}</div>
-        <div class="stat-value table-field-text">${{ formatNumberS(balance, 2) }}</div>
-        <div class="stat-change table-field-text">
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumberS(balance, 2) }}</div>
+        <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">
           {{ formatNumberS(walletTxData?.balance_amount || 0, 4) }} {{ tokenSymbol }}
           <span :style="{ color: changePercentage >= 0 ? '#12B886' : '#ff646d' }">
             ({{ changePercentage >= 0 ? '+' : '' }}{{ formatNumberS(changePercentage, 2) }}%)
@@ -187,34 +187,35 @@ onMounted(() => {
       </div>
       <div class="stat-item">
         <div class="stat-label">{{ t('totalProfit') }}</div>
-        <div class="stat-value table-field-text">${{ formatNumberS(totalProfit, 2) }}</div>
-        <div class="stat-change" :style="{ color: profitPercentage >= 0 ? '#12B886' : '#ff646d' }">
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumberS(totalProfit, 2) }}</div>
+        <div class="stat-change text-[var(--d-999-l-959A9F)]"
+          :style="{ color: profitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ profitPercentage >= 0 ? '+' : '' }}{{ formatNumberS(profitPercentage, 2) }}%
         </div>
       </div>
       <div class="stat-item">
         <div class="stat-label">{{ t('realizedProfit') }}</div>
-        <div class="stat-value table-field-text">${{ formatNumberS(realizedProfit, 2) }}</div>
-        <div class="stat-change" :style="{ color: realizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumberS(realizedProfit, 2) }}</div>
+        <div class="stat-change text-[var(--d-999-l-959A9F)]" :style="{ color: realizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ realizedProfitPercentage >= 0 ? '+' : '' }}{{ formatNumberS(realizedProfitPercentage, 2) }}%
         </div>
       </div>
       <div class="stat-item">
         <div class="stat-label">{{ t('unrealizedProfit') }}</div>
-        <div class="stat-value table-field-text">${{ formatNumberS(unrealizedProfit, 2) }}</div>
-        <div class="stat-change" :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumberS(unrealizedProfit, 2) }}</div>
+        <div class="stat-change text-[var(--d-999-l-959A9F)]" :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ unrealizedProfitPercentage >= 0 ? '+' : '' }}{{ formatNumberS(unrealizedProfitPercentage, 2) }}%
         </div>
       </div>
       <div class="stat-item">
         <div class="stat-label">{{ t('buyPriceWithSlash') }}</div>
-        <div class="stat-value token-amount table-field-text">{{ buyTokenAmount }} {{ tokenSymbol }}</div>
-        <div class="stat-change table-field-text">{{ buyUsdAmount }}</div>
+        <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ buyTokenAmount }} {{ tokenSymbol }}</div>
+        <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ buyUsdAmount }}</div>
       </div>
       <div class="stat-item">
         <div class="stat-label">{{ t('sellPriceWithSlash') }}</div>
-        <div class="stat-value token-amount table-field-text">{{ sellTokenAmount }} {{ tokenSymbol }}</div>
-        <div class="stat-change table-field-text">{{ sellUsdAmount }}</div>
+        <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ sellTokenAmount }} {{ tokenSymbol }}</div>
+        <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ sellUsdAmount }}</div>
       </div>
     </div>
 

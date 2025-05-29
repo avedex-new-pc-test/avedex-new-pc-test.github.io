@@ -42,19 +42,21 @@
 
       <el-table-column :label="t('type')" align="right" prop="isBuy">
         <template #header>
-          <span>{{ t('type') }}</span>
-          <el-dropdown trigger="click" @command="handleTypeCommand">
-            <i class="iconify i-custom:filter text-10px mt-5px color-[--d-666-l-999] cursor-pointer text-10px"></i>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                <el-dropdown-item command="LimitSell">{{ t('limit') }}/{{ t('sell') }}</el-dropdown-item>
-                <el-dropdown-item command="LimitBuy">{{ t('limit') }}/{{ t('buy') }}</el-dropdown-item>
-                <el-dropdown-item command="MarketSell">{{ t('market') }}/{{ t('sell') }}</el-dropdown-item>
-                <el-dropdown-item command="MarketBuy">{{ t('market') }}/{{ t('buy') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div class="flex items-center">
+            <span>{{ t('type') }}</span>
+            <el-dropdown trigger="click" @command="handleTypeCommand">
+              <i class="iconify i-custom:filter text-10px color-[--d-666-l-999] cursor-pointer text-10px"></i>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                  <el-dropdown-item command="LimitSell">{{ t('limit') }}/{{ t('sell') }}</el-dropdown-item>
+                  <el-dropdown-item command="LimitBuy">{{ t('limit') }}/{{ t('buy') }}</el-dropdown-item>
+                  <el-dropdown-item command="MarketSell">{{ t('market') }}/{{ t('sell') }}</el-dropdown-item>
+                  <el-dropdown-item command="MarketBuy">{{ t('market') }}/{{ t('buy') }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </template>
         <template #default="{ row }">
           <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-[#12B886] px-8px rounded-4px">
@@ -105,29 +107,31 @@
 
       <el-table-column :label="t('status')" align="right">
         <template #header>
-          <span>{{ t('status') }}</span>
-          <el-dropdown trigger="click" @command="handleStatusCommand">
-            <i class="iconify i-custom:filter text-10px  mt-5px color-[--d-666-l-999] cursor-pointer text-10px"></i>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                <el-dropdown-item command="confirmed">{{ t('completed') }}</el-dropdown-item>
-                <el-dropdown-item command="cancelled">{{ t('cancelled1') }}</el-dropdown-item>
-                <el-dropdown-item command="error">{{ t('failed') }}</el-dropdown-item>
-                <el-dropdown-item command="auto_cancelled">{{ t('autoCancelled') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div class="flex items-center">
+            <span>{{ t('status') }}</span>
+            <el-dropdown trigger="click" @command="handleStatusCommand">
+              <i class="iconify i-custom:filter text-10px  color-[--d-666-l-999] cursor-pointer text-10px"></i>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                  <el-dropdown-item command="confirmed">{{ t('completed') }}</el-dropdown-item>
+                  <el-dropdown-item command="cancelled">{{ t('cancelled1') }}</el-dropdown-item>
+                  <el-dropdown-item command="error">{{ t('failed') }}</el-dropdown-item>
+                  <el-dropdown-item command="auto_cancelled">{{ t('autoCancelled') }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </template>
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">
-            <span v-if="row.status === 'confirmed'" style="color: var(--custom-text-2-color);">{{ t('completed')
+          <div class="text-[var(--d-999-l-959A9F)] text-right truncate">
+            <span v-if="row.status === 'confirmed'">{{ t('completed')
             }}</span>
             <span v-else-if="row.status === 'error'" style="color: var(--color-red-500);word-break: break-all;">{{
               t('failed') }}<template v-if="row?.errorLog">({{ formatBotError(row?.errorLog) }})</template></span>
-            <span v-else-if="row.status === 'cancelled'" style="color: var(--custom-text-2-color);">{{ t('cancelled1')
+            <span v-else-if="row.status === 'cancelled'">{{ t('cancelled1')
             }}</span>
-            <span v-else-if="row.status === 'auto_cancelled'" style="color: var(--custom-text-2-color);">{{
+            <span v-else-if="row.status === 'auto_cancelled'">{{
               t('autoCancelled')
             }}</span>
             <span v-else style="color: var(--custom-text-1-color);">{{ t('pending') }}</span>
@@ -147,9 +151,8 @@
           <template v-if="row.status == 'confirmed' && row.swapType === 2 && row.chain === 'solana'">
             <share :statistics="row" :address="props.userAddress" :chain="row.chain" />
           </template>
-          <i v-if="row.txHash" class="iconify i-custom:browser font-14  ml-8px"
-            style="cursor: pointer; font-size: 16px; color: var(--custom-text-2-color)"
-            @click.stop.prevent="jumpExplorerUrl(row)"></i>
+          <i v-if="row.txHash" class="iconify i-custom:browser font-14 ml-8px text-[var(--d-999-l-959A9F)]"
+            style="cursor: pointer; font-size: 16px;" @click.stop.prevent="jumpExplorerUrl(row)"></i>
         </template>
       </el-table-column>
     </el-table>
@@ -196,7 +199,7 @@ const txHistory = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate], () => {
+watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderSuccess], () => {
   getTxHistory()
 })
 
@@ -278,6 +281,30 @@ onMounted(() => {
   getTxHistory()
 })
 </script>
+
+<style>
+:root {
+  --color-red-500: #F6465D;
+}
+
+.light {
+  --custom-table-th-bg-color: #ECECEC;
+  --a-text-1-color: #f5f5f5;
+  --custom-br-1-color: #f5f5f5;
+  --custom-table-th-bg-color: #ECECEC;
+  --a-text-2-color: #666666;
+  --a-table-hover-bg-color: #fafafa;
+}
+
+.dark {
+  --custom-table-th-bg-color: #17191C;
+  --a-text-1-color: #222;
+  --custom-br-1-color: #33353D;
+  --custom-table-th-bg-color: #17191C;
+  --a-text-2-color: #999999;
+  --a-table-hover-bg-color: #1E2024;
+}
+</style>
 <style lang="scss" scoped>
 :deep(.el-dropdown-menu__item) {
   font-size: 12px;
@@ -285,7 +312,37 @@ onMounted(() => {
 }
 
 :deep(.el-dropdown-menu) {
-  background-color: var(--custom-bg-1-color);
+  background-color: #0A0B0D;
   border: 1px solid var(--custom-br-1-color);
+}
+
+:deep(.el-table) {
+  --el-table-tr-bg-color: #0A0B0D;
+  --el-table-bg-color: #0A0B0D;
+  --el-table-text-color: var(--a-text-1-color);
+  --el-table-header-bg-color: var(--custom-table-th-bg-color);
+  --el-fill-color-lighter: #0A0B0D;
+  --el-table-header-text-color: var(--a-text-2-color);
+  --el-table-border-color: var(--custom-br-1-color);
+  --el-table-row-hover-bg-color: var(--a-table-hover-bg-color);
+  background: #0A0B0D;
+  --el-bg-color: #0A0B0D;
+  --el-table-border: 0.5px solid var(--custom-br-1-color);
+  font-size: 13px;
+
+  th {
+    padding: 6px 0;
+    border-bottom: none !important;
+    height: 32px;
+
+    &.el-table__cell.is-leaf {
+      border-bottom: none;
+    }
+
+    .cell {
+      font-weight: 400;
+      font-size: 12px;
+    }
+  }
 }
 </style>

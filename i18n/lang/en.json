@@ -514,5 +514,6 @@
   "volume4": "Trading Volume",
   "sent": "Sent",
   "pendingOrder": "Pending Order",
-  "botCancelOrder": "Confirm to Cancel Order?"
+  "botCancelOrder": "Confirm to Cancel Order?",
+  "emptyNoData": "No Data"
 }

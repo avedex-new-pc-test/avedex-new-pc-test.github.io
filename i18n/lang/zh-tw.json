@@ -512,5 +512,6 @@
   "volume4": "交易額",
   "sent": "已發送",
   "pendingOrder": "掛單中",
-  "botCancelOrder": "確定取消訂單？"
+  "botCancelOrder": "確定取消訂單？",
+  "emptyNoData": "暫無數據"
 }

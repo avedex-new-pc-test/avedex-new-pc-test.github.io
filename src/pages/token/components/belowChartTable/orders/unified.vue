@@ -33,24 +33,26 @@
               <img v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
                 :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="" />
             </div>
-            <span class="token-symbol">{{ !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol }}</span>
+            <span class="text-[var(--custom-font-1-color)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol }}</span>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column :label="t('type')" align="right" prop="isBuy">
         <template #header>
-          <span>{{ t('type') }}</span>
-          <el-dropdown trigger="click" @command="handleTypeCommand">
-            <i class="iconify i-custom:filter text-10px color-[--d-666-l-999] cursor-pointer text-10px"></i>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                <el-dropdown-item command="5">{{ t('limitBuy') }}</el-dropdown-item>
-                <el-dropdown-item command="6">{{ t('limitSell') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div class="flex items-center">
+            <span>{{ t('type') }}</span>
+            <el-dropdown trigger="click" @command="handleTypeCommand">
+              <i class="iconify i-custom:filter text-10px color-[--d-666-l-999] cursor-pointer text-10px"></i>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                  <el-dropdown-item command="5">{{ t('limitBuy') }}</el-dropdown-item>
+                  <el-dropdown-item command="6">{{ t('limitSell') }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </template>
         <template #default="{ row }">
           <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] px-8px rounded-4px bg-[#221115]">
@@ -263,6 +265,32 @@ defineExpose({
   getUserPendingTx,
 })
 </script>
+
+<style>
+:root {
+  --color-red-500: #F6465D;
+}
+
+.light {
+  --custom-table-th-bg-color: #ECECEC;
+  --a-text-1-color: #f5f5f5;
+  --custom-br-1-color: #f5f5f5;
+  --custom-table-th-bg-color: #ECECEC;
+  --a-text-2-color: #666666;
+  --a-table-hover-bg-color: #fafafa;
+  --custom-font-1-color: #333333;
+}
+
+.dark {
+  --custom-table-th-bg-color: #17191C;
+  --a-text-1-color: #222;
+  --custom-br-1-color: #33353D;
+  --custom-table-th-bg-color: #17191C;
+  --a-text-2-color: #999999;
+  --a-table-hover-bg-color: #1E2024;
+  --custom-font-1-color: #eaecef;
+}
+</style>
 <style lang="scss" scoped>
 :deep(.el-dropdown-menu__item) {
   font-size: 12px;
@@ -274,8 +302,33 @@ defineExpose({
   border: 1px solid var(--custom-br-1-color);
 }
 
-:deep(.el-table .cell) {
-  display: flex;
-  align-items: center;
+:deep(.el-table) {
+  --el-table-tr-bg-color: #0A0B0D;
+  --el-table-bg-color: #0A0B0D;
+  --el-table-text-color: var(--a-text-1-color);
+  --el-table-header-bg-color: var(--custom-table-th-bg-color);
+  --el-fill-color-lighter: #0A0B0D;
+  --el-table-header-text-color: var(--a-text-2-color);
+  --el-table-border-color: var(--custom-br-1-color);
+  --el-table-row-hover-bg-color: var(--a-table-hover-bg-color);
+  background: #0A0B0D;
+  --el-bg-color: #0A0B0D;
+  --el-table-border: 0.5px solid var(--custom-br-1-color);
+  font-size: 13px;
+
+  th {
+    padding: 6px 0;
+    border-bottom: none !important;
+    height: 32px;
+
+    &.el-table__cell.is-leaf {
+      border-bottom: none;
+    }
+
+    .cell {
+      font-weight: 400;
+      font-size: 12px;
+    }
+  }
 }
 </style>
