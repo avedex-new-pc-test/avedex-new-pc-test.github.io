@@ -178,6 +178,8 @@
   "possibleRisks": "Posibles riesgos",
   "netInflow": "Entrada neta",
   "limitPrice": "Precio de la orden límite",
+  "emptyNoData": "Sin datos",
+  "ratio": "Ratio",
   "myPosition1": "Mi Posición",
   "download": "Descargar",
   "lastPrice1": "Último precio",

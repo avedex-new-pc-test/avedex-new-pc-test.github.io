@@ -17,7 +17,7 @@ const tabs = shallowRef([
 ])
 const components = {
   Transactions,
-  Holders: defineAsyncComponent(() => import('./holders.vue')),
+  Holders: defineAsyncComponent(() => import('./holders/index.vue')),
   LP: '',
   Attention: '',
   Orders: defineAsyncComponent(() => import('./orders/index.vue')),
