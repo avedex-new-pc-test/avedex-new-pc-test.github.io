@@ -547,5 +547,6 @@
   "notice": "通知",
   "limitOrder": "限价单",
   "T_Trading": "做T",
-  "mCap": "市值"
+  "mCap": "市值",
+  "emptyNoData": "暂无数据"
 }
