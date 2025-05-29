@@ -310,6 +310,46 @@ export function getPairTxs(query: {
   })
 }
 
+export interface IGetTokenTxsResponse {
+  time: number;
+  id: string;
+  chain: string;
+  transaction: string;
+  amm: string;
+  amount_eth: number;
+  amount_usd: number;
+  from_address: string;
+  from_price_eth: number;
+  from_price_usd: number;
+  from_symbol: string;
+  from_amount: number;
+  to_address: string;
+  to_price_eth: number;
+  to_price_usd: number;
+  to_symbol: string;
+  to_amount: number;
+  wallet_address: string;
+  profile: string;
+  wallet_tag_v2: string;
+  newTags: NewTag[];
+  wallet_logo: any;
+}
+
+// 新版交易历史
+export function getTokenTxs(query: {
+  token_id: string,
+  tag_type?: string,
+  maker?: string,
+  time_min?: string,
+  time_max?: string
+}): Promise<IGetTokenTxsResponse[]> {
+  const {$api} = useNuxtApp()
+  return $api('https://0ftrfsdb.xyz/v2api/token_info/v1/token/txs', {
+    method: 'get',
+    query
+  })
+}
+
 export interface GetPairLiqResponse {
   time: number;
   chain: string;
