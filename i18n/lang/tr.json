@@ -176,5 +176,7 @@
   "seemsNoProblem": "Sorun görünmüyor",
   "possibleRisks": "Olası riskler",
   "netInflow": "Net Giriş",
-  "limitPrice": "Limit emir fiyatı"
+  "limitPrice": "Limit emir fiyatı",
+  "notice": "Bildirim",
+  "mCap": "Piyasa değeri"
 }

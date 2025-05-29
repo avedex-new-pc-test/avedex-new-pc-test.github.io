@@ -54,7 +54,10 @@ function switchSort(sortBy: string, activeSort?: number) {
       :key="i"
       :class="`flex items-center cursor-pointer ${column.flex}`"
       @click.stop="switchSort(column.value)">
-      {{ column.label }}
+      <template v-if="column.label">
+        {{ column.label }}
+      </template>
+      <slot v-else :name="column.value"></slot>
       <div v-if="column.sort" class="flex flex-col items-center justify-center ml-5px">
         <i
           :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer

@@ -320,5 +320,11 @@
   "download": "Скачать",
   "RIO": "P&L",
   "balance2": "Баланс",
-  "lastPrice1": "Последняя цена"
+  "lastPrice1": "Последняя цена",
+  "transfer_out": "Выход",
+  "transfer_in": "Вход",
+  "notice": "Уведомление",
+  "limitOrder": "Лимитный ордер",
+  "T_Trading": "Торговля",
+  "mCap": "Капитализация"
 }

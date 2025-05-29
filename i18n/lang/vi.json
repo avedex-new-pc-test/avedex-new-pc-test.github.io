@@ -320,5 +320,11 @@
   "download": "Tải về",
   "RIO": "Lãi/lỗ",
   "balance2": "Số dư",
-  "lastPrice1": "Giá cuối"
+  "lastPrice1": "Giá cuối",
+  "transfer_out": "Ra",
+  "transfer_in": "Vào",
+  "notice": "Thông báo",
+  "limitOrder": "Lệnh giới hạn",
+  "T_Trading": "Giao dịch",
+  "mCap": "Vốn hóa"
 }

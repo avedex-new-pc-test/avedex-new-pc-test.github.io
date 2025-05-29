@@ -539,5 +539,11 @@
   "download": "Download",
   "RIO": "PnL",
   "balance2": "Balance",
-  "lastPrice1": "Last Price"
+  "lastPrice1": "Last Price",
+  "transfer_out": "Out",
+  "transfer_in": "In",
+  "notice": "Notice",
+  "limitOrder": "Limit Order",
+  "T_Trading": "Trade",
+  "mCap": "MC"
 }
