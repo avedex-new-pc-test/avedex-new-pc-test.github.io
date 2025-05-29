@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref } from 'vue'
 
 import { useBotStore } from '@/stores/bot'
 import { getChainInfo } from '@/utils'
 import unified from './unified.vue'
-import { cancelAllLimitOrdersByGuid } from "@/api/token"
+import { cancelAllLimitOrdersByGuid } from '@/api/token'
 
 const botStore = useBotStore()
 const { t } = useI18n()
@@ -74,7 +74,7 @@ onMounted(() => {
       </div>
       <div class="flex items-center gap-3">
         <button
-          class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer bg-[rgba(63,128,247,0.10)] text-#3F80F7"
+          class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer bg-[rgba(63,128,247,0.10)] text-#3F80F7 whitespace-nowrap"
           :class="[botOrderOnlyCurrentToken && '!bg-[#3F80F7] !text-white']" @click="toggleCurrentToken">
           {{ t('currentToken') }}
         </button>

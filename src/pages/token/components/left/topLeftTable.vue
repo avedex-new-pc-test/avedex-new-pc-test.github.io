@@ -2,7 +2,7 @@
 import FavoriteTable from './favoriteTable.vue'
 
 const {t} = useI18n()
-defineProps({
+const props = defineProps({
   height: {
     type: [Number, String],
     default: 370
@@ -23,13 +23,19 @@ const components = {
 const Component = computed(() => {
   return components[activeTab.value]
 })
+const activeHeight = computed(() => {
+  if (activeTab.value === 'PositionsTable') {
+    return props.height - 10
+  }
+  return props.height
+})
 </script>
 
 <template>
   <div
     :class="`color-[var(--d-F5F5F5-l-333)] bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px
     `">
-    <div class="flex items-center px-12px gap-20px">
+    <div class="flex items-center px-12px gap-20px border-b-solid border-b-1px border-b-#FFFFFF08">
       <a
         v-for="(item) in tabs"
         :key="item.component" href="javascript:;"
@@ -43,12 +49,12 @@ const Component = computed(() => {
     <KeepAlive v-if="botStore.evmAddress">
       <component
         :is="Component"
-        :height="height"
+        :height="activeHeight"
       />
     </KeepAlive>
     <AveEmpty
       v-else
-      :style="{height:`${height}px`}"
+      :style="{height:`${activeHeight}px`}"
     >
       <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
       <el-button

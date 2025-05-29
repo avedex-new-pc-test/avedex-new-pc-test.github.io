@@ -591,7 +591,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style style="scss" scoped>
+<style lang='scss' scoped>
 @keyframes rotate {
   from {
     transform: rotate(0deg);

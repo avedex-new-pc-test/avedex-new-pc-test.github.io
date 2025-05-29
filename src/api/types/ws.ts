@@ -24,7 +24,7 @@ export interface IPriceV2Response {
 export interface IAssetResponse {
   client_address: string;
   event: string;
-  swap: {
+  swap?: {
     type: '0' | '1';
     chain: string;
     token: string;
@@ -36,6 +36,17 @@ export interface IAssetResponse {
     amm: string;
     eth_price: string;
     price: string;
+  };
+  transfer?: {
+    type: string;
+    chain: string;
+    token: string;
+    token_name: string;
+    logo_url: string;
+    time: number;
+    rule_id: number;
+    amount: string;
+    address: string;
   };
 }
 

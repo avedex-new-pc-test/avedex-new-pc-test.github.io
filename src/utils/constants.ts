@@ -82,3 +82,10 @@ export const BusEventType = {
   FAV_DIALOG: 'fav-dialog',
 }
 export const SupportFullDataChain = ['solana', 'bsc']
+
+export const defaultPaginationParams = {
+  pageNO: 1,
+  pageSize: 10,
+  loaded: false,
+  finished: false,
+}

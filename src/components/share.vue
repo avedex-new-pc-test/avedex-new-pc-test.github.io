@@ -23,7 +23,15 @@ const props = defineProps({
   chain: {
     type: String,
     required: true
-  }
+  },
+  type: {
+    type: String,
+    required: false,
+    default: 'default',
+    validator: (value: string) => {
+      return ['topHolder', 'default'].includes(value)
+    },
+  },
 })
 const dialogVisible = ref(false)
 const shareDom = templateRef('shareDom')
@@ -110,11 +118,11 @@ function getRandom(min: number, max: number) {
 
 function getColorClass(val: string) {
   if (Number(val) > 0) {
-    return 'color-#12b886'
+    return 'color-#12b886!'
   } else if (Number(val) < 0) {
-    return 'color-#ff646d'
+    return 'color-#ff646d!'
   } else {
-    return 'color-#848E9C'
+    return 'color-#848E9C!'
   }
 }
 </script>
@@ -130,13 +138,13 @@ function getColorClass(val: string) {
   <el-dialog
     v-model="dialogVisible"
     :title="$t('share')"
-    width="628"
+    width="700"
     append-to-body
   >
     <div>
-      <div ref="shareDom" class="relative p-25px z-1">
+      <div ref="shareDom" class="relative p-25px z-1 w-100% overflow-hidden min-h-353px">
         <img
-          class="absolute w-588px left--1px top--1px z--1"
+          class="absolute left--1px top--1px z--1 w-101%"
           :src="bgImg"
           alt="share"
         >
@@ -166,33 +174,82 @@ function getColorClass(val: string) {
           />
           <span class="text-14px color-#999 ml-8px">
               {{ address?.slice(0, 4) + '...' + address?.slice(-4) }}
-            </span>
+          </span>
         </div>
-        <div class="mt-60px text-40px" :class="getColorClass(statistics.total_profit_ratio)">
+        <div class="mt-15px text-40px lh-none" :class="getColorClass(statistics.total_profit_ratio)">
+          <div class="color-#999 text-14px">{{ $t('RIO') }}</div>
           <ExcludeError
             :model-value="statistics.total_profit_ratio"
           >
+            <div class="lh-46px h-46px mt-5px font-700">
             {{ addSign(Number(statistics.total_profit_ratio)) }}{{
               formatNumber(Number(statistics.total_profit_ratio) * 100 || 0, 2)
             }}%
+            </div>
           </ExcludeError>
         </div>
-        <table class="mt-30px">
+        <table class="absolute" style="bottom: 25px; left: 25px;">
           <tbody>
-          <tr>
-            <td :style="{ width: getTextWidth($t('total_profit')) + 20 + 'px' }">
-              {{ $t('total_profit') }}
-            </td>
-            <td :class="getColorClass(statistics.total_profit)">
-              <ExcludeError
-                :model-value="statistics.total_profit"
-              >
-                {{ addSign(Number(statistics.total_profit)) }}${{
-                  formatNumber(statistics.total_profit, 2)
-                }}
-              </ExcludeError>
-            </td>
-          </tr>
+          <template v-if="type === 'topHolder'">
+            <tr>
+              <td :style="{ width: getTextWidth($t('profit')) + 20 + 'px' }">
+                {{ $t('profit') }}
+              </td>
+              <td :class="getColorClass(statistics.total_profit)">
+                <ExcludeError :model-value="statistics.total_profit">
+                  {{ addSign(Number(statistics.total_profit)) }}${{
+                    formatNumber(Math.abs(Number(statistics.total_profit)), 2)
+                  }}
+                </ExcludeError>
+              </td>
+            </tr>
+            <tr>
+              <td :style="{ width: getTextWidth($t('balance2')) + 20 + 'px' }">
+                {{ $t('balance2') }}
+              </td>
+              <td>
+                <ExcludeError :model-value="statistics.balance_usd">
+                  {{'$'+formatNumber(statistics.balance_usd, 4)}}
+                </ExcludeError>
+              </td>
+            </tr>
+            <tr>
+              <td :style="{ width: getTextWidth($t('costPrice')) + 20 + 'px' }">
+                {{ $t('costPrice') }}
+              </td>
+              <td>
+                <ExcludeError :model-value="statistics.average_purchase_price_usd">
+                  {{'$'+formatNumber(statistics.average_purchase_price_usd, 4)}}
+                </ExcludeError>
+              </td>
+            </tr>
+            <tr>
+              <td :style="{ width: getTextWidth($t('lastPrice1')) + 20 + 'px' }">
+                {{ $t('lastPrice1') }}
+              </td>
+              <td>
+                <ExcludeError :model-value="statistics.current_price_usd">
+                  {{'$'+formatNumber(statistics.current_price_usd, 4)}}
+                </ExcludeError>
+              </td>
+            </tr>
+          </template>
+          <template v-else>
+            <tr>
+              <td :style="{ width: getTextWidth($t('total_profit')) + 20 + 'px' }">
+                {{ $t('total_profit') }}
+              </td>
+              <td :class="getColorClass(statistics.total_profit)">
+                <ExcludeError
+                  :model-value="statistics.total_profit"
+                >
+                  {{ addSign(Number(statistics.total_profit)) }}${{
+                    formatNumber(Math.abs(Number(statistics.total_profit)), 2)
+                  }}
+                </ExcludeError>
+              </td>
+            </tr>
+          </template>
           </tbody>
         </table>
         <div class="absolute right-30px bottom-30px flex justify-end text-center">
@@ -225,5 +282,14 @@ function getColorClass(val: string) {
 </template>
 
 <style scoped lang="scss">
-
+table {
+  tr {
+    td:nth-child(odd) {
+      color:#999;
+    }
+    td:nth-child(even) {
+      color:#fff;
+    }
+  }
+}
 </style>

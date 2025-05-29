@@ -54,7 +54,7 @@ function handleCheckedChange(val: any[]) {
   isIndeterminate.value = checkedCount > 0 && checkedCount < list.value.length
 }
 
-function filterType(type) {
+function filterType(type: 'swap_buy' | 'swap_sell' | 'AUTHORITY' | 'ADD_LIQUIDITY' | 'NEW_COIN' | 'MINT' | 'FREEZE' | 'transfer_in' | 'transfer_out' | 'BURN' | 'NEW_PAIR') {
   const o = {
     swap_buy: {
       name: t('swap_buy'),
@@ -115,10 +115,14 @@ function filterType(type) {
   }
   return o[type]
 }
+
+function tableRowClick(row: GetTokenDetailsListResponse) {
+  window.open(formatExplorerUrl(row.chain, row.tx_hash, 'tx'))
+}
 </script>
 
 <template>
-  <div>
+  <div class="min-h-400px">
     <div
       class="flex justify-between items-center py-8px text-10px border-b-0.5px border-b-solid border-b-[--d-333-l-F2F2F2]"
     >
@@ -187,7 +191,9 @@ function filterType(type) {
     </div>
     <div
       v-for="(row, $index) in tableList" :key="$index"
-      class="text-13px flex h-42px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2]">
+      class="text-13px flex h-42px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-1D2232-l-F5F5F5)] cursor-pointer"
+      @click="tableRowClick(row)"
+    >
       <div class="flex items-center flex-[2]">
         <TimerCount
           v-if="!isShowDate && row.block_time && Number(formatTimeFromNow(row.block_time,true)) < 60"

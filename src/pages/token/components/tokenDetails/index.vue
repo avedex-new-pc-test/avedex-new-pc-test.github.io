@@ -58,6 +58,7 @@ const loadingMark = ref(false)
 const baseRef = templateRef('baseRef')
 watch(() => tokenDetailsStore.drawerVisible, val => {
   if (val) {
+    activeTime.value = 86400
     init()
     setTimeout(() => {
       if (baseRef.value) {
@@ -68,7 +69,6 @@ watch(() => tokenDetailsStore.drawerVisible, val => {
 })
 
 async function init() {
-  activeTime.value = 86400
   marks.value = []
   lineChartList.value = []
   await _getTokenDetailLine()

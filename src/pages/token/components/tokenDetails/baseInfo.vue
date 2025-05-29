@@ -42,6 +42,7 @@ defineExpose({
 })
 
 function init() {
+  trendList.value.length = 0
   editable.value = false
   statistics.value = {} as any
   _getTokenStatistics()
@@ -391,7 +392,7 @@ function attention() {
     >
       <List
         v-model="checkedTrend"
-        v-loading="listStatus.loading&&listQuery.pageNO===1"
+        v-loading="listStatus.loading&&listQuery.pageNO===1&&trendList.length===0"
         :tableList="trendList"
         @update:modelValue="resetListStatus"
       />

@@ -538,7 +538,7 @@ function handleMax() {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
 /* .tg-name-box {
   color: var(--custom-text-1-color);
   height: 32px;

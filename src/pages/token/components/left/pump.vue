@@ -17,7 +17,7 @@ const sort = ref({
   sortBy: undefined,
   activeSort: 0
 })
-// const isVolUSDT = ref(true)
+const isVolUSDT = ref(true)
 const tabList = shallowRef([{
   label: '新内盘',
   value: 'pump_in_new',
@@ -56,14 +56,14 @@ const columns = computed(() => {
     flex: 'flex-1',
     sort: true
   }, {
-    label: t('amountB') + '/TXs',
+    label: '',
     value: 'current_price_usd',
-    flex: 'w-78px justify-end',
+    flex: 'w-92px justify-end',
     sort: false
   }, {
     label: t('mCap'),
     value: 'market_cap',
-    flex: 'w-78px justify-end',
+    flex: 'w-70px justify-end',
     sort: true
   }]
 })
@@ -139,7 +139,17 @@ async function _getHomePumpList() {
       v-model:sort="sort"
       :columns="columns"
       @update:sort="sortChange"
-    />
+    >
+    <template #current_price_usd>
+      {{ t('amountB') }}
+      <Icon
+        name="custom:price"
+        :class="`ml-1px mr-1px cursor-pointer ${isVolUSDT?'color-#FFF':'color-#666'}`"
+        @click.stop.self="isVolUSDT=!isVolUSDT"
+      />
+      /{{ t('Txs') }}
+    </template>
+    </THead>
     <el-scrollbar
       :height="scrollbarHeight"
       class="[&&]:h-auto"
@@ -191,11 +201,13 @@ async function _getHomePumpList() {
             </div>
           </div>
         </div>
-        <div class="w-78px flex-col flex items-end">
-          <span>${{ formatNumber(row.volume_u_24h, 2) }}</span>
+        <div class="w-92px flex-col flex items-end">
+          <span>{{ isVolUSDT ? '$' : '' }}{{
+              isVolUSDT ? formatNumber(row.volume_u_24h, 2) : formatNumber(row.volume_u_24h / row.current_price_usd, 2)
+            }}</span>
           <span class="color-[--d-666-l-999]">{{ formatNumber(row.tx_24h_count) }}</span>
         </div>
-        <div class="w-78px flex-col flex items-end">
+        <div class="w-70px flex-col flex items-end">
           <span>${{ formatNumber(row.market_cap, 2) }}</span>
           <span :class="getColorClass(row.price_change_24h)">{{ formatNumber(row.price_change_24h, 1) }}%</span>
         </div>
