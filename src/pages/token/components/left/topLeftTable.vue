@@ -2,7 +2,7 @@
 import FavoriteTable from './favoriteTable.vue'
 
 const {t} = useI18n()
-defineProps({
+const props = defineProps({
   height: {
     type: [Number, String],
     default: 370
@@ -22,6 +22,12 @@ const components = {
 }
 const Component = computed(() => {
   return components[activeTab.value]
+})
+const activeHeight = computed(() => {
+  if (activeTab.value === 'PositionsTable') {
+    return props.height - 10
+  }
+  return props.height
 })
 </script>
 
@@ -43,12 +49,12 @@ const Component = computed(() => {
     <KeepAlive v-if="botStore.evmAddress">
       <component
         :is="Component"
-        :height="height"
+        :height="activeHeight"
       />
     </KeepAlive>
     <AveEmpty
       v-else
-      :style="{height:`${height}px`}"
+      :style="{height:`${activeHeight}px`}"
     >
       <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
       <el-button
