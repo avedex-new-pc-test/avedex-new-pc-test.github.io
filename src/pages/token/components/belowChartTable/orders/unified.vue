@@ -35,7 +35,7 @@
                   :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
               </div>
             </div>
-            <span class="text-[var(--custom-font-1-color)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
+            <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
               row.outTokenSymbol
             }}</span>
           </div>
@@ -267,31 +267,6 @@ defineExpose({
 })
 </script>
 
-<style>
-:root {
-  --color-red-500: #F6465D;
-}
-
-.light {
-  --custom-table-th-bg-color: #ECECEC;
-  --a-text-1-color: #f5f5f5;
-  --custom-br-1-color: #f5f5f5;
-  --custom-table-th-bg-color: #ECECEC;
-  --a-text-2-color: #666666;
-  --a-table-hover-bg-color: #fafafa;
-  --custom-font-1-color: #333333;
-}
-
-.dark {
-  --custom-table-th-bg-color: #17191C;
-  --a-text-1-color: #222;
-  --custom-br-1-color: #33353D;
-  --custom-table-th-bg-color: #17191C;
-  --a-text-2-color: #999999;
-  --a-table-hover-bg-color: #1E2024;
-  --custom-font-1-color: #eaecef;
-}
-</style>
 <style lang="scss" scoped>
 :deep(.el-dropdown-menu__item) {
   font-size: 12px;
@@ -300,21 +275,21 @@ defineExpose({
 
 :deep(.el-dropdown-menu) {
   background-color: var(--custom-bg-1-color);
-  border: 1px solid var(--custom-br-1-color);
+  border: 1px solid var(--d-33353D-l-f5f5f5);
 }
 
 :deep(.el-table) {
   --el-table-tr-bg-color: #0A0B0D;
   --el-table-bg-color: #0A0B0D;
-  --el-table-text-color: var(--a-text-1-color);
-  --el-table-header-bg-color: var(--custom-table-th-bg-color);
+  --el-table-text-color: var(--d-222-l-F2F2F2);
+  --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
   --el-fill-color-lighter: #0A0B0D;
-  --el-table-header-text-color: var(--a-text-2-color);
-  --el-table-border-color: var(--custom-br-1-color);
-  --el-table-row-hover-bg-color: var(--a-table-hover-bg-color);
+  --el-table-header-text-color: var(--d-999-l-666);
+  --el-table-border-color: var(--d-33353D-l-f5f5f5);
+  --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
   background: #0A0B0D;
   --el-bg-color: #0A0B0D;
-  --el-table-border: 0.5px solid var(--custom-br-1-color);
+  --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
   font-size: 13px;
 
   th {
