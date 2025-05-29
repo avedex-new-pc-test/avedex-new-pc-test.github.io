@@ -56,7 +56,7 @@ const columns = computed(() => {
     flex: 'flex-1',
     sort: true
   }, {
-    label: t('amountB') + '/TXs',
+    label: t('amountB') + '/' + t('Txs'),
     value: 'current_price_usd',
     flex: 'w-78px justify-end',
     sort: false

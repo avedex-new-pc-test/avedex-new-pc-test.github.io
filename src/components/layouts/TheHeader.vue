@@ -47,15 +47,7 @@
       </div>
     </el-popover> -->
     <wallet v-else/>
-    <a
-      class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
-      href="javascript:;"
-    >
-      <Icon
-        class="text-20px text-[--d-999-l-666]"
-        name="material-symbols:notifications"
-      />
-    </a>
+    <Notice/>
     <el-dropdown
       trigger="click"
       placement="bottom"
@@ -105,6 +97,7 @@
 import dialogSearch from '@/components/header/dialogSearch.vue'
 // import connectWallet from '@/components/header/connectWallet/index.vue'
 import wallet from '@/components/header/wallet/index.vue'
+import Notice from "~/components/layouts/components/notice.vue";
 // const connectWallet = shallowRef<Component | null>(null)
 const { locales } = useI18n()
 const themeStore = useThemeStore()
