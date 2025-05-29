@@ -56,7 +56,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang='ts' setup>
 import sha256 from 'crypto-js/sha256'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
@@ -265,7 +265,7 @@ function sendVerificationCode() {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang='scss'>
 .w-reset {
   .title {
     position: relative;

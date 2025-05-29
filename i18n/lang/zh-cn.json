@@ -535,5 +535,11 @@
   "volume4": "交易额",
   "sent": "已发送",
   "pendingOrder": "挂单中",
-  "botCancelOrder": "确定取消订单？"
+  "botCancelOrder": "确定取消订单？",
+  "myPosition1": "我的持仓",
+  "costPrice": "成本价",
+  "currentPrice": "当前价格",
+  "PnLTips": "仅统计7日内买入交易的浮动盈亏",
+  "balance2": "持仓",
+  "lastPrice1": "最新价"
 }

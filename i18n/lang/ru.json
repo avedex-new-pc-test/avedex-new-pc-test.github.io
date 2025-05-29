@@ -308,5 +308,17 @@
   "campaignBuyAvg": "Цена покупки",
   "outflow": "Отток",
   "campaignSellAvg": "Цена продажи",
-  "limitPrice": "Цена лимитного ордера"
+  "limitPrice": "Цена лимитного ордера",
+  "myPosition1": "Моя позиция",
+  "costPrice": "Цена покупки",
+  "currentPrice": "Текущая цена",
+  "PnLTips": "Учитывается только нереализованный P&L покупок за последние 7 дней",
+  "share": "Поделиться",
+  "campaignSubTitle": "Пригласите друзей сейчас",
+  "campaignDesc": "Майните 100x Golden Dog на Ave.ai",
+  "campaignScan": "Сканируйте для скачивания",
+  "download": "Скачать",
+  "RIO": "P&L",
+  "balance2": "Баланс",
+  "lastPrice1": "Последняя цена"
 }

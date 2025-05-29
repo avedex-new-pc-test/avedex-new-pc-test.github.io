@@ -133,7 +133,7 @@ if (botStore.userInfo) {
   userIds = botStore.userInfo.addresses.map(({address, chain}) => address + '-' + chain)
 }
 const tableFilter = ref({
-  hide_risk: 0,
+  hide_risk: 1,
   hide_small: 0,
   user_ids: userIds
 })

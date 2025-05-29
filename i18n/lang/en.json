@@ -519,12 +519,6 @@
   "autoCancelled": "Auto Cancelled",
   "campaignBuyTime": "Buy Time",
   "campaignSellTime": "Sell Time",
-  "campaignSubTitle": "Invite to Register, Earn Rebates",
-  "campaignDesc": "Mine 100x Gems on Ave.ai",
-  "campaignScan": "Scan to Download",
-  "share": "Share",
-  "download": "Download",
-  "RIO": "ROI",
   "currentToken": "Current Token",
   "cancelAll": "Cancel All",
   "limitBuy": "Limit Buy",
@@ -533,5 +527,18 @@
   "volume4": "Trading Volume",
   "sent": "Sent",
   "pendingOrder": "Pending Order",
-  "botCancelOrder": "Confirm to Cancel Order?"
+  "botCancelOrder": "Confirm to Cancel Order?",
+  "myPosition1": "My Position",
+  "costPrice": "Cost Price",
+  "currentPrice": "Current Price",
+  "PnLTips": "Only count the unrealized PnL of buy transactions within the last 7 days.",
+  "share": "Share",
+  "campaignSubTitle": "Invite Your Friends Now",
+  "campaignDesc": "Go to Ave.ai to mine 1000X Alpha",
+  "campaignScan": "Scan to download",
+  "download": "Download",
+  "RIO": "PnL",
+  "balance2": "Balance",
+  "lastPrice1": "Last Price"
 }
+ 
