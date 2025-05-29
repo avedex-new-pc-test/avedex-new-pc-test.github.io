@@ -63,7 +63,7 @@ const Component = computed(() => {
       <a v-for="(item) in tabsList" :key="item.component" href="javascript:;" :class="`flex items-center decoration-none text-12px lh-16px text-center color-[--d-999-l-666]
          ${activeTab === item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`"
         @click="activeTab = item.component">
-        <div v-if="item.component === 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"></div>
+        <div v-if="item.component == 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"></div>
         <div
           :class="`b-b-solid b-b-2px pb-8px ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
           {{ item.name }}
@@ -73,12 +73,12 @@ const Component = computed(() => {
       <OneClick />
     </div>
     <KeepAlive>
-      <component :is="Component"/>
+      <component :is="Component" />
     </KeepAlive>
   </div>
 </template>
 
-<style scoped>
+<style>
 .light {
   --custom-br-1-color: #f5f5f5;
 }
@@ -87,3 +87,4 @@ const Component = computed(() => {
   --custom-br-1-color: #33353D;
 }
 </style>
+<style scoped></style>

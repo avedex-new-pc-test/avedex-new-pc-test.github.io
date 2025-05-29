@@ -1,63 +1,58 @@
 <template>
   <div>
-    <el-table
-      v-loading="loading && !txOrder?.length" :data="txOrder" fit stripe max-height="700"
+    <el-table v-loading="loading && !txOrder?.length" :data="txOrder" fit stripe max-height="700"
       style="width: 100%; min-height: 450px;" @row-click="tableRowClick">
       <template #empty>
         <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
-          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg" >
-          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" >
+          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
+          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
           <span>{{ t('emptyNoData') }}</span>
         </div>
-        <span v-else/>
+        <span v-else />
       </template>
       <el-table-column :label="t('token')" align="left">
         <template #default="{ row }">
           <div class="flex items-center justify-start">
             <div class="icon-token-container mr-5px">
-              <el-image
-                class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+              <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
                 chain: row?.chain,
                 symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
                 logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
               })">
                 <template #error>
-                  <img
-                    class="w-32px h-32px"
+                  <img class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)" alt=""
                     srcset="">
                 </template>
                 <template #placeholder>
-                  <img
-                    class="w-32px h-32px"
+                  <img class="w-32px h-32px"
                     :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)" alt=""
                     srcset="">
                 </template>
               </el-image>
-              <img
-                v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
-                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="" >
+              <img v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
+                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
             </div>
-            <span class="text-[var(--custom-font-1-color)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol }}</span>
+            <span class="text-[var(--custom-font-1-color)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
+              row.outTokenSymbol
+              }}</span>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column :label="t('type')" align="right" prop="isBuy">
         <template #header>
-          <div class="flex items-center">
-            <span>{{ t('type') }}</span>
-            <el-dropdown trigger="click" @command="handleTypeCommand">
-              <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px" />
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                  <el-dropdown-item command="5">{{ t('limitBuy') }}</el-dropdown-item>
-                  <el-dropdown-item command="6">{{ t('limitSell') }}</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
+          <span>{{ t('type') }}</span>
+          <el-dropdown trigger="click" @command="handleTypeCommand">
+            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                <el-dropdown-item command="5">{{ t('limitBuy') }}</el-dropdown-item>
+                <el-dropdown-item command="6">{{ t('limitSell') }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
         <template #default="{ row }">
           <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] px-8px rounded-4px bg-[#221115]">
@@ -93,13 +88,15 @@
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)]">
             <template v-if="!row?.isBuy">
-              {{ !!Number(row?.inAmount) ? formatNumber(new BigNumber(row?.inAmount || 0).div(new BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) : '--' }}
+              {{ !!Number(row?.inAmount) ? formatNumber(new BigNumber(row?.inAmount || 0).div(new
+                BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) : '--' }}
               <span v-if="isUnit" class="color-[--d-999-l-666]">
                 &nbsp;{{ getChainInfo(row.chain)?.main_name }}
               </span>
             </template>
             <template v-else>
-              {{ !!Number(row?.outputAmount) ? formatNumber(new BigNumber(row?.outputAmount || 0).div(new BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) : '--' }}
+              {{ !!Number(row?.outputAmount) ? formatNumber(new BigNumber(row?.outputAmount || 0).div(new
+                BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) : '--' }}
               <span v-if="isUnit" class="color-[--d-999-l-666]">
                 &nbsp;{{ getChainInfo(row.chain)?.main_name }}
               </span>
@@ -145,8 +142,7 @@
       </el-table-column>
       <el-table-column :label="t('operate')" align="right">
         <template #default="{ row }">
-          <div
-            v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
+          <div v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
             @click.stop="handleCancelOrder(row)">
             {{ t('cancel') }}
           </div>
