@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-scrollbar height="calc(100vh - 114px)">
+    <el-scrollbar height="calc(100vh - 104px)">
       <div class="p-15px bg-[--d-111-l-FFF]">
         <PriceTabs v-model="tabActive" :tabs="tabs" />
         <template v-for="item in tabs" :key="item.id">

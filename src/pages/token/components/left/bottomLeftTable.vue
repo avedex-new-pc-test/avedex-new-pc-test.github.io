@@ -17,8 +17,8 @@ const tabs = shallowRef([
   {name: 'Pump', component: 'Pump' as const},
 ])
 const tabsToHeight = {
-  Trending: 240,
-  Pump: 290
+  Trending: 242,
+  Pump: 292
 }
 const components = {
   Trending,
