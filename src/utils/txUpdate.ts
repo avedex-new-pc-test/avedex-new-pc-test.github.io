@@ -24,12 +24,18 @@ export function updatePriceFromTx(tx: WSTx) {
       const price = Number(tx.from_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.() ? tx.from_price_usd : tx.to_price_usd) || 0
       const currentPrice = pair.token0_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.() ? pair.token0_price_usd : pair.token1_price_usd
       if (isToken0From || isToken0To) {
-         pair.reserve0 = Number(isToken0From ? tx.from_reserve : tx.to_reserve)
-         pair.token0_price_usd = Number(isToken0From ? tx.from_price_usd : tx.to_price_usd)
+        pair.reserve0 = Number(isToken0From ? tx.from_reserve : tx.to_reserve)
+        pair.token0_price_usd = Number(isToken0From ? tx.from_price_usd : tx.to_price_usd)
+      } else {
+        pair.reserve1 = Number(isToken1From ? tx.from_reserve : tx.to_reserve)
+        pair.token1_price_usd = Number(isToken1From ? tx.from_price_usd : tx.to_price_usd)
       }
       if (isToken1From || isToken1To) {
-         pair.reserve1 = Number(isToken1From ? tx.from_reserve : tx.to_reserve)
-         pair.token1_price_usd = Number(isToken1From ? tx.from_price_usd : tx.to_price_usd)
+        pair.reserve1 = Number(isToken1From ? tx.from_reserve : tx.to_reserve)
+        pair.token1_price_usd = Number(isToken1From ? tx.from_price_usd : tx.to_price_usd)
+      } else {
+        pair.reserve0 = Number(isToken0From ? tx.from_reserve : tx.to_reserve)
+        pair.token0_price_usd = Number(isToken0From ? tx.from_price_usd : tx.to_price_usd)
       }
       if (isBuy) {
         const volume = new BigNumber(tx.to_amount).times(price) || 0

@@ -179,15 +179,13 @@ async function submitBotSwap(amount1: string | number, type: 'buy' | 'sell', ind
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
               setTimeout(() => {
                 getTokenBalance()
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
+
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
@@ -265,15 +263,12 @@ async function submitBotSwap(amount1: string | number, type: 'buy' | 'sell', ind
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
               setTimeout(() => {
                 getTokenBalance()
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotPosition'
-                // }
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')

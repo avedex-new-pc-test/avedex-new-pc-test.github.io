@@ -71,7 +71,7 @@
     </template>
 
     <template v-if="isSupportSwap">
-      <el-button v-if="!isApprove || loadingAllowance" :color="swapButtonColor" class="submit-btn" native-type="button" :loading="loadingApprove || loadingSwap || loadingAllowance" :disabled="Number(fromToken.balance) < Number(fromAmount)" @click.stop="approve">{{ Number(fromToken.balance) === 0 || Number(fromToken.balance) < Number(fromAmount) ? (checkAmountMessage() || $t('approve')) : $t('approve') }}</el-button>
+      <el-button v-if="!isApprove" :color="swapButtonColor" class="submit-btn" native-type="button" :loading="loadingApprove || loadingSwap || loadingAllowance" :disabled="Number(fromToken.balance) < Number(fromAmount)" @click.stop="approve">{{ Number(fromToken.balance) === 0 || Number(fromToken.balance) < Number(fromAmount) ? (checkAmountMessage() || $t('approve')) : $t('approve') }}</el-button>
 
       <el-button
         v-else-if="activeTab === 'buy' && (Number(fromToken.balance) === 0 || Number(fromToken.balance) < Number(fromAmount))"
@@ -657,7 +657,6 @@ async function submitBotSwap() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.historyUpdate++
-          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'myBotHistory'
@@ -682,10 +681,6 @@ async function submitBotSwap() {
               unwatch()
               setTimeout(() => {
                 emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
@@ -744,11 +739,7 @@ async function submitBotSwap() {
     bot_createSwapEvmTx(data).then(res => {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
-          // this.$store.state.bot.historyUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
-          // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-          //   this.$store.state.tabActive = 'myBotHistory'
-          // }
           loadingSwap.value = false
           amountNative.value = ''
           amountNativeOut.value = ''
@@ -763,15 +754,12 @@ async function submitBotSwap() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
               setTimeout(() => {
                 emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotPosition'
-                // }
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
@@ -874,19 +862,13 @@ function submitBotLimit() {
               unwatch()
               setTimeout(() => {
                 emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
               loadingSwap.value = false
               setTimeout(() => {
-                // this.getTokenDetails()
                 emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
               }, 1000)
             }
           }
@@ -928,20 +910,13 @@ function submitBotLimit() {
     bot_createEvmLimitTx(data).then(res => {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
-          // this.$store.state.bot.limitHistoryUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('limitSubmitted') })
-          //  if (!['myBotPosition', 'botLimitOrder']?.includes(this.$store.state.tabActive)) {
-          //   this.$store.state.tabActive = 'botLimitOrder'
-          // }
           loadingSwap.value = false
           amountToken.value = ''
           amountNative.value = ''
           amountTokenOut.value = ''
           amountNativeOut.value = ''
-          // this.dialogVisibleSwap = false
-          // if (this.$store.state.tabActive === 'botLimitOrder') {
-          //   this.$store.state.bot.orderTabActive = 'my'
-          // }
         }, 500)
         const unwatch = watch(() => wsStore?.wsResult.tgbot, (subscribeResult) => {
           const batchId = subscribeResult.batchId
@@ -950,15 +925,12 @@ function submitBotLimit() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
               setTimeout(() => {
                 emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')

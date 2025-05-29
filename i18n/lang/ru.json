@@ -333,5 +333,7 @@
   "limitOrderFail": "Ошибка лимитного ордера сумма",
   "limitOrderCancel": "Лимитный ордер отменен сумма",
   "limitOrderAutoCancel": "Лимитный ордер отменен автоматически причина: {f}",
-  "limitOrderSuccess": "Лимитный ордер успешно {t} {a} {s} средняя цена {p}"
+  "limitOrderSuccess": "Лимитный ордер успешно {t} {a} {s} средняя цена {p}",
+  "averagePositionPrice": "Средняя цена",
+  "pending": "В ожидании"
 }

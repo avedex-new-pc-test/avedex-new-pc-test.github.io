@@ -554,5 +554,7 @@
   "limitOrderFail": "限价单交易失败，委托金额",
   "limitOrderCancel": "限价单交易取消，委托金额",
   "limitOrderAutoCancel": "限价单自动取消，原因: {f}",
-  "limitOrderSuccess": "限价单已成功{t} {a} {s}，平均单价为 ${p}"
+  "limitOrderSuccess": "限价单已成功{t} {a} {s}，平均单价为 ${p}",
+  "averagePositionPrice": "持仓均价",
+  "pending": "交易中"
 }

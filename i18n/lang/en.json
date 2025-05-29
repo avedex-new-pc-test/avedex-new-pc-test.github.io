@@ -552,5 +552,7 @@
   "limitOrderFail": "limit order transaction failed, order amount",
   "limitOrderCancel": "limit order canceled, order amount",
   "limitOrderAutoCancel": "Limit order automatically canceled, reason: {f}",
-  "limitOrderSuccess": "limit order has been successfully {t} {a} {s}, average price is {p}"
+  "limitOrderSuccess": "limit order has been successfully {t} {a} {s}, average price is {p}",
+  "averagePositionPrice": "Average Price",
+  "pending": "Pending"
 }
