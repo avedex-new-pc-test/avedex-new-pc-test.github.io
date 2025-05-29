@@ -14,28 +14,30 @@
         <template #default="{ row }">
           <div class="flex items-center justify-start">
             <div class="icon-token-container mr-5px">
-              <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
-                chain: row?.chain,
-                symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
-                logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
-              })">
-                <template #error>
-                  <img class="w-32px h-32px"
-                    :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)" alt=""
-                    srcset="">
-                </template>
-                <template #placeholder>
-                  <img class="w-32px h-32px"
-                    :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)" alt=""
-                    srcset="">
-                </template>
-              </el-image>
-              <img v-if="row?.chain" class="w-12px h-12px relative left-[-7px]"
-                :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
+              <div class="relative">
+                <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+                  chain: row?.chain,
+                  symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
+                  logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
+                })">
+                  <template #error>
+                    <img class="w-32px h-32px"
+                      :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)"
+                      alt="" srcset="">
+                  </template>
+                  <template #placeholder>
+                    <img class="w-32px h-32px"
+                      :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)"
+                      alt="" srcset="">
+                  </template>
+                </el-image>
+                <img v-if="row?.chain" class="w-12px h-12px absolute bottom-3px right-3px"
+                  :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
+              </div>
             </div>
             <span class="text-[var(--custom-font-1-color)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
               row.outTokenSymbol
-              }}</span>
+            }}</span>
           </div>
         </template>
       </el-table-column>
@@ -55,12 +57,12 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] px-8px rounded-4px bg-[#221115]">
+          <span v-if="row.swapType === 6" class="text-13px text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
             {{ t('limit') }}/{{ t('sell') }}
-          </div>
-          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] px-8px rounded-4px bg-[#0b1d19]">
+          </span>
+          <span v-if="row.swapType === 5" class="text-13px text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ t('limit') }}/{{ t('buy') }}
-          </div>
+          </span>
         </template>
       </el-table-column>
       <el-table-column :label="t('price')" align="right">
