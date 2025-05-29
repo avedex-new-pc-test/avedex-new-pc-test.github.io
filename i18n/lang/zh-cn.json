@@ -548,5 +548,11 @@
   "limitOrder": "限价单",
   "T_Trading": "做T",
   "mCap": "市值",
-  "emptyNoData": "暂无数据"
+  "emptyNoData": "暂无数据",
+  "autoCancel": "自动取消",
+  "failReason": "失败原因",
+  "limitOrderFail": "限价单交易失败，委托金额",
+  "limitOrderCancel": "限价单交易取消，委托金额",
+  "limitOrderAutoCancel": "限价单自动取消，原因: {f}",
+  "limitOrderSuccess": "限价单已成功{t} {a} {s}，平均单价为 ${p}"
 }
