@@ -21,7 +21,8 @@ const props = defineProps({
     type: Number,
     default: 0
   },
-  loading: Boolean
+  loading: Boolean,
+  fixed: Boolean,
 })
 
 const slots = useSlots()
@@ -64,8 +65,9 @@ const defaultSlots = computed(() => {
 
 // 处理 columns，注入 cellRenderer/headerCellRenderer
 const computedColumns = computed(() => {
-  const avgWidth = getAvgWidth()
+  let avgWidth = getAvgWidth()
   return props.columns.map((col: any) => {
+    avgWidth = Math.max(avgWidth, col.minWidth || 0)
     // 支持 key 或 dataKey
     const cellSlot = slots[`cell-${col.key}`] || slots[`cell-${col.dataKey}`]
     const headerSlot = slots[`header-${col.key}`] || slots[`header-${col.dataKey}`]
@@ -94,7 +96,7 @@ function getAvgWidth() {
     }
     return prev
   }, 0)
-  return ((elTableWidth.value - sumWidth) / avgNum) | 0
+  return ((elTableWidth.value - 6 - sumWidth) / avgNum) | 0
 }
 </script>
 
@@ -113,6 +115,7 @@ function getAvgWidth() {
         :width="width"
         :footer-height="footerHeight"
         v-bind="attrs"
+        :fixed="fixed"
       >
         <template v-for="(slotFn, slotName) in defaultSlots" #[slotName]="slotProps">
           <slot :name="slotName" v-bind="slotProps"/>
