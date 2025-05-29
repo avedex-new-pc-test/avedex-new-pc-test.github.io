@@ -208,7 +208,9 @@ function createToggleButton() {
     showMarket.value = !showMarket.value
 
     updateButtonContent()
-    resetChart()
+    // resetChart()
+    _widget?.resetCache?.()
+    _widget?.activeChart?.().resetData?.()
   }
   updateButtonContent()
   headerBtns.push(btn)

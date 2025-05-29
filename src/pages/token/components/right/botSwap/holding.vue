@@ -1,5 +1,5 @@
 <template>
-  <div v-if="Number(walletTokenInfo?.balance_usd || 0) > 0" class="max-h-54px flex items-start justify-between color-[--d-F5F5F5-l-333] text-center bg-[--d-222-l-F2F2F2] mb-12px p-10px rd-4px">
+  <div v-if="Number(walletTokenInfo?.balance_usd || 0) > 0" class="max-h-54px flex items-start justify-between color-[--d-F5F5F5-l-333] text-center bg-[--d-222-l-F2F2F2] mb-12px py-10px rd-4px">
     <div class="flex-1">
       <div class="text-11px color-[--d-666-l-999]">{{ $t('bought') }}</div>
       <div class="text-12px mt-5px color-#12B886">${{ formatNumber(walletTokenInfo?.total_purchase_usd || 0, 2) }}</div>
@@ -15,7 +15,7 @@
     <div class="flex-1">
       <div class="text-11px color-[--d-666-l-999] flex items-center justify-center">
         <span>{{ $t('profit2') }}</span>
-        <Icon name="solar:dollar-bold" class="text-12px clickable" @click.stop="isShowB=!isShowB" />
+        <Icon name="custom:price" class="text-11px clickable ml-5px" :class="[isShowB ? 'color-[--d-666-l-999]' : 'color-[--d-F5F5F5-l-333]']" @click.stop="isShowB=!isShowB" />
       </div>
       <div class="text-12px mt-5px" :class="[Number(walletTokenInfo?.total_profit || 0) > 0 ? 'color-#12B886' : 'color-#F6465D']">
         <template v-if="!isShowB">
