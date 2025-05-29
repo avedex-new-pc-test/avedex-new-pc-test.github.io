@@ -541,5 +541,11 @@
   "currentPrice": "当前价格",
   "PnLTips": "仅统计7日内买入交易的浮动盈亏",
   "balance2": "持仓",
-  "lastPrice1": "最新价"
+  "lastPrice1": "最新价",
+  "transfer_out": "转出",
+  "transfer_in": "转入",
+  "notice": "通知",
+  "limitOrder": "限价单",
+  "T_Trading": "做T",
+  "mCap": "市值"
 }

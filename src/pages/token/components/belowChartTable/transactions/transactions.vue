@@ -517,7 +517,10 @@ function setMakerAddress(address: string) {
 }
 
 function onRowClick({rowData}: RowEventHandlerParams) {
-  const {symbol, logo_url, chain, token: _token} = token.value!
+  if (!token.value) {
+    return
+  }
+  const {symbol, logo_url, chain, token: _token} = token.value
   const {target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress} = pair.value!
   tokenDetailSStore.$patch({
     drawerVisible: true,

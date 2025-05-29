@@ -502,7 +502,7 @@
   "campaignSellAvg": "賣出均價",
   "limitPrice": "掛單價格",
   "mev": "防夾",
-   "totalProfit": "累計收益",
+  "totalProfit": "累計收益",
   "realizedProfit": "已實現利潤",
   "unrealizedProfit": "未實現利潤",
   "buyPriceWithSlash": "買入/買價",
@@ -538,5 +538,11 @@
   "currentPrice": "目前價格",
   "PnLTips": "僅統計7日內買進交易的浮動盈虧",
   "balance2": "持倉",
-  "lastPrice1": "最新價"
+  "lastPrice1": "最新價",
+  "transfer_out": "轉出",
+  "transfer_in": "轉入",
+  "notice": "通知",
+  "limitOrder": "限價單",
+  "T_Trading": "做T",
+  "mCap": "市值"
 }

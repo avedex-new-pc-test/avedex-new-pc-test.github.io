@@ -56,7 +56,7 @@ const columns = computed(() => {
     flex: 'flex-1',
     sort: true
   }, {
-    label: t('amountB') + '/' + t('Txs'),
+    label: '',
     value: 'current_price_usd',
     flex: 'w-78px justify-end',
     sort: false
@@ -139,7 +139,13 @@ async function _getHomePumpList() {
       v-model:sort="sort"
       :columns="columns"
       @update:sort="sortChange"
-    />
+    >
+    <template #current_price_usd>
+      {{ t('amountB') }}
+      <Icon name="custom:price"/>
+      /{{ t('Txs') }}
+    </template>
+    </THead>
     <el-scrollbar
       :height="scrollbarHeight"
       class="[&&]:h-auto"
