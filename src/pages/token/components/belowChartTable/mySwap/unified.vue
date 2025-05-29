@@ -47,7 +47,7 @@
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
+            <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -60,10 +60,10 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-[#12B886] px-8px rounded-4px">
+          <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ row.swapType === 1 ? t('market') : t('limit') }}/{{ t('buy') }}
           </div>
-          <div v-if="row.swapType === 2 || row.swapType === 6" class="text-13px text-[#F6465D] px-8px rounded-4px">
+          <div v-if="row.swapType === 2 || row.swapType === 6" class="text-13px text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
             {{ row.swapType === 2 ? t('market') : t('limit') }}/{{ t('sell') }}
           </div>
         </template>
@@ -107,7 +107,7 @@
         <template #header>
           <span>{{ t('status') }}</span>
           <el-dropdown trigger="click" @command="handleStatusCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
+            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>

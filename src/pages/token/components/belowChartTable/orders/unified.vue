@@ -46,7 +46,7 @@
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
+            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
