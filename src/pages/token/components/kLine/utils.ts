@@ -220,8 +220,8 @@ export function buildOrUpdateLastBarFromTx(
     return {
       time: barStartTime,
       open: lastBar.close,
-      high: Math.max(lastBar.high, price),
-      low: Math.min(lastBar.low, price),
+      high: Math.max(lastBar.close, price),
+      low: Math.min(lastBar.close, price),
       close: price,
       volume
     }

@@ -14,7 +14,7 @@ import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
 import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
-import type { WSTx } from './types'
+import type { WSTx, KLineBar } from './types'
 import BigNumber from 'bignumber.js'
 import { useKlineMarks } from './mark'
 
@@ -142,6 +142,7 @@ watch(() => localeStore.locale, () => {
 function resetChart() {
   isReadyLine = false
   isHeaderReady = false
+  lastBar = null
   resetLimitPriceLineId()
   _widget?.remove?.()
   initChart()
@@ -203,6 +204,7 @@ function createToggleButton() {
 
   btn.onclick = () => {
     showMarket.value = !showMarket.value
+
     updateButtonContent()
     resetChart()
   }
@@ -403,6 +405,7 @@ async function initChart() {
         try {
           if (firstDataRequest) {
             noData = false
+            lastBar = null
           } else {
             if (noData) {
               onResult([], { noData: true })
@@ -418,7 +421,8 @@ async function initChart() {
             to
           }
           getKlineHistoryData(params).then(res => {
-            const bars = res?.kline_data?.map?.(i => ({
+            const bars1 = res?.kline_data || []
+            const bars = bars1?.map?.(i => ({
               time: i.time * 1000,
               open: showMarket.value ? new BigNumber(i.open || 0).times(tokenStore?.circulation || 0).toNumber() : i.open,
               high: showMarket.value ? new BigNumber(i.high || 0).times(tokenStore?.circulation || 0).toNumber() : i.high,
@@ -428,9 +432,9 @@ async function initChart() {
             })) || []
             klinePair.value = res?.pair || ''
             if (firstDataRequest) {
-              lastBar = bars?.[bars?.length - 1] || null
+              lastBar = bars1?.[bars1?.length - 1] || null
+              noData = bars?.length < 200
             }
-            noData = bars?.length < 200
             onResult(bars, {noData: !bars?.length})
           })
           // if (firstDataRequest) {
@@ -484,10 +488,11 @@ async function initChart() {
             const interval = switchResolution(resolution)
             if (tx.pair_address === pair.value) {
               const t = token.value?.replace?.(/-.*$/, '')
-              const newBar = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
-              if (newBar) {
-                lastBar = {...newBar}
+              const newBar1 = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
+              if (newBar1) {
+                lastBar = {...newBar1}
               }
+              const newBar = {...newBar1} as KLineBar
               if (showMarket.value && newBar) {
                 newBar.open = new BigNumber(newBar.open || 0).times(tokenStore?.circulation || 0).toNumber()
                 newBar.high = new BigNumber(newBar.high || 0).times(tokenStore?.circulation || 0).toNumber()
