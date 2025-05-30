@@ -31,11 +31,18 @@ export const useGlobalStore = defineStore('global', () => {
    function sendFooterPriceWs() {
     const data = {
       jsonrpc: '2.0',
-      method: 'subscribe',
+      method: 'unsubscribe',
       params: ['pricev2', footerTokensPrice.value?.map(i => i.id)],
       id: 1,
     }
     wsStore.send(data)
+    const data1 = {
+      jsonrpc: '2.0',
+      method: 'subscribe',
+      params: ['pricev2', footerTokensPrice.value?.map(i => i.id)],
+      id: 1,
+    }
+    wsStore.send(data1)
   }
 
   function onmessageFooterPrice(data: any) {
