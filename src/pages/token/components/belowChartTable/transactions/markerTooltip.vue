@@ -100,6 +100,7 @@ function getColorClass(val: string) {
             icon-size="20px"
           />
           <UserRemark
+            :canEdit="false"
             :remark="currentRow.remark"
             :address="currentRow.wallet_address"
             :chain="currentRow.chain"
