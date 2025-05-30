@@ -442,13 +442,6 @@ export function useAvgPriceLine(getWidget: () => IChartingLibraryWidget | null, 
     }
   }
 
-
-  onUnmounted(() => {
-    if (stop) {
-      stop()
-    }
-  })
-
   return {
     resetAvgPriceLineId: () => {
       lineId = '' as EntityId
