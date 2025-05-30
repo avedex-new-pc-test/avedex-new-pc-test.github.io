@@ -178,5 +178,8 @@
   "netInflow": "Net Giriş",
   "limitPrice": "Limit emir fiyatı",
   "notice": "Bildirim",
-  "mCap": "Piyasa değeri"
+  "mCap": "Piyasa değeri",
+  "disclaimers": "Sorumluluk reddi beyanı",
+  "privacyPolicy": "Gizlilik Politikası",
+  "partners": "Partnerler"
 }

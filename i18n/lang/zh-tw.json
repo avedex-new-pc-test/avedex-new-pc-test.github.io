@@ -544,5 +544,9 @@
   "notice": "通知",
   "limitOrder": "限價單",
   "T_Trading": "做T",
-  "mCap": "市值"
+  "mCap": "市值",
+  "disclaimers": "免責聲明",
+  "privacyPolicy": "隱私條款",
+  "partners": "合作夥伴",
+  "ecosystem": "生態夥伴計劃"
 }

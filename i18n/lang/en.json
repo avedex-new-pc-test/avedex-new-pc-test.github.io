@@ -545,5 +545,9 @@
   "notice": "Notice",
   "limitOrder": "Limit Order",
   "T_Trading": "Trade",
-  "mCap": "MC"
+  "mCap": "MC",
+  "disclaimers": "Disclaimers",
+  "privacyPolicy": "Privacy Policy",
+  "partners": "Partners",
+  "ecosystem": "Ecosystem"
 }

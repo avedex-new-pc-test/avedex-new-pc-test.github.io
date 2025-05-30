@@ -547,5 +547,9 @@
   "notice": "通知",
   "limitOrder": "限价单",
   "T_Trading": "做T",
-  "mCap": "市值"
+  "mCap": "市值",
+  "disclaimers": "免责声明",
+  "privacyPolicy": "隐私条款",
+  "partners": "合作伙伴",
+  "ecosystem": "生态伙伴计划"
 }
