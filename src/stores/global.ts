@@ -66,6 +66,7 @@ export const useGlobalStore = defineStore('global', () => {
       }
     )
   }
+   const footerTokensPriceIds = computed(() => footerTokensPrice.value?.map(i => i.id))
   return {
     t,
     lang: computed(() => localeStore.locale),
@@ -74,6 +75,7 @@ export const useGlobalStore = defineStore('global', () => {
     isDark: computed(() => themeStore.isDark),
     sendFooterPriceWs,
     onmessageFooterPrice,
-    footerTokensPrice
+    footerTokensPrice,
+    footerTokensPriceIds
   }
 })

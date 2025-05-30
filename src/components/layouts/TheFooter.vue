@@ -77,7 +77,6 @@ const data = ref([])
 onMounted(() => {
   // Add any initialization logic if needed
   initPage()
-  globalStore.sendFooterPriceWs()
 })
 const initPage = () => {
   // Initialize the page or perform any setup tasks

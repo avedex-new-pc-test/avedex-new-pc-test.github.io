@@ -96,8 +96,6 @@ function init() {
   _getTokenInfoExtra()
   // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
-  botSwapStore.sendNativePriceWs()
-  globalStore.sendFooterPriceWs()
 }
 
 watch(() => route.params.id, () => {
