@@ -1,92 +1,61 @@
 <template>
   <footer class="h-40px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer">
-    <ul class="left">
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
-        <a class="border-left" target="_blank" href="https://eco.ave.ai">{{ $t('ecosystem') }}</a>
+    <ul class="left gap-12px">
+      <li v-for="item in data" :key="item.symbol || item.logo_url" class="color-[--d-999-l-666]  flex items-center gap-5px">
+        <TokenImg 
+        :row="{
+          logo_url: item.logo_url,
+        }" token-class="w-16px h-16px [&&]:mr-0" />
+        <span>{{ item.symbol }}</span>
+        <span :class="`color-${item.color}`">{{'$'+formatDec(item.current_price_usd, 2)}}</span>
       </li>
     </ul>
     <ul class="right">
-      <!-- <li>
-        <a
-          target="_blank"
-          :href="
-            lang?.includes?.('zh')
-              ? 'https://doc.ave.ai/cn'
-              : 'https://doc.ave.ai'
-          "
-        >
-          {{ $t('tutorial') }}
-        </a>
-      </li>
-      <li>
-        <a
-          target="_blank"
-          href="https://blog.ave.ai/"
-        >
-          {{ $t('blog') }}
-        </a>
-      </li> -->
-      <!-- <li class="sr-only">
-          <el-tooltip effect="customized" placement="top" :popper-class="$store.state.mode">
-            <template #content>
-              <ul class="support">
-                <li v-for="(item, $index) in list" :key="$index"><a :href="item.src" :title="item.title" target="_blank">{{ item.title }} <i class="iconfont icon-share font-8"></i></a></li>
-              </ul>
-            </template>
-            <a href @click.stop.prevent> {{ $t('alternative') }}</a>
-          </el-tooltip>
-      </li> -->
-      <!-- <li v-if="lang === 'en'">
-        <a target="_blank" href="/user_agreement.html">User Agreement</a>
-      </li> -->
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
         <a class="border-left" target="_blank" href="https://eco.ave.ai">{{ $t('ecosystem') }}</a>
       </li>
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
         <a target="_blank" href="https://cloud.ave.ai">API</a>
       </li>
-      <li class="bg-[--d-999-l-666] w-1px h-8px"/>
+      <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
-        <a
-          class="border-left"
-          target="_blank"
-          :href="
-            lang?.includes?.('zh')
-              ? 'https://doc.ave.ai/cn/mian-ze-shen-ming'
-              : 'https://doc.ave.ai/disclaimers'
-          "
-        >
+        <a class="border-left" target="_blank" :href="lang?.includes?.('zh')
+            ? 'https://doc.ave.ai/cn/mian-ze-shen-ming'
+            : 'https://doc.ave.ai/disclaimers'
+          ">
           {{ $t('disclaimers') }}
         </a>
       </li>
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
         <a target="_blank" href="/privacy.html">{{ $t('privacyPolicy') }}</a>
       </li>
-      <li class="bg-[--d-999-l-666] w-1px h-8px"/>
+      <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666]">
         <span class="partners">{{ $t('partners') }}</span>
       </li>
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
         <a target="_blank" href="https://www.tradingview.com/" class="flex-center">
-          <Icon name="simple-icons:tradingview" class="text-18px mr-2px"/>TradingView
+          <Icon name="simple-icons:tradingview" class="text-18px mr-2px" />TradingView
           <!-- <img v-if="isDark" src="@/assets/images/tradingView-dark.svg" alt="" height="12" />
           <img v-else src="@/assets/images/tradingView-light.svg" alt="" height="12" /> -->
         </a>
       </li>
-      <li class="bg-[--d-999-l-666] w-1px h-8px"/>
+      <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
-        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'" class="flex-center">
-          <Icon name="bi:twitter-x" class="text-16px"/>
+        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
+          class="flex-center">
+          <Icon name="bi:twitter-x" class="text-16px" />
         </a>
       </li>
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
-        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'" class="flex-center">
-          <Icon name="lineicons:telegram-original" class="text-19px"/>
+        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
+          class="flex-center">
+          <Icon name="lineicons:telegram-original" class="text-19px" />
         </a>
       </li>
       <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
-        <a  href="mailto:avebusiness100@ave.ai" class="flex-center">
-          <Icon name="material-symbols:mail" class="text-20px"/>
+        <a href="mailto:avebusiness100@ave.ai" class="flex-center">
+          <Icon name="material-symbols:mail" class="text-20px" />
         </a>
       </li>
     </ul>
@@ -94,7 +63,53 @@
 </template>
 
 <script setup lang='ts'>
-  const {mode,lang,isDark} = storeToRefs(useGlobalStore())
+import { formatDec } from '~/utils/formatNumber'
+import { getTokensPrice } from '@/api/token'
+import { upColor, downColor } from '@/utils/constants'
+const globalStore = useGlobalStore()
+const { lang } = storeToRefs(globalStore)
+const ids = [
+  '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c-bsc',
+  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2-eth',
+  'So11111111111111111111111111111111111111112-solana',
+]
+const data = ref([])
+onMounted(() => {
+  // Add any initialization logic if needed
+  initPage()
+  globalStore.sendFooterPriceWs()
+})
+const initPage = () => {
+  // Initialize the page or perform any setup tasks
+  getTokensPrice(ids).then((res) => {
+    console.log('Price data:', res)
+    //WETH BTCB SOL
+    const newVal = res.map(i=>{
+      return {
+        ...i,
+        symbol: {WETH:'ETH',BTCB:'BTC',SOL:'SOL'}[i.symbol],
+        logo_url: i.logo_url,
+        color:i.price_change>=0?upColor:downColor
+      }
+    })
+    data.value[0] = newVal.filter(i => i.symbol === 'BTC')[0]
+    data.value[1] = newVal.filter(i => i.symbol === 'ETH')[0]
+    data.value[2] = newVal.filter(i => i.symbol === 'SOL')[0]
+  })
+}
+watch(()=>globalStore.footerTokensPrice, (newVal) => {
+  console.log('globalStore.footerTokensPrice', newVal)
+  if(data.value.length){
+    for (let index = 0; index < data.value.length; index++) {
+      const item = data.value[index]
+      const newItem = newVal.filter(i => i.id === ids[index])?.[0]
+      if(newItem){
+        item.current_price_usd = newItem?.current_price_usd || item.current_price_usd
+        item.color = newItem?.price_change>=0?upColor:downColor
+      }
+    }
+  }
+})
 </script>
 
 <style scoped lang="scss">
@@ -111,13 +126,13 @@
     flex: auto;
     display: flex;
     justify-content: flex-start;
-    align-items: center;  
+    align-items: center;
   }
 
   .right {
     flex: auto;
     display: flex;
-    gap:12px;
+    gap: 12px;
     justify-content: flex-end;
     align-items: center;
   }

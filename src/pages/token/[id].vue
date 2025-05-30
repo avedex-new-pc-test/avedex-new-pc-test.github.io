@@ -34,6 +34,7 @@ definePageMeta({
 const route = useRoute()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
+const globalStore = useGlobalStore()
 const addresses = computed(() => {
   const result = botStore.userInfo?.addresses
   if (Array.isArray(result)) {
@@ -96,6 +97,7 @@ function init() {
   // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
   botSwapStore.sendNativePriceWs()
+  globalStore.sendFooterPriceWs()
 }
 
 watch(() => route.params.id, () => {
