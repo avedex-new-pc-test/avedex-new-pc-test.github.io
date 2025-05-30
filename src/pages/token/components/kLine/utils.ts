@@ -316,9 +316,9 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
       textcolor: '#FFBE3C',
       showLabel: true,
       horzLabelsAlign: 'right',
-      vertLabelsAlign: 'middle',
+      vertLabelsAlign: 'bottom',
       bold: true,
-      fontSize: 14,
+      fontSize: 12,
       // italic: true,
     })
   }
@@ -401,20 +401,20 @@ export function useAvgPriceLine(getWidget: () => IChartingLibraryWidget | null, 
         disableUndo: true,
         text: t('averagePositionPrice'),
         overrides: {
-          linecolor: '#999999',  // 线的颜色
+          linecolor: '#3F80F7',  // 线的颜色
           linewidth: 1,          // 线的粗细
-          linestyle: 2        // 线的样式：0表示实线，1表示虚线 2 长虚线
-        }
+          linestyle: 0        // 线的样式：0表示实线，1表示虚线 2 长虚线
+        },
       }
     )
     isCreating = false
     chart?.getShapeById?.(lineId)?.setProperties?.({
-      textcolor: '#999999',
+      textcolor: '#3F80F7',
       showLabel: true,
       horzLabelsAlign: 'right',
-      vertLabelsAlign: 'middle',
+      vertLabelsAlign: 'bottom',
       bold: true,
-      fontSize: 14,
+      fontSize: 12,
       // italic: true,
     })
   }

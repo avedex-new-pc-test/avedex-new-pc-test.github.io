@@ -354,8 +354,7 @@ async function initChart() {
         if (!isSupportSecChains) {
           configurationData.supported_resolutions = ['1', '5', '15', '30', '60', '120', '240', '1D', '1W'] as ResolutionString[]
         }
-        isReady = true
-        isReadyLine = true
+
         setTimeout(() => callback(configurationData), 50)
       },
       resolveSymbol: (symbolName, onResolve, onError) => {
@@ -566,6 +565,8 @@ async function initChart() {
   })
   updateChartBackground()
   _widget.onChartReady(() => {
+    isReady = true
+    isReadyLine = true
     // 保存指标
     saveStudy()
     if (themeStore.isDark) {
