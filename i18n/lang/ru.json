@@ -355,5 +355,6 @@
   "limitOrderAutoCancel": "Лимитный ордер отменен автоматически причина: {f}",
   "limitOrderSuccess": "Лимитный ордер успешно {t} {a} {s} средняя цена {p}",
   "averagePositionPrice": "Средняя цена",
-  "pending": "В ожидании"
+  "pending": "В ожидании",
+  "openedTip": "Ликвидность перемещена"
 }

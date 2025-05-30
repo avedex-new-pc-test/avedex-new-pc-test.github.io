@@ -181,5 +181,6 @@
   "notice": "Bildirim",
   "mCap": "Piyasa değeri",
   "emptyNoData": "Veri Yok",
-  "averagePositionPrice": "Ortalama Fiyat"
+  "averagePositionPrice": "Ortalama Fiyat",
+  "openedTip": "Likidite yeni çifte taşındı"
 }

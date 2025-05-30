@@ -573,5 +573,6 @@
   "limitOrderAutoCancel": "限價單自動取消，原因: {f}",
   "limitOrderSuccess": "限價單已成功買進 {a} {s}，平均單價為 ${p}",
   "averagePositionPrice": "持倉均價",
-  "pending": "交易中"
+  "pending": "交易中",
+  "openedTip": "外盤已開盤"
 }

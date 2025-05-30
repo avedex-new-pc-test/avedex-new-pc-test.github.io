@@ -186,5 +186,6 @@
   "lastPrice1": "Último preço",
   "notice": "Notar ",
   "mCap": "MCap",
-  "averagePositionPrice": "Preço Médio"
+  "averagePositionPrice": "Preço Médio",
+  "openedTip": "A liquidez foi movida para um novo par"
 }

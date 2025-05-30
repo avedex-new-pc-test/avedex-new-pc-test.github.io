@@ -21,7 +21,8 @@ export const useWSStore = defineStore('ws', () => {
     [WSEventType.KLINE]: null,
     [WSEventType.PRICEV2]: null,
     [WSEventType.TGBOT]: null,
-    [WSEventType.ASSET]: null
+    [WSEventType.ASSET]: null,
+    [WSEventType.SWITCH_MAIN_PAIR_V2]: null
   })
 
   // 将 createWebSocket 重命名为 init
@@ -50,6 +51,9 @@ export const useWSStore = defineStore('ws', () => {
       } else if (event === WSEventType.PRICEV2) {
         botSwapStore.onmessageNativePrice(data)
         wsResult[event] = data
+      } else if (event === WSEventType.SWITCH_MAIN_PAIR_V2) {
+        // 内盘转外盘更新 pair
+        useTokenStore().onSwitchMainPairV2(data)
       } else {
         wsResult[event] = data
       }
