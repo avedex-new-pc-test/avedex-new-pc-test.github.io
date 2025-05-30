@@ -2,12 +2,12 @@
   <footer class="h-40px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer">
     <ul class="left gap-12px">
       <li v-for="item in data" :key="item.symbol || item.logo_url" class="color-[--d-999-l-666]  flex items-center gap-5px">
-        <TokenImg 
+        <TokenImg
         :row="{
           logo_url: item.logo_url,
         }" token-class="w-16px h-16px [&&]:mr-0" />
         <span>{{ item.symbol }}</span>
-        <span :class="`color-${item.color}`">{{'$'+formatDec(item.current_price_usd, 2)}}</span>
+        <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
       </li>
     </ul>
     <ul class="right">
@@ -73,7 +73,12 @@ const ids = [
   '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2-eth',
   'So11111111111111111111111111111111111111112-solana',
 ]
-const data = ref([])
+const data = ref<Array<{
+  symbol: string
+  logo_url: string
+  color: string
+  current_price_usd: number
+}>>([])
 onMounted(() => {
   // Add any initialization logic if needed
   initPage()
@@ -86,9 +91,9 @@ const initPage = () => {
     const newVal = res.map(i=>{
       return {
         ...i,
-        symbol: {WETH:'ETH',BTCB:'BTC',SOL:'SOL'}[i.symbol],
+        symbol: {WETH:'ETH',BTCB:'BTC',SOL:'SOL'}[i.symbol as string] || i.symbol,
         logo_url: i.logo_url,
-        color:i.price_change>=0?upColor:downColor
+        color:i.price_change>=0?upColor[0]:downColor[0]
       }
     })
     data.value[0] = newVal.filter(i => i.symbol === 'BTC')[0]
@@ -104,7 +109,7 @@ watch(()=>globalStore.footerTokensPrice, (newVal) => {
       const newItem = newVal.filter(i => i.id === ids[index])?.[0]
       if(newItem){
         item.current_price_usd = newItem?.current_price_usd || item.current_price_usd
-        item.color = newItem?.price_change>=0?upColor:downColor
+        item.color = newItem?.price_change>=0?upColor[0]:downColor[0]
       }
     }
   }
