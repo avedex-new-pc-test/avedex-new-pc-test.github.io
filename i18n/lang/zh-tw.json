@@ -573,5 +573,12 @@
   "limitOrderAutoCancel": "限價單自動取消，原因: {f}",
   "limitOrderSuccess": "限價單已成功買進 {a} {s}，平均單價為 ${p}",
   "averagePositionPrice": "持倉均價",
-  "pending": "交易中"
+  "pending": "交易中",
+  "holdersDetail": "持幣明細",
+  "excludeNullAndPoll": "不包含黑洞地址和池子地址",
+  "topN": "前{n}",
+  "mainChip": "主力籌碼",
+  "position": "倉位",
+  "Change3D": "3日波動",
+  "profit1": "預計盈虧"
 }

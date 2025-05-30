@@ -355,5 +355,12 @@
   "limitOrderAutoCancel": "Lệnh giới hạn tự động hủy lý do: {f}",
   "limitOrderSuccess": "Lệnh giới hạn thành công {t} {a} {s} giá trung bình {p}",
   "averagePositionPrice": "Giá trung bình",
-  "pending": "Đang chờ"
+  "pending": "Đang chờ",
+  "holdersDetail": "Chi tiết người nắm giữ",
+  "excludeNullAndPoll": "Không bao gồm địa chỉ rỗng",
+  "topN": "Top {n}",
+  "mainChip": "Chip chính",
+  "position": "Vị thế",
+  "Change3D": "Thay đổi 3 ngày",
+  "profit1": "Lãi/Lỗ"
 }

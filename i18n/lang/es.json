@@ -186,5 +186,12 @@
   "noMore": "No más",
   "notice": "Aviso",
   "mCap": "Cap.de Mercado",
-  "averagePositionPrice": "Precio promedio"
+  "averagePositionPrice": "Precio promedio",
+  "holdersDetail": "Detalle de portadores",
+  "excludeNullAndPoll": "excluyendo direcciones nulas y direcciones de pool",
+  "topN": "Top {n}",
+  "mainChip": "Chip principal",
+  "position": "Posición",
+  "Change3D": "Cambio. 3D",
+  "profit1": "PyG"
 }

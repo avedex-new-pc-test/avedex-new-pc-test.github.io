@@ -917,7 +917,7 @@
 
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
-import { getChainInfo,formatDate, formatTimeFromNow } from '@/utils/index'
+import { getChainInfo,formatDate, formatTimeFromNow, getAddressAndChainFromId } from '@/utils/index'
 import dayjs from 'dayjs'
 const props = defineProps({
   modelValue: Boolean,

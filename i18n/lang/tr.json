@@ -181,5 +181,12 @@
   "notice": "Bildirim",
   "mCap": "Piyasa değeri",
   "emptyNoData": "Veri Yok",
-  "averagePositionPrice": "Ortalama Fiyat"
+  "averagePositionPrice": "Ortalama Fiyat",
+  "holdersDetail": "Sahipler Detayı",
+  "excludeNullAndPoll": "Boş adresler ve havuz adresleri hariç",
+  "topN": "İlk {n}",
+  "mainChip": "Ana Yatırımcılar",
+  "position": "Pozisyon",
+  "Change3D": "3 Günlük Değişim",
+  "profit1": "Tahmini Kar/Zarar"
 }
