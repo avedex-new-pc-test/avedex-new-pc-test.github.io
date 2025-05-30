@@ -61,10 +61,10 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
+          <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-center text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ row.swapType === 1 ? t('market') : t('limit') }}/{{ t('buy') }}
           </div>
-          <div v-if="row.swapType === 2 || row.swapType === 6" class="text-13px text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 2 || row.swapType === 6" class="text-13px  text-center text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
             {{ row.swapType === 2 ? t('market') : t('limit') }}/{{ t('sell') }}
           </div>
         </template>

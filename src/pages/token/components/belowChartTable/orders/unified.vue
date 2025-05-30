@@ -42,7 +42,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="t('type')" align="right" prop="isBuy" width="100px">
+      <el-table-column :label="t('type')" align="right" prop="isBuy">
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
@@ -57,12 +57,12 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <span v-if="row.swapType === 6" class="text-13px text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px bg-[#221115]">
             {{ t('limit') }}/{{ t('sell') }}
-          </span>
-          <span v-if="row.swapType === 5" class="text-13px text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
+          </div>
+          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ t('limit') }}/{{ t('buy') }}
-          </span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column :label="t('price')" align="right">
