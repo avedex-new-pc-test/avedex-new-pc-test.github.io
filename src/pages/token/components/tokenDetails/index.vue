@@ -204,6 +204,7 @@ async function _getTokenDetailMarks(type: string) {
           >
             <LineChart
               v-loading="loadingLineChart"
+              element-loading-background="transparent"
               :active-time="activeTime"
               :marks="marks"
               :show-series="[true,true]"

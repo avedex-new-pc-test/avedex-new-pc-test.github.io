@@ -27,6 +27,8 @@ const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
 const route = useRoute()
+// 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
+const realAddress = shallowRef(route.params.id as string)
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
@@ -35,7 +37,7 @@ const tabs = computed(() => {
       if (num > 0) {
         arr.push({
           ...i,
-          label: i?.[filterLanguage(useLocaleStore().locale)] + (i.type !== '31' ? `(${num})` : ''),
+          label: i?.[filterLanguage(useLocaleStore().locale)] + `(${num})`,
           value: i.type
         })
       }
@@ -53,10 +55,10 @@ const tabs = computed(() => {
       label: t('sell3'),
       value: 'sell'
     },
-    {
-      label: t('followed'),
-      value: '-100'
-    },
+    // {
+    //   label: t('followed'),
+    //   value: '-100'
+    // },
     {
       label: t('liquidity2'),
       value: 'liquidity'
@@ -196,6 +198,7 @@ watch(() => pairAddress.value, (pair, oldPair) => {
 watch(() => route.params.id, val => {
   if (val) {
     resetCache()
+    tableFilter.value.markerAddress = ''
     _getTokenTxs()
   }
 }, {
@@ -306,6 +309,7 @@ async function _getTokenTxs() {
       tag_type
     }
     const res = await getTokenTxs(getPairTxsParams)
+    realAddress.value = getAddressAndChainFromId(getPairTxsParams.token_id).address
     tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       const {wallet_tag, topN} = getWalletTag(val)
@@ -366,7 +370,7 @@ function isBuy(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('from_address' in row) {
     if (
       row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.from_address?.toLowerCase?.()
     ) {
       return false
     }
@@ -375,7 +379,7 @@ function isBuy(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('to_address' in row) {
     if (
       row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.to_address.toLowerCase?.()
     ) {
       return true
     }
@@ -394,7 +398,8 @@ function getRowColor(row: GetPairLiqResponse | IGetTokenTxsResponse) {
 }
 
 function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = false) {
-  const tokenAddress = addressAndChain.value.address
+  // route.params。id 同步更改，而接口异步请求，此时更新该值变成了 0
+  const tokenAddress = realAddress.value
   if ('from_address' in row) {
     if (
       row.from_address &&
@@ -429,7 +434,7 @@ function getAmount(row: GetPairLiqResponse | IGetTokenTxsResponse, needPrice = f
   if ('from_address' in row) {
     if (
       row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.from_address?.toLowerCase?.()
     ) {
       return row.from_amount * (
         needPrice ? Number(isVolUSDT ? row.from_price_usd : row.from_price_eth)
@@ -441,7 +446,7 @@ function getAmount(row: GetPairLiqResponse | IGetTokenTxsResponse, needPrice = f
   if ('to_address' in row) {
     if (
       row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.to_address.toLowerCase?.()
     ) {
       return row.to_amount * (
         needPrice ? Number(isVolUSDT ? row.to_price_usd : row.to_price_eth)
@@ -457,7 +462,7 @@ function hasNewAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { send
     return false
   }
   if (
-    addressAndChain.value.address.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
+    realAddress.value.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
   ) {
     return row.senderProfile?.token0HasNewAccount
   } else {
@@ -470,7 +475,7 @@ function hasClearedAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { 
     return false
   }
   if (
-    addressAndChain.value.address.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
+    realAddress.value.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
   ) {
     return row.senderProfile?.token0HasClearedAccount
   } else {
@@ -595,7 +600,7 @@ function onRowClick({rowData}: RowEventHandlerParams) {
           class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
           v-html="$t('filterTip',{
           address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
-          count:`<span>&nbsp;${filterTableList[0]?.count}&nbsp;</span>`
+          count:`<span>&nbsp;${filterTableList[0]?.count||0}&nbsp;</span>`
          })"
         />
         <UserTxsFilterHead
@@ -610,7 +615,10 @@ function onRowClick({rowData}: RowEventHandlerParams) {
         />
       </template>
     </template>
-    <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
+    <div
+      v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
+      element-loading-background="transparent"
+    >
       <AveTable
         fixed
         :data="filterTableList"
