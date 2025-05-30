@@ -186,8 +186,6 @@ const addressAndChain = computed(() => {
 })
 watch(() => pairAddress.value, (pair, oldPair) => {
   if (pairAddress.value) {
-    txCount.value = {}
-    _getTokenTxs()
     _getPairLiq()
     subscribeLiq(pair, oldPair)
   }
@@ -195,13 +193,26 @@ watch(() => pairAddress.value, (pair, oldPair) => {
   immediate: true
 })
 
+watch(() => route.params.id, val => {
+  if (val) {
+    resetCache()
+    _getTokenTxs()
+  }
+}, {
+  immediate: true
+})
+
 useVisibilityChange(() => {
-  txCount.value = {}
-  wsPairCache.value.length = 0
-  wsLiqCache.value.length = 0
+  resetCache()
   _getTokenTxs()
   _getPairLiq()
 })
+
+function resetCache() {
+  txCount.value = {}
+  wsPairCache.value.length = 0
+  wsLiqCache.value.length = 0
+}
 
 watch(() => wsStore.wsResult[WSEventType.TX], data => {
   if (!data || listStatus.value.loadingTxs) {
@@ -226,10 +237,10 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
     return
   }
   const {wallet_address} = data.liq
-  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
-    count: txCount.value[wallet_address]
+    // count: txCount.value[wallet_address]
   })
   if (!isPausedTxs.value) {
     updateLiqList()
@@ -338,10 +349,10 @@ async function _getPairLiq() {
     listStatus.value.loadingLiq = true
     const res = await getPairLiq(pairAddress.value + '-' + addressAndChain.value.chain)
     pairLiq.value = (res || []).reverse().map(val => {
-      txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
+      // txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       return {
         ...val,
-        count: txCount.value[val.wallet_address],
+        // count: txCount.value[val.wallet_address],
       }
     }).reverse()
   } catch (e) {
