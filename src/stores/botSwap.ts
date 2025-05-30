@@ -18,6 +18,13 @@ export const useBotSwapStore = defineStore('botSwap', () => {
 
   const mainTokensPrice = shallowRef([
     {
+      token: '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c',
+      chain: 'bsc',
+      id: '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c-bsc',
+      current_price_usd: 0,
+      price_change: 0
+    },
+    {
       token: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
       chain: 'bsc',
       id: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c-bsc',

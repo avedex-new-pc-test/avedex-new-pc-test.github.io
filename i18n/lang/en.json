@@ -575,5 +575,9 @@
   "limitOrderSuccess": "limit order has been successfully {t} {a} {s}, average price is {p}",
   "averagePositionPrice": "Average Price",
   "pending": "Pending",
-  "openedTip": "Liquidity has moved to new pair"
+  "openedTip": "Liquidity has moved to new pair",
+  "disclaimers": "Disclaimers",
+  "privacyPolicy": "Privacy Policy",
+  "partners": "Partners",
+  "ecosystem": "Ecosystem"
 }

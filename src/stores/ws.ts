@@ -12,6 +12,7 @@ export const useWSStore = defineStore('ws', () => {
   const wsInstance = shallowRef<WS | null>(null)
   const isConnected = shallowRef(false)
   const botSwapStore = useBotSwapStore()
+  const globalStore = useGlobalStore()
 
   // const tokenStore = useTokenStore()
 
@@ -50,6 +51,7 @@ export const useWSStore = defineStore('ws', () => {
         wsResult[event] = data
       } else if (event === WSEventType.PRICEV2) {
         botSwapStore.onmessageNativePrice(data)
+        globalStore.onmessageFooterPrice(data)
         wsResult[event] = data
       } else if (event === WSEventType.SWITCH_MAIN_PAIR_V2) {
         // 内盘转外盘更新 pair

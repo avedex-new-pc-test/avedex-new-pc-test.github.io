@@ -17,6 +17,7 @@
     useConfigStore().getGlobalConfig()
     useBotStore().getUserInfo()
     useRemarksStore().initRemarks()
+    useBotSwapStore().sendNativePriceWs()
   }
 
   onBeforeMount(() => {
