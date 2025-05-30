@@ -21,7 +21,8 @@ const props = defineProps({
     type: Number,
     default: 0
   },
-  loading: Boolean
+  loading: Boolean,
+  fixed: Boolean,
 })
 
 const slots = useSlots()
@@ -64,8 +65,8 @@ const defaultSlots = computed(() => {
 
 // 处理 columns，注入 cellRenderer/headerCellRenderer
 const computedColumns = computed(() => {
-  const avgWidth = getAvgWidth()
-  return props.columns.map((col: any) => {
+  const columnsWidthArr = calculateColumnWidths()
+  return props.columns.map((col: any, index) => {
     // 支持 key 或 dataKey
     const cellSlot = slots[`cell-${col.key}`] || slots[`cell-${col.dataKey}`]
     const headerSlot = slots[`header-${col.key}`] || slots[`header-${col.dataKey}`]
@@ -78,23 +79,35 @@ const computedColumns = computed(() => {
       headerCellRenderer: headerSlot
         ? ({column}: any) => headerSlot({column})
         : col.headerCellRenderer,
-      width: col.width || avgWidth
+      width: columnsWidthArr[index]
     }
   })
 })
 
 // 获取平均宽度
-function getAvgWidth() {
-  let avgNum = 0
-  const sumWidth = props.columns.reduce((prev, cur) => {
-    if (cur.width) {
-      return prev + cur.width
-    } else {
-      avgNum++
-    }
-    return prev
-  }, 0)
-  return ((elTableWidth.value - sumWidth) / avgNum) | 0
+// function getAvgWidth() {
+//   let avgNum = 0
+//   const sumWidth = props.columns.reduce((prev, cur) => {
+//     if (cur.width) {
+//       return prev + cur.width
+//     } else {
+//       avgNum++
+//     }
+//     return prev
+//   }, 0)
+//   return ((elTableWidth.value - 6 - sumWidth) / avgNum) | 0
+// }
+function calculateColumnWidths() {
+  const totalMinWidth = props.columns.reduce((sum, col) => sum + col.minWidth, 0)
+
+  if (totalMinWidth >= elTableWidth.value) {
+    return props.columns.map(col => col.minWidth)
+  }
+
+  const remainingWidth = elTableWidth.value - 6 - totalMinWidth
+  const averageWidth = remainingWidth / props.columns.length
+
+  return props.columns.map(col => col.minWidth + averageWidth)
 }
 </script>
 
@@ -113,6 +126,7 @@ function getAvgWidth() {
         :width="width"
         :footer-height="footerHeight"
         v-bind="attrs"
+        :fixed="fixed"
       >
         <template v-for="(slotFn, slotName) in defaultSlots" #[slotName]="slotProps">
           <slot :name="slotName" v-bind="slotProps"/>

@@ -37,6 +37,7 @@ export const useTokenStore = defineStore('token', () => {
   const priceChange = computed(() => tokenPriceChange.value || pair.value?.price_change || token.value?.price_change)
 
   const placeOrderUpdate = ref(0)
+  const placeOrderSuccess = ref(0)
   const registrationNum = ref(0)
 
   const swap = reactive<{
@@ -103,6 +104,7 @@ export const useTokenStore = defineStore('token', () => {
     swap,
     placeOrderUpdate,
     registrationNum,
+    placeOrderSuccess
   }
 })
 

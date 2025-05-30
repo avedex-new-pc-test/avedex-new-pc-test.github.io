@@ -2,7 +2,8 @@
 import type { Mark, ChartingLibraryWidgetConstructor, IChartingLibraryWidget, EntityId } from '~/types/tradingview/charting_library'
 import { formatNumber } from '@/utils/formatNumber'
 import type { WSTx, KLineBar  } from './types'
-import { useDocumentVisibility } from '@vueuse/core'
+import { useDocumentVisibility, useEventBus } from '@vueuse/core'
+import BigNumber from 'bignumber.js'
 
 export const supportSecChains = ['solana', 'bsc', 'eth', 'base', 'tron']
 
@@ -268,14 +269,18 @@ export function useWidgetVisibilityRefresh(getWidget: () => IChartingLibraryWidg
   })
 }
 
-export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null, getIsReady: () => boolean) {
+export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null, getIsReady: () => boolean, showMarket: Ref<boolean>) {
   let priceLimitLineId = '' as EntityId
   let isCreating = false
+  const { t } = useI18n()
   // 创建 限价价格线
   async function createLimitPriceLine(price: number) {
     const _widget = getWidget()
     const chart = _widget?.activeChart?.()
     if (!_widget || !chart) return
+    if (showMarket.value) {
+      price = new BigNumber(price).times(useTokenStore().circulation || '0')?.toNumber()
+    }
     if (priceLimitLineId) {
       const line = chart?.getShapeById?.(priceLimitLineId)
       if (line) {
@@ -295,9 +300,10 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
       {
         shape: 'horizontal_line',
         lock: true,
-        disableSelection: true,
+        disableSelection: true, // 允许选中
         disableSave: true,
-        text: '挂单价格',
+        disableUndo: true,
+        text: t('limitPrice'),
         overrides: {
           linecolor: '#FFBE3C',  // 线的颜色
           linewidth: 1,          // 线的粗细
@@ -310,13 +316,12 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
       textcolor: '#FFBE3C',
       showLabel: true,
       horzLabelsAlign: 'right',
-      vertLabelsAlign: 'middle',
+      vertLabelsAlign: 'bottom',
       bold: true,
-      fontSize: 14,
+      fontSize: 12,
       // italic: true,
     })
   }
-
 
 
   const botSwapStore = useBotSwapStore()
@@ -327,6 +332,22 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
     }
   })
 
+  function subscribePriceMove() {
+    const _widget = getWidget()
+    const chart = _widget?.activeChart?.()
+    if (_widget) {
+      _widget?.subscribe('drawing_event', (id, type) => {
+        if (id === priceLimitLineId && type === 'points_changed') {
+          nextTick(() => {
+            const line = chart?.getShapeById?.(id)
+            if (!line) return
+            console.log(id, type, line.getPoints?.())
+          })
+        }
+      })
+    }
+  }
+
   onUnmounted(() => {
     if (stop) {
       stop()
@@ -336,6 +357,94 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
   return {
     resetLimitPriceLineId: () => {
       priceLimitLineId = '' as EntityId
+    },
+    subscribePriceMove
+  }
+}
+
+
+export function useAvgPriceLine(getWidget: () => IChartingLibraryWidget | null, getIsReady: () => boolean, showMarket: Ref<boolean>) {
+  let lineId = '' as EntityId
+  let isCreating = false
+  const { t } = useI18n()
+  // 创建 限价价格线
+  async function createAvgPriceLine(price: number) {
+    const _widget = getWidget()
+    const chart = _widget?.activeChart?.()
+    if (!_widget || !chart) return
+    if (showMarket.value) {
+      price = new BigNumber(price).times(useTokenStore().circulation || '0')?.toNumber()
+    }
+    if (lineId) {
+      const line = chart?.getShapeById?.(lineId)
+      if (line) {
+        if (!price) {
+          chart?.removeEntity?.(lineId)
+          lineId = '' as EntityId
+          return
+        }
+        line?.setPoints?.([{ price: price, time: 0 }])
+        return
+      }
+    } else {
+      if (!price) return
+    }
+    if (isCreating) return
+    isCreating = true
+    lineId = await chart?.createShape?.(
+      { price: price, time: 0 }, // 水平线的起始位置
+      {
+        shape: 'horizontal_line',
+        lock: true,
+        disableSelection: true, // 允许选中
+        disableSave: true,
+        disableUndo: true,
+        text: t('averagePositionPrice'),
+        overrides: {
+          linecolor: '#3F80F7',  // 线的颜色
+          linewidth: 1,          // 线的粗细
+          linestyle: 0        // 线的样式：0表示实线，1表示虚线 2 长虚线
+        },
+      }
+    )
+    isCreating = false
+    chart?.getShapeById?.(lineId)?.setProperties?.({
+      textcolor: '#3F80F7',
+      showLabel: true,
+      horzLabelsAlign: 'right',
+      vertLabelsAlign: 'bottom',
+      bold: true,
+      fontSize: 12,
+      // italic: true,
+    })
+  }
+
+  function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  useEventBus<number>('updateAvgPrice').on(createAvgPriceLinePoll)
+
+  let time = 0
+  async function createAvgPriceLinePoll(price: number) {
+    if (time > 5) {
+      time = 0
+      return
+    }
+    const isReady = getIsReady()
+    if (isReady) {
+      createAvgPriceLine(price)
+      time = 0
+    } else {
+      await sleep(2000)
+      createAvgPriceLinePoll(price)
+      time += 1
+    }
+  }
+
+  return {
+    resetAvgPriceLineId: () => {
+      lineId = '' as EntityId
     }
   }
 }

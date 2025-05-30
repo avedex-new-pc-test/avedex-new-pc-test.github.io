@@ -29,7 +29,7 @@ const props = defineProps({
     required: false,
     default: 'default',
     validator: (value: string) => {
-      return ['topHolder'].includes(value)
+      return ['topHolder', 'default'].includes(value)
     },
   },
 })

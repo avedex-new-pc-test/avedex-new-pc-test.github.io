@@ -1,6 +1,7 @@
-import type { TokenInfo, TokenInfoExtra } from './types/token'
+import type { TokenInfo, TokenInfoExtra, WalletTokenInfo } from './types/token'
 import { getAddressAndChainFromId, getChainInfo } from '@/utils'
 import { NATIVE_TOKEN } from '@/utils/constants'
+import { createCacheRequest } from '#imports'
 
 const testDomain = 'https://0ftrfsdb.xyz'
 
@@ -310,6 +311,46 @@ export function getPairTxs(query: {
   })
 }
 
+export interface IGetTokenTxsResponse {
+  time: number;
+  id: string;
+  chain: string;
+  transaction: string;
+  amm: string;
+  amount_eth: number;
+  amount_usd: number;
+  from_address: string;
+  from_price_eth: number;
+  from_price_usd: number;
+  from_symbol: string;
+  from_amount: number;
+  to_address: string;
+  to_price_eth: number;
+  to_price_usd: number;
+  to_symbol: string;
+  to_amount: number;
+  wallet_address: string;
+  profile: string;
+  wallet_tag_v2: string;
+  newTags: NewTag[];
+  wallet_logo: any;
+}
+
+// 新版交易历史
+export function getTokenTxs(query: {
+  token_id: string,
+  tag_type?: string,
+  maker?: string,
+  time_min?: string,
+  time_max?: string
+}): Promise<IGetTokenTxsResponse[]> {
+  const {$api} = useNuxtApp()
+  return $api('https://0ftrfsdb.xyz/v2api/token_info/v1/token/txs', {
+    method: 'get',
+    query
+  })
+}
+
 export interface GetPairLiqResponse {
   time: number;
   chain: string;
@@ -597,7 +638,7 @@ export interface GetTokenDetailsListResponse {
   risk_level: number;
   risk_score: number;
   block_time: number;
-  event_type: string;
+  event_type: 'swap_buy' | 'swap_sell' | 'AUTHORITY' | 'ADD_LIQUIDITY' | 'NEW_COIN' | 'MINT' | 'FREEZE' | 'transfer_in' | 'transfer_out' | 'BURN' | 'NEW_PAIR';
   event_type_id: number;
   volume: string;
   amount: string;
@@ -693,17 +734,18 @@ export function getUserBalances(token_id: string, user_ids: string[]): Promise<{
     }
   })
 }
-export async function bot_getUserWalletTxInfo(query: {
+
+export const bot_getUserWalletTxInfo = createCacheRequest(async function(query: {
   user_address: string;
+  user_token: string;
   chain: string;
-  user_token: string
-}) {
+}): Promise<Array<WalletTokenInfo>>  {
   const { $api } = useNuxtApp()
   return $api('/v2api/walletinfo/v1/usertx', {
     method: 'get',
     query,
   })
-}
+}, 2000)
 
 export async function bot_getUserTxHistory1(query: {
   page: number;

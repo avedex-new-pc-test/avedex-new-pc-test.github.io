@@ -12,7 +12,7 @@ import type { IChartingLibraryWidget, ResolutionString, Timezone, SeriesFormat, 
 import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, getWSMessage } from '@/utils'
 import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
-import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine } from './utils'
+import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine, useAvgPriceLine } from './utils'
 import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
 import type { WSTx, KLineBar } from './types'
 import BigNumber from 'bignumber.js'
@@ -64,6 +64,7 @@ watch(pair, (val) => {
 function switchTokenKline() {
   isReadyLine = false
   resetLimitPriceLineId()
+  resetAvgPriceLineId()
   const val = pair.value
   if (isReady && route.name === 'token-id') {
     const isSupportSecChains = (chain.value && supportSecChains.includes(chain.value)) || false
@@ -144,6 +145,7 @@ function resetChart() {
   isHeaderReady = false
   lastBar = null
   resetLimitPriceLineId()
+  resetAvgPriceLineId()
   _widget?.remove?.()
   initChart()
 }
@@ -206,7 +208,9 @@ function createToggleButton() {
     showMarket.value = !showMarket.value
 
     updateButtonContent()
-    resetChart()
+    // resetChart()
+    _widget?.resetCache?.()
+    _widget?.activeChart?.().resetData?.()
   }
   updateButtonContent()
   headerBtns.push(btn)
@@ -350,8 +354,7 @@ async function initChart() {
         if (!isSupportSecChains) {
           configurationData.supported_resolutions = ['1', '5', '15', '30', '60', '120', '240', '1D', '1W'] as ResolutionString[]
         }
-        isReady = true
-        isReadyLine = true
+
         setTimeout(() => callback(configurationData), 50)
       },
       resolveSymbol: (symbolName, onResolve, onError) => {
@@ -433,7 +436,7 @@ async function initChart() {
             klinePair.value = res?.pair || ''
             if (firstDataRequest) {
               lastBar = bars1?.[bars1?.length - 1] || null
-              noData = bars?.length < 200
+              noData = bars?.length < 100
             }
             onResult(bars, {noData: !bars?.length})
           })
@@ -562,6 +565,8 @@ async function initChart() {
   })
   updateChartBackground()
   _widget.onChartReady(() => {
+    isReady = true
+    isReadyLine = true
     // 保存指标
     saveStudy()
     if (themeStore.isDark) {
@@ -577,6 +582,8 @@ async function initChart() {
         _widget?.resetCache?.()
       }
     })
+    subscribePriceMove()
+
 
     createStudy()
   })
@@ -633,7 +640,10 @@ function drag(e: MouseEvent) {
   return false
 }
 
-const { resetLimitPriceLineId } = useLimitPriceLine(() => _widget, () => isReadyLine)
+const { resetLimitPriceLineId, subscribePriceMove } = useLimitPriceLine(() => _widget, () => isReadyLine, showMarket)
+
+const { resetAvgPriceLineId } = useAvgPriceLine(() => _widget, () => isReadyLine, showMarket)
+
 
 onBeforeMount(() => {
   // _getTotalHolders()

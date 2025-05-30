@@ -9,9 +9,8 @@
     <template #reference>
       <div
         class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
-        @click.stop="visitSysNotice"
       >
-        <el-badge :is-dot="limitOrderUnRead || !isLatestExperienced" color="#F6465D">
+        <el-badge color="#F6465D">
           <Icon
             class="text-20px text-[--d-999-l-666] cursor-pointer"
             name="material-symbols:notifications"
@@ -20,7 +19,7 @@
       </div>
     </template>
     <div class="p-20px pr-0">
-      <div class="flex items-center gap-20px mb-20px">
+      <div class="flex mr-20px items-center gap-20px mb-20px border-b-solid border-b-1px border-b-[--d-333-l-F2F2F2]">
         <a
           href="javascript:;"
           :class="`decoration-none text-14px lh-16px pb-12px text-center color-[--d-999-l-666] b-b-solid b-b-1px
@@ -32,8 +31,8 @@
         <a
           v-show="isBotLogin && completedLimitTx.length > 0"
           href="javascript:;"
-          :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-999-l-666] b-b-solid b-b-2px
-         ${!isLimitOrder ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
+          :class="`decoration-none text-14px lh-16px pb-12px text-center color-[--d-999-l-666] b-b-solid b-b-1px
+         ${isLimitOrder ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
           @click.stop="handleVisible"
           @click="activeTab='limitOrder'"
         >
@@ -90,16 +89,16 @@
               class="text-12px mt-5px"
             >
               {{ item.symbol }} {{ $t('limitOrderFail') }} {{
-                formatNumber(formatUnits(new BigNumber(item.inAmount || 0).toFixed(0), item.inTokenDecimals || 0), 3)
+                formatNumber(formatUnits(new BigNumber(item.inAmount || 0).toFixed(0), item.inTokenDecimals || 0).toString(), 3)
               }} {{ item.inTokenSymbol }} {{ $t('failReason') }}: {{ $f.formatBotError(item.errorLog) }}
             </div>
-            <div v-if="item.status === 'cancelled'" class="text-10px mt-5px">{{ item.symbol }} {{
+            <div v-else-if="item.status === 'cancelled'" class="text-12px mt-5px">{{ item.symbol }} {{
                 $t('limitOrderCancel')
               }} {{
-                formatNumber(formatUnits(new BigNumber(item?.inAmount || 0).toFixed(0), item.inTokenDecimals || 0), 3)
+                formatNumber(formatUnits(new BigNumber(item?.inAmount || 0).toFixed(0), item.inTokenDecimals || 0).toString(), 3)
               }} {{ item?.inTokenSymbol }}
             </div>
-            <div v-else-if="item.status === 'confirmed'" class="text-10px mt-5px">{{ item.symbol }} {{
+            <div v-else-if="item.status === 'confirmed'" class="text-12px mt-5px">{{ item.symbol }} {{
                 $t('limitOrderSuccess', {
                   a: formatNumber(item.amount, 3),
                   s: item.symbol,
@@ -111,7 +110,7 @@
             <div v-else-if="item.status === 'auto_cancelled'">{{ item.symbol }}
               {{ $t('limitOrderAutoCancel', {f: formatBotError(item?.errorLog || '')}) }}
             </div>
-            <div>{{ formatDate((item?.updateTime) || item?.createTime) }}</div>
+            <div class="color-[--d-666-l-999] text-12px">{{ formatDate((item?.updateTime) || item?.createTime) }}</div>
           </li>
         </ul>
       </el-scrollbar>
@@ -124,7 +123,7 @@ import {useStorage} from '@vueuse/core'
 import {evm_utils} from '@/utils'
 import BigNumber from 'bignumber.js'
 import {getAnnounces} from '~/api/user'
-import {bot_getMarketCompletedLimitTx} from '~/api/bot'
+import {bot_getMarketCompletedLimitTx, type IGetMarketCompletedLimitResponse} from '~/api/bot'
 
 const NOTICE_FILTER_TIME = 1744460716
 const {formatUnits} = evm_utils
@@ -133,9 +132,16 @@ const ACTIVE_ENUM = {
   limitOrder: 'limitOrder',
 } as const
 
+interface ICompletedLimitTx extends IGetMarketCompletedLimitResponse {
+  symbol: string
+  amount: any
+  price: string
+  isBuy: boolean
+}
+
 type ActiveTab = keyof typeof ACTIVE_ENUM
 
-const lastExperienceTime = useStorage('lastExperienceTime', 0, localStorage)
+// const lastExperienceTime = useStorage('lastExperienceTime', 0, localStorage)
 const themeStore = useThemeStore()
 const wsStore = useWSStore()
 const botStore = useBotStore()
@@ -144,17 +150,17 @@ const lastVisitedTime = ref<number>(visitedTime.value || 0)
 const visible = ref(false)
 const activeTab = ref<ActiveTab>('notice')
 const announceList = ref<any[]>([])
-const completedLimitTx = ref([])
+const completedLimitTx = shallowRef<ICompletedLimitTx[]>([])
 
-const latestNotice = ref([])
-const limitOrderUnRead = computed(() => completedLimitTx.value?.some(i => visitedTime.value < (i.blockTime || (i.batchId) / 1000)))
+// const latestNotice = ref([])
+// const limitOrderUnRead = computed(() => completedLimitTx.value?.some(i => visitedTime.value < (i.blockTime || (i.batchId) / 1000)))
 const isLimitOrder = computed(() => activeTab.value === ACTIVE_ENUM.limitOrder)
 const isBotLogin = computed(() => botStore.userInfo && botStore.userInfo.name)
-const isLatestExperienced = computed(() => {
-  return !latestNotice.value.time
-    || latestNotice.value.time <= NOTICE_FILTER_TIME
-    || String(lastExperienceTime.value) === String(latestNotice.value.time)
-})
+// const isLatestExperienced = computed(() => {
+//   return !latestNotice.value.time
+//     || latestNotice.value.time <= NOTICE_FILTER_TIME
+//     || String(lastExperienceTime.value) === String(latestNotice.value.time)
+// })
 
 watch(visible, (val) => {
   if (!val) {
@@ -181,8 +187,25 @@ onMounted(() => {
 
 async function getCompletedLimitTx() {
   try {
+    const chainMainToken: Record<string, string> = {
+      solana: 'sol',
+      ton: 'TON'
+    }
     const res = await bot_getMarketCompletedLimitTx(botStore.evmAddress)
-    completedLimitTx.value = res || []
+    completedLimitTx.value = (res || []).map(el => {
+      const isBuy = (el.inTokenAddress === (chainMainToken[el.chain] || NATIVE_TOKEN))
+      let inAmount: any = new BigNumber(el.inAmount || 0).toFixed(0)
+      inAmount = !(el.inTokenDecimals) ? inAmount : (formatUnits(inAmount, el.inTokenDecimals || 0))
+      let outputAmount: any = new BigNumber(el?.outputAmount || 0).toFixed(0)
+      outputAmount = !(el.outTokenDecimals) ? outputAmount : (formatUnits(outputAmount, el.outTokenDecimals || 0))
+      return {
+        ...el,
+        isBuy,
+        symbol: !isBuy ? el.inTokenSymbol : el.outTokenSymbol,
+        amount: !isBuy ? inAmount : outputAmount,
+        price: !isBuy ? el.inPrice : el.outPrice
+      }
+    })
   } catch (err) {
     console.log('=>(notice.vue:187) err', err)
   }
@@ -208,7 +231,7 @@ async function getNoticeList() {
   }
 }
 
-function visitSysNotice() {
-  lastExperienceTime.value = latestNotice.value.time
-}
+// function visitSysNotice() {
+//   lastExperienceTime.value = latestNotice.value.time
+// }
 </script>

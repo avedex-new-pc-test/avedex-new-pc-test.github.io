@@ -3,7 +3,7 @@
     <Icon name="ion:flash" />
     <span class="ml-5px">{{ $t('oneClick') }}</span>
   </button>
-  <div v-if="botStore.isSupportChains?.includes(chain) && visible" class="fixed-one-click">
+  <div v-show="botStore.isSupportChains?.includes(chain) && visible" class="fixed-one-click">
     <div class="flex-between">
       <div class="flex-start">
         <span>{{ $t('oneClick') }}</span>
@@ -15,7 +15,7 @@
         </div>
         <SlippageSetMarket :chain="chain" />
       </div>
-      <Icon class="text-14px clickable color-[--d-999-l-666]" name="ri:close-large-fill" @click.stop="visible = false"  />
+      <Icon class="text-14px clickable color-[--d-999-l-666] clickable" name="ri:close-large-fill" @click.stop="visible = false"  />
     </div>
     <div class="content">
       <div class="flex-between mt-10px">
@@ -179,15 +179,13 @@ async function submitBotSwap(amount1: string | number, type: 'buy' | 'sell', ind
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
               setTimeout(() => {
                 getTokenBalance()
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
+
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
@@ -265,15 +263,12 @@ async function submitBotSwap(amount1: string | number, type: 'buy' | 'sell', ind
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
               setTimeout(() => {
                 getTokenBalance()
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotPosition'
-                // }
               }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')

@@ -7,7 +7,13 @@ import UserTxsFilterHead from './userTxsFilterHead.vue'
 import type {RowEventHandlerParams} from 'element-plus'
 
 import {filterLanguage} from '~/pages/token/components/kLine/utils'
-import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse, type Profile} from '~/api/token'
+import {
+  getPairLiq,
+  type GetPairLiqResponse,
+  type IGetTokenTxsResponse,
+  getTokenTxs,
+  type Profile
+} from '~/api/token'
 import {formatDate, getAddressAndChainFromId, getChainInfo} from '~/utils'
 import dayjs from 'dayjs'
 import {useThrottleFn} from '@vueuse/core'
@@ -62,12 +68,13 @@ const isPausedTxs = shallowRef(false)
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
   const visible = token.value?.chain === 'solana' && !isLiquidity.value
-  return [{key: 'time', dataKey: 'time', title: t('time'), width: 80},
-    {key: 'type', dataKey: 'type', title: t('type'), width: 80},
-    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), width: 100},
-    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', width: 140},
+  return [{key: 'time', dataKey: 'time', title: t('time'), minWidth: 80},
+    {key: 'type', dataKey: 'type', title: t('type'), minWidth: 80},
+    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100},
+    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', minWidth: 140},
     {
-      key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative'
+      key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
+      minWidth: 120
     },
     {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 120},
     {
@@ -76,17 +83,17 @@ const columns = computed(() => {
       title: t('makers') + ' SOL',
       align: 'right',
       hidden: !visible,
-      width: 86
+      minWidth: 86
     },
-    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', width: 70}]
+    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', minWidth: 70}]
     .filter(el => !el.hidden)
 })
 const listStatus = ref({
   loadingTxs: false,
   loadingLiq: false
 })
-const pairTxs = shallowRef<GetPairTxsResponse[]>([])
-const wsPairCache = shallowRef<GetPairTxsResponse[]>([])
+const tokenTxs = shallowRef<IGetTokenTxsResponse[]>([])
+const wsPairCache = shallowRef<IGetTokenTxsResponse[]>([])
 const pairLiq = shallowRef<GetPairLiqResponse[]>([])
 const wsLiqCache = shallowRef<GetPairLiqResponse[]>([])
 
@@ -103,18 +110,18 @@ const tableFilter = ref<{
 })
 
 const filterTableListMap = {
-  all: () => [...pairTxs.value, ...pairLiq.value].toSorted((a, b) => b.time - a.time),
+  all: () => [...tokenTxs.value, ...pairLiq.value].toSorted((a, b) => b.time - a.time),
   liquidity: () => pairLiq.value,
-  buy: () => pairTxs.value.filter(el => isBuy((el))),
-  sell: () => pairTxs.value.filter(el => !isBuy(el))
+  buy: () => tokenTxs.value.filter(el => isBuy((el))),
+  sell: () => tokenTxs.value.filter(el => !isBuy(el))
 }
 // 纯前端筛选
 const filterTableList = computed(() => {
-  let tableList: ((GetPairTxsResponse | GetPairLiqResponse) & { count?: number })[] = []
+  let tableList: ((IGetTokenTxsResponse | GetPairLiqResponse) & { count?: number })[] = []
   if (activeTab.value in filterTableListMap) {
     tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
   } else {
-    tableList = pairTxs.value
+    tableList = tokenTxs.value
   }
   const {timestamp, amountU, markerAddress} = tableFilter.value
   const [startTime, endTime] = timestamp || []
@@ -165,7 +172,7 @@ const tableFilterVisible = ref({
   markers: false
 })
 const makerTooltip = ref()
-const currentRow = shallowRef<GetPairTxsResponse & { senderProfile: Profile }>({} as any)
+const currentRow = shallowRef<IGetTokenTxsResponse & { senderProfile: Profile }>({} as any)
 
 const addressAndChain = computed(() => {
   const id = route.params.id as string
@@ -179,22 +186,33 @@ const addressAndChain = computed(() => {
 })
 watch(() => pairAddress.value, (pair, oldPair) => {
   if (pairAddress.value) {
-    txCount.value = {}
-    _getPairTxs()
     _getPairLiq()
-    subscribeTxsAndLiq(pair, oldPair)
+    subscribeLiq(pair, oldPair)
+  }
+}, {
+  immediate: true
+})
+
+watch(() => route.params.id, val => {
+  if (val) {
+    resetCache()
+    _getTokenTxs()
   }
 }, {
   immediate: true
 })
 
 useVisibilityChange(() => {
+  resetCache()
+  _getTokenTxs()
+  _getPairLiq()
+})
+
+function resetCache() {
   txCount.value = {}
   wsPairCache.value.length = 0
   wsLiqCache.value.length = 0
-  _getPairTxs()
-  _getPairLiq()
-})
+}
 
 watch(() => wsStore.wsResult[WSEventType.TX], data => {
   if (!data || listStatus.value.loadingTxs) {
@@ -219,10 +237,10 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
     return
   }
   const {wallet_address} = data.liq
-  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
-    count: txCount.value[wallet_address]
+    // count: txCount.value[wallet_address]
   })
   if (!isPausedTxs.value) {
     updateLiqList()
@@ -232,7 +250,7 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
   }
 })
 
-function subscribeTxsAndLiq(pair: string, oldPair?: string) {
+function subscribeLiq(pair: string, oldPair?: string) {
   if (oldPair) {
     wsStore.send({
       jsonrpc: '2.0',
@@ -253,9 +271,9 @@ function subscribeTxsAndLiq(pair: string, oldPair?: string) {
 }
 
 const updatePairTxs = useThrottleFn(() => {
-  pairTxs.value.unshift(...wsPairCache.value)
+  tokenTxs.value.unshift(...wsPairCache.value)
   wsPairCache.value.length = 0
-  triggerRef(pairTxs)
+  triggerRef(tokenTxs)
 }, 500)
 
 const updateLiqList = useThrottleFn(() => {
@@ -279,16 +297,16 @@ function confirmMakersFilter(markerAddress = '') {
   tableFilter.value.markerAddress = markerAddress
 }
 
-async function _getPairTxs() {
+async function _getTokenTxs() {
   try {
     listStatus.value.loadingTxs = true
     const {tag_type} = tableFilter.value
     const getPairTxsParams = {
-      pair: pairAddress.value + '-' + addressAndChain.value.chain,
+      token_id: route.params.id as string,
       tag_type
     }
-    const res = await getPairTxs(getPairTxsParams)
-    pairTxs.value = (res || []).reverse().map(val => {
+    const res = await getTokenTxs(getPairTxsParams)
+    tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       const {wallet_tag, topN} = getWalletTag(val)
       return {
@@ -306,7 +324,7 @@ async function _getPairTxs() {
   }
 }
 
-function getWalletTag(val: GetPairTxsResponse) {
+function getWalletTag(val: IGetTokenTxsResponse) {
   const wallet_tagStr = val.wallet_tag_v2 || ''
   let topN = ''
   let wallet_tag: string[] = []
@@ -331,10 +349,10 @@ async function _getPairLiq() {
     listStatus.value.loadingLiq = true
     const res = await getPairLiq(pairAddress.value + '-' + addressAndChain.value.chain)
     pairLiq.value = (res || []).reverse().map(val => {
-      txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
+      // txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       return {
         ...val,
-        count: txCount.value[val.wallet_address],
+        // count: txCount.value[val.wallet_address],
       }
     }).reverse()
   } catch (e) {
@@ -344,7 +362,7 @@ async function _getPairLiq() {
   }
 }
 
-function isBuy(row: GetPairLiqResponse | GetPairTxsResponse) {
+function isBuy(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('from_address' in row) {
     if (
       row.from_address &&
@@ -364,7 +382,7 @@ function isBuy(row: GetPairLiqResponse | GetPairTxsResponse) {
   }
 }
 
-function getRowColor(row: GetPairLiqResponse | GetPairTxsResponse) {
+function getRowColor(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('type' in row) {
     if (row.type === 'addLiquidity') {
       return 'color-#65C4ED'
@@ -375,7 +393,7 @@ function getRowColor(row: GetPairLiqResponse | GetPairTxsResponse) {
   return isBuy(row) ? 'color-#12B886' : 'color-#FF646D'
 }
 
-function getPrice(row: GetPairLiqResponse | GetPairTxsResponse, isShowToken = false) {
+function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = false) {
   const tokenAddress = addressAndChain.value.address
   if ('from_address' in row) {
     if (
@@ -407,7 +425,7 @@ function getPrice(row: GetPairLiqResponse | GetPairTxsResponse, isShowToken = fa
   return 0
 }
 
-function getAmount(row: GetPairLiqResponse | GetPairTxsResponse, needPrice = false, isVolUSDT = false) {
+function getAmount(row: GetPairLiqResponse | IGetTokenTxsResponse, needPrice = false, isVolUSDT = false) {
   if ('from_address' in row) {
     if (
       row.from_address &&
@@ -434,7 +452,7 @@ function getAmount(row: GetPairLiqResponse | GetPairTxsResponse, needPrice = fal
   return 0
 }
 
-function hasNewAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { senderProfile?: Profile }) {
+function hasNewAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderProfile?: Profile }) {
   if (row?.newTags?.some?.(i => i?.type === '8')) {
     return false
   }
@@ -447,7 +465,7 @@ function hasNewAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { sender
   }
 }
 
-function hasClearedAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { senderProfile?: Profile }) {
+function hasClearedAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderProfile?: Profile }) {
   if (isBuy(row) || row.newTags?.some?.(i => i?.type === '8')) {
     return false
   }
@@ -460,14 +478,14 @@ function hasClearedAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { se
   }
 }
 
-function bigWallet(row: (GetPairLiqResponse | GetPairTxsResponse) & { senderProfile?: Profile }) {
+function bigWallet(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderProfile?: Profile }) {
   if (row?.newTags?.some?.(i => i.type === '8')) {
     return false
   }
   return Number(row.senderProfile?.solTotalHolding) > 50
 }
 
-function getGradient(row: GetPairTxsResponse) {
+function getGradient(row: IGetTokenTxsResponse) {
   const str = `${useThemeStore().isDark}-${isBuy(row)}`
   const map = {
     'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.1)_0%,rgba(18,184,134,0.1)_100%)]',
@@ -482,7 +500,7 @@ function updateRemark() {
 
 }
 
-function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile }, e: MouseEvent) {
+function openMarkerTooltip(row: IGetTokenTxsResponse & { senderProfile: Profile }, e: MouseEvent) {
   if (row && MAKER_SUPPORT_CHAINS.includes(row.chain)) {
     makerTooltip.value = e.currentTarget
     if (currentRow.value?.wallet_address === row.wallet_address) {
@@ -492,7 +510,7 @@ function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile },
   }
 }
 
-function goBrowser(row: GetPairTxsResponse) {
+function goBrowser(row: IGetTokenTxsResponse) {
   window.open(
     formatExplorerUrl(row.chain, row.transaction, 'tx')
   )
@@ -506,7 +524,7 @@ function setActiveTab(val: string) {
   txCount.value = {}
   tableFilter.value.tag_type = val
   if (val !== 'liquidity') {
-    _getPairTxs()
+    _getTokenTxs()
   } else {
     _getPairLiq()
   }
@@ -594,6 +612,7 @@ function onRowClick({rowData}: RowEventHandlerParams) {
     </template>
     <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
       <AveTable
+        fixed
         :data="filterTableList"
         :columns="columns"
         class="h-560px"
@@ -883,9 +902,4 @@ function onRowClick({rowData}: RowEventHandlerParams) {
 </template>
 
 <style>
-.transactions {
-  .el-table-v2__header-wrapper, .el-table-v2__header {
-    --at-apply: overflow-visible;
-  }
-}
 </style>

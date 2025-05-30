@@ -25,7 +25,7 @@ const filterTime = ref([])
     placement="bottom"
     :width="420"
     trigger="click"
-    :teleported="false"
+    teleported
     popper-style="max-width: 420px"
     popper-class="transaction-popover"
   >
