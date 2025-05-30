@@ -3,7 +3,7 @@
     <Icon name="ion:flash" />
     <span class="ml-5px">{{ $t('oneClick') }}</span>
   </button>
-  <div v-if="botStore.isSupportChains?.includes(chain) && visible" class="fixed-one-click">
+  <div v-show="botStore.isSupportChains?.includes(chain) && visible" class="fixed-one-click">
     <div class="flex-between">
       <div class="flex-start">
         <span>{{ $t('oneClick') }}</span>
@@ -15,7 +15,7 @@
         </div>
         <SlippageSetMarket :chain="chain" />
       </div>
-      <Icon class="text-14px clickable color-[--d-999-l-666]" name="ri:close-large-fill" @click.stop="visible = false"  />
+      <Icon class="text-14px clickable color-[--d-999-l-666] clickable" name="ri:close-large-fill" @click.stop="visible = false"  />
     </div>
     <div class="content">
       <div class="flex-between mt-10px">
