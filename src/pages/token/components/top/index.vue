@@ -415,7 +415,7 @@
         />
         <a
           v-else
-          v-tooltip="pair?.amm"
+          v-tooltip="getSwapInfo(pair?.chain || '', pair?.amm || '')?.show_name || pair?.amm || ''"
           :href="pair?.swap_url || '' + pair?.target_token || ''"
           target="_blank"
           class="ml-5px"
