@@ -68,10 +68,10 @@ const isPausedTxs = shallowRef(false)
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
   const visible = token.value?.chain === 'solana' && !isLiquidity.value
-  return [{key: 'time', dataKey: 'time', title: t('time'), width: 80},
-    {key: 'type', dataKey: 'type', title: t('type'), width: 80},
-    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), width: 100},
-    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', width: 140},
+  return [{key: 'time', dataKey: 'time', title: t('time'), minWidth: 80},
+    {key: 'type', dataKey: 'type', title: t('type'), minWidth: 80},
+    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100},
+    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', minWidth: 140},
     {
       key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
       minWidth: 120
@@ -83,9 +83,9 @@ const columns = computed(() => {
       title: t('makers') + ' SOL',
       align: 'right',
       hidden: !visible,
-      width: 86
+      minWidth: 86
     },
-    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', width: 70}]
+    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', minWidth: 70}]
     .filter(el => !el.hidden)
 })
 const listStatus = ref({
