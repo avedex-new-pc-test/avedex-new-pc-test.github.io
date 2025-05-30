@@ -11,14 +11,14 @@
       </li>
     </ul>
     <ul class="right">
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a class="border-left" target="_blank" href="https://eco.ave.ai">{{ $t('ecosystem') }}</a>
       </li>
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a target="_blank" href="https://cloud.ave.ai">API</a>
       </li>
       <li class="bg-[--d-999-l-666] w-1px h-8px" />
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a class="border-left" target="_blank" :href="lang?.includes?.('zh')
             ? 'https://doc.ave.ai/cn/mian-ze-shen-ming'
             : 'https://doc.ave.ai/disclaimers'
@@ -26,14 +26,14 @@
           {{ $t('disclaimers') }}
         </a>
       </li>
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a target="_blank" href="/privacy.html">{{ $t('privacyPolicy') }}</a>
       </li>
       <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666]">
         <span class="partners">{{ $t('partners') }}</span>
       </li>
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a target="_blank" href="https://www.tradingview.com/" class="flex-center">
           <Icon name="simple-icons:tradingview" class="text-18px mr-2px" />TradingView
           <!-- <img v-if="isDark" src="@/assets/images/tradingView-dark.svg" alt="" height="12" />
@@ -41,19 +41,19 @@
         </a>
       </li>
       <li class="bg-[--d-999-l-666] w-1px h-8px" />
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
           class="flex-center">
           <Icon name="bi:twitter-x" class="text-16px" />
         </a>
       </li>
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-#3F80F7">
         <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
           class="flex-center">
           <Icon name="lineicons:telegram-original" class="text-19px" />
         </a>
       </li>
-      <li class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333]">
+      <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a href="mailto:avebusiness100@ave.ai" class="flex-center">
           <Icon name="material-symbols:mail" class="text-20px" />
         </a>
