@@ -183,6 +183,7 @@ const props = defineProps({
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const route = useRoute()
+const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useGlobalStore()
 const configStore = useConfigStore()
@@ -196,7 +197,7 @@ const txHistory = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderSuccess], () => {
+watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderSuccess, () => route.params.id], () => {
   getTxHistory()
 })
 
@@ -241,8 +242,13 @@ function jumpExplorerUrl(row: any) {
 }
 
 function tableRowClick(row: any) {
-  if (!row.txHash) return
-  window.open(formatExplorerUrl(row.chain, row.txHash, 'tx'))
+  // if (!row.txHash) return
+  // window.open(formatExplorerUrl(row.chain, row.txHash, 'tx'))
+  const token = row.swapType === 2 || row.swapType === 6 ? row?.inTokenAddress : row.outTokenAddress
+  if (!token) {
+    return
+  }
+  router.push(`/token/${token}-${row.chain}`)
 }
 
 const getTxHistory = async () => {

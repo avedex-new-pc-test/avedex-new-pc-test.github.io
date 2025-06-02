@@ -37,7 +37,7 @@
             </div>
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
               row.outTokenSymbol
-            }}</span>
+              }}</span>
           </div>
         </template>
       </el-table-column>
@@ -195,7 +195,7 @@ const txOrder = ref([])
 const loading = ref(false)
 const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate], () => {
+watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate, () => route.params.id], () => {
   getUserPendingTx()
 })
 
@@ -221,6 +221,7 @@ function handleTypeCommand(command: string) {
   } else if (command === '6') {
     filterConditions.value.swapType = ['sell']
   }
+  getUserPendingTx()
 }
 
 // function handleStatusCommand(command: string) {
