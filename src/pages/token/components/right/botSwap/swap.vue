@@ -657,6 +657,7 @@ async function submitBotSwap() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.historyUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'myBotHistory'
@@ -739,6 +740,7 @@ async function submitBotSwap() {
     bot_createSwapEvmTx(data).then(res => {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           loadingSwap.value = false
           amountNative.value = ''

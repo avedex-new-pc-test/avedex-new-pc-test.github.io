@@ -37,7 +37,7 @@
             </div>
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
               row.outTokenSymbol
-              }}</span>
+            }}</span>
           </div>
         </template>
       </el-table-column>
@@ -57,10 +57,12 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 6"
+            class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px bg-[#221115]">
             {{ t('limit') }}/{{ t('sell') }}
           </div>
-          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px bg-[#0b1d19]">
+          <div v-if="row.swapType === 5"
+            class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ t('limit') }}/{{ t('buy') }}
           </div>
         </template>
@@ -144,8 +146,7 @@
       </el-table-column>
       <el-table-column :label="t('operate')" align="right">
         <template #default="{ row }">
-          <div
-            v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
+          <div v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
             @click.stop="handleCancelOrder(row)">
             {{ t('cancel') }}
           </div>
@@ -195,7 +196,7 @@ const txOrder = ref([])
 const loading = ref(false)
 const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate, () => route.params.id], () => {
+watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate, () => tokenStore.placeOrderSuccess, () => route.params.id], () => {
   getUserPendingTx()
 })
 
