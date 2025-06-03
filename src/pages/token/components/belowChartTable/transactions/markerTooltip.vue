@@ -106,6 +106,7 @@ function getColorClass(val: string) {
             :chain="currentRow.chain"
             :wallet_logo="currentRow.wallet_logo"
             class="color-[--d-999-l-666]"
+            :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
           />
           <slot/>
         </div>
