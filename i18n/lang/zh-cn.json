@@ -569,6 +569,10 @@
   "limitOrder": "限价单",
   "T_Trading": "做T",
   "mCap": "市值",
+  "disclaimers": "免责声明",
+  "privacyPolicy": "隐私条款",
+  "partners": "合作伙伴",
+  "ecosystem": "生态伙伴计划",
   "autoCancel": "自动取消",
   "failReason": "失败原因",
   "limitOrderFail": "限价单交易失败，委托金额",
@@ -583,5 +587,6 @@
   "mainChip": "主力筹码",
   "position": "仓位",
   "Change3D": "3日波动",
-  "profit1": "预计盈亏"
+  "profit1": "预计盈亏",
+  "openedTip": "外盘已开盘"
 }

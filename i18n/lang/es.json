@@ -193,5 +193,9 @@
   "mainChip": "Chip principal",
   "position": "Posición",
   "Change3D": "Cambio. 3D",
-  "profit1": "PyG"
+  "profit1": "PyG",
+  "openedTip": "La liquidez se ha movido a un nuevo par",
+  "disclaimers": "Cláusulas",
+  "privacyPolicy": "Política de privacidad",
+  "partners": "Socios"
 }

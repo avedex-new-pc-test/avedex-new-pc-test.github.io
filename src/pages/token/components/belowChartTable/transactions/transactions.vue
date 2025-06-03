@@ -27,6 +27,8 @@ const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
 const route = useRoute()
+// 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
+const realAddress = shallowRef(route.params.id as string)
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
@@ -35,7 +37,7 @@ const tabs = computed(() => {
       if (num > 0) {
         arr.push({
           ...i,
-          label: i?.[filterLanguage(useLocaleStore().locale)] + (i.type !== '31' ? `(${num})` : ''),
+          label: i?.[filterLanguage(useLocaleStore().locale)] + `(${num})`,
           value: i.type
         })
       }
@@ -53,10 +55,10 @@ const tabs = computed(() => {
       label: t('sell3'),
       value: 'sell'
     },
-    {
-      label: t('followed'),
-      value: '-100'
-    },
+    // {
+    //   label: t('followed'),
+    //   value: '-100'
+    // },
     {
       label: t('liquidity2'),
       value: 'liquidity'
@@ -68,10 +70,10 @@ const isPausedTxs = shallowRef(false)
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
   const visible = token.value?.chain === 'solana' && !isLiquidity.value
-  return [{key: 'time', dataKey: 'time', title: t('time'), width: 80},
-    {key: 'type', dataKey: 'type', title: t('type'), width: 80},
-    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), width: 100},
-    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', width: 140},
+  return [{key: 'time', dataKey: 'time', title: t('time'), minWidth: 80},
+    {key: 'type', dataKey: 'type', title: t('type'), minWidth: 80},
+    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100},
+    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', minWidth: 140},
     {
       key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
       minWidth: 120
@@ -83,9 +85,9 @@ const columns = computed(() => {
       title: t('makers') + ' SOL',
       align: 'right',
       hidden: !visible,
-      width: 86
+      minWidth: 86
     },
-    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', width: 70}]
+    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', minWidth: 70}]
     .filter(el => !el.hidden)
 })
 const listStatus = ref({
@@ -186,8 +188,6 @@ const addressAndChain = computed(() => {
 })
 watch(() => pairAddress.value, (pair, oldPair) => {
   if (pairAddress.value) {
-    txCount.value = {}
-    _getTokenTxs()
     _getPairLiq()
     subscribeLiq(pair, oldPair)
   }
@@ -195,13 +195,27 @@ watch(() => pairAddress.value, (pair, oldPair) => {
   immediate: true
 })
 
+watch(() => route.params.id, val => {
+  if (val) {
+    resetCache()
+    tableFilter.value.markerAddress = ''
+    _getTokenTxs()
+  }
+}, {
+  immediate: true
+})
+
 useVisibilityChange(() => {
-  txCount.value = {}
-  wsPairCache.value.length = 0
-  wsLiqCache.value.length = 0
+  resetCache()
   _getTokenTxs()
   _getPairLiq()
 })
+
+function resetCache() {
+  txCount.value = {}
+  wsPairCache.value.length = 0
+  wsLiqCache.value.length = 0
+}
 
 watch(() => wsStore.wsResult[WSEventType.TX], data => {
   if (!data || listStatus.value.loadingTxs) {
@@ -226,10 +240,10 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
     return
   }
   const {wallet_address} = data.liq
-  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
-    count: txCount.value[wallet_address]
+    // count: txCount.value[wallet_address]
   })
   if (!isPausedTxs.value) {
     updateLiqList()
@@ -295,6 +309,7 @@ async function _getTokenTxs() {
       tag_type
     }
     const res = await getTokenTxs(getPairTxsParams)
+    realAddress.value = getAddressAndChainFromId(getPairTxsParams.token_id).address
     tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       const {wallet_tag, topN} = getWalletTag(val)
@@ -338,10 +353,10 @@ async function _getPairLiq() {
     listStatus.value.loadingLiq = true
     const res = await getPairLiq(pairAddress.value + '-' + addressAndChain.value.chain)
     pairLiq.value = (res || []).reverse().map(val => {
-      txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
+      // txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       return {
         ...val,
-        count: txCount.value[val.wallet_address],
+        // count: txCount.value[val.wallet_address],
       }
     }).reverse()
   } catch (e) {
@@ -355,7 +370,7 @@ function isBuy(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('from_address' in row) {
     if (
       row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.from_address?.toLowerCase?.()
     ) {
       return false
     }
@@ -364,7 +379,7 @@ function isBuy(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('to_address' in row) {
     if (
       row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.to_address.toLowerCase?.()
     ) {
       return true
     }
@@ -383,7 +398,8 @@ function getRowColor(row: GetPairLiqResponse | IGetTokenTxsResponse) {
 }
 
 function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = false) {
-  const tokenAddress = addressAndChain.value.address
+  // route.params。id 同步更改，而接口异步请求，此时更新该值变成了 0
+  const tokenAddress = realAddress.value
   if ('from_address' in row) {
     if (
       row.from_address &&
@@ -418,7 +434,7 @@ function getAmount(row: GetPairLiqResponse | IGetTokenTxsResponse, needPrice = f
   if ('from_address' in row) {
     if (
       row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.from_address?.toLowerCase?.()
     ) {
       return row.from_amount * (
         needPrice ? Number(isVolUSDT ? row.from_price_usd : row.from_price_eth)
@@ -430,7 +446,7 @@ function getAmount(row: GetPairLiqResponse | IGetTokenTxsResponse, needPrice = f
   if ('to_address' in row) {
     if (
       row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.to_address.toLowerCase?.()
     ) {
       return row.to_amount * (
         needPrice ? Number(isVolUSDT ? row.to_price_usd : row.to_price_eth)
@@ -446,7 +462,7 @@ function hasNewAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { send
     return false
   }
   if (
-    addressAndChain.value.address.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
+    realAddress.value.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
   ) {
     return row.senderProfile?.token0HasNewAccount
   } else {
@@ -459,7 +475,7 @@ function hasClearedAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { 
     return false
   }
   if (
-    addressAndChain.value.address.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
+    realAddress.value.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
   ) {
     return row.senderProfile?.token0HasClearedAccount
   } else {
@@ -584,7 +600,7 @@ function onRowClick({rowData}: RowEventHandlerParams) {
           class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
           v-html="$t('filterTip',{
           address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
-          count:`<span>&nbsp;${filterTableList[0]?.count}&nbsp;</span>`
+          count:`<span>&nbsp;${filterTableList[0]?.count||0}&nbsp;</span>`
          })"
         />
         <UserTxsFilterHead
@@ -599,7 +615,10 @@ function onRowClick({rowData}: RowEventHandlerParams) {
         />
       </template>
     </template>
-    <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
+    <div
+      v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
+      element-loading-background="transparent"
+    >
       <AveTable
         fixed
         :data="filterTableList"

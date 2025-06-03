@@ -14,6 +14,7 @@ import List from './list.vue'
 import BigNumber from 'bignumber.js'
 
 const tokenDetailStore = useTokenDetailsStore()
+const themeStore = useThemeStore()
 const botStore = useBotStore()
 const {t} = useI18n()
 const listQuery = shallowRef({
@@ -25,6 +26,14 @@ const listQuery = shallowRef({
 })
 const checkedTrend = ref(['SWAP', 'ADD_LIQUIDITY/REMOVE_LIQUIDITY'])
 const trendList = shallowRef<GetTokenDetailsListResponse[]>([])
+const filteredTrendList = computed(() => {
+  return trendList.value.filter(
+    i =>
+      (i.is_target && (i.event_type == 'swap_buy' || i.event_type == 'swap_sell')) ||
+      !(i.event_type == 'swap_buy' || i.event_type == 'swap_sell')
+  ).filter(i => NATIVE_TOKENS.findIndex(y => y?.toLowerCase() == i.token?.toLowerCase()) == -1)
+
+})
 const listStatus = ref({
   loading: false,
   finished: false,
@@ -102,16 +111,16 @@ function _getTokenDetailsList() {
       const list = Array.isArray(res) ? res : []
       const arr = list.map(i => {
         let event_type = i.event_type
-        if (i.event_type == 'SWAP' && i.flow_type == 0) {
+        if (i.event_type === 'SWAP' && i.flow_type == 0) {
           event_type = 'swap_buy'
         }
-        if (i.event_type == 'SWAP' && i.flow_type == 1) {
+        if (i.event_type === 'SWAP' && i.flow_type == 1) {
           event_type = 'swap_sell'
         }
-        if (i.event_type == 'TRANSFER' && i.flow_type == 0) {
+        if (i.event_type === 'TRANSFER' && i.flow_type == 0) {
           event_type = 'transfer_in'
         }
-        if (i.event_type == 'TRANSFER' && i.flow_type == 1) {
+        if (i.event_type === 'TRANSFER' && i.flow_type == 1) {
           event_type = 'transfer_out'
         }
         return {
@@ -392,8 +401,9 @@ function attention() {
     >
       <List
         v-model="checkedTrend"
-        v-loading="listStatus.loading&&listQuery.pageNO===1&&trendList.length===0"
-        :tableList="trendList"
+        v-loading="listStatus.loading&&listQuery.pageNO===1&&filteredTrendList.length===0"
+        :tableList="filteredTrendList"
+        element-loading-background="transparent"
         @update:modelValue="resetListStatus"
       />
       <div

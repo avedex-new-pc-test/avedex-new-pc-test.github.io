@@ -102,7 +102,7 @@
           <div style="padding: 15px 20px;">
             <el-select
               v-model="depositChain" class="chains-select" placeholder="Select" size="large"
-              style="width: 100%" :teleported="false" suffix-icon="ArrowDownBold">
+              style="width: 100%" :teleported="false" :suffix-icon="ArrowDownBold">
               <template #prefix>
                 <img
                   v-if="depositChain" height="24" class="mr-5px border-rd-[50%]"

@@ -581,5 +581,10 @@
   "mainChip": "Main Chip",
   "position": "Position",
   "Change3D": "Change. 3D",
-  "profit1": "PnL"
+  "profit1": "PnL",
+  "openedTip": "Liquidity has moved to new pair",
+  "disclaimers": "Disclaimers",
+  "privacyPolicy": "Privacy Policy",
+  "partners": "Partners",
+  "ecosystem": "Ecosystem"
 }

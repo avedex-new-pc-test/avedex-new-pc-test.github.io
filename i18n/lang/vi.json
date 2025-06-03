@@ -348,6 +348,9 @@
   "limitOrder": "Lệnh giới hạn",
   "T_Trading": "Giao dịch",
   "mCap": "Vốn hóa",
+  "disclaimers": "Tuyên bố miễn trừ",
+  "privacyPolicy": "Chính sách",
+  "partners": "Đối tác",
   "autoCancel": "Tự động hủy",
   "failReason": "Lý do thất bại",
   "limitOrderFail": "Giao dịch lệnh giới hạn thất bại số tiền",
@@ -362,5 +365,6 @@
   "mainChip": "Chip chính",
   "position": "Vị thế",
   "Change3D": "Thay đổi 3 ngày",
-  "profit1": "Lãi/Lỗ"
+  "profit1": "Lãi/Lỗ",
+  "openedTip": "Thanh khoản đã chuyển"
 }
