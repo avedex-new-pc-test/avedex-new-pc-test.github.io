@@ -565,6 +565,11 @@ function onRowClick({rowData}: RowEventHandlerParams) {
     user_address: rowData.wallet_address
   })
 }
+
+function resetMakerAddress() {
+  tableFilter.value.markerAddress = ''
+  _getTokenTxs()
+}
 </script>
 
 <template>
@@ -596,13 +601,19 @@ function onRowClick({rowData}: RowEventHandlerParams) {
           {{ $t('loading') }}
       </div>
       <template v-else>
-        <div
-          class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
-          v-html="$t('filterTip',{
-          address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
-          count:`<span>&nbsp;${filterTableList[0]?.count||0}&nbsp;</span>`
-         })"
-        />
+        <div class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px flex justify-center">
+          <div
+            v-html="$t('filterTip',{
+            address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
+            count:`<span>&nbsp;${filterTableList[0]?.count||0}&nbsp;</span>`
+            })"
+          />
+          <span
+            class='color-#3F80F7 decoration-underline cursor-pointer ml-2px'
+            @click.stop="resetMakerAddress">
+          {{ $t('filterCancel') }}
+          </span>
+        </div>
         <UserTxsFilterHead
           :makerAddress="tableFilter.markerAddress"
           :isLiquidity="isLiquidity"
@@ -828,7 +839,6 @@ function onRowClick({rowData}: RowEventHandlerParams) {
           />
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
-              v-if="MAKER_SUPPORT_CHAINS.includes(row.chain)"
               :remark="row.remark"
               :address="row.wallet_address"
               :chain="row.chain"
