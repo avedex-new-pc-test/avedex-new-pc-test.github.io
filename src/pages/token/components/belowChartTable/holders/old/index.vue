@@ -89,19 +89,7 @@
               </tr>
             </tbody>
           </table>
-          <!-- <Insiders
-              v-show="tabActive !== '100'"
-              :tableDataHold="tableDataHold"
-              :loadingHold="loadingHold"
-              @sortChange="sortChange"
-              @getAllTagsHoldList="getAllTagsHoldList"
-              @getAllTagsActivityList="getAllTagsActivityList"
-              :tableDataActivity="tableDataActivity"
-              :loadingActivity="loadingActivity"
-              :insidersObj="insidersObj"
-              :active="active"
-              :type="tabActive"
-            /> -->
+          <Insiders v-show="tabActive !== '100'" />
         </el-scrollbar>
       </el-col>
     </el-row>
