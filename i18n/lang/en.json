@@ -574,5 +574,10 @@
   "limitOrderAutoCancel": "Limit order automatically canceled, reason: {f}",
   "limitOrderSuccess": "limit order has been successfully {t} {a} {s}, average price is {p}",
   "averagePositionPrice": "Average Price",
-  "pending": "Pending"
+  "pending": "Pending",
+  "openedTip": "Liquidity has moved to new pair",
+  "disclaimers": "Disclaimers",
+  "privacyPolicy": "Privacy Policy",
+  "partners": "Partners",
+  "ecosystem": "Ecosystem"
 }

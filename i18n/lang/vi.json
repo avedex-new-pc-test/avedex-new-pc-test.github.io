@@ -348,6 +348,9 @@
   "limitOrder": "Lệnh giới hạn",
   "T_Trading": "Giao dịch",
   "mCap": "Vốn hóa",
+  "disclaimers": "Tuyên bố miễn trừ",
+  "privacyPolicy": "Chính sách",
+  "partners": "Đối tác",
   "autoCancel": "Tự động hủy",
   "failReason": "Lý do thất bại",
   "limitOrderFail": "Giao dịch lệnh giới hạn thất bại số tiền",
@@ -355,5 +358,6 @@
   "limitOrderAutoCancel": "Lệnh giới hạn tự động hủy lý do: {f}",
   "limitOrderSuccess": "Lệnh giới hạn thành công {t} {a} {s} giá trung bình {p}",
   "averagePositionPrice": "Giá trung bình",
-  "pending": "Đang chờ"
+  "pending": "Đang chờ",
+  "openedTip": "Thanh khoản đã chuyển"
 }

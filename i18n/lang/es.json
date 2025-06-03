@@ -186,5 +186,9 @@
   "noMore": "No más",
   "notice": "Aviso",
   "mCap": "Cap.de Mercado",
-  "averagePositionPrice": "Precio promedio"
+  "averagePositionPrice": "Precio promedio",
+  "openedTip": "La liquidez se ha movido a un nuevo par",
+  "disclaimers": "Cláusulas",
+  "privacyPolicy": "Política de privacidad",
+  "partners": "Socios"
 }

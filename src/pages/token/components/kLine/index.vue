@@ -361,7 +361,7 @@ async function initChart() {
         try {
           // const { chain, symbol, price, amm } = props
           const isSupportSecChains = !!(chain.value && supportSecChains?.includes?.(chain.value))
-          const symbolUp = symbol.value?.toUpperCase?.() || '-'
+          const symbolUp = symbol.value?.toUpperCase?.() || tokenStore?.token?.symbol || '-'
           const p = Number(price) || 0
           const symbolInfo = {
             symbol: symbolUp,
