@@ -614,7 +614,9 @@ function resetMakerAddress() {
     </template>
     <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
       element-loading-background="transparent">
-      <AveTable fixed :data="filterTableList" :columns="columns" class="h-560px" :rowEventHandlers="{
+      <AveTable fixed :data="filterTableList" :columns="columns" class="h-560px" 
+      row-class='cursor-pointer'
+      :rowEventHandlers="{
         onMouseenter: () => {
           isPausedTxs = true
         },
