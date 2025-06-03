@@ -514,11 +514,12 @@ function initGoogleLogin() {
     callback: handleCredentialResponse,
   })
   google.accounts.id.renderButton(document.getElementById('g_id_onload'), {
-    type: 'icon',
-    shape: 'circle',
+    type: 'standard',
+    shape: 'rectangular',
     theme: 'outline',
     text: 'signin_with',
     size: 'large',
+    width: 205,
   })
   const iframe = document.querySelector('#g_id_onload iframe') as HTMLElement
   const button = document.querySelector(
