@@ -71,14 +71,12 @@
       </el-table-column>
       <el-table-column :label="t('price')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ row?.swapType === 1 ? formatNumber(row?.outPrice ||
-            0) : formatNumber(row?.inPrice || 0) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(calculateTokenPrice(row), 2) }}</div>
         </template>
       </el-table-column>
       <el-table-column :label="t('volume4')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(Number(row?.inValue) || row?.outValue ||
-            0, 2) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(calculateTradeVolume(row), 2) }}</div>
         </template>
       </el-table-column>
 
@@ -249,6 +247,34 @@ function tableRowClick(row: any) {
     return
   }
   router.push(`/token/${token}-${row.chain}`)
+}
+
+// 计算代币单价
+function calculateTokenPrice(row: any) {
+  try {
+    // 获取代币数量和对应的美元价值来计算单价
+    let tokenAmount = 0
+    
+    if (row?.swapType === 1) {
+      tokenAmount = row?.outValue || 0// 花费的美元
+    } else {
+      tokenAmount = row?.inValue || 0
+    }
+    return tokenAmount
+  } catch (error) {
+    console.error('Error calculating token price:', error)
+    return 0
+  }
+}
+
+// 计算交易额（总价值）
+function calculateTradeVolume(row: any) {
+  try {
+    return (Number(row?.inValue) || row?.outValue || 0) * calculateTokenPrice(row)
+  } catch (error) {
+    console.error('Error calculating trade volume:', error)
+    return 0
+  }
 }
 
 const getTxHistory = async () => {
