@@ -971,11 +971,12 @@ function formatProfit(row: { bought?: number, sold?: number, avg_purchase_price?
   return formatUnrealizedProfit(row, price) + (row?.realized_profit || 0)
 }
 
-function handleFilterQuery(keyword: string) {
-      visible.value = false
-      $emit('filterAddress', keyword)
-      keyword.value = keyword || ''
-    }
+function handleFilterQuery(k: string) {
+  visible.value = false
+  $emit('filterAddress', k)
+  keyword.value = k || ''
+}
+
 function goLink() {}
 function handleSortChange(obj:{prop: string, order:string }) {
   console.log('----------obj-------', obj)

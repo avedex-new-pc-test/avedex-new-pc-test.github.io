@@ -35,7 +35,7 @@ import { filterLanguage } from '~/pages/token/components/kLine/utils'
     chartHeight?: string
   }>()
 
-  const chartId = `chart`
+  const chartId = 'chart'
   const myChart = ref<echarts.ECharts | null>(null)
 
 const route = useRoute()
@@ -52,15 +52,15 @@ const { mode } = storeToRefs(useGlobalStore())
     const { chain } = getAddressAndChainFromId(route.params.id as string) || token?.value?.chain || ''
     const c =
     globalConfig.value?.chains_support_data_analysis_insider_sniper_V3
-    const supportTags = c?.[chain] || []
+    const supportTags = c?.[chain as 'eth' | 'base' | 'bsc' | 'solana'] || []
 
     if (supportTags) {
       arr = supportTags.map((i: any, index: number) => ({
         k: index,
-        color: filterChartColor(i.type)?.color,
-        label: i?.[filterLanguage(language.value)],
-        value: filterChartColor(i.type)?.data,
-        color1: filterChartColor(i.type)?.areaStyleColor,
+        color: filterChartColor(i.type)?.color || '',
+        label: i?.[filterLanguage(language.value)] || '',
+        value: filterChartColor(i.type)?.data || '',
+        color1: filterChartColor(i.type)?.areaStyleColor || '',
       }))
     }
 

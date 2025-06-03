@@ -62,11 +62,9 @@ const loadComponent = async () => {
   lazyComponent.value = component.default
 }
 
-console.log('connectWallet')
-
 const botStore = useBotStore()
 const { mode } = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: Boolean

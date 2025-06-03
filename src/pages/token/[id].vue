@@ -34,7 +34,6 @@ definePageMeta({
 const route = useRoute()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
-const globalStore = useGlobalStore()
 const addresses = computed(() => {
   const result = botStore.userInfo?.addresses
   if (Array.isArray(result)) {
@@ -47,7 +46,6 @@ const wsStore = useWSStore()
 
 const documentVisible = shallowRef(true)
 provide('documentVisible', documentVisible)
-const botSwapStore = useBotSwapStore()
 
 watch(() => addresses.value, () => {
   if (addresses.value?.length) {
