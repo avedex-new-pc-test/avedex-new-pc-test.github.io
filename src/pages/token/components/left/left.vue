@@ -14,17 +14,18 @@ function drag(e: MouseEvent) {
     if (!canDrag.value) {
       return
     }
-    if (e.clientY > height.value - 240) {
-      canDrag.value = false
+    const {clientY} = e
+    // 阈值
+    if (clientY > height.value - 240 || clientY < 310) {
       return
     }
     // document.getElementById('k-line-chart-container').style.pointerEvents = 'none'
-    if (e.clientY < dy) {
-      topLeftHeight.value -= dy - e.clientY
+    if (clientY < dy) {
+      topLeftHeight.value -= dy - clientY
     } else {
-      topLeftHeight.value += e.clientY - dy
+      topLeftHeight.value += clientY - dy
     }
-    dy = e.clientY
+    dy = clientY
   }
   document.onmouseup = () => {
     // document.getElementById('k-line-chart-container').style.pointerEvents = 'auto'

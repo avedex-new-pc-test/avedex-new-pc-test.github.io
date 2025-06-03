@@ -581,5 +581,6 @@
   "limitOrderSuccess": "限价单已成功{t} {a} {s}，平均单价为 ${p}",
   "averagePositionPrice": "持仓均价",
   "pending": "交易中",
-  "openedTip": "外盘已开盘"
+  "openedTip": "外盘已开盘",
+  "filterCancel": "取消筛选"
 }

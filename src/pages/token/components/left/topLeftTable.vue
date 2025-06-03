@@ -55,6 +55,7 @@ const activeHeight = computed(() => {
     <AveEmpty
       v-else
       :style="{height:`${props.height-50}px`}"
+      class="overflow-hidden"
     >
       <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
       <el-button

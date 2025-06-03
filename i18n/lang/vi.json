@@ -359,5 +359,6 @@
   "limitOrderSuccess": "Lệnh giới hạn thành công {t} {a} {s} giá trung bình {p}",
   "averagePositionPrice": "Giá trung bình",
   "pending": "Đang chờ",
-  "openedTip": "Thanh khoản đã chuyển"
+  "openedTip": "Thanh khoản đã chuyển",
+  "filterCancel": "Hủy lọc"
 }
