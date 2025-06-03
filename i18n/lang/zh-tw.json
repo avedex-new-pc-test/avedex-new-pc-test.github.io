@@ -585,5 +585,21 @@
   "position": "倉位",
   "Change3D": "3日波動",
   "profit1": "預計盈虧",
-  "openedTip": "外盤已開盤"
+  "openedTip": "外盤已開盤",
+  "insidersBalance": "剩餘金額",
+  "insidersPosition": "當前持倉/最多持倉",
+  "insidersBuyOrSell": "累計買入/賣出",
+  "snipersAddress": "未清倉地址/全部地址",
+  "insidersProfit": "浮盈",
+  "insidersHoldings": "持幣",
+  "insidersActivity": "動態",
+  "cleared": "已清倉",
+  "insidersOwned": "持倉占比",
+  "clearance": "清倉",
+  "insidersBalance1": "持倉餘額",
+  "addPool": "加池子",
+  "removePool": "减池子",
+  "transferIn1": "轉入",
+  "transferOut1": "轉出",
+  "value": "金額"
 }

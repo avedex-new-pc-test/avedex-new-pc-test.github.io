@@ -586,5 +586,21 @@
   "disclaimers": "Disclaimers",
   "privacyPolicy": "Privacy Policy",
   "partners": "Partners",
-  "ecosystem": "Ecosystem"
+  "ecosystem": "Ecosystem",
+  "insidersBalance": "Amount",
+  "insidersPosition": "Balance/Largest position",
+  "insidersBuyOrSell": "Buy/Sell",
+  "snipersAddress": "Uncleared/All",
+  "insidersProfit": "Total Profit",
+  "insidersHoldings": "Holdings",
+  "insidersActivity": "Activity",
+  "cleared": "Cleared",
+  "insidersOwned": "Owned%",
+  "clearance": "Clearance",
+  "insidersBalance1": "Balance",
+  "addPool": "ADD",
+  "removePool": "REMOVE",
+  "transferIn1": "TRANSFER_IN",
+  "transferOut1": "TRANSFER_OUT",
+  "value": "Value"
 }

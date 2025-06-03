@@ -132,7 +132,7 @@ export interface Top100Balance {
   cost_cur: number
   cost_diff_3days: number
   is_wallet_address_fav: number
-  newTags: []
+  newTags: NewTags[]
   remark: string
   sell_amount_cur: number
   sell_amount_diff_3days: number
@@ -144,6 +144,20 @@ export interface Top100Balance {
   wallet_logo: {}
   wallet_tag_extra: {}
   wallet_tag_v2: string
+}
+interface NewTags {
+  cn: string
+  color: string
+  en: string
+  es: string
+  extra_info: null
+  icon: string
+  ja: string
+  nick_name: string
+  pt: string
+  tr: string
+  tw: string
+  type: string
 }
 export function _getTop100balance(params: {
   token_id: string
@@ -157,5 +171,82 @@ export function _getTop100balance(params: {
       size: 100,
       address: params.address,
     },
+  })
+}
+export interface AllTagsStats {
+  token: string
+  date: Date
+  balance: number
+  balance_ratio_cur: number
+  balance_ratio_max: number
+  vol_buy: number
+  vol_sell: number
+  unsettled_addresses: number
+  all_addresses: number
+  vol_profit: number
+  vol_profit_ratio: number
+}
+export function _getAllTagsStats(params: {
+  token_id: string
+  type: string
+}): Promise<AllTagsStats> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/stats/alltags/stats', {
+    method: 'get',
+    query: params,
+  })
+}
+
+// 获取 老鼠仓dev聪明钱 持仓列表
+export interface Hold {
+  total_value: number
+  balance_ratio: number
+  balance: number
+  cumulative_purchase: number
+  cumulative_sold: number
+  address: string
+  is_wallet_address_fav: boolean
+}
+
+export function _getAllTagsHoldList(params: {
+  token_id: string
+  type: string
+}): Promise<Hold> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/stats/alltags/holders', {
+    method: 'get',
+    query: params,
+  })
+}
+
+// 获取 老鼠仓dev聪明钱 动态列表
+
+export interface Activity {
+  txhash: string
+  instruction_index: number
+  pair: string
+  time: Date
+  publish_at: Date
+  token: string
+  quote_token: string
+  type: string
+  block_number: number
+  amm: string
+  wallet_address: string
+  base_token_amount: number
+  quote_token_amount: number
+  base_token_price_u: number
+  quote_token_price_u: number
+  base_token_symbol: string
+  quote_token_symbol: string
+}
+export function _getAllTagsActivityList(params: {
+  token_id: string
+  type: string
+}): Promise<Activity> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/stats/alltags/activities', {
+    method: 'get',
+    query: params,
   })
 }

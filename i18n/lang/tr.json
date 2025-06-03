@@ -192,5 +192,21 @@
   "openedTip": "Likidite yeni çifte taşındı",
   "disclaimers": "Sorumluluk reddi beyanı",
   "privacyPolicy": "Gizlilik Politikası",
-  "partners": "Partnerler"
+  "partners": "Partnerler",
+  "insidersBalance": "Kalan miktar",
+  "insidersPosition": "Mevcut bakiye/en büyük pozisyon",
+  "insidersBuyOrSell": "Toplam alım/satım",
+  "snipersAddress": "Tasfiye edilmemiş/Tüm adresler",
+  "insidersProfit": "Toplam Kâr",
+  "insidersHoldings": "Tokenler",
+  "insidersActivity": "Aktivite",
+  "cleared": "Tasfiye edildi",
+  "insidersOwned": "Sahiplik %",
+  "clearance": "Tasfiye",
+  "insidersBalance1": "Bakiye",
+  "addPool": "Havuz ekleme",
+  "removePool": "Havuz çıkarma",
+  "transferIn1": "Transfer girişi",
+  "transferOut1": "Transfer çıkışı",
+  "value": "Değer"
 }

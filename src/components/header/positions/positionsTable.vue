@@ -3,7 +3,7 @@
     <slot/>
     <el-table class="table-position w-100%" :data="dataSource" :height="400" @row-click="tableRowClick
   ">
-      <el-table-column 
+      <el-table-column
         v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
         :align="col.align">
         <template #header="{ column }">
@@ -36,7 +36,7 @@
         </template>
       </el-table-column>
       <template #append>
-        <div 
+        <div
           v-infinite-scroll="fetchTable"
           class="text-0 lh-0 h-0"
           :infinite-scroll-disabled="paginationParams.loaded || paginationParams.finished"
@@ -58,7 +58,7 @@ import TokenImg from '@/components/tokenImg.vue'
 import { getUserBalance ,type GetUserBalanceResponse} from '~/api/swap'
 import { upColor, downColor ,defaultPaginationParams} from '@/utils/constants'
 const { mode } = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const $router = useRouter()
 
 
@@ -191,7 +191,7 @@ watch(props.tableFilter, () => {
 watch(() => dialogVisible.value, (val) => {
   if(val){
      paginationParams.value={...defaultPaginationParams}
-     fetchTable() 
+     fetchTable()
   }
 }, { immediate: true })
 
@@ -228,7 +228,7 @@ onMounted(() => {
   :deep() .cell{
     padding: 0;
   }
- 
+
 }
 /* .table-position.el-table {
   --el-table-tr-bg-color: var(--custom-bg-1-color);

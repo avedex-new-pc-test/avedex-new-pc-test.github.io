@@ -1,9 +1,10 @@
 <template>
   <div class="holderInfoOld px-12px">
     <el-row :gutter="10">
-      <el-col :span="10">
-        <div class="title">
-          {{ $t('holdersDetail') }} ({{ $t('excludeNullAndPoll') }})
+      <el-col :span="24">
+        <div class="title text-12px color-[--d-FFF-l-000]">
+          {{ $t('holdersDetail') }}
+          <span class="color-#848E9C">({{ $t('excludeNullAndPoll') }})</span>
         </div>
         <div class="checkbox-container checkbox-old mt-10px">
           <el-checkbox v-model="checked[0]" class="checkbox-FFCC00">
@@ -27,18 +28,20 @@
           :dataList="top100range"
           :showSeries="checked"
           :loading="loadingTop100Range"
-          chartHeight="330px"
+          chartHeight="162px"
         />
       </el-col>
-      <el-col :span="14">
-        <div class="title flex items-center justify-between">
-          <span>{{ $t('mainChip') }}</span>
+      <el-col :span="24">
+        <div class="title flex items-center justify-between mt-17px">
+          <span class="text-12px color-[--d-FFF-l-000]">{{
+            $t('mainChip')
+          }}</span>
           <div class="tabs">
             <template v-for="(item, index) in tabs" :key="index">
               <span
                 class="tab-item"
                 :class="{ active: item.type == tabActive }"
-                @click.stop.prevent="tabActive = item.type"
+                @click.stop.prevent="switchTabs(item)"
               >
                 {{ item?.[filterLanguage(language)] }}
                 <template v-if="item?.total_address !== undefined">
@@ -49,47 +52,94 @@
           </div>
         </div>
         <el-scrollbar :height="355">
-          <table v-show="tabActive == '100'">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>{{ $t('ratio') }}</th>
-                <th>{{ $t('position') }}</th>
-                <th>{{ $t('Change3D') }}</th>
-                <th>{{ $t('profit1') }}($)</th>
-                <th>{{ $t('address') }}&nbsp;&nbsp;&nbsp;&nbsp;</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(item, index) in top100balanceC"
-                :key="index"
-                @click="goLink(item)"
+          <el-table
+            v-show="tabActive == '100'"
+            ref="tableRef"
+            v-loading="loadingTop100Balance"
+            class="mt-15px"
+            cell-class-name="color-[--d-999-l-959A9F] text-12px"
+            :data="top100balanceC"
+            fit
+            :height="355"
+            style="width: 100%"
+            @row-click="goLink"
+          >
+            <template #empty>
+              <div
+                v-if="!loadingTop100Balance"
+                class="flex flex-col items-center justify-center py-30px"
               >
-                <td class="index">
-                  {{ index < 9 ? '0' + (index + 1) : index + 1 }}
-                </td>
-                <td>{{ formatProportion(item) }}</td>
-                <td>{{ formatNumber(item?.amount_cur, 2) }}</td>
-                <td
+                <img
+                  v-if="mode === 'light'"
+                  src="@/assets/images/empty-white.svg"
+                />
+                <img
+                  v-if="mode === 'dark'"
+                  src="@/assets/images/empty-black.svg"
+                />
+                <span>{{ t('emptyNoData') }}</span>
+              </div>
+              <span v-else />
+            </template>
+            <el-table-column type="index" label="#" width="40" />
+            <el-table-column :label="$t('ratio')" prop="time" align="right">
+              <template #default="{ row }">
+                {{ formatProportion(row) }}
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('position')" prop="time" align="right">
+              <template #default="{ row }">
+                {{ formatNumber(row?.amount_cur, 2) }}
+              </template>
+            </el-table-column>
+
+            <el-table-column :label="$t('Change3D')" prop="time" align="right">
+              <template #default="{ row }">
+                <span
                   :style="{
                     color:
-                      item.amount_diff_3days > 0 ? upColor[0] : downColor[0],
+                      row.amount_diff_3days > 0 ? upColor[0] : downColor[0],
                   }"
                 >
-                  {{ formatNumber(item?.amount_diff_3days, 2) }}
-                </td>
-                <td
+                  {{ formatNumber(row?.amount_diff_3days, 2) }}
+                </span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              :label="$t('profit1') + '($)'"
+              prop="time"
+              align="right"
+            >
+              <template #default="{ row }">
+                <span
                   :style="{
-                    color: formatProfit(item) > 0 ? upColor[0] : downColor[0],
+                    color: formatProfit(row) > 0 ? upColor[0] : downColor[0],
                   }"
                 >
-                  {{ formatNumber(formatProfit(item), 2) }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <Insiders v-show="tabActive !== '100'" />
+                  {{ formatNumber(formatProfit(row), 2) }}</span
+                >
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('address')" align="right">
+              <template #default="{ row }">
+                <div class="flex-end">
+                  <SignalTags
+                    :tags="row.newTags"
+                    :walletAddress="row.address"
+                    :chain="row.chain"
+                  />
+                  <span class="ml-3px"> *{{ row.address?.slice(-6) }}</span>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <Insiders
+            v-show="tabActive !== '100'"
+            :insidersObj="insidersObj"
+            :type="tabActive"
+          />
         </el-scrollbar>
       </el-col>
     </el-row>
@@ -102,14 +152,19 @@ import { getAddressAndChainFromId } from '@/utils/index'
 import { upColor, downColor } from '@/utils/constants'
 import { filterChartColor } from '@/utils/holders'
 import LineChart from './lineChart.vue'
+import Insiders from './insiders.vue'
 import {
   _getTop100range,
   _getTop100balance,
+  _getAllTagsStats,
+  _getAllTagsHoldList,
   type Top100range,
   type Top100Balance,
+  type AllTagsStats,
 } from '@/api/holders'
 const route = useRoute()
 const { t } = useI18n()
+const { mode } = storeToRefs(useGlobalStore())
 const botStore = useBotStore()
 const checked = ref<boolean[]>([true, true, true, true, true, true, true])
 
@@ -121,6 +176,9 @@ const tabActive = shallowRef<string>('100')
 
 const top100balance = ref<Top100Balance[]>([])
 const loadingTop100Balance = shallowRef<boolean>(false)
+
+const insidersObj = ref<AllTagsStats>({})
+const loadingStats = shallowRef<boolean>(false)
 
 const supportTags = computed(() => {
   const chain = addressAndChain.value.chain
@@ -199,7 +257,14 @@ function getTop100balance() {
   _getTop100balance(paramas)
     .then((res) => {
       console.log('--------------------res-----------------------------', res)
-      top100balance.value = Array.isArray(res) ? res : []
+      top100balance.value = Array.isArray(res)
+        ? res?.map((i) => ({
+            ...i,
+            newTags: i?.newTags?.filter(
+              (m) => !new RegExp('^top.*$', 'gi').test(m?.type)
+            ),
+          }))
+        : []
     })
     .catch(() => {})
     .finally(() => {
@@ -226,32 +291,47 @@ function formatProportion(item: Top100Balance) {
   )
 }
 function goLink() {}
+function switchTabs(item: { type: string }) {
+  tabActive.value = item.type
+  if (item.type == '100') {
+    getTop100balance()
+  } else {
+    getAllTagsStats()
+  }
+}
+
+function getAllTagsStats() {
+  loadingStats.value = true
+  const paramas = {
+    token_id: id.value,
+    type: tabActive.value,
+  }
+  _getAllTagsStats(paramas)
+    .then((res) => {
+      console.log('--------------------res-----------------------------', res)
+      insidersObj.value = res
+    })
+    .catch(() => {})
+    .finally(() => {
+      loadingStats.value = false
+    })
+}
 </script>
 
 <style lang="scss" scoped>
 .tabs {
-  .tab-radio-input {
-    width: 0;
-    height: 0;
-    font-size: 0;
-    opacity: 0;
-    &:checked + .tab-item {
-      // background: #558BED;
-      color: var(--custom-text-1-color);
-    }
-  }
   .tab-item {
-    background: var(--custom-btn-bg-color);
-    border-radius: 16px;
+    background: var(--d-1f242a-l-F5f5f5);
+    border-radius: 4px;
     font-size: 12px;
-    color: var(--custom-text-2-color);
+    color: #787b86;
     letter-spacing: 0;
     line-height: 16px;
     font-weight: 400;
     padding: 4px 10px;
     cursor: pointer;
     &.active {
-      color: var(--custom-text-1-color);
+      color: var(--d-FFF-l-000);
     }
     & ~ .tab-item {
       margin-left: 5px;

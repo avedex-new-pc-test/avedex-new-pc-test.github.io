@@ -366,5 +366,21 @@
   "openedTip": "Ликвидность перемещена",
   "disclaimers": "Отказ от ответств.",
   "privacyPolicy": "Конфиденциальность",
-  "partners": "Партнеры"
+  "partners": "Партнеры",
+  "insidersBalance": "Сумма",
+  "insidersPosition": "Баланс/Макс. позиция",
+  "insidersBuyOrSell": "Покупка/Продажа",
+  "snipersAddress": "Неочищенные/Все",
+  "insidersProfit": "Общая прибыль",
+  "insidersHoldings": "Активы",
+  "insidersActivity": "Активность",
+  "cleared": "Очищено",
+  "insidersOwned": "Владение%",
+  "clearance": "Очистка",
+  "insidersBalance1": "Баланс",
+  "addPool": "Добавить",
+  "removePool": "Удалить",
+  "transferIn1": "Входящий",
+  "transferOut1": "Исходящий",
+  "value": "Стоимость"
 }

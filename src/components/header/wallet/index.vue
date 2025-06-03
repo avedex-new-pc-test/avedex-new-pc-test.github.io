@@ -231,7 +231,7 @@ import { ElMessage, ElMessageBox, ElNotification as ElNotify, type FormInstance 
 import { useEventBus } from '@vueuse/core'
 
 const { mode, token_logo_url } = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const botStore = useBotStore()
 // const route = useRoute()
 // const router = useRouter()
