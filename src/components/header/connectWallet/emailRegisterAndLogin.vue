@@ -250,7 +250,7 @@ console.log('emailRegisterAndLogin')
 const userStore = useUserStore()
 const botStore = useBotStore()
 const {mode,lang,isDark} = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const props = defineProps({
   cType: {
     type: String,
@@ -536,9 +536,9 @@ function initGoogleLogin() {
       left: -91px;
       width: 205px;
       height: 32px;
-      opacity: 0; 
-      pointer-events: auto; 
-      z-index: 1; 
+      opacity: 0;
+      pointer-events: auto;
+      z-index: 1;
     `
     loading4.value = false
   }

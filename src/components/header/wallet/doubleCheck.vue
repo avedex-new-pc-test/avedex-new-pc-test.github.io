@@ -217,7 +217,7 @@ const props = defineProps({
 const emit = defineEmits(['update:showVisible', 'update:authCode', 'update:emailCode', 'action'])
 const { mode, lang } = storeToRefs(useGlobalStore())
 const { isDark } = useThemeStore()
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const userStore = useUserStore()
 
 

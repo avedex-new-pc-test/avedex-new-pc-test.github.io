@@ -6,21 +6,21 @@
       </el-icon>
     </h3>
     <h3 v-if="step === 2" class="title2">{{ $t('startResetTitle2') }}({{ desensitizeEmail(form.email) }})</h3>
-    <el-form 
+    <el-form
       ref="formRef" :model="form" :rules="rules" label-width="0" autocomplete="off" size="large"
       :style="{ marginTop: step === 1 ? '100px' : '10px' }" @submit.prevent>
       <el-form-item v-if="step === 1" label="" prop="email">
-        <el-input 
+        <el-input
           v-model="form.email" :autocomplete="'new-email' + Math.random()" :placeholder="$t('startEmail')"
           name="emailField" />
       </el-form-item>
       <template v-else-if="step === 2">
         <el-form-item label="" prop="verificationCode">
-          <el-input 
+          <el-input
             v-model="form.verificationCode" :autocomplete="'new-verificationCode' + Math.random()"
             :placeholder="$t('startVerificationCode')" name="new-verificationCode">
             <template #suffix>
-              <el-button 
+              <el-button
                 class="countdownBtn" link :disabled="disabledCountdownBtn" :loading="loading2" :style="{
                 color: mode == 'dark' ? '#f5f5f5' : '#333333',
               }" @click="sendVerificationCode">
@@ -31,7 +31,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="" prop="password">
-          <el-input 
+          <el-input
             v-model="form.password" type="password" name="password_field"
             :autocomplete="'new-password' + Math.random()" :placeholder="$t('startPassword')" show-password />
         </el-form-item>
@@ -47,7 +47,7 @@
         </template>
       </el-result>
       <el-form-item>
-        <el-button 
+        <el-button
           :color="'#3F80F7'" :class="['btn', (step === 3) && 'step3']"
           size="large" :loading="loading" style="width: 100%" @click="submitForm">{{ startSubmitText }}</el-button>
       </el-form-item>
@@ -76,7 +76,7 @@ const props = defineProps({
 })
 const userStore = useUserStore()
 const { mode, lang } = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 
 const count = ref(60) // 倒计时的初始值
 const isCounting = ref(false) // 是否正在倒计时
