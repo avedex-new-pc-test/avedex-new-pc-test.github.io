@@ -92,3 +92,70 @@ export function _getHoldersList(params: {
     query: params,
   })
 }
+
+
+export interface Top100range {
+  date: string
+  dev_balance_ratio: number
+  insider_balance_ratio: number
+  kol_balance_ratio: number
+  smartmoney_balance_ratio: number
+  sniper_balance_ratio: number
+  token: string
+  top10_amount: number
+  top20_amount: number
+  top50_amount: number
+  top100_amount: number
+  total_amount: number
+}
+export function _getTop100range(tokenId: string): Promise<Top100range[]> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v2/stats/top100range', {
+    method: 'get',
+    query: {
+      token_id: tokenId,
+    },
+  })
+}
+
+
+export interface Top100Balance {
+  address: string
+  amount_cur: number
+  amount_diff_3days: number
+  buy_amount_cur: number
+  buy_amount_diff_3days: number
+  buy_tx_count_cur: number
+  buy_volume_cur: number
+  buy_volume_diff_3days: number
+  chain: string
+  cost_cur: number
+  cost_diff_3days: number
+  is_wallet_address_fav: number
+  newTags: []
+  remark: string
+  sell_amount_cur: number
+  sell_amount_diff_3days: number
+  sell_tx_count_cur: 4
+  sell_volume_cur: number
+  sell_volume_diff_3days: number
+  trade_first_at: number
+  trade_last_at: number
+  wallet_logo: {}
+  wallet_tag_extra: {}
+  wallet_tag_v2: string
+}
+export function _getTop100balance(params: {
+  token_id: string
+  address?: string
+}): Promise<Top100Balance[]> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v3/stats/top100balance', {
+    method: 'get',
+    query: {
+      token_id: params.token_id,
+      size: 100,
+      address: params.address,
+    },
+  })
+}
