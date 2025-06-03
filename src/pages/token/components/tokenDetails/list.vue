@@ -14,7 +14,8 @@ const props = defineProps({
   tableList: {
     type: Array<GetTokenDetailsListResponse>,
     default: () => []
-  }
+  },
+  loading:Boolean
 })
 const isShowDate = ref(false)
 const isVolUSDT = ref(true)
@@ -259,6 +260,10 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
       </div>
       <!--<div class="flex items-center w-50px text-right"/>-->
     </div>
+    <AveEmpty 
+      class="pt-50px"
+      v-if="!loading && tableList.length === 0"
+    />
   </div>
 </template>
 

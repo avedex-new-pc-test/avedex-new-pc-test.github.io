@@ -1,4 +1,5 @@
 // src/middleware/router.global.ts
+const redirectToOldUrls = ['/address']
 export default defineNuxtRouteMiddleware((to) => {
   // console.log('to', from, to)
   if (to.fullPath?.includes('/login')) {
@@ -10,6 +11,15 @@ export default defineNuxtRouteMiddleware((to) => {
       const redirectUrl = query.redirectUrl?.includes('/') ? (query.redirectUrl as string)?.replace(/^(.*?)(\/.*)$/, '$2') : '/'
       return navigateTo(redirectUrl, { replace: true })
     }
+  }
+  const needRedirectToOld = redirectToOldUrls.find((url) => to.fullPath.includes(url))
+  if(needRedirectToOld){
+    navigateTo('https://ave.ai'+to.path,{
+      open:{
+        target:'_blank'
+      }
+    })
+    return abortNavigation()
   }
   if (!to.fullPath?.includes('/token')) {
     useHead({ title: 'Ave.ai' })
