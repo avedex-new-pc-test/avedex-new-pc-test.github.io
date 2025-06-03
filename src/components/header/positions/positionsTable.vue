@@ -24,14 +24,18 @@
             <template v-if="col?.prop === 'token'">
               <div class="flex items-center gap-8px clickable flex-nowrap">
                 <TokenImg :row="row" class="w-24px h-24px" />
-                <div>{{ row?.symbol }}</div>
+                <el-tooltip :effect="mode" placement="top-end" :content="row?.symbol">
+                  <div class="whitespace-nowrap text-ellipsis overflow-hidden max-w-100px">{{ row?.symbol }}</div>
+                </el-tooltip>
               </div>
             </template>
             <span v-else-if="row[col.prop] === '--'" :class="col?.getClassName ? col.getClassName(row) : ''">--</span>
             <span v-else-if="row[col.prop] === 0" :class="col?.getClassName ? col.getClassName(row) : ''">0</span>
             <span v-else :class="col?.getClassName ? col.getClassName(row) : ''">{{ col.formatter ? col.formatter(row) :row[col.prop] }}</span>
             <!-- <Icon v-if="col?.prop === 'total_profit_ratio'" name="circum:share-1" class="text-12px ml-4px" @click.stop = "handleShare(row)"/> -->
-            <share v-if="col?.prop === 'total_profit_ratio'" :address="row.address" :statistics="row" :chain="row.chain" type="topHolder"/>
+            <div  v-if="col?.prop === 'total_profit_ratio'" class="pr-10px inline-block" >
+              <share :address="row.address" :statistics="row" :chain="row.chain" type="topHolder"/>
+            </div>
           </div>
         </template>
       </el-table-column>
@@ -155,10 +159,8 @@ const fetchTable = async () => {
   const pageNO = paginationParams.value.pageNO
   const pageSize = paginationParams.value.pageSize
   console.log('fetchTable', {pageNO,pageSize})
-  let res,data
-  try {
-    res = await getUserBalance({pageNO, pageSize,...props.tableFilter})
-    data=res?.data||[]
+  getUserBalance({pageNO, pageSize,...props.tableFilter}).then(res => {
+    const data=res?.data||[]
     if (Array.isArray(data) && data?.length > 0) {
       if(pageNO === 1) {
         dataSource.value = data?.map(i => ({ ...i, index: `${i.token}-${i.chain}` }))
@@ -174,13 +176,11 @@ const fetchTable = async () => {
         dataSource.value = []
       }
     }
-  } catch (e) {
-    console.error('Error fetching user balance:', e)
-    // dataSource.value = []
-  }
-  setTimeout(() => {
+  }).finally(() => {
+   setTimeout(() => {
     paginationParams.value.loaded = false
-  }, 200)
+    }, 200)
+  })
 }
 watch(props.tableFilter, () => {
   paginationParams.value={...defaultPaginationParams}
