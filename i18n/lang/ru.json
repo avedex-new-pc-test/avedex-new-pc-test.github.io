@@ -368,5 +368,6 @@
   "privacyPolicy": "Конфиденциальность",
   "partners": "Партнеры",
   "filterCancel": "Отменить фильтрацию",
-  "returnToLogin": "Вернуться к входу"
+  "returnToLogin": "Вернуться к входу",
+  "startBotFooter21": "Уже нет аккаунта?"
 }

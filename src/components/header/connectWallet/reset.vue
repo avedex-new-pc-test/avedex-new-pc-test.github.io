@@ -1,14 +1,14 @@
 <template>
   <div :class="['w-reset', mode]">
-    <h3 v-if="step !== 3" class="title" :style="{ marginBottom: step === 2 ? '40px' : 0 }">{{ title }}
-      <el-icon :size="35" style="color:var(--d-999-l-222);" @click="emit('update:c-type', 'login')">
+    <h3 v-if="step !== 3" class="title" :style="{ marginBottom: step === 2 ? '40px' : 0 }">
+      <el-icon :size="28" style="color:var(--d-999-l-222);" @click="handleBack">
         <ArrowLeft />
-      </el-icon>
+      </el-icon>{{ title }}
     </h3>
     <h3 v-if="step === 2" class="title2">{{ $t('startResetTitle2') }}({{ desensitizeEmail(form.email) }})</h3>
     <el-form
       ref="formRef" :model="form" :rules="rules" label-width="0" autocomplete="off" size="large"
-      :style="{ marginTop: step === 1 ? '100px' : '10px' }" @submit.prevent>
+      :style="{ marginTop: step === 1 ? '40px' : '10px' }" @submit.prevent>
       <el-form-item v-if="step === 1" label="" prop="email">
         <el-input
           v-model="form.email" :autocomplete="'new-email' + Math.random()" :placeholder="$t('startEmail')"
@@ -22,7 +22,7 @@
             <template #suffix>
               <el-button
                 class="countdownBtn" link :disabled="disabledCountdownBtn" :loading="loading2" :style="{
-                color: mode == 'dark' ? '#f5f5f5' : '#333333',
+                color: mode == 'dark' ? '##3F80F7' : '##3F80F7',
               }" @click="sendVerificationCode">
                 {{
                   isCounting ? `${count}${$t("SS")}` : $t("startCountDown")
@@ -46,12 +46,12 @@
           <img src="@/assets/images/success.svg" width="80px">
         </template>
       </el-result>
-      <el-form-item>
+      <el-form-item :class="['mb-0px!']">
         <el-button
-          :color="'#3F80F7'" :class="['btn', (step === 3) && 'step3']"
+          :color="'#3F80F7'" class="btn"
           size="large" :loading="loading" style="width: 100%" @click="submitForm">{{ startSubmitText }}</el-button>
       </el-form-item>
-      <p v-if="step === 2" class="tip">{{ $t('startResetTip') }}</p>
+      <p v-if="step === 2" class="tip">*&nbsp;{{ $t('startResetTip') }}</p>
     </el-form>
   </div>
 </template>
@@ -74,6 +74,7 @@ const props = defineProps({
     },
   },
 })
+const botStore = useBotStore()
 const userStore = useUserStore()
 const { mode, lang } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
@@ -135,6 +136,11 @@ watch([()=>userStore.email,()=>props.cType], (val) => {
     form.email = userStore.email
   }
 })
+watch(()=>botStore.connectVisible, () => {
+  step.value = 1
+  title.value = t('startForgetPassword')
+  startSubmitText.value = t('next')
+})
 onMounted(() => {
     console.log('reset')
 })
@@ -143,6 +149,17 @@ onUnmounted(() => {
     clearInterval(timer.value)
   }
 })
+
+function handleBack() {
+  if (step.value === 1) {
+    emit('update:c-type', 'login')
+  } else if (step.value === 2) {
+    step.value = 1
+    title.value = t('startForgetPassword')
+    startSubmitText.value = t('next')
+    // Optionally reset form fields or errors here if needed
+  }
+}
 
 function validatePassword(rule: any, value: string, callback: (error?: Error) => void) {
   if (value !== form.password) {
@@ -157,7 +174,7 @@ function submitForm() {
     if (valid) {
       if (step.value === 1) {
         startSubmitText.value = t('confirm')
-        title.value = t('startResetTitle')
+        // title.value = t('startResetTitle')
         sendVerificationCode()
         step.value = 2
       }
@@ -271,11 +288,12 @@ function sendVerificationCode() {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     font-family: PingFang SC;
-    font-size: 40px;
     font-weight: 600;
-    line-height: 48px;
+    font-size: 24px;
+    line-height: 100%;
+    letter-spacing: 0%;
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
@@ -283,30 +301,28 @@ function sendVerificationCode() {
     margin-bottom: 30px;
 
     .el-icon {
-      font-size: 16px;
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
       cursor: pointer;
     }
   }
 
   .title2 {
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 27px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 150%;
+    letter-spacing: 0px;
     text-align: left;
-    color: #999999;
+    color: var(--d-666-l-999);
     word-break: break-all;
   }
 
   .tip {
-    margin: 0;
-    color: #999999;
-    font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
+    font-size: 12px;
     line-height: 20px;
+    letter-spacing: 0%;
+    margin-bottom: 0;
+    margin-top: 10px;
+    color: #999999;
     width: calc(100% + 174.5px);
     text-align: center;
     margin-left: -87.25px;
@@ -317,9 +333,9 @@ function sendVerificationCode() {
     --el-result-padding: 10px 30px 40px 30px;
 
     :deep() p {
-      font-size: 20px !important;
       font-weight: 500 !important;
-      line-height: 30px !important;
+      font-size: 18px !important;
+      line-height: 100% !important;
       color: #F5F5F5;
     }
   }
@@ -354,13 +370,7 @@ function sendVerificationCode() {
   }
 
   .btn {
-    margin-top: 20px;
     height: 48px;
-
-    &.step3 {
-      margin-bottom: 44px;
-    }
-
     :deep() &.el-button {}
 
     :deep() &.el-button.is-disabled,
