@@ -226,6 +226,7 @@ watch(marksTabs, () => {
 
 // 提前拦截 K线 数据 没有更多
 let noData = false
+let firstBarTime = 0
 
 async function initChart() {
   const symbolUp = symbol.value?.toUpperCase?.() || '-'
@@ -421,7 +422,7 @@ async function initChart() {
             pair_id: pair.value + '-' + chain.value,
             token_id: route.params.id as string,
             from,
-            to
+            to: Math.max(to, firstBarTime || 0)
           }
           getKlineHistoryData(params).then(res => {
             const bars1 = res?.kline_data || []
@@ -437,6 +438,9 @@ async function initChart() {
             if (firstDataRequest) {
               lastBar = bars1?.[bars1?.length - 1] || null
               noData = bars?.length < 100
+            }
+            if (bars1?.length > 0) {
+              firstBarTime = bars1?.[0]?.time || 0
             }
             onResult(bars, {noData: !bars?.length})
           })
