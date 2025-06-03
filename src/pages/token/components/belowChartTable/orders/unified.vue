@@ -185,7 +185,7 @@ const props = defineProps({
 const tokenStore = useTokenStore()
 const route = useRoute()
 const { mode } = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const configStore = useConfigStore()
 const filterConditions = ref({
   swapType: ['buy', 'sell'],

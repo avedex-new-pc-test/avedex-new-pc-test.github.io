@@ -574,5 +574,17 @@
   "limitOrderAutoCancel": "Limit order automatically canceled, reason: {f}",
   "limitOrderSuccess": "limit order has been successfully {t} {a} {s}, average price is {p}",
   "averagePositionPrice": "Average Price",
-  "pending": "Pending"
+  "pending": "Pending",
+  "holdersDetail": "Holders Detail",
+  "excludeNullAndPoll": "excluding null addresses and pool addresses",
+  "topN": "Top {n}",
+  "mainChip": "Main Chip",
+  "position": "Position",
+  "Change3D": "Change. 3D",
+  "profit1": "PnL",
+  "openedTip": "Liquidity has moved to new pair",
+  "disclaimers": "Disclaimers",
+  "privacyPolicy": "Privacy Policy",
+  "partners": "Partners",
+  "ecosystem": "Ecosystem"
 }

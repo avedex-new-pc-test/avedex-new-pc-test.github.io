@@ -186,5 +186,16 @@
   "lastPrice1": "Último preço",
   "notice": "Notar ",
   "mCap": "MCap",
-  "averagePositionPrice": "Preço Médio"
+  "averagePositionPrice": "Preço Médio",
+  "holdersDetail": "Detalhe dos Detentores",
+  "excludeNullAndPoll": "excluindo endereços nulos e endereços de pool",
+  "topN": "Top {n}",
+  "mainChip": "Chip Principal",
+  "position": "Posição",
+  "Change3D": "Mudança. 3D",
+  "profit1": "PnL",
+  "openedTip": "A liquidez foi movida para um novo par",
+  "disclaimers": "Isenções ",
+  "privacyPolicy": "Política de privacidade ",
+  "partners": "Parceiros"
 }

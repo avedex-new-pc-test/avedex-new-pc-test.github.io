@@ -5,7 +5,7 @@ export interface GetTotalHoldersResponse {
   pt: string
   tw: string
   type: string
-  total_address: number
+  total_address?: number
 }
 
 export function getTotalHolders(token_id: string): Promise<Array<GetTotalHoldersResponse>> {

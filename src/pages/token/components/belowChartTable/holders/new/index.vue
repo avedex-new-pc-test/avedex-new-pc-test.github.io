@@ -111,6 +111,7 @@
 import { filterLanguage } from '~/pages/token/components/kLine/utils'
 import BigNumber from 'bignumber.js'
 import {
+  _getTop100range,
   _getHoldersList,
   type AggregateStats,
   type HolderStat,

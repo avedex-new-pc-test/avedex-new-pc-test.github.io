@@ -566,6 +566,10 @@
   "limitOrder": "限價單",
   "T_Trading": "做T",
   "mCap": "市值",
+  "disclaimers": "免責聲明",
+  "privacyPolicy": "隱私條款",
+  "partners": "合作夥伴",
+  "ecosystem": "生態夥伴計劃",
   "autoCancel": "自動取消",
   "failReason": "失敗原因",
   "limitOrderFail": "限價單交易失敗，委託金額",
@@ -573,5 +577,13 @@
   "limitOrderAutoCancel": "限價單自動取消，原因: {f}",
   "limitOrderSuccess": "限價單已成功買進 {a} {s}，平均單價為 ${p}",
   "averagePositionPrice": "持倉均價",
-  "pending": "交易中"
+  "pending": "交易中",
+  "holdersDetail": "持幣明細",
+  "excludeNullAndPoll": "不包含黑洞地址和池子地址",
+  "topN": "前{n}",
+  "mainChip": "主力籌碼",
+  "position": "倉位",
+  "Change3D": "3日波動",
+  "profit1": "預計盈虧",
+  "openedTip": "外盤已開盤"
 }

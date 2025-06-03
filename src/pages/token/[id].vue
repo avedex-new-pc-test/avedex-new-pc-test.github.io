@@ -46,7 +46,6 @@ const wsStore = useWSStore()
 
 const documentVisible = shallowRef(true)
 provide('documentVisible', documentVisible)
-const botSwapStore = useBotSwapStore()
 
 watch(() => addresses.value, () => {
   if (addresses.value?.length) {
@@ -95,7 +94,6 @@ function init() {
   _getTokenInfoExtra()
   // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
-  botSwapStore.sendNativePriceWs()
 }
 
 watch(() => route.params.id, () => {

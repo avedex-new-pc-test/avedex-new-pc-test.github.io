@@ -17,7 +17,7 @@ export const downColor = ['#F6465D']
 // WebSocket 事件类型常量
 export const WSEventType = {
   KLINE: 'kline',
-  SWITCH_MAIN_PAIR: 'switch_main_pair',
+  SWITCH_MAIN_PAIR_V2: 'switch_main_pair_v2',
   TX: 'tx',
   LIQ: 'liq',
   PRICE: 'price',

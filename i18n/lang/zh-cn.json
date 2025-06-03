@@ -569,6 +569,10 @@
   "limitOrder": "限价单",
   "T_Trading": "做T",
   "mCap": "市值",
+  "disclaimers": "免责声明",
+  "privacyPolicy": "隐私条款",
+  "partners": "合作伙伴",
+  "ecosystem": "生态伙伴计划",
   "autoCancel": "自动取消",
   "failReason": "失败原因",
   "limitOrderFail": "限价单交易失败，委托金额",
@@ -576,5 +580,13 @@
   "limitOrderAutoCancel": "限价单自动取消，原因: {f}",
   "limitOrderSuccess": "限价单已成功{t} {a} {s}，平均单价为 ${p}",
   "averagePositionPrice": "持仓均价",
-  "pending": "交易中"
+  "pending": "交易中",
+  "holdersDetail": "持币明细",
+  "excludeNullAndPoll": "不包含黑洞地址和池子地址",
+  "topN": "前{n}",
+  "mainChip": "主力筹码",
+  "position": "仓位",
+  "Change3D": "3日波动",
+  "profit1": "预计盈亏",
+  "openedTip": "外盘已开盘"
 }
