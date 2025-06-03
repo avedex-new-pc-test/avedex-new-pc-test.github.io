@@ -367,5 +367,6 @@
   "disclaimers": "Отказ от ответств.",
   "privacyPolicy": "Конфиденциальность",
   "partners": "Партнеры",
-  "filterCancel": "Отменить фильтрацию"
+  "filterCancel": "Отменить фильтрацию",
+  "returnToLogin": "Вернуться к входу"
 }

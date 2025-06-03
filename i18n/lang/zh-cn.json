@@ -589,5 +589,6 @@
   "position": "仓位",
   "Change3D": "3日波动",
   "profit1": "预计盈亏",
-  "openedTip": "外盘已开盘"
+  "openedTip": "外盘已开盘",
+  "returnToLogin": "返回登录"
 }

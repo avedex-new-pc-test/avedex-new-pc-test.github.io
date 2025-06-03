@@ -179,13 +179,13 @@ function submitForm() {
                 step.value = 3
               })
               .catch((err) => {
-                ElMessage.error(err)
+                ElMessage.error(String(err))
                 loading.value = false
               })
           })
           .catch((err) => {
             loading.value = false
-            ElMessage.error(err)
+            ElMessage.error(String(err))
           })
       } else {
         emit('update:c-type', 'login')
@@ -210,7 +210,7 @@ function startCountdown() {
     })
     .catch((err) => {
       console.log('验证码已发送到',err)
-      ElMessage.error(err)
+      ElMessage.error(String(err))
       if (!timer.value) disabledCountdownBtn.value = false
       loading2.value = false
     })
@@ -230,7 +230,7 @@ function startCountdown() {
   //         console.log(`验证码已发送到 ${form.email}`)
   //       })
   //       .catch((err) => {
-  //         ElMessage.error(err)
+  //         ElMessage.error(String(err))
   //         if (!timer.value) disabledCountdownBtn.value = false
   //         loading2.value = false
   //       })

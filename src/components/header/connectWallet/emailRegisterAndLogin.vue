@@ -359,7 +359,7 @@ function startCountdown() {
           loading2.value = false
         })
         .catch((err) => {
-          ElMessage.error(err)
+          ElMessage.error(String(err))
           loading2.value = false
         })
     } else {
@@ -419,7 +419,7 @@ function login() {
         })
         .catch((err) => {
           // store.commit('showMessage', { type: 'error', text: err });
-          ElMessage.error(err)
+          ElMessage.error(String(err))
         })
         .finally(() => {
           loading.value = false
@@ -456,7 +456,7 @@ function register() {
           }, 1500)
         })
         .catch((err) => {
-          ElMessage.error(err)
+          ElMessage.error(String(err))
           // store.commit('showMessage', { type: 'error', text: err })
         })
         .finally(() => {
@@ -496,7 +496,7 @@ function handleCredentialResponse(response: any) {
       botStore.changeConnectVisible(false)
     })
     .catch((err) => {
-      ElMessage.error(err)
+      ElMessage.error(String(err))
     })
     .finally(() => {
       loading3.value = false

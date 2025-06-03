@@ -587,5 +587,6 @@
   "privacyPolicy": "Privacy Policy",
   "partners": "Partners",
   "ecosystem": "Ecosystem",
-  "filterCancel": "cancel filtering"
+  "filterCancel": "cancel filtering",
+  "returnToLogin": "Return to login"
 }
