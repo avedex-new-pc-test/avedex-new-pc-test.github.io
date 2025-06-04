@@ -596,7 +596,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
           newBar.low = new BigNumber(newBar.low || 0).times(tokenStore?.circulation || 0).toNumber()
           newBar.close = new BigNumber(newBar.close || 0).times(tokenStore?.circulation || 0).toNumber()
         }
-        if (newBar) {
+        if (newBar && newBar?.time) {
           onTick(newBar)
         }
       }

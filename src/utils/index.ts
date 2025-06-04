@@ -600,7 +600,10 @@ export function getRpcProvider(chain: string) {
   if (!chainInfo || chainInfo?.vm_type !== 'evm') {
     return null
   }
-  const rpcUrl = chainInfo?.rpc_url || ''
+  const RPC: Record<string, string> = {
+    base: 'https://1rpc.io/base'
+  }
+  const rpcUrl = RPC?.[chain] || chainInfo?.rpc_url || ''
   return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
 }
 
