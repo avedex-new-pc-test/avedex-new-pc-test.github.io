@@ -5,13 +5,12 @@
   </template>
 
   <script setup lang="ts">
-import { formatNumber } from '@/utils/formatNumber'
-import { getAddressAndChainFromId } from '@/utils/index'
+  import { formatNumber } from '@/utils/formatNumber'
+  import { getAddressAndChainFromId } from '@/utils/index'
   import * as echarts from 'echarts'
-//   import { v4 as uuidv4 } from 'uuid'
-import { onMounted, ref, watch, computed, nextTick } from 'vue'
+  //   import { v4 as uuidv4 } from 'uuid'
   import { filterChartColor } from '@/utils/holders'
-import { filterLanguage } from '~/pages/token/components/kLine/utils'
+  import { filterLanguage } from '~/pages/token/components/kLine/utils'
   interface DataItem {
     date: string
     total_amount?: number
@@ -35,14 +34,14 @@ import { filterLanguage } from '~/pages/token/components/kLine/utils'
     chartHeight?: string
   }>()
 
-  const chartId = 'chart'
-  const myChart = ref<echarts.ECharts | null>(null)
+  const chartId = 'chart_holder'
+  let myChart: echarts.ECharts | null = null
 
-const route = useRoute()
-const { t } = useI18n()
-const { token } = storeToRefs(useTokenStore())
-const { globalConfig } = storeToRefs(useConfigStore())
-const { mode } = storeToRefs(useGlobalStore())
+  const route = useRoute()
+  const { t } = useI18n()
+  const { token } = storeToRefs(useTokenStore())
+  const { globalConfig } = storeToRefs(useConfigStore())
+  const { mode } = storeToRefs(useGlobalStore())
   // 获取语言、工具函数
   const language = computed(() => useLocaleStore().locale)
 
@@ -86,7 +85,7 @@ const { mode } = storeToRefs(useGlobalStore())
   const dataX = computed(() => props.dataList.map(i => i.date))
 
   const series = computed(() =>
-    option.value.map((opt, k) => ({
+    (option.value.map((opt, k) => ({
       name: opt.label,
       type: 'line',
       z: 10 - k,
@@ -108,20 +107,20 @@ const { mode } = storeToRefs(useGlobalStore())
           return j.total_amount ? j[opt.value] * 100 / j.total_amount : 0
         }
       })
-    }))
+    })))
   )
 
   function initChart() {
     const dom = document.getElementById(chartId)
     if (!dom) return
 
-    if (!myChart.value) {
-      myChart.value = echarts.init(dom)
+    if (!myChart) {
+      myChart = echarts.init(dom)
     }
 
     const isLight = mode.value === 'light'
 
-    myChart.value?.setOption({
+    myChart?.setOption({
       legend: { show: false },
       tooltip: {
         trigger: 'axis',
@@ -169,15 +168,15 @@ const { mode } = storeToRefs(useGlobalStore())
     })
 
     if (props.dataList.length > 0) {
-      myChart.value?.hideLoading()
+      myChart?.hideLoading()
     }
   }
 
   function updateLegendSelection(val: boolean, index: number) {
     const label = option.value[index]?.label
-    if (!myChart.value || !label) return
+    if (!myChart || !label) return
 
-    myChart.value.dispatchAction({
+    myChart.dispatchAction({
       type: val ? 'legendSelect' : 'legendUnSelect',
       name: label
     })
@@ -192,11 +191,11 @@ const { mode } = storeToRefs(useGlobalStore())
   // Watchers
   watch(() => props.dataList, () => initChart())
   watch(() => props.loading, (val) => {
-    if (!myChart.value) return
+    if (!myChart) return
     if (val) {
-      myChart.value.showLoading({ maskColor: 'rgba(255,255,255,0)', text: '' })
+      myChart.showLoading({ maskColor: 'rgba(255,255,255,0)', text: '' })
     } else {
-      myChart.value.hideLoading()
+      myChart.hideLoading()
     }
   })
   props.showSeries.forEach((val, idx) => {
