@@ -1,6 +1,6 @@
 // import { getGlobalT } from '@/utils/i18nBridge'
 import type { Mark, ChartingLibraryWidgetConstructor, IChartingLibraryWidget, EntityId } from '~/types/tradingview/charting_library'
-import { formatNumber } from '@/utils/formatNumber'
+import { formatNumber, formatDec } from '@/utils/formatNumber'
 import type { WSTx, KLineBar  } from './types'
 import { useDocumentVisibility, useEventBus } from '@vueuse/core'
 import BigNumber from 'bignumber.js'
@@ -278,6 +278,7 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
     const _widget = getWidget()
     const chart = _widget?.activeChart?.()
     if (!_widget || !chart) return
+
     if (showMarket.value) {
       price = new BigNumber(price).times(useTokenStore().circulation || '0')?.toNumber()
     }
@@ -299,8 +300,8 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
       { price: price, time: 0 }, // 水平线的起始位置
       {
         shape: 'horizontal_line',
-        lock: true,
-        disableSelection: true, // 允许选中
+        lock: false,
+        disableSelection: false, // 允许选中
         disableSave: true,
         disableUndo: true,
         text: t('limitPrice'),
@@ -312,7 +313,9 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
       }
     )
     isCreating = false
-    chart?.getShapeById?.(priceLimitLineId)?.setProperties?.({
+    const line = chart?.getShapeById?.(priceLimitLineId)
+    if (!line) return
+    line?.setProperties?.({
       textcolor: '#FFBE3C',
       showLabel: true,
       horzLabelsAlign: 'right',
@@ -321,14 +324,13 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
       fontSize: 12,
       // italic: true,
     })
+    line?.setSelectionEnabled?.(false)
   }
 
-
-  const botSwapStore = useBotSwapStore()
-  const stop = watch(() => botSwapStore.priceLimit, (val) => {
+  const stop = useEventBus<number>('priceLimit').on((price) => {
     const isReady = getIsReady()
     if (isReady) {
-      createLimitPriceLine(val)
+      createLimitPriceLine(price)
     }
   })
 
@@ -341,7 +343,11 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
           nextTick(() => {
             const line = chart?.getShapeById?.(id)
             if (!line) return
-            console.log(id, type, line.getPoints?.())
+            const points = line.getPoints?.()
+            if (!points?.length) return
+            const price = points?.[0]?.price || 0
+            if (!price) return
+            useEventBus<string>('priceLimit_move').emit(formatDec(Number(price), 4))
           })
         }
       })

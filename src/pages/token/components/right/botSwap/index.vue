@@ -89,7 +89,7 @@ const walletAddress = computed(() => {
   return botStore.userInfo?.addresses?.find?.(i => i?.chain === chain)?.address
 })
 
-watch(walletAddress, (val) => {
+watch([walletAddress, () => route.params?.id], (val) => {
   if (!val) return
   getTokenBalance()
 })
