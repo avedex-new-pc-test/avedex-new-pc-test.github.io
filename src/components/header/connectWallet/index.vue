@@ -3,7 +3,7 @@
     <el-dialog
       v-model="dialogVisible" modal-class="dialog-connect-bg" width="500" height='630'
       :class='["dialog-connect", mode, emailRegisterType]' append-to-body>
-      <div class="w-logo">
+      <div v-if="emailRegisterType !== 'reset'" class="w-logo">
         <img
           v-if="mode === 'dark'" src="@/assets/images/logo1-83.29x21.97.png" alt="logo" height="21.97"
           loading="lazy">
@@ -121,11 +121,13 @@ watch(dialogVisible, (val) => {
 
 <style lang='scss'>
 .dialog-connect.el-dialog {
+  font-family: DIN Pro;
   position: relative;
   border-radius: 15px;
+  border-width: 0!important;
   min-width: 500px;
-  min-height: 630px;
-  padding: 70px 40px 40px;
+  min-height: 500px;
+  padding: 102px 40px 40px;
   box-sizing: border-box;
   position: absolute;
   top: 50%;
@@ -135,10 +137,17 @@ watch(dialogVisible, (val) => {
   border: 1px solid #27282B;
   margin: 0;
   --el-dialog-padding-primary: 0px;
-
+  &.reset{
+    padding-top: 40px;
+    min-height: auto;
+    .el-dialog__headerbtn{
+      top: 33px;
+      right: 20px;
+    }
+  }
   .el-dialog__headerbtn {
-    top: 11px;
-    right: 11px;
+    top: 27px;
+    right: 20px;
   }
 
   &.light {
@@ -162,8 +171,8 @@ watch(dialogVisible, (val) => {
   display: flex;
   align-items: center;
   flex-direction: row;
-  left: 24px;
-  top: 24px;
+  left: 40px;
+  top: 40px;
 
   >img {
     margin-right: 10.15px;
@@ -270,15 +279,14 @@ watch(dialogVisible, (val) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: PingFang SC;
     font-size: 40px;
-    font-weight: 600;
-    line-height: 48px;
+    font-weight: 700;
+    line-height: 100%;
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
     color: #F5F5F5;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 
     .el-icon {
       font-size: 16px;
@@ -303,7 +311,7 @@ watch(dialogVisible, (val) => {
 .light {
   .w-content {
     .connect-popup-title {
-      color: #222222;
+      color: #333;
     }
 
     .m-content .tabs {
