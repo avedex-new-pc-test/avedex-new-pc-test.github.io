@@ -48,7 +48,7 @@
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
+            <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -61,22 +61,26 @@
           </el-dropdown>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 1 || row.swapType === 5" class="text-13px text-center text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
+          <div v-if="row.swapType === 1 || row.swapType === 5"
+            class="text-13px text-center text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ row.swapType === 1 ? t('market') : t('limit') }}/{{ t('buy') }}
           </div>
-          <div v-if="row.swapType === 2 || row.swapType === 6" class="text-13px  text-center text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 2 || row.swapType === 6"
+            class="text-13px  text-center text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
             {{ row.swapType === 2 ? t('market') : t('limit') }}/{{ t('sell') }}
           </div>
         </template>
       </el-table-column>
       <el-table-column :label="t('price')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(calculateTokenPrice(row), 2) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ row?.swapType === 1 ? formatNumber(row?.outPrice ||
+            0) : formatNumber(row?.inPrice || 0) }}</div>
         </template>
       </el-table-column>
       <el-table-column :label="t('volume4')" align="right">
         <template #default="{ row }">
-          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(calculateTradeVolume(row), 2) }}</div>
+          <div class="text-[var(--d-999-l-959A9F)] text-right">${{ formatNumber(Number(row?.inValue) || row?.outValue ||
+            0, 2) }}</div>
         </template>
       </el-table-column>
 
@@ -90,13 +94,14 @@
         </template>
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">
-            <template v-if="!row?.isBuy">
-              {{ formatNumber(new BigNumber(row?.inAmount || 0).div(new BigNumber(10).pow(row.inTokenDecimals ||
-                0)).toFixed(), 4) }} {{ row?.inTokenSymbol }}
+            <template v-if="row.swapType === 2 || row.swapType === 6">
+              {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0), 4) }}
+              {{ row?.inTokenSymbol }}
             </template>
             <template v-else>
-              {{ formatNumber(new BigNumber(row?.outAmount || 0).div(new BigNumber(10).pow(row.outTokenDecimals ||
-                0)).toFixed(), 4) }} {{ row?.outTokenSymbol }}
+              {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0), 4)
+              }}
+              {{ row?.outTokenSymbol }}
             </template>
           </span>
         </template>
@@ -106,7 +111,7 @@
         <template #header>
           <span>{{ t('status') }}</span>
           <el-dropdown trigger="click" @command="handleStatusCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
+            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -160,8 +165,11 @@ import { formatDate, getSymbolDefaultIcon, getChainDefaultIcon, formatExplorerUr
 import { formatNumber } from '~/utils/formatNumber'
 import { bot_getUserTxHistory1 } from '@/api/token'
 import share from './share.vue'
+import { evm_utils } from '@/utils'
 
 import { ref } from 'vue'
+
+const { formatUnits } = evm_utils
 
 const props = defineProps({
   chain: {
@@ -183,7 +191,7 @@ const botStore = useBotStore()
 const route = useRoute()
 const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
-const { t } = useI18n()
+const { t } = useGlobalStore()
 const configStore = useConfigStore()
 const filterConditions = ref({
   isLimit: undefined as number | undefined,
@@ -247,34 +255,6 @@ function tableRowClick(row: any) {
     return
   }
   router.push(`/token/${token}-${row.chain}`)
-}
-
-// 计算代币单价
-function calculateTokenPrice(row: any) {
-  try {
-    // 获取代币数量和对应的美元价值来计算单价
-    let tokenAmount = 0
-    
-    if (row?.swapType === 1) {
-      tokenAmount = row?.outValue || 0// 花费的美元
-    } else {
-      tokenAmount = row?.inValue || 0
-    }
-    return tokenAmount
-  } catch (error) {
-    console.error('Error calculating token price:', error)
-    return 0
-  }
-}
-
-// 计算交易额（总价值）
-function calculateTradeVolume(row: any) {
-  try {
-    return (Number(row?.inValue) || row?.outValue || 0) * calculateTokenPrice(row)
-  } catch (error) {
-    console.error('Error calculating trade volume:', error)
-    return 0
-  }
 }
 
 const getTxHistory = async () => {

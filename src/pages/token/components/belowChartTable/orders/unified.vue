@@ -37,7 +37,7 @@
             </div>
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
               row.outTokenSymbol
-            }}</span>
+              }}</span>
           </div>
         </template>
       </el-table-column>
@@ -46,7 +46,7 @@
         <template #header>
           <span>{{ t('type') }}</span>
           <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
+            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
@@ -95,14 +95,14 @@
               {{ !!Number(row?.inAmount) ? formatNumber(new BigNumber(row?.inAmount || 0).div(new
                 BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) : '--' }}
               <span v-if="isUnit" class="color-[--d-999-l-666]">
-                &nbsp;{{ getChainInfo(row.chain)?.main_name }}
+                &nbsp;{{ !!Number(row?.inAmount) ? row?.inTokenSymbol : '' }}
               </span>
             </template>
             <template v-else>
               {{ !!Number(row?.outputAmount) ? formatNumber(new BigNumber(row?.outputAmount || 0).div(new
                 BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) : '--' }}
               <span v-if="isUnit" class="color-[--d-999-l-666]">
-                &nbsp;{{ getChainInfo(row.chain)?.main_name }}
+                &nbsp;{{ !!Number(row?.outputAmount) ? row?.outTokenSymbol : '' }}
               </span>
             </template>
           </span>

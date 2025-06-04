@@ -65,7 +65,7 @@ const unrealizedProfitPercentage = computed(() => {
 })
 
 const buyTokenAmount = computed(() => {
-  return walletTxData.value && walletTxData.value.total_purchase > 0 ? formatNumber(walletTxData.value.total_purchase, 4) : '0'
+  return walletTxData.value && walletTxData.value.total_purchase > 0 ? formatNumber(walletTxData.value.bought, 4) : '0'
 })
 
 const buyUsdAmount = computed(() => {
@@ -145,6 +145,10 @@ watch([() => tokenStore.placeOrderSuccess], () => {
   }
 })
 
+watch([() => route.params.id], () => {
+  getWalletTxData()
+})
+
 onMounted(() => {
   const chain = String(route.params.id).split('-')[1]
   if (tabs.value.find(i => i?.chain === chain)) {
@@ -158,8 +162,7 @@ onMounted(() => {
   <div>
     <div class="px-12px mb-10px flex justify-between">
       <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
-        <a
-          v-for="(item) in tabs" :key="item.chain" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+        <a v-for="(item) in tabs" :key="item.chain" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
           ${activeTab === item.chain ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
           @click="setActiveTab(item.chain)">
           {{ getChainInfo(item.chain).name }}
@@ -196,26 +199,32 @@ onMounted(() => {
       </div>
       <div class="stat-item">
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('realizedProfit') }}</div>
-        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(realizedProfit, 2) }}</div>
-        <div class="stat-change text-[var(--d-999-l-959A9F)]" :style="{ color: realizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(realizedProfit, 2) }}
+        </div>
+        <div class="stat-change text-[var(--d-999-l-959A9F)]"
+          :style="{ color: realizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ realizedProfitPercentage >= 0 ? '+' : '' }}{{ formatNumber(realizedProfitPercentage, 2) }}%
         </div>
       </div>
       <div class="stat-item">
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('unrealizedProfit') }}</div>
-        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(unrealizedProfit, 2) }}</div>
-        <div class="stat-change text-[var(--d-999-l-959A9F)]" :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(unrealizedProfit, 2) }}
+        </div>
+        <div class="stat-change text-[var(--d-999-l-959A9F)]"
+          :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ unrealizedProfitPercentage >= 0 ? '+' : '' }}{{ formatNumber(unrealizedProfitPercentage, 2) }}%
         </div>
       </div>
       <div class="stat-item">
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('buyPriceWithSlash') }}</div>
-        <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ buyTokenAmount }} {{ tokenSymbol }}</div>
+        <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ buyTokenAmount }} {{
+          tokenSymbol }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ buyUsdAmount }}</div>
       </div>
       <div class="stat-item">
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('sellPriceWithSlash') }}</div>
-        <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ sellTokenAmount }} {{ tokenSymbol }}</div>
+        <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ sellTokenAmount }} {{
+          tokenSymbol }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ sellUsdAmount }}</div>
       </div>
     </div>
