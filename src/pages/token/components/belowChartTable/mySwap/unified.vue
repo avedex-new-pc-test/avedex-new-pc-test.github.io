@@ -191,7 +191,7 @@ const botStore = useBotStore()
 const route = useRoute()
 const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const configStore = useConfigStore()
 const filterConditions = ref({
   isLimit: undefined as number | undefined,
