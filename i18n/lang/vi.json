@@ -367,5 +367,21 @@
   "position": "Vị thế",
   "Change3D": "Thay đổi 3 ngày",
   "profit1": "Lãi/Lỗ",
-  "openedTip": "Thanh khoản đã chuyển"
+  "openedTip": "Thanh khoản đã chuyển",
+  "insidersBalance": "Số tiền",
+  "insidersPosition": "Số dư/Vị thế lớn nhất",
+  "insidersBuyOrSell": "Mua/Bán",
+  "snipersAddress": "Chưa thanh lý/Tất cả",
+  "insidersProfit": "Tổng lợi nhuận",
+  "insidersHoldings": "Nắm giữ",
+  "insidersActivity": "Hoạt động",
+  "cleared": "Đã thanh lý",
+  "insidersOwned": "Tỷ lệ sở hữu",
+  "clearance": "Thanh lý",
+  "insidersBalance1": "Số dư",
+  "addPool": "Thêm",
+  "removePool": "Xóa",
+  "transferIn1": "Chuyển vào",
+  "transferOut1": "Chuyển ra",
+  "value": "Giá trị"
 }
