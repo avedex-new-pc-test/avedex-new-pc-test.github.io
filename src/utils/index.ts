@@ -663,7 +663,7 @@ export function addSign(val: number) {
 export function getTextWidth(text: string, min = 0) {
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')!
-  context.font = '12px DINPro-Medium'
+  context.font = '12px DINPro-regular'
   const metrics = context.measureText(text)
   return Math.max(metrics.width, min)
 }

@@ -49,14 +49,14 @@
 
 
 @font-face {
-  font-family: 'DINPro-Medium';
-  src: url('/fonts/DINPro-Medium.woff2') format('woff2');
+  font-family: 'DINPro-regular';
+  src: url('/fonts/DINPro-regular.otf');
   font-weight: normal;
   font-style: normal;
 }
 
 html, body {
-  font-family: 'DINPro-Medium', 'Microsoft Yahei', sans-serif;
+  font-family: 'DINPro-regular', sans-serif;
 }
 .text-hF57_4zZ{
   white-space: pre-line;
