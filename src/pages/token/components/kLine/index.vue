@@ -422,7 +422,7 @@ async function initChart() {
             pair_id: pair.value + '-' + chain.value,
             token_id: route.params.id as string,
             from,
-            to: Math.max(to, firstBarTime || 0)
+            to: firstDataRequest ? 0 : Math.max(to, firstBarTime || 0)
           }
           getKlineHistoryData(params).then(res => {
             const bars1 = res?.kline_data || []
