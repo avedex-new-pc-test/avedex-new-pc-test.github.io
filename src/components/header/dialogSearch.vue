@@ -61,20 +61,20 @@
     </div>
     <div class="search-content">
       <template v-if="query === ''">
-        <searchTable
+        <SearchTable
           v-if="tabActive === 'token'"
           :tokens="hotStore.hotList?.slice?.(0, 200) || []"
           :loading="loading"
           @close="visible = false"
         />
-        <walletTable v-else :tokens="smartTop10List || []" :loading="loading" />
+        <WalletTable v-else :tokens="smartTop10List || []" :loading="loading" />
       </template>
-      <walletTable
+      <WalletTable
         v-else-if="tabActive === 'wallet'"
         :tokens="searchResult?.wallet_list || []"
         :loading="loading"
       />
-      <searchTable
+      <SearchTable
         v-else
         :tokens="searchResult?.token_list?.slice?.(0, 200) || []"
         :loading="loading"

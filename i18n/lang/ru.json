@@ -382,5 +382,6 @@
   "removePool": "Удалить",
   "transferIn1": "Входящий",
   "transferOut1": "Исходящий",
-  "value": "Стоимость"
+  "value": "Стоимость",
+  "filterCancel": "Отменить фильтрацию"
 }

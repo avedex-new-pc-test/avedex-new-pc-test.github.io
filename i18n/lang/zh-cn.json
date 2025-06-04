@@ -581,6 +581,7 @@
   "limitOrderSuccess": "限价单已成功{t} {a} {s}，平均单价为 ${p}",
   "averagePositionPrice": "持仓均价",
   "pending": "交易中",
+  "filterCancel": "取消筛选",
   "holdersDetail": "持币明细",
   "excludeNullAndPoll": "不包含黑洞地址和池子地址",
   "topN": "前{n}",

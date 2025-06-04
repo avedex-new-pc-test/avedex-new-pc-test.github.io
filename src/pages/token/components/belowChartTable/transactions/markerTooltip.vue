@@ -100,11 +100,13 @@ function getColorClass(val: string) {
             icon-size="20px"
           />
           <UserRemark
+            :canEdit="false"
             :remark="currentRow.remark"
             :address="currentRow.wallet_address"
             :chain="currentRow.chain"
             :wallet_logo="currentRow.wallet_logo"
             class="color-[--d-999-l-666]"
+            :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
           />
           <slot/>
         </div>

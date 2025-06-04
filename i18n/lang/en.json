@@ -602,5 +602,6 @@
   "removePool": "REMOVE",
   "transferIn1": "TRANSFER_IN",
   "transferOut1": "TRANSFER_OUT",
-  "value": "Value"
+  "value": "Value",
+  "filterCancel": "cancel filtering"
 }

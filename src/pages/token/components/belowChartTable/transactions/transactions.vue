@@ -4,9 +4,9 @@ import VolFilter from './volFilter.vue'
 import MakersFilter from './makersFilter.vue'
 import MarkerTooltip from './markerTooltip.vue'
 import UserTxsFilterHead from './userTxsFilterHead.vue'
-import type {RowEventHandlerParams} from 'element-plus'
+import type { RowEventHandlerParams } from 'element-plus'
 
-import {filterLanguage} from '~/pages/token/components/kLine/utils'
+import { filterLanguage, supportSecChains } from '~/pages/token/components/kLine/utils'
 import {
   getPairLiq,
   type GetPairLiqResponse,
@@ -14,15 +14,15 @@ import {
   getTokenTxs,
   type Profile
 } from '~/api/token'
-import {formatDate, getAddressAndChainFromId, getChainInfo} from '~/utils'
+import { formatDate, getAddressAndChainFromId, getChainInfo } from '~/utils'
 import dayjs from 'dayjs'
-import {useThrottleFn} from '@vueuse/core'
+import { useThrottleFn } from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
-const {t} = useI18n()
-const {totalHolders, pairAddress, token, pair} = storeToRefs(useTokenStore())
+const { t } = useI18n()
+const { totalHolders, pairAddress, token, pair } = storeToRefs(useTokenStore())
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
@@ -33,7 +33,7 @@ const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
     totalHolders.value.forEach(i => {
-      const num = i.total_address
+      const num = i.total_address!
       if (num > 0) {
         arr.push({
           ...i,
@@ -47,22 +47,22 @@ const tabs = computed(() => {
     label: t('all'),
     value: 'all'
   },
-    {
-      label: t('buy3'),
-      value: 'buy'
-    },
-    {
-      label: t('sell3'),
-      value: 'sell'
-    },
-    // {
-    //   label: t('followed'),
-    //   value: '-100'
-    // },
-    {
-      label: t('liquidity2'),
-      value: 'liquidity'
-    }, ...arr]
+  {
+    label: t('buy3'),
+    value: 'buy'
+  },
+  {
+    label: t('sell3'),
+    value: 'sell'
+  },
+  // {
+  //   label: t('followed'),
+  //   value: '-100'
+  // },
+  {
+    label: t('liquidity2'),
+    value: 'liquidity'
+  }, ...arr]
 })
 const activeTab = shallowRef('all')
 const isPausedTxs = shallowRef(false)
@@ -70,24 +70,24 @@ const isPausedTxs = shallowRef(false)
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
   const visible = token.value?.chain === 'solana' && !isLiquidity.value
-  return [{key: 'time', dataKey: 'time', title: t('time'), minWidth: 80},
-    {key: 'type', dataKey: 'type', title: t('type'), minWidth: 80},
-    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100},
-    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', minWidth: 140},
-    {
-      key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
-      minWidth: 120
-    },
-    {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 120},
-    {
-      key: 'SOLBalance',
-      dataKey: 'SOLBalance',
-      title: t('makers') + ' SOL',
-      align: 'right',
-      hidden: !visible,
-      minWidth: 86
-    },
-    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', minWidth: 70}]
+  return [{ key: 'time', dataKey: 'time', title: t('time'), minWidth: 80 },
+  { key: 'type', dataKey: 'type', title: t('type'), minWidth: 80 },
+  { key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100 },
+  { key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', minWidth: 140 },
+  {
+    key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
+    minWidth: 120
+  },
+  { key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 120 },
+  {
+    key: 'SOLBalance',
+    dataKey: 'SOLBalance',
+    title: t('makers') + ' SOL',
+    align: 'right',
+    hidden: !visible,
+    minWidth: 86
+  },
+  { key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', minWidth: 70 }]
     .filter(el => !el.hidden)
 })
 const listStatus = ref({
@@ -125,7 +125,7 @@ const filterTableList = computed(() => {
   } else {
     tableList = tokenTxs.value
   }
-  const {timestamp, amountU, markerAddress} = tableFilter.value
+  const { timestamp, amountU, markerAddress } = tableFilter.value
   const [startTime, endTime] = timestamp || []
   const [startVol, endVol] = amountU || []
   if (startTime) {
@@ -221,9 +221,9 @@ watch(() => wsStore.wsResult[WSEventType.TX], data => {
   if (!data || listStatus.value.loadingTxs) {
     return
   }
-  const {wallet_address} = data.tx
+  const { wallet_address } = data.tx
   txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
-  const {topN, wallet_tag} = getWalletTag(data.tx)
+  const { topN, wallet_tag } = getWalletTag(data.tx)
   const item = {
     ...data.tx,
     topN, wallet_tag,
@@ -239,7 +239,7 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
   if (!data || listStatus.value.loadingLiq) {
     return
   }
-  const {wallet_address} = data.liq
+  const { wallet_address } = data.liq
   // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
@@ -303,7 +303,7 @@ function confirmMakersFilter(markerAddress = '') {
 async function _getTokenTxs() {
   try {
     listStatus.value.loadingTxs = true
-    const {tag_type} = tableFilter.value
+    const { tag_type } = tableFilter.value
     const getPairTxsParams = {
       token_id: route.params.id as string,
       tag_type
@@ -312,7 +312,7 @@ async function _getTokenTxs() {
     realAddress.value = getAddressAndChainFromId(getPairTxsParams.token_id).address
     tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
-      const {wallet_tag, topN} = getWalletTag(val)
+      const { wallet_tag, topN } = getWalletTag(val)
       return {
         ...val,
         wallet_tag,
@@ -539,31 +539,41 @@ function setMakerAddress(address: string) {
   tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
 }
 
-function onRowClick({rowData}: RowEventHandlerParams) {
+function onRowClick({ rowData }: RowEventHandlerParams) {
   if (!token.value) {
     return
   }
-  const {symbol, logo_url, chain, token: _token} = token.value
-  const {target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress} = pair.value!
-  tokenDetailSStore.$patch({
-    drawerVisible: true,
-    tokenInfo: {
-      id: route.params.id! as string,
-      symbol,
-      logo_url,
-      chain,
-      address: _token,
-      remark: rowData.remark!,
-    },
-    pairInfo: {
-      target_token,
-      token0_address,
-      token0_symbol,
-      token1_symbol,
-      pairAddress
-    },
-    user_address: rowData.wallet_address
-  })
+  if (SupportFullDataChain.includes(token.value.chain)) {
+    const { symbol, logo_url, chain, token: _token } = token.value
+    const { target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress } = pair.value!
+    tokenDetailSStore.$patch({
+      drawerVisible: true,
+      tokenInfo: {
+        id: route.params.id! as string,
+        symbol,
+        logo_url,
+        chain,
+        address: _token,
+        remark: rowData.remark!,
+      },
+      pairInfo: {
+        target_token,
+        token0_address,
+        token0_symbol,
+        token1_symbol,
+        pairAddress
+      },
+      user_address: rowData.wallet_address
+    })
+  } else {
+    window.open(formatExplorerUrl(token.value.chain, rowData.transaction, 'tx'))
+  }
+
+}
+
+function resetMakerAddress() {
+  tableFilter.value.markerAddress = ''
+  _getTokenTxs()
 }
 </script>
 
@@ -571,94 +581,65 @@ function onRowClick({rowData}: RowEventHandlerParams) {
   <div class="transactions">
     <div class="px-12px mb-10px flex justify-between">
       <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
-        <a
-          v-for="(item) in tabs"
-          :key="item.value" href="javascript:;"
-          :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
-         ${activeTab===item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]':''}`"
-          @click="setActiveTab(item.value)"
-        >
+        <a v-for="(item) in tabs" :key="item.value" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+         ${activeTab === item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
+          @click="setActiveTab(item.value)">
           {{ item.label }}
         </a>
       </div>
       <div v-show="isPausedTxs" class="flex items-center color-#FFA622 text-12px">
-        <Icon name="custom:stop"/>
+        <Icon name="custom:stop" />
         <span class="ml-3px">{{ $t('paused') }}</span>
       </div>
     </div>
-    <template
-      v-if="tableFilter.markerAddress"
-    >
-      <div
-          v-if="listStatus.loadingTxs || listStatus.loadingLiq"
-          class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
-        >
-          {{ $t('loading') }}
+    <template v-if="tableFilter.markerAddress">
+      <div v-if="listStatus.loadingTxs || listStatus.loadingLiq"
+        class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px">
+        {{ $t('loading') }}
       </div>
       <template v-else>
-        <div
-          class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
-          v-html="$t('filterTip',{
-          address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
-          count:`<span>&nbsp;${filterTableList[0]?.count||0}&nbsp;</span>`
-         })"
-        />
-        <UserTxsFilterHead
-          :makerAddress="tableFilter.markerAddress"
-          :isLiquidity="isLiquidity"
-          :pairLiq="pairLiq"
-          :isBuy="isBuy"
-          :getAmount="getAmount"
-          :getPrice="getPrice"
-          :chain="addressAndChain.chain"
-          :tagType="tableFilter.tag_type"
-        />
+        <div class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px flex justify-center">
+          <div v-html="$t('filterTip', {
+            address: `<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0, 4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
+            count: `<span>&nbsp;${filterTableList[0]?.count || 0}&nbsp;</span>`
+          })" />
+          <span class='color-#3F80F7 decoration-underline cursor-pointer ml-2px' @click.stop="resetMakerAddress">
+            {{ $t('filterCancel') }}
+          </span>
+        </div>
+        <UserTxsFilterHead :makerAddress="tableFilter.markerAddress" :isLiquidity="isLiquidity" :pairLiq="pairLiq"
+          :isBuy="isBuy" :getAmount="getAmount" :getPrice="getPrice" :chain="addressAndChain.chain"
+          :tagType="tableFilter.tag_type" />
       </template>
     </template>
-    <div
-      v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
-      element-loading-background="transparent"
-    >
-      <AveTable
-        fixed
-        :data="filterTableList"
-        :columns="columns"
-        class="h-560px"
-        :rowEventHandlers="{
-          onMouseenter:()=>{
-            isPausedTxs = true
-          },
-          onMouseleave:()=>{
-            isPausedTxs = false
-          },
-          onClick:onRowClick
-        }"
-      >
+    <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
+      element-loading-background="transparent">
+      <AveTable fixed :data="filterTableList" :columns="columns" class="h-560px" 
+      row-class='cursor-pointer'
+      :rowEventHandlers="{
+        onMouseenter: () => {
+          isPausedTxs = true
+        },
+        onMouseleave: () => {
+          isPausedTxs = false
+        },
+        onClick: onRowClick
+      }">
         <template #header-time>
           <div class="flex items-center gap-2px">
             <span>{{ $t('time') }}</span>
-            <Icon
-              :name="`${tableView.isShowDate?'custom:calendar':'custom:countdown'}`"
-              class="color-[--d-666-l-999] cursor-pointer"
-              @click.self="tableView.isShowDate=!tableView.isShowDate"
-            />
-            <TableDateFilter
-              v-model:visible="tableFilterVisible.timestamp"
-              :modelValue="tableFilter.timestamp"
-              @confirm="onTimestampConfirm"
-            />
+            <Icon :name="`${tableView.isShowDate ? 'custom:calendar' : 'custom:countdown'}`"
+              class="color-[--d-666-l-999] cursor-pointer" @click.self="tableView.isShowDate = !tableView.isShowDate" />
+            <TableDateFilter v-model:visible="tableFilterVisible.timestamp" :modelValue="tableFilter.timestamp"
+              @confirm="onTimestampConfirm" />
           </div>
         </template>
-        <template #cell-time="{row}">
-          <TimerCount
-            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time,true)) < 60"
-            :key="row.time"
-            :timestamp="row.time"
-            :end-time="60"
-          >
-            <template #default="{seconds}">
+        <template #cell-time="{ row }">
+          <TimerCount v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60"
+            :key="row.time" :timestamp="row.time" :end-time="60">
+            <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
-                <template v-if="seconds<60">
+                <template v-if="seconds < 60">
                   {{ seconds }}{{ $t('ss') }}
                 </template>
                 <template v-else>
@@ -675,20 +656,20 @@ function onRowClick({rowData}: RowEventHandlerParams) {
             }}
           </span>
         </template>
-        <template #cell-type="{row}">
+        <template #cell-type="{ row }">
           <div :class="getRowColor(row)">
             <span v-if="row.type !== undefined">
               <template v-if="row.type == 'removeLiquidity'">
-                  {{ $t('removeLiq') }}
+                {{ $t('removeLiq') }}
               </template>
               <template v-else-if="row.type == 'addLiquidity'">
-                  {{ $t('addLiq') }}
+                {{ $t('addLiq') }}
               </template>
               <template v-else-if="row.type == 'CollectFee'">
-                  {{ $t('CollectFee') }}
+                {{ $t('CollectFee') }}
               </template>
               <template v-else>
-                  {{ row.type }}
+                {{ row.type }}
               </template>
             </span>
             <span v-else-if="isBuy(row)">{{ $t('buy') }}</span>
@@ -705,11 +686,11 @@ function onRowClick({rowData}: RowEventHandlerParams) {
             <!--/>-->
           </div>
         </template>
-        <template #cell-swapPrice="{row}">
+        <template #cell-swapPrice="{ row }">
           <template v-if="row.type !== undefined">- -</template>
           <div v-else :class="getRowColor(row)">
             <!--<template v-if="tableView.isSwapPriceUSDT">-->
-              ${{ formatNumber(getPrice(row), 4) }}
+            ${{ formatNumber(getPrice(row), 4) }}
             <!--</template>-->
             <!--<template v-else>-->
             <!--  {{ formatNumber(getPrice(row, true), 4) }}-->
@@ -717,7 +698,7 @@ function onRowClick({rowData}: RowEventHandlerParams) {
             <!--</template>-->
           </div>
         </template>
-        <template #cell-amountB="{row}">
+        <template #cell-amountB="{ row }">
           <span v-if="row.type === undefined" :class="getRowColor(row)">
             {{ formatNumber(getAmount(row), 2) }}
             <span class="color-[--d-999-l-666]">{{ token?.symbol }}</span>
@@ -740,31 +721,17 @@ function onRowClick({rowData}: RowEventHandlerParams) {
         <template #header-amountU>
           <div class="flex items-center gap-2px">
             <span>{{ $t('amountU') }}</span>
-            <Icon
-              name="custom:price"
-              :class="`${tableView.isVolUSDT ? 'color-#FFF':'color-#666'} cursor-pointer`"
-              @click.self="tableView.isVolUSDT=!tableView.isVolUSDT"
-            />
-            <VolFilter
-              v-model:visible="tableFilterVisible.amountU"
-              :modelValue="tableFilter.amountU"
-              @confirm="confirmVolFilter"
-            />
+            <Icon name="custom:price" :class="`${tableView.isVolUSDT ? 'color-#FFF' : 'color-#666'} cursor-pointer`"
+              @click.self="tableView.isVolUSDT = !tableView.isVolUSDT" />
+            <VolFilter v-model:visible="tableFilterVisible.amountU" :modelValue="tableFilter.amountU"
+              @confirm="confirmVolFilter" />
           </div>
         </template>
-        <template #cell-amountU="{row}">
-          <div
-            v-if="row.type===undefined"
-            :class="`absolute h-full ${getGradient(row)}`"
-            :style="`width:${Math.min(getAmount(row,true,true)/20,100)}%`"
-          />
-          <div
-            v-if="row.type===undefined"
-            :class="`${getRowColor(row)} w-full h-full flex items-center justify-end`"
-          >
-            <template
-              v-if="tableView.isVolUSDT"
-            >
+        <template #cell-amountU="{ row }">
+          <div v-if="row.type === undefined" :class="`absolute h-full ${getGradient(row)}`"
+            :style="`width:${Math.min(getAmount(row, true, true) / 20, 100)}%`" />
+          <div v-if="row.type === undefined" :class="`${getRowColor(row)} w-full h-full flex items-center justify-end`">
+            <template v-if="tableView.isVolUSDT">
               ${{ formatNumber(getAmount(row, true, true), 2) }}
             </template>
             <template v-else>
@@ -774,13 +741,8 @@ function onRowClick({rowData}: RowEventHandlerParams) {
               </span>
             </template>
           </div>
-          <div
-            v-else
-            :class="getRowColor(row)"
-          >
-            <template
-              v-if="tableView.isVolUSDT"
-            >
+          <div v-else :class="getRowColor(row)">
+            <template v-if="tableView.isVolUSDT">
               ${{ formatNumber(row.amount0 * row.token0_price_usd + row.amount1 * row.token1_price_usd, 2) }}
             </template>
             <template v-else>
@@ -793,121 +755,67 @@ function onRowClick({rowData}: RowEventHandlerParams) {
         </template>
         <template #header-makers>
           <span class="mr-2px">{{ $t('makers') }}</span>
-          <MakersFilter
-            v-model:visible="tableFilterVisible.markers"
-            :modelValue="tableFilter.markerAddress"
-            :chain="addressAndChain.chain"
-            @confirm="confirmMakersFilter"
-          />
+          <MakersFilter v-model:visible="tableFilterVisible.markers" :modelValue="tableFilter.markerAddress"
+            :chain="addressAndChain.chain" @confirm="confirmMakersFilter" />
         </template>
-        <template #cell-makers="{row}">
-          <template v-if="['solana','bsc'].includes(row.chain)&&row.senderProfile">
-            <Icon
-              v-if="hasNewAccount(row)"
-              v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`"
-              name="custom:new-account"
-              class="mr-3px"
-            />
-            <Icon
-              v-if="hasClearedAccount(row)"
-              v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
-              name="custom:cleared-account"
-              class="mr-3px"/>
-            <Icon
-              v-if="bigWallet(row)"
-              v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
-              name="custom:big"
-              class="mr-3px"
-            />
+        <template #cell-makers="{ row }">
+          <template v-if="['solana', 'bsc'].includes(row.chain) && row.senderProfile">
+            <Icon v-if="hasNewAccount(row)"
+              v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`" name="custom:new-account"
+              class="mr-3px" />
+            <Icon v-if="hasClearedAccount(row)" v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
+              name="custom:cleared-account" class="mr-3px" />
+            <Icon v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
+              name="custom:big" class="mr-3px" />
           </template>
-          <SignalTags
-            tagClass="mr-3px"
-            :tags="row.newTags"
-            :walletAddress="row.wallet_address"
-            :chain="row.chain"
-          />
+          <SignalTags tagClass="mr-3px" :tags="row.newTags" :walletAddress="row.wallet_address" :chain="row.chain" />
           <div :key="row.wallet_address" class="flex items-center gap-4px">
-            <UserRemark
-              v-if="MAKER_SUPPORT_CHAINS.includes(row.chain)"
-              :remark="row.remark"
-              :address="row.wallet_address"
-              :chain="row.chain"
-              :wallet_logo="row.wallet_logo"
-              class="color-[--d-999-l-666]"
-              :mouseoverAddress="e=>openMarkerTooltip(row,e)"
-              @update-remark="updateRemark"
-            >
+            <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain"
+              :wallet_logo="row.wallet_logo" class="color-[--d-999-l-666]"
+              :mouseoverAddress="e => openMarkerTooltip(row, e)"
+              :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
+              @update-remark="updateRemark">
               <div v-if="row.count && row.count > 1">
                 ({{ row.count }})
               </div>
             </UserRemark>
-            <Icon
-              name="custom:filter"
-              :class="`${tableFilter.markerAddress?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
-              @click.self.stop="setMakerAddress(row.wallet_address)"
-            />
+            <Icon name="custom:filter"
+              :class="`${tableFilter.markerAddress ? 'color-[--d-F5F5F5-l-222]' : 'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+              @click.self.stop="setMakerAddress(row.wallet_address)" />
           </div>
         </template>
-        <template #cell-SOLBalance="{row}">
+        <template #cell-SOLBalance="{ row }">
           <span v-if="row.senderProfile" class="color-[--d-999-l-666]">
             {{ formatNumber(row.senderProfile?.solTotalHolding || 0, 2) }}
           </span>
         </template>
-        <template #cell-DEX="{row}">
+        <template #cell-DEX="{ row }">
           <div class="flex justify-end gap-8px">
-            <img
-              v-if="row.amm === 'unknown'"
-              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
-              class="w-16px h-16px cursor-pointer" :src="IconUnknown"
-              alt=""
-            >
-            <img
-              v-else
-              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
-              class="w-16px h-16px cursor-pointer"
-              :src="formatIconSwap(row.amm)"
-              alt=""
-            >
-            <Icon
-              name="custom:browser"
-              class="text-16px color-[--d-999-l-666] cursor-pointer"
-              @click.self="goBrowser(row)"
-            />
+            <img v-if="row.amm === 'unknown'" v-tooltip="getSwapInfo(row.chain, row.amm)?.show_name"
+              class="w-16px h-16px cursor-pointer rounded-full" :src="IconUnknown" alt="">
+            <img v-else v-tooltip="getSwapInfo(row.chain, row.amm)?.show_name"
+              class="w-16px h-16px cursor-pointer rounded-full" :src="formatIconSwap(row.amm)" alt="">
+            <Icon name="custom:browser" class="text-16px color-[--d-999-l-666] cursor-pointer"
+              @click.self="goBrowser(row)" />
           </div>
         </template>
       </AveTable>
-      <MarkerTooltip
-        :virtual-ref="makerTooltip"
-        :currentRow="currentRow"
-        :addressAndChain="addressAndChain"
-      >
-        <template v-if="['solana','bsc'].includes(currentRow.chain)&&currentRow.senderProfile">
-          <Icon
-            v-if="hasNewAccount(currentRow)"
-            v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`"
-            name="custom:new-account"
-            class="mr-3px"
-          />
-          <Icon
-            v-if="hasClearedAccount(currentRow)"
-            v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
-            name="custom:cleared-account"
-            class="mr-3px"/>
-          <Icon
-            v-if="bigWallet(currentRow)"
-            v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
-            name="custom:big"/>
+      <MarkerTooltip :virtual-ref="makerTooltip" :currentRow="currentRow" :addressAndChain="addressAndChain">
+        <template v-if="['solana', 'bsc'].includes(currentRow.chain) && currentRow.senderProfile">
+          <Icon v-if="hasNewAccount(currentRow)"
+            v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`" name="custom:new-account"
+            class="mr-3px" />
+          <Icon v-if="hasClearedAccount(currentRow)"
+            v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`" name="custom:cleared-account"
+            class="mr-3px" />
+          <Icon v-if="bigWallet(currentRow)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
+            name="custom:big" />
         </template>
-        <SignalTags
-          tagClass="mr-3px"
-          :tags="currentRow.newTags"
-          :walletAddress="currentRow.wallet_address"
-          :chain="currentRow.chain"
-        />
+        <SignalTags tagClass="mr-3px" :tags="currentRow.newTags" :walletAddress="currentRow.wallet_address"
+          :chain="currentRow.chain" />
       </MarkerTooltip>
     </div>
   </div>
 </template>
 
-<style>
-</style>
+<style></style>

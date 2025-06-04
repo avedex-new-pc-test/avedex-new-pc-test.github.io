@@ -359,6 +359,7 @@
   "limitOrderSuccess": "Lệnh giới hạn thành công {t} {a} {s} giá trung bình {p}",
   "averagePositionPrice": "Giá trung bình",
   "pending": "Đang chờ",
+  "filterCancel": "Hủy lọc",
   "holdersDetail": "Chi tiết người nắm giữ",
   "excludeNullAndPoll": "Không bao gồm địa chỉ rỗng",
   "topN": "Top {n}",
