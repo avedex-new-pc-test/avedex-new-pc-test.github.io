@@ -45,7 +45,7 @@
           class="text-0 lh-0 h-0"
           :infinite-scroll-disabled="paginationParams.loaded || paginationParams.finished"
           :infinite-scroll-distance="0"
-          :infinite-scroll-delay="100"
+          :infinite-scroll-delay="200"
           :infinite-scroll-immediate="true"
         />
           <div v-if="paginationParams.loaded && dataSource?.length > 0"  style="text-align: center; padding:  15px 0 10px; font-size: 12px; color: #959a9f;">{{ $t('loading') }} </div>
@@ -175,6 +175,7 @@ const fetchTable = async () => {
       if(pageNO === 1) {
         dataSource.value = []
       }
+      paginationParams.value.finished = true
     }
   }).finally(() => {
    setTimeout(() => {
