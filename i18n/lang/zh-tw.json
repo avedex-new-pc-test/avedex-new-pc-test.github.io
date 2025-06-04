@@ -618,5 +618,7 @@
   "NewPairs": "新內盤",
   "FinalStretch": "即將打滿",
   "Migrated": "外盤",
-  "HotMigrated": "熱外盤"
+  "HotMigrated": "熱外盤",
+  "Expand": "展開",
+  "Collapse": "收起"
 }

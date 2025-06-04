@@ -618,8 +618,10 @@
   "tokenValue": "持仓价值",
   "sellTax1": "卖税",
   "positionCostPrice": "持仓成本价",
-  "NewPairs":"新内盘",
-  "FinalStretch":"即将打满",
-  "Migrated":"外盘",
-  "HotMigrated":"热外盘"
+  "NewPairs": "新内盘",
+  "FinalStretch": "即将打满",
+  "Migrated": "外盘",
+  "HotMigrated": "热外盘",
+  "Expand": "展开",
+  "Collapse": "收起"
 }
