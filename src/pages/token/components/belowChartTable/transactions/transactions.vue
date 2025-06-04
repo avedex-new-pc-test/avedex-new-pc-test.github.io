@@ -521,6 +521,7 @@ function goBrowser(row: IGetTokenTxsResponse) {
   )
 }
 
+const tabsContainer = ref<HTMLElement | null>(null)
 function setActiveTab(val: string,index:number) {
   activeTab.value = val
   if (val === '-100' && !botStore.evmAddress) {
@@ -533,26 +534,7 @@ function setActiveTab(val: string,index:number) {
   } else {
     _getPairLiq()
   }
-  scrollTabToCenter(index)
-}
-
-const tabsContainer = ref<HTMLElement | null>(null)
-function scrollTabToCenter(index: number) {
-  if (!tabsContainer.value) {
-    return
-  }
-  const container = tabsContainer.value
-  const tab = container.children[index] as HTMLElement
-  if (!tab) return
-  
-  const containerWidth = container.offsetWidth
-  const tabLeft = tab.offsetLeft
-  const tabWidth = tab.offsetWidth
-  
-  container.scrollTo({
-    left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
-    behavior: 'smooth'
-  })
+  scrollTabToCenter(tabsContainer,index)
 }
 
 function setMakerAddress(address: string) {
