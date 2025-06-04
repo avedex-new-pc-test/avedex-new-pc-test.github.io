@@ -39,7 +39,7 @@
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
               row?.inTokenSymbol :
               row.outTokenSymbol
-            }}</span>
+              }}</span>
           </div>
         </template>
       </el-table-column>
@@ -126,14 +126,14 @@
         <template #default="{ row }">
           <div class="text-[var(--d-999-l-959A9F)] text-right truncate">
             <span v-if="row.status === 'confirmed'">{{ t('completed')
-            }}</span>
+              }}</span>
             <span v-else-if="row.status === 'error'" style="color: var(--color-red-500);word-break: break-all;">{{
               t('failed') }}<template v-if="row?.errorLog">({{ formatBotError(row?.errorLog) }})</template></span>
             <span v-else-if="row.status === 'cancelled'">{{ t('cancelled1')
-            }}</span>
+              }}</span>
             <span v-else-if="row.status === 'auto_cancelled'">{{
               t('autoCancelled')
-            }}</span>
+              }}</span>
             <span v-else style="color: var(--custom-text-1-color);">{{ t('pending') }}</span>
           </div>
         </template>
@@ -142,17 +142,19 @@
       <el-table-column :label="t('CreateTime')" align="right">
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">{{ formatDate(row.createTime, 'YYYY/MM/DD HH:mm')
-            }}</span>
+          }}</span>
         </template>
       </el-table-column>
 
       <el-table-column :label="t('operate')" align="right">
         <template #default="{ row }">
-          <template v-if="row.status == 'confirmed' && row.swapType === 2 && row.chain === 'solana'">
-            <share :statistics="row" :address="props.userAddress" :chain="row.chain" />
-          </template>
-          <Icon name="custom:browser" class="text-16px  ml-8px clickable color-[--d-999-l-666]"
-            @click.stop.prevent="jumpExplorerUrl(row)" />
+          <div class="flex items-center flex-row-reverse">
+            <Icon name="custom:browser" class="text-16px  ml-8px clickable color-[--d-999-l-666]"
+              @click.stop.prevent="jumpExplorerUrl(row)" />
+            <template v-if="row.status == 'confirmed' && row.swapType === 2 && row.chain === 'solana'">
+              <share :statistics="row" :address="props.userAddress" :chain="row.chain" />
+            </template>
+          </div>
         </template>
       </el-table-column>
     </el-table>
