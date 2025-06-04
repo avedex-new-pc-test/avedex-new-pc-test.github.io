@@ -607,5 +607,9 @@
   "transferOut1": "转出",
   "value": "金额",
   "returnToLogin": "返回登录",
-  "startBotFooter21": "还没有钱包，"
+  "startBotFooter21": "还没有钱包，",
+  "NewPairs":"新内盘",
+  "FinalStretch":"即将打满",
+  "Migrated":"外盘",
+  "HotMigrated":"热外盘"
 }

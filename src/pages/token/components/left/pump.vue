@@ -20,19 +20,19 @@ const sort = ref({
 const isVolUSDT = ref(true)
 const tabList = computed(()=>{
   return [{
-    label: '新内盘',
+    label: t('NewPairs'),
     value: 'pump_in_new',
     progressVisible: true
   }, {
-    label: '即将打满',
+    label: t('FinalStretch'),
     value: 'pump_in_almost',
     progressVisible: true
   }, {
-    label: '外盘',
+    label: t('Migrated'),
     value: 'pump_out_new',
     progressVisible: false
   }, {
-    label: '热外盘',
+    label: t('HotMigrated'),
     value: 'pump_out_hot',
     progressVisible: false
   }]
@@ -127,7 +127,7 @@ async function _getHomePumpList() {
 <template>
   <div v-loading="listStatus.loading && query.pageNO===1&&listData.length===0">
     <div
-      class="mt-12px  px-12px mb-16px flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
+      class="mt-12px  px-12px mb-16px flex items-center gap-10px whitespace-nowrap scrollbar-hide">
         <span
           v-for="(item,index) in tabList"
           :key="index"

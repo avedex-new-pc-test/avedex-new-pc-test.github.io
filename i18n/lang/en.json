@@ -605,5 +605,9 @@
   "value": "Value",
   "filterCancel": "cancel filtering",
   "returnToLogin": "Return to login",
-  "startBotFooter21": "Don't have an account yet?"
+  "startBotFooter21": "Don't have an account yet?",
+  "NewPairs":"New Pairs",
+  "FinalStretch":"Final Stretch",
+  "Migrated":"Migrated",
+  "HotMigrated":"Hot Migrated"
 }

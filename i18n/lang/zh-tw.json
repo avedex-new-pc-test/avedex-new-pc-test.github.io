@@ -604,5 +604,9 @@
   "transferOut1": "轉出",
   "value": "金額",
   "returnToLogin": "返回登入",
-  "startBotFooter21": "還沒有錢包，"
+  "startBotFooter21": "還沒有錢包，",
+  "NewPairs": "新內盤",
+  "FinalStretch": "即將打滿", 
+  "Migrated": "外盤",
+  "HotMigrated": "熱外盤"
 }
