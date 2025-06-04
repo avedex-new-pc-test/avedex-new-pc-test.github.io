@@ -19,7 +19,7 @@ onMounted(() => {
 
 const sort = shallowRef({
   activeSort: 0,
-  sortBy: ''
+  sortBy: '' as 'current_price_usd' | 'price_change' | 'mcap' | 'symbol'
 })
 const wsStore = useWSStore()
 const priceV2Store = usePriceV2Store()
@@ -37,7 +37,7 @@ const sortedHotList = computed(() => {
     } else if (sortBy === 'mcap') {
       return (Number(getMcap(b)) - Number(getMcap(a))) * activeSort
     } else {
-      return ((b[sortBy!] || 0) - (a[sortBy!] || 0)) * activeSort
+      return (Number((b[sortBy!] || 0)) - Number((a[sortBy!] || 0))) * activeSort
     }
   })
 })

@@ -4,7 +4,7 @@ import FavoriteTable from './favoriteTable.vue'
 const {t} = useI18n()
 const props = defineProps({
   height: {
-    type: [Number, String],
+    type: Number,
     default: 370
   }
 })
@@ -54,7 +54,8 @@ const activeHeight = computed(() => {
     </KeepAlive>
     <AveEmpty
       v-else
-      :style="{height:`${activeHeight}px`}"
+      :style="{height:`${props.height-50}px`}"
+      class="overflow-hidden"
     >
       <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
       <el-button

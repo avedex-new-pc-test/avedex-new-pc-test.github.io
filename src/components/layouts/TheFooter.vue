@@ -102,7 +102,7 @@ const initPage = () => {
   })
 }
 watch(()=>globalStore.footerTokensPrice, (newVal) => {
-  console.log('globalStore.footerTokensPrice', newVal)
+  // console.log('globalStore.footerTokensPrice', newVal)
   if(data.value.length){
     for (let index = 0; index < data.value.length; index++) {
       const item = data.value[index]
