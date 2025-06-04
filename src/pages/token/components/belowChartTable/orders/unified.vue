@@ -280,7 +280,9 @@ const getUserPendingTx = async () => {
 }
 
 onMounted(() => {
-  getUserPendingTx()
+  setTimeout(() => {
+    getUserPendingTx()
+  }, 300)
 })
 defineExpose({
   txOrder,
