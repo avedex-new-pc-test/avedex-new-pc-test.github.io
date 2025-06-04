@@ -270,7 +270,7 @@ function resetListStatus() {
                 <span class="text-12px">{{ row.symbol }}</span>
                 <span
                   v-if="row.remark"
-                  class="mt-2px border-solid border-0.5px border-#286dff color-#286dff rounded-4px text-10px px-4px py-1px overflow-hidden text-ellipsis whitespace-nowrap max-w-140px"
+                  class="mt-2px border-solid border-0.5px border-#286dff color-#286dff rounded-4px text-10px px-4px py-1px overflow-hidden text-ellipsis whitespace-nowrap max-w-100px"
                 >{{ row.remark }}</span>
               </div>
             </div>
