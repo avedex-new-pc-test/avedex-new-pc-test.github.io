@@ -702,3 +702,21 @@ export function jumpX() {
   )}+${encodeURIComponent(url)}`
   window.open(share_url)
 }
+
+export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: number) {
+  if (!tabsContainer.value) {
+    return
+  }
+  const container = tabsContainer.value
+  const tab = container.children[index] as HTMLElement
+  if (!tab) return
+  
+  const containerWidth = container.offsetWidth
+  const tabLeft = tab.offsetLeft
+  const tabWidth = tab.offsetWidth
+  
+  container.scrollTo({
+    left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
+    behavior: 'smooth'
+  })
+}
