@@ -361,4 +361,43 @@ function handlerDialogProfitLoss(row: { address: string }) {
     }
   }
 }
+:deep(.el-dropdown-menu__item) {
+  font-size: 12px;
+  padding: 8px 16px;
+}
+
+:deep(.el-dropdown-menu) {
+  background-color: var(--custom-bg-1-color);
+  // border: 1px solid var(--d-33353D-l-f5f5f5);
+}
+
+:deep(.el-table) {
+  --el-table-tr-bg-color: #0A0B0D;
+  --el-table-bg-color: #0A0B0D;
+  --el-table-text-color: var(--d-222-l-F2F2F2);
+  --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
+  --el-fill-color-lighter: #0A0B0D;
+  --el-table-header-text-color: var(--d-999-l-666);
+  --el-table-border-color: var(--d-33353D-l-f5f5f5);
+  --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
+  background: #0A0B0D;
+  --el-bg-color: #0A0B0D;
+  --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
+  font-size: 13px;
+
+  th {
+    padding: 6px 0;
+    border-bottom: none !important;
+    height: 32px;
+
+    &.el-table__cell.is-leaf {
+      border-bottom: none;
+    }
+
+    .cell {
+      font-weight: 400;
+      font-size: 12px;
+    }
+  }
+}
 </style>
