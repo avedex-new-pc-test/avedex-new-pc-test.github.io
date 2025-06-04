@@ -118,6 +118,7 @@ onMounted(() => {
 })
 watch(() => botStore.evmAddress, () => {
   _getUserFavoriteGroups()
+  setActiveTab(0,0)
 })
 
 async function _getUserFavoriteGroups() {
@@ -143,10 +144,30 @@ onMounted(() => {
   loadMoreFavorites()
 })
 
-function setActiveTab(groupId: number) {
+const tabsContainer = ref<HTMLElement | null>(null)
+function setActiveTab(groupId: number,index:number) {
   activeTab.value = groupId
   resetListStatus()
   loadMoreFavorites()
+  scrollTabToCenter(index)
+}
+
+function scrollTabToCenter(index: number) {
+  if (!tabsContainer.value) {
+    return
+  }
+  const container = tabsContainer.value
+  const tab = container.children[index] as HTMLElement
+  if (!tab) return
+  
+  const containerWidth = container.offsetWidth
+  const tabLeft = tab.offsetLeft
+  const tabWidth = tab.offsetWidth
+  
+  container.scrollTo({
+    left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
+    behavior: 'smooth'
+  })
 }
 
 async function loadMoreFavorites() {
@@ -194,10 +215,11 @@ function resetListStatus() {
   <div v-loading="listStatus.pageNo===1&&listStatus.loading">
     <div class="flex items-center justify-between pr-15px pl-12px mt-10px">
       <div
+        ref="tabsContainer"
         class="flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
         <span
           :class="`text-12px cursor-pointer ${activeTab===0?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
-          @click="setActiveTab(0)"
+          @click="setActiveTab(0,0)"
         >
           {{ $t('defaultGroup') }}
         </span>
@@ -205,7 +227,7 @@ function resetListStatus() {
           v-for="(item,index) in userFavoriteGroups.slice(1)"
           :key="index"
           :class="`text-12px cursor-pointer ${activeTab===item.group_id?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
-          @click="setActiveTab(item.group_id)"
+          @click="setActiveTab(item.group_id,index+1)"
         >
         {{ item.name }}
         </span>
@@ -248,7 +270,7 @@ function resetListStatus() {
                 <span class="text-12px">{{ row.symbol }}</span>
                 <span
                   v-if="row.remark"
-                  class="mt-2px border-solid border-0.5px border-#286dff color-#286dff rounded-4px text-10px px-4px py-1px"
+                  class="mt-2px border-solid border-0.5px border-#286dff color-#286dff rounded-4px text-10px px-4px py-1px overflow-hidden text-ellipsis whitespace-nowrap max-w-140px"
                 >{{ row.remark }}</span>
               </div>
             </div>
@@ -272,6 +294,9 @@ function resetListStatus() {
               </div>
             </div>
           </NuxtLink>
+          <AveEmpty
+            v-if="sortedFavList.length===0&&!listStatus.loading"
+          />
         </div>
         <div
           v-if="listStatus.loading&&listStatus.pageNo>1"

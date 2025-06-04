@@ -101,6 +101,10 @@ async function _removeFavoriteGroup(item: GetUserFavoriteGroupsResponse) {
     await removeFavoriteGroup(item.group_id, evmAddress)
     ElMessage.success(t('success'))
     props.getData()
+    favDialogEvent.emit({
+      type: 'removeFavoriteGroup',
+      groupId:item.group_id
+    })
   } catch (e) {
     console.log('=>(dialogGroupManage.vue:92) e', e)
 
@@ -119,8 +123,12 @@ async function _confirmChangeName() {
     <el-table
       v-loading="loading"
       :data="currentList"
+      height="325px"
       class="[--el-font-size-base:12px]"
     >
+      <template #empty>
+        <AveEmpty/>
+      </template>
       <el-table-column :label="$t('groupName')" prop="name"/>
       <el-table-column :label="$t('rename')" align="center">
         <template #default="{ row }">

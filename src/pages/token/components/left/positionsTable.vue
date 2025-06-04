@@ -168,8 +168,8 @@ const sort = shallowRef({
   activeSort: 0
 })
 const map: { [key: number]: string } = {
-  '-1': 'desc',
-  1: 'asc'
+  '-1': 'asc',
+  1: 'desc'
 }
 const backendSort = computed(() => {
   const backActiveSort = map[sort.value.activeSort]
@@ -207,7 +207,8 @@ const listData = shallowRef<(GetUserBalanceResponse & { index: string })[]>([])
 onMounted(() => {
   _getUserBalance()
 })
-watch(() => [backendSort.value, tableFilter.value.hide_risk, tableFilter.value.hide_small], () => {
+watch(() => [backendSort.value, tableFilter.value.hide_risk, tableFilter.value.hide_small,botStore.evmAddress], () => {
+  resetStatus()
   _getUserBalance()
 })
 
@@ -502,6 +503,9 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
               <span v-else class="color-[var(--d-EAECEF-l-333)]">--</span>
             </div>
           </NuxtLink>
+          <AveEmpty
+            v-if="listData.length===0&&!listStatus.loading"
+          />
         </div>
         <div
           v-if="listStatus.loading&&listStatus.pageNo!==1"
