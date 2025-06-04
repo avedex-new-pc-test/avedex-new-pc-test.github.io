@@ -383,5 +383,7 @@
   "transferIn1": "Входящий",
   "transferOut1": "Исходящий",
   "value": "Стоимость",
-  "filterCancel": "Отменить фильтрацию"
+  "filterCancel": "Отменить фильтрацию",
+  "returnToLogin": "Вернуться к входу",
+  "startBotFooter21": "Уже нет аккаунта?"
 }

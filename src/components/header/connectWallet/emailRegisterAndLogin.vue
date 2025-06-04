@@ -109,7 +109,7 @@
           class="el-form-item__label icon mb-0 justify-between!"
         >
           <a
-            class="gap-8px flex items-center cursor-pointer decoration-underline"
+            class="gap-8px flex items-center cursor-pointer decoration-underline color-[--d-F5F5F5-l-333]"
             @click="loginType = loginType === 'password' ? 'email' : 'password'"
           >
             {{
@@ -122,14 +122,14 @@
             </el-icon> -->
           </a>
           <a
-            class="gap-8px flex items-center cursor-pointer decoration-underline"
+            class="gap-8px flex items-center cursor-pointer decoration-underline color-[--d-F5F5F5-l-333]"
             @click.prevent="emit('update:c-type', 'reset')"
           >
             {{ $t("startForgetPassword") }}
           </a>
         </label>
       </el-form-item>
-      <el-form-item :style="{ paddingTop: cType === 'login' ? '10px' : '0' }">
+      <el-form-item class="mb-10px!">
         <el-button
           class="btn"
           :color="'#3F80F7'"
@@ -143,7 +143,7 @@
       </el-form-item>
       <p class="botFooter">
         <span :style="lang == 'en' ? { 'margin-right': '10px' } : ''">{{
-          cType == "register" ? $t("startBotFooter11") : ""
+          cType == "register" ? $t("startBotFooter11") : $t("startBotFooter21")
         }}</span>
         <a
           v-if="cType == 'register'"
@@ -165,7 +165,7 @@
       <el-form-item
         v-if="cType == 'register'"
         size="small"
-        class="h-20px lh-20px mt-20px"
+        class="h-20px lh-20px mt-20px mb-0px!"
       >
         <el-checkbox v-model="form.agree" class="text-[#999] mx-auto! my-0">
           {{ $t("startFooter1") }}&nbsp;
@@ -195,7 +195,7 @@
     </el-divider>
     <ul v-show="cType === 'login'" class="w-loginByThird">
       <li class="relative">
-        <el-button class="w-[100%]" :color="isDark ? '#2A2A2A' : '#F2F2F2'" :loading="loading4" :disabled="disabled4">
+        <el-button class="w-[100%]" :color="isDark ? '#333' : '#F2F2F2'" :loading="loading4" :disabled="disabled4">
           <!-- <img
             v-show="loading4"
             class="googleLoading cursor-pointer border-[none]"
@@ -209,7 +209,7 @@
         </el-button>
       </li>
       <li>
-        <el-button class="inline-block w-[100%]" :color="isDark ? '#2A2A2A' : '#F2F2F2'" @click.stop="botStore.tgLogin()"
+        <el-button class="inline-block w-[100%]" :color="isDark ? '#333' : '#F2F2F2'" @click.stop="botStore.tgLogin()"
           ><img src="@/assets/images/tgIcon.svg" width="20" height="20" >
         </el-button>
       </li>
@@ -359,7 +359,7 @@ function startCountdown() {
           loading2.value = false
         })
         .catch((err) => {
-          ElMessage.error(err)
+          ElMessage.error(String(err))
           loading2.value = false
         })
     } else {
@@ -419,7 +419,7 @@ function login() {
         })
         .catch((err) => {
           // store.commit('showMessage', { type: 'error', text: err });
-          ElMessage.error(err)
+          ElMessage.error(String(err))
         })
         .finally(() => {
           loading.value = false
@@ -456,7 +456,7 @@ function register() {
           }, 1500)
         })
         .catch((err) => {
-          ElMessage.error(err)
+          ElMessage.error(String(err))
           // store.commit('showMessage', { type: 'error', text: err })
         })
         .finally(() => {
@@ -496,7 +496,7 @@ function handleCredentialResponse(response: any) {
       botStore.changeConnectVisible(false)
     })
     .catch((err) => {
-      ElMessage.error(err)
+      ElMessage.error(String(err))
     })
     .finally(() => {
       loading3.value = false
@@ -514,11 +514,12 @@ function initGoogleLogin() {
     callback: handleCredentialResponse,
   })
   google.accounts.id.renderButton(document.getElementById('g_id_onload'), {
-    type: 'icon',
-    shape: 'circle',
+    type: 'standard',
+    shape: 'rectangular',
     theme: 'outline',
     text: 'signin_with',
     size: 'large',
+    width: 205,
   })
   const iframe = document.querySelector('#g_id_onload iframe') as HTMLElement
   const button = document.querySelector(
@@ -604,9 +605,9 @@ onBeforeUnmount(() => {
 
 .w-divider {
   border-color: #333;
-  margin: 27px 0;
+  margin: 50px 0 40px 0;
   --el-bg-color: #222222;
-  --el-text-color-primary: #999999;
+  --el-text-color-primary: var(--d-666-l-CCC);
 }
 
 .w-emailRegister {
@@ -698,7 +699,7 @@ onBeforeUnmount(() => {
   ul.w-loginByThird {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 20px;
     align-items: flex-start;
     flex-wrap: nowrap;
     >li{
@@ -722,7 +723,7 @@ onBeforeUnmount(() => {
     font-size: 14px;
     height: 20px;
     margin: 0;
-    margin-top: 20px;
+    margin-bottom: 10px;
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -817,7 +818,6 @@ onBeforeUnmount(() => {
       color: #ffffff;
       border-color: #d8d8dc;
       --el-bg-color: #ffffff;
-      --el-text-color-primary: #999;
     }
 
     .botFooter {

@@ -383,5 +383,7 @@
   "removePool": "Xóa",
   "transferIn1": "Chuyển vào",
   "transferOut1": "Chuyển ra",
-  "value": "Giá trị"
+  "value": "Giá trị",
+  "returnToLogin": "Quay lại đăng nhập",
+  "startBotFooter21": "Chưa có tài khoản?"
 }

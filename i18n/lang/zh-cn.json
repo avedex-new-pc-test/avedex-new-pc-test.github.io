@@ -605,5 +605,7 @@
   "removePool": "减池子",
   "transferIn1": "转入",
   "transferOut1": "转出",
-  "value": "金额"
+  "value": "金额",
+  "returnToLogin": "返回登录",
+  "startBotFooter21": "还没有钱包，"
 }
