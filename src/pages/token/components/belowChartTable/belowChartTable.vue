@@ -46,7 +46,7 @@ watch(
 const tabsList = computed(() => {
   return tabs.value.filter(item => {
     if (item.component === 'Orders' && !botStore?.userInfo?.evmAddress) {
-      // return false
+      return false
     }
     return true
   })

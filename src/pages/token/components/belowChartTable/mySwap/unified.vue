@@ -46,19 +46,33 @@
 
       <el-table-column :label="t('type')" align="right" prop="isBuy">
         <template #header>
-          <span>{{ t('type') }}</span>
-          <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class=" color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                <el-dropdown-item command="LimitSell">{{ t('limit') }}/{{ t('sell') }}</el-dropdown-item>
-                <el-dropdown-item command="LimitBuy">{{ t('limit') }}/{{ t('buy') }}</el-dropdown-item>
-                <el-dropdown-item command="MarketSell">{{ t('market') }}/{{ t('sell') }}</el-dropdown-item>
-                <el-dropdown-item command="MarketBuy">{{ t('market') }}/{{ t('buy') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div class="flex flex-row-reverse">
+            <div class="flex items-center">
+              <div>{{ t('type') }}</div>
+              <el-dropdown trigger="click" @command="handleTypeCommand">
+                <Icon name="custom:filter"
+                  :class="[filterConditions.isBuy >= 0 && filterConditions.isLimit >= 0 && 'color-#286DFF']"
+                  class=" color-[--d-666-l-999] cursor-pointer text-10px" />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.isBuy === 0 && filterConditions.isLimit === 1 && 'active-dropdown-item']"
+                      command="LimitSell">{{ t('limit') }}/{{ t('sell') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.isBuy === 1 && filterConditions.isLimit === 1 && 'active-dropdown-item']"
+                      command="LimitBuy">{{ t('limit') }}/{{ t('buy') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.isBuy === 0 && filterConditions.isLimit === 0 && 'active-dropdown-item']"
+                      command="MarketSell">{{ t('market') }}/{{ t('sell') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.isBuy === 1 && filterConditions.isLimit === 0 && 'active-dropdown-item']"
+                      command="MarketBuy">{{ t('market') }}/{{ t('buy') }}</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
         </template>
         <template #default="{ row }">
           <div v-if="row.swapType === 1 || row.swapType === 5"
@@ -109,19 +123,29 @@
 
       <el-table-column :label="t('status')" align="right">
         <template #header>
-          <span>{{ t('status') }}</span>
-          <el-dropdown trigger="click" @command="handleStatusCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                <el-dropdown-item command="confirmed">{{ t('completed') }}</el-dropdown-item>
-                <el-dropdown-item command="cancelled">{{ t('cancelled1') }}</el-dropdown-item>
-                <el-dropdown-item command="error">{{ t('failed') }}</el-dropdown-item>
-                <el-dropdown-item command="auto_cancelled">{{ t('autoCancelled') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div class="flex flex-row-reverse">
+            <div class="flex items-center">
+              <div>{{ t('status') }}</div>
+              <el-dropdown trigger="click" @command="handleStatusCommand">
+                <Icon name="custom:filter" :class="[filterConditions.statusType && 'color-#286DFF']"
+                  class="color-[--d-666-l-999] cursor-pointer text-10px" />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                    <el-dropdown-item :class="[filterConditions.statusType === 'confirmed' && 'active-dropdown-item']"
+                      command="confirmed">{{ t('completed') }}</el-dropdown-item>
+                    <el-dropdown-item :class="[filterConditions.statusType === 'cancelled' && 'active-dropdown-item']"
+                      command="cancelled">{{ t('cancelled1') }}</el-dropdown-item>
+                    <el-dropdown-item :class="[filterConditions.statusType === 'error' && 'active-dropdown-item']"
+                      command="error">{{ t('failed') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.statusType === 'auto_cancelled' && 'active-dropdown-item']"
+                      command="auto_cancelled">{{ t('autoCancelled') }}</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
         </template>
         <template #default="{ row }">
           <div class="text-[var(--d-999-l-959A9F)] text-right truncate">
@@ -297,11 +321,21 @@ onMounted(() => {
 :deep(.el-dropdown-menu__item) {
   font-size: 12px;
   padding: 8px 16px;
+
+  &.active-dropdown-item {
+    color: #286DFF;
+    font-weight: bold;
+  }
 }
 
 :deep(.el-dropdown-menu) {
   background-color: var(--custom-bg-1-color);
   border: 1px solid var(--d-33353D-l-f5f5f5);
+}
+
+.active-dropdown-item {
+  color: #286DFF !important;
+  font-weight: bold;
 }
 
 :deep(.el-table) {

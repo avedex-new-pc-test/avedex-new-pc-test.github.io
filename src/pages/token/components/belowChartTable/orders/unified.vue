@@ -38,24 +38,33 @@
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
               row?.inTokenSymbol :
               row.outTokenSymbol
-              }}</span>
+            }}</span>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column :label="t('type')" align="right" prop="isBuy">
         <template #header>
-          <span>{{ t('type') }}</span>
-          <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-5px" />
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                <el-dropdown-item command="5">{{ t('limitBuy') }}</el-dropdown-item>
-                <el-dropdown-item command="6">{{ t('limitSell') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div class="flex flex-row-reverse">
+            <div class="flex items-center">
+              <div>{{ t('type') }}</div>
+              <el-dropdown trigger="click" @command="handleTypeCommand">
+                <Icon name="custom:filter" :class="[filterConditions.swapType?.length === 1 && 'color-#286DFF']"
+                  class="color-[--d-666-l-999] cursor-pointer text-10px" />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.swapType.length === 1 && filterConditions.swapType[0] === 'buy' && 'active-dropdown-item']"
+                      command="5">{{ t('limitBuy') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.swapType.length === 1 && filterConditions.swapType[0] === 'sell' && 'active-dropdown-item']"
+                      command="6">{{ t('limitSell') }}</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
         </template>
         <template #default="{ row }">
           <div v-if="row.swapType === 6"
@@ -294,7 +303,13 @@ defineExpose({
 :deep(.el-dropdown-menu__item) {
   font-size: 12px;
   padding: 8px 16px;
+
+  &.active-dropdown-item {
+    color: #286DFF;
+    font-weight: bold;
+  }
 }
+
 
 :deep(.el-dropdown-menu) {
   background-color: var(--custom-bg-1-color);
