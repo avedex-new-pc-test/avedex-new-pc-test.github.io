@@ -130,6 +130,11 @@
                     :chain="row.chain"
                   />
                   <span class="ml-3px"> *{{ row.address?.slice(-6) }}</span>
+                  <Icon
+                    name="custom:filter"
+                    class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
+                    @click="handlerDialogProfitLoss(row)"
+                  />
                 </div>
               </template>
             </el-table-column>
@@ -143,6 +148,7 @@
         </el-scrollbar>
       </el-col>
     </el-row>
+    <ProfitLoss ref="profitLossRef1" v-model="dialogProfitLoss"/>
   </div>
 </template>
 
@@ -153,11 +159,11 @@ import { upColor, downColor } from '@/utils/constants'
 import { filterChartColor } from '@/utils/holders'
 import LineChart from './lineChart.vue'
 import Insiders from './insiders.vue'
+import ProfitLoss from './profitLoss.vue'
 import {
   _getTop100range,
   _getTop100balance,
   _getAllTagsStats,
-  _getAllTagsHoldList,
   type Top100range,
   type Top100Balance,
   type AllTagsStats,
@@ -170,6 +176,7 @@ const checked = ref<boolean[]>([true, true, true, true, true, true, true])
 
 const { globalConfig } = storeToRefs(useConfigStore())
 const { token, totalHolders, price } = storeToRefs(useTokenStore())
+const dialogProfitLoss = shallowRef<boolean>(false)
 const top100range = ref<Top100range[]>([])
 const loadingTop100Range = shallowRef<boolean>(false)
 const tabActive = shallowRef<string>('100')
@@ -179,6 +186,7 @@ const loadingTop100Balance = shallowRef<boolean>(false)
 
 const insidersObj = ref<AllTagsStats>({})
 const loadingStats = shallowRef<boolean>(false)
+  const profitLossRef1 = ref()
 
 const supportTags = computed(() => {
   const chain = addressAndChain.value.chain
@@ -227,20 +235,30 @@ watch(
   () => id.value,
   (newId) => {
     if (newId) {
-      getTop100range()
-      getTop100balance()
+      init()
     }
-  },
-  {
-    immediate: true,
   }
 )
+onMounted(() => {
+  init()
+})
+function init() {
+  if (tabActive.value === '100') {
+    getTop100range()
+    getTop100balance()
+  } else {
+    getAllTagsStats()
+  }
+}
 function getTop100range() {
   loadingTop100Range.value = true
   _getTop100range(id.value)
     .then((res) => {
       // console.log('--------------------res-----------------------------', res)
-      top100range.value = Array.isArray(res) ? res : []
+      top100range.value = Array.isArray(res) ? res?.map(i => ({
+        ...i,
+        date: i?.date?.slice(5)
+      })) : []
     })
     .catch(() => {})
     .finally(() => {
@@ -316,6 +334,11 @@ function getAllTagsStats() {
       loadingStats.value = false
     })
 }
+function handlerDialogProfitLoss(row: { address: string }) {
+  dialogProfitLoss.value = true
+  profitLossRef1.value?.getUserTxs(row.address)
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -335,6 +358,45 @@ function getAllTagsStats() {
     }
     & ~ .tab-item {
       margin-left: 5px;
+    }
+  }
+}
+:deep(.el-dropdown-menu__item) {
+  font-size: 12px;
+  padding: 8px 16px;
+}
+
+:deep(.el-dropdown-menu) {
+  background-color: var(--custom-bg-1-color);
+  // border: 1px solid var(--d-33353D-l-f5f5f5);
+}
+
+:deep(.el-table) {
+  --el-table-tr-bg-color: #0A0B0D;
+  --el-table-bg-color: #0A0B0D;
+  --el-table-text-color: var(--d-222-l-F2F2F2);
+  --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
+  --el-fill-color-lighter: #0A0B0D;
+  --el-table-header-text-color: var(--d-999-l-666);
+  --el-table-border-color: var(--d-33353D-l-f5f5f5);
+  --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
+  background: #0A0B0D;
+  --el-bg-color: #0A0B0D;
+  --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
+  font-size: 13px;
+
+  th {
+    padding: 6px 0;
+    border-bottom: none !important;
+    height: 32px;
+
+    &.el-table__cell.is-leaf {
+      border-bottom: none;
+    }
+
+    .cell {
+      font-weight: 400;
+      font-size: 12px;
     }
   }
 }
