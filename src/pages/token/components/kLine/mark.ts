@@ -26,7 +26,7 @@ export function useKlineMarks() {
   // 创建打点数据
   const marksTabs = computed(() => {
     const arr = botStore.accessToken ? [{ id: 'trade', name: t('mine') }] : []
-    return arr.concat(tokenStore.totalHolders?.filter?.(i => i?.total_address > 0 && ['16','19','25','30','31']?.includes(i.type))?.map?.((i) => ({
+    return arr.concat(tokenStore.totalHolders?.filter?.(i => (i?.total_address || 0) > 0 && ['16','19','25','30','31']?.includes(i.type))?.map?.((i) => ({
       id: i.type,
       name: i?.[filterLanguage(localeStore.locale)] + (i.type !== '31' ? `(${i?.total_address})` : '')
     })))
