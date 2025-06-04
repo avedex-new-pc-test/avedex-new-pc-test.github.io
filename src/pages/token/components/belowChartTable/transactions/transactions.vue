@@ -658,7 +658,7 @@ function resetMakerAddress() {
           </div>
         </template>
         <template #cell-time="{ row }">
-          <TimerCount v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60"
+          <TimerCount v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60 && Number(formatTimeFromNow(row.time, true)) > 0"
             :key="row.time" :timestamp="row.time" :end-time="60">
             <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
