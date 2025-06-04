@@ -213,5 +213,15 @@
   "removePool": "ELIMINAR",
   "transferIn1": "TRANSFERENCIA_ENTRANTE",
   "transferOut1": "TRANSFERENCIA_SALIENTE",
-  "value": "Valor"
+  "value": "Valor",
+  "transactionsDetails": "Detalles de transacciones",
+  "myTxsNotice": "Los siguientes datos se remontan al momento en que la dirección se importó por primera vez a ave.ai",
+  "buyFrequency": "Frecuencia de compra",
+  "buyAmount": "Cantidad de compra",
+  "sellFrequency": "Frecuencia de venta",
+  "sellAmount": "Cantidad de venta",
+  "currentPosition": "Posición actual",
+  "tokenValue": "Valor de posición",
+  "sellTax1": "impuesto de venta",
+  "positionCostPrice": "Precio de posición"
 }

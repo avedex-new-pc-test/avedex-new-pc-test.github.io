@@ -607,5 +607,15 @@
   "transferOut1": "转出",
   "value": "金额",
   "returnToLogin": "返回登录",
-  "startBotFooter21": "还没有钱包，"
+  "startBotFooter21": "还没有钱包，",
+  "transactionsDetails": "交易明细",
+  "myTxsNotice": "以下数据，追溯至该地址首次导入 ave.ai 的时刻",
+  "buyFrequency": "买入次数",
+  "buyAmount": "买入金额",
+  "sellFrequency": "卖出次数",
+  "sellAmount": "卖出金额",
+  "currentPosition": "当前持仓",
+  "tokenValue": "持仓价值",
+  "sellTax1": "卖税",
+  "positionCostPrice": "持仓成本价"
 }

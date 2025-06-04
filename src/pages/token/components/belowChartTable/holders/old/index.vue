@@ -130,6 +130,11 @@
                     :chain="row.chain"
                   />
                   <span class="ml-3px"> *{{ row.address?.slice(-6) }}</span>
+                  <Icon
+                    name="custom:filter"
+                    class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
+                    @click="handlerDialogProfitLoss(row)"
+                  />
                 </div>
               </template>
             </el-table-column>
@@ -143,6 +148,7 @@
         </el-scrollbar>
       </el-col>
     </el-row>
+    <ProfitLoss ref="profitLossRef1" v-model="dialogProfitLoss"/>
   </div>
 </template>
 
@@ -153,11 +159,11 @@ import { upColor, downColor } from '@/utils/constants'
 import { filterChartColor } from '@/utils/holders'
 import LineChart from './lineChart.vue'
 import Insiders from './insiders.vue'
+import ProfitLoss from './profitLoss.vue'
 import {
   _getTop100range,
   _getTop100balance,
   _getAllTagsStats,
-  _getAllTagsHoldList,
   type Top100range,
   type Top100Balance,
   type AllTagsStats,
@@ -170,6 +176,7 @@ const checked = ref<boolean[]>([true, true, true, true, true, true, true])
 
 const { globalConfig } = storeToRefs(useConfigStore())
 const { token, totalHolders, price } = storeToRefs(useTokenStore())
+const dialogProfitLoss = shallowRef<boolean>(false)
 const top100range = ref<Top100range[]>([])
 const loadingTop100Range = shallowRef<boolean>(false)
 const tabActive = shallowRef<string>('100')
@@ -179,6 +186,7 @@ const loadingTop100Balance = shallowRef<boolean>(false)
 
 const insidersObj = ref<AllTagsStats>({})
 const loadingStats = shallowRef<boolean>(false)
+  const profitLossRef1 = ref()
 
 const supportTags = computed(() => {
   const chain = addressAndChain.value.chain
@@ -227,20 +235,30 @@ watch(
   () => id.value,
   (newId) => {
     if (newId) {
-      getTop100range()
-      getTop100balance()
+      init()
     }
-  },
-  {
-    immediate: true,
   }
 )
+onMounted(() => {
+  init()
+})
+function init() {
+  if (tabActive.value === '100') {
+    getTop100range()
+    getTop100balance()
+  } else {
+    getAllTagsStats()
+  }
+}
 function getTop100range() {
   loadingTop100Range.value = true
   _getTop100range(id.value)
     .then((res) => {
       // console.log('--------------------res-----------------------------', res)
-      top100range.value = Array.isArray(res) ? res : []
+      top100range.value = Array.isArray(res) ? res?.map(i => ({
+        ...i,
+        date: i?.date?.slice(5)
+      })) : []
     })
     .catch(() => {})
     .finally(() => {
@@ -316,6 +334,11 @@ function getAllTagsStats() {
       loadingStats.value = false
     })
 }
+function handlerDialogProfitLoss(row: { address: string }) {
+  dialogProfitLoss.value = true
+  profitLossRef1.value?.getUserTxs(row.address)
+}
+
 </script>
 
 <style lang="scss" scoped>

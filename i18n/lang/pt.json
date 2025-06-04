@@ -213,5 +213,15 @@
   "removePool": "REMOVER",
   "transferIn1": "TRANSFER_IN",
   "transferOut1": "TRANSFER_OUT",
-  "value": "Valor "
+  "value": "Valor ",
+  "transactionsDetails": "Detalhes das Transações",
+  "myTxsNotice": "Os seguintes dados podem ser rastreados desde o momento em que o endereço foi importado pela primeira vez para ave.ai",
+  "buyFrequency": "Frequência de Compra",
+  "buyAmount": "Quantidade de Compra",
+  "sellFrequency": "Frequência de Venda",
+  "sellAmount": "Quantidade de Venda",
+  "currentPosition": "Posição Atual",
+  "tokenValue": "Valor da Posição",
+  "sellTax1": "imposto sobre venda",
+  "positionCostPrice": "Preço da Posição"
 }

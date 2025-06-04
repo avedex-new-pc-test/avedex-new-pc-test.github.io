@@ -125,7 +125,7 @@
       </el-table>
     </div>
 
-    <!-- <ProfitLoss ref="profitLossRef" v-model:visible="dialogProfitLoss" /> -->
+    <ProfitLoss ref="profitLossRef" v-model="dialogProfitLoss"/>
   </section>
 </template>
 
@@ -133,6 +133,7 @@
 import { getAddressAndChainFromId } from '@/utils/index'
 import { formatNumber } from '@/utils/formatNumber'
 import { upColor, downColor } from '@/utils/constants'
+import ProfitLoss from './profitLoss.vue'
 
 const props = defineProps<{
   tableList: any[]
@@ -151,6 +152,7 @@ const tableIndex = ref(0)
 const dialogProfitLoss = ref(false)
 const profitLossRef = ref()
 const tableRef = ref()
+
 
 const isLoading = computed(() => props.loading)
 const chain = computed(
@@ -175,7 +177,7 @@ function jumpBalance() {
 
 }
 
-function handlerDialogProfitLoss(row: any) {
+function handlerDialogProfitLoss(row: { address: string }) {
   dialogProfitLoss.value = true
   profitLossRef.value?.getUserTxs(row.address)
 }
