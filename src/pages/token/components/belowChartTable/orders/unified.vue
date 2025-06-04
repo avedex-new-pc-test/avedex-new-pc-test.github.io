@@ -12,7 +12,7 @@
       </template>
       <el-table-column :label="t('token')" align="left">
         <template #default="{ row }">
-          <div class="flex items-center justify-start">
+          <div class="flex items-center justify-start" @click="handleTokenClick(row)">
             <div class="icon-token-container mr-5px">
               <div class="relative">
                 <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
@@ -35,7 +35,8 @@
                   :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
               </div>
             </div>
-            <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
+            <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
+              row?.inTokenSymbol :
               row.outTokenSymbol
               }}</span>
           </div>
@@ -91,20 +92,19 @@
         </template>
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)]">
-            <template v-if="!row?.isBuy">
-              {{ !!Number(row?.inAmount) ? formatNumber(new BigNumber(row?.inAmount || 0).div(new
-                BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) : '--' }}
-              <span v-if="isUnit" class="color-[--d-999-l-666]">
-                &nbsp;{{ !!Number(row?.inAmount) ? row?.inTokenSymbol : '' }}
-              </span>
-            </template>
-            <template v-else>
-              {{ !!Number(row?.outputAmount) ? formatNumber(new BigNumber(row?.outputAmount || 0).div(new
-                BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) : '--' }}
-              <span v-if="isUnit" class="color-[--d-999-l-666]">
-                &nbsp;{{ !!Number(row?.outputAmount) ? row?.outTokenSymbol : '' }}
-              </span>
-            </template>
+            <span class="text-[var(--d-999-l-959A9F)] text-right">
+              <template v-if="row.swapType === 2 || row.swapType === 6">
+                {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0), 4)
+                }}
+                {{ row?.inTokenSymbol }}
+              </template>
+              <template v-else>
+                {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0),
+                  4)
+                }}
+                {{ row?.outTokenSymbol }}
+              </template>
+            </span>
           </span>
         </template>
       </el-table-column>
@@ -164,9 +164,10 @@ import BigNumber from 'bignumber.js'
 import { formatDate, getChainDefaultIcon, formatExplorerUrl } from '~/utils'
 import { formatNumber } from '~/utils/formatNumber'
 import { bot_getUserPendingTx, bot_cancelLimitOrdersByBatch } from '@/api/token'
-
+import { evm_utils } from '@/utils'
 import { ref } from 'vue'
 
+const { formatUnits } = evm_utils
 const props = defineProps({
   chain: {
     type: String,
@@ -184,6 +185,7 @@ const props = defineProps({
 
 const tokenStore = useTokenStore()
 const route = useRoute()
+const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
 const configStore = useConfigStore()
@@ -194,7 +196,7 @@ const filterConditions = ref({
 
 const txOrder = ref([])
 const loading = ref(false)
-const isUnit = ref(true)
+// const isUnit = ref(true)
 
 watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate, () => tokenStore.placeOrderSuccess, () => route.params.id], () => {
   getUserPendingTx()
@@ -213,6 +215,14 @@ function handleCancelOrder(row: any) {
       })
       getUserPendingTx()
     }).catch(() => { })
+}
+
+const handleTokenClick = (row: any) => {
+  const token = row.swapType === 2 || row.swapType === 6 ? row?.inTokenAddress : row.outTokenAddress
+  if (!token) {
+    return
+  }
+  router.push(`/token/${token}-${row.chain}`)
 }
 function handleTypeCommand(command: string) {
   if (command === 'all') {
@@ -253,6 +263,14 @@ const getUserPendingTx = async () => {
       ...data
     })
     txOrder.value = res || []
+    if (filterConditions.value.swapType.length === 1) {
+      if (filterConditions.value.swapType[0] === 'buy') {
+        txOrder.value = txOrder.value.filter((item: any) => item.swapType === 5)
+      }
+      if (filterConditions.value.swapType[0] === 'sell') {
+        txOrder.value = txOrder.value.filter((item: any) => item.swapType === 6)
+      }
+    }
     tokenStore.registrationNum = txOrder.value.length
   } catch (error: any) {
     ElMessage.error(error)

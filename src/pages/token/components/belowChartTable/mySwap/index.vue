@@ -192,7 +192,10 @@ onMounted(() => {
       </div>
       <div class="stat-item">
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('totalProfit') }}</div>
-        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumberS(totalProfit, 2) }}</div>
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]"
+          :style="{ color: totalProfit >= 0 ? '#12B886' : '#ff646d' }">
+          ${{ totalProfit >= 0 ? '+' : '' }}{{ formatNumberS(totalProfit, 2) }}
+        </div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: profitPercentage >= 0 ? '#12B886' : '#ff646d' }">
           {{ profitPercentage >= 0 ? '+' : '' }}{{ formatNumberS(profitPercentage, 2) }}%
@@ -200,7 +203,9 @@ onMounted(() => {
       </div>
       <div class="stat-item">
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('realizedProfit') }}</div>
-        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumberS(realizedProfit, 2) }}
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]"
+          :style="{ color: realizedProfit >= 0 ? '#12B886' : '#ff646d' }">
+          ${{ realizedProfit >= 0 ? '+' : '' }}{{ formatNumberS(realizedProfit, 2) }}
         </div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: realizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
@@ -209,7 +214,10 @@ onMounted(() => {
       </div>
       <div class="stat-item">
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('unrealizedProfit') }}</div>
-        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumberS(unrealizedProfit, 2) }}
+        <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]"
+          :style="{ color: unrealizedProfit >= 0 ? '#12B886' : '#ff646d' }">
+          {{ unrealizedProfit >= 0 ? '+' : '' }}
+          ${{ formatNumberS(unrealizedProfit, 2) }}
         </div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">

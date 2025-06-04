@@ -287,6 +287,7 @@ function getColorClass(val: string) {
   .token-icon {
     width: 32px;
     height: 32px;
+    border-radius: 50%;
   }
 
   .icon-symbol {
