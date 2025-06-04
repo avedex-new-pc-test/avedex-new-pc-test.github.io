@@ -614,7 +614,7 @@ function resetMakerAddress() {
     </template>
     <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
       element-loading-background="transparent">
-      <AveTable fixed :data="filterTableList" :columns="columns" class="h-560px" 
+      <AveTable fixed :data="filterTableList" :columns="columns" class="h-560px"
       row-class='cursor-pointer'
       :rowEventHandlers="{
         onMouseenter: () => {
@@ -721,7 +721,7 @@ function resetMakerAddress() {
         <template #header-amountU>
           <div class="flex items-center gap-2px">
             <span>{{ $t('amountU') }}</span>
-            <Icon name="custom:price" :class="`${tableView.isVolUSDT ? 'color-#FFF' : 'color-#666'} cursor-pointer`"
+            <Icon name="custom:price" :class="`${tableView.isVolUSDT ? 'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
               @click.self="tableView.isVolUSDT = !tableView.isVolUSDT" />
             <VolFilter v-model:visible="tableFilterVisible.amountU" :modelValue="tableFilter.amountU"
               @confirm="confirmVolFilter" />
