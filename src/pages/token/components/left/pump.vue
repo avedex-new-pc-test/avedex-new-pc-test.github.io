@@ -18,23 +18,25 @@ const sort = ref({
   activeSort: 0
 })
 const isVolUSDT = ref(true)
-const tabList = shallowRef([{
-  label: '新内盘',
-  value: 'pump_in_new',
-  progressVisible: true
-}, {
-  label: '即将打满',
-  value: 'pump_in_almost',
-  progressVisible: true
-}, {
-  label: '外盘',
-  value: 'pump_out_new',
-  progressVisible: false
-}, {
-  label: '热外盘',
-  value: 'pump_out_hot',
-  progressVisible: false
-}])
+const tabList = computed(()=>{
+  return [{
+    label: '新内盘',
+    value: 'pump_in_new',
+    progressVisible: true
+  }, {
+    label: '即将打满',
+    value: 'pump_in_almost',
+    progressVisible: true
+  }, {
+    label: '外盘',
+    value: 'pump_out_new',
+    progressVisible: false
+  }, {
+    label: '热外盘',
+    value: 'pump_out_hot',
+    progressVisible: false
+  }]
+})
 const activeTab = ref('pump_in_new')
 const progressVisible = computed(() => {
   return tabList.value.find(el => el.value === activeTab.value)?.progressVisible

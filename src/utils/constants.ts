@@ -74,8 +74,9 @@ export const NATIVE_TOKENS = [
 ]
 
 export interface IFavDialogEventArgs {
-  type: 'confirmSwitchGroup' | 'remark' | 'order' | 'changeFavoriteGroupName',
+  type: 'confirmSwitchGroup' | 'remark' | 'order' | 'changeFavoriteGroupName'|'removeFavoriteGroup',
   tokenId?: string,
+  groupId?: string,
 }
 export const BusEventType = {
   TOP_FAV_CHANGE: 'top-favorite-change',
