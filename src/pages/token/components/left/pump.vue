@@ -144,7 +144,7 @@ async function _getHomePumpList() {
       {{ t('amountB') }}
       <Icon
         name="custom:price"
-        :class="`ml-1px mr-1px cursor-pointer ${isVolUSDT?'color-#FFF':'color-#666'}`"
+        :class="`ml-1px mr-1px cursor-pointer ${isVolUSDT?'color-[--d-F5F5F5-l-222]':'color-#666'}`"
         @click.stop.self="isVolUSDT=!isVolUSDT"
       />
       /{{ t('Txs') }}

@@ -10,11 +10,13 @@ const props = defineProps({
 })
 const botStore = useBotStore()
 const activeTab = shallowRef<keyof typeof components>('FavoriteTable')
-const tabs = shallowRef([
+const tabs = computed(() => {
+  return [
   {name: t('favorites'), component: 'FavoriteTable' as const},
   {name: t('positions'), component: 'PositionsTable' as const},
   // {name: t('attention1'),  component: 'MyAttentionTable' as const},
-])
+  ]
+})
 const components = {
   FavoriteTable,
   PositionsTable: defineAsyncComponent(() => import('./positionsTable.vue')),

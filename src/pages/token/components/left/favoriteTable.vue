@@ -196,7 +196,13 @@ function resetListStatus() {
       <div
         class="flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
         <span
-          v-for="(item,index) in userFavoriteGroups"
+          :class="`text-12px cursor-pointer ${activeTab===0?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
+          @click="setActiveTab(0)"
+        >
+          {{ $t('defaultGroup') }}
+        </span>
+        <span
+          v-for="(item,index) in userFavoriteGroups.slice(1)"
           :key="index"
           :class="`text-12px cursor-pointer ${activeTab===item.group_id?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
           @click="setActiveTab(item.group_id)"

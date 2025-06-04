@@ -12,10 +12,12 @@ const {t} = useI18n()
 // const leftBottomBox = templateRef('leftBottomBox')
 // const {height} = useElementSize(leftBottomBox)
 const activeTab = shallowRef<keyof typeof components>('Trending')
-const tabs = shallowRef([
-  {name: t('trending'), component: 'Trending' as const},
-  {name: 'Pump', component: 'Pump' as const},
-])
+const tabs = computed(()=>{
+    return [
+    {name: t('trending'), component: 'Trending' as const},
+    {name: 'Pump', component: 'Pump' as const},
+  ]
+})
 const tabsToHeight = {
   Trending: 243,
   Pump: 292
