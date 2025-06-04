@@ -120,7 +120,7 @@ watch(() => themeStore.theme, (val) => {
       _widget?.applyOverrides?.({
         'scalesProperties.textColor': themeStore.isDark ? '#d5d5d5' : '#333',
         'paneProperties.backgroundType': 'solid',
-        'paneProperties.background': themeStore.isDark ? '#0A0B0D' : '#fff',
+        'paneProperties.background': themeStore.isDark ? '#111' : '#fff',
       })
     })
   }
@@ -287,7 +287,7 @@ async function initChart() {
       // "scalesProperties.lineColor": '#333',
       'scalesProperties.textColor': themeStore.isDark ? '#d5d5d5' : '#333',
       'paneProperties.backgroundType': 'solid',
-      'paneProperties.background': themeStore.isDark ? '#0A0B0D' : '#fff',
+      'paneProperties.background': themeStore.isDark ? '#111' : '#fff',
       'paneProperties.vertGridProperties.style': 2,
       // "paneProperties.vertGridProperties.color": style.grid,
       // "paneProperties.horzGridProperties.style": 2,
