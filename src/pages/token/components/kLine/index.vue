@@ -514,7 +514,7 @@ async function initChart() {
         const interval = switchResolution(resolution)
         getMarks({
           from,
-          to: Math.min(to, Math.ceil(Date.now() / 1000)),
+          to: to,
           interval,
           pair: pair.value,
           token: token.value,
