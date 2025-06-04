@@ -54,7 +54,7 @@ async function _getFavoriteList() {
       id: i.token + '-' + i.chain,
       address: i.token,
       network: i.chain,
-      priceChange24h: i?.price_change ? i?.price_change / 100 : 0,
+      priceChange24h: i?.price_change ? Number(i?.price_change) / 100 : 0,
       priceUSD: i?.current_price_usd || 0,
       activeGroup: activeTab.value
     }))
@@ -81,13 +81,10 @@ async function confirmSwitchGroup(row: GetFavListResponse, id: number) {
     )
     ElMessage.success(t('success'))
     _getFavoriteList()
-    const {token} = tokenStore
-    if (token && token.token + '-' + token.chain === tokenId) {
-      favDialogEvent.emit({
+    favDialogEvent.emit({
         type: 'confirmSwitchGroup',
         tokenId
-      })
-    }
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:76) e', e)
     ElMessage.error(t('fail'))
@@ -202,6 +199,9 @@ async function confirmEditRemark(remark: string, tokenId: string) {
       class="w-full table-container [&&]:text-12px"
       highlight-current-row
     >
+      <template #empty>
+        <AveEmpty/>
+      </template>
       <el-table-column
         :label="$t('token')"
       >

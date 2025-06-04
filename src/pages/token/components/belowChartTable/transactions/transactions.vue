@@ -521,7 +521,7 @@ function goBrowser(row: IGetTokenTxsResponse) {
   )
 }
 
-function setActiveTab(val: string) {
+function setActiveTab(val: string,index:number) {
   activeTab.value = val
   if (val === '-100' && !botStore.evmAddress) {
     throw new Error('')
@@ -533,6 +533,26 @@ function setActiveTab(val: string) {
   } else {
     _getPairLiq()
   }
+  scrollTabToCenter(index)
+}
+
+const tabsContainer = ref<HTMLElement | null>(null)
+function scrollTabToCenter(index: number) {
+  if (!tabsContainer.value) {
+    return
+  }
+  const container = tabsContainer.value
+  const tab = container.children[index] as HTMLElement
+  if (!tab) return
+  
+  const containerWidth = container.offsetWidth
+  const tabLeft = tab.offsetLeft
+  const tabWidth = tab.offsetWidth
+  
+  container.scrollTo({
+    left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
+    behavior: 'smooth'
+  })
 }
 
 function setMakerAddress(address: string) {
@@ -580,10 +600,13 @@ function resetMakerAddress() {
 <template>
   <div class="transactions">
     <div class="px-12px mb-10px flex justify-between">
-      <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
-        <a v-for="(item) in tabs" :key="item.value" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+      <div 
+        ref="tabsContainer"
+        class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide"
+      >
+        <a v-for="(item,index) in tabs" :key="item.value" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
          ${activeTab === item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
-          @click="setActiveTab(item.value)">
+          @click="setActiveTab(item.value,index)">
           {{ item.label }}
         </a>
       </div>
@@ -614,7 +637,7 @@ function resetMakerAddress() {
     </template>
     <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
       element-loading-background="transparent">
-      <AveTable fixed :data="filterTableList" :columns="columns" class="h-560px" 
+      <AveTable fixed :data="filterTableList" :columns="columns" class="h-560px"
       row-class='cursor-pointer'
       :rowEventHandlers="{
         onMouseenter: () => {
@@ -635,7 +658,7 @@ function resetMakerAddress() {
           </div>
         </template>
         <template #cell-time="{ row }">
-          <TimerCount v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60"
+          <TimerCount v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60 && Number(formatTimeFromNow(row.time, true)) > 0"
             :key="row.time" :timestamp="row.time" :end-time="60">
             <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
@@ -721,7 +744,7 @@ function resetMakerAddress() {
         <template #header-amountU>
           <div class="flex items-center gap-2px">
             <span>{{ $t('amountU') }}</span>
-            <Icon name="custom:price" :class="`${tableView.isVolUSDT ? 'color-#FFF' : 'color-#666'} cursor-pointer`"
+            <Icon name="custom:price" :class="`${tableView.isVolUSDT ? 'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
               @click.self="tableView.isVolUSDT = !tableView.isVolUSDT" />
             <VolFilter v-model:visible="tableFilterVisible.amountU" :modelValue="tableFilter.amountU"
               @confirm="confirmVolFilter" />

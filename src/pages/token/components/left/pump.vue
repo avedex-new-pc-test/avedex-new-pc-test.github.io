@@ -18,23 +18,25 @@ const sort = ref({
   activeSort: 0
 })
 const isVolUSDT = ref(true)
-const tabList = shallowRef([{
-  label: '新内盘',
-  value: 'pump_in_new',
-  progressVisible: true
-}, {
-  label: '即将打满',
-  value: 'pump_in_almost',
-  progressVisible: true
-}, {
-  label: '外盘',
-  value: 'pump_out_new',
-  progressVisible: false
-}, {
-  label: '热外盘',
-  value: 'pump_out_hot',
-  progressVisible: false
-}])
+const tabList = computed(()=>{
+  return [{
+    label: t('NewPairs'),
+    value: 'pump_in_new',
+    progressVisible: true
+  }, {
+    label: t('FinalStretch'),
+    value: 'pump_in_almost',
+    progressVisible: true
+  }, {
+    label: t('Migrated'),
+    value: 'pump_out_new',
+    progressVisible: false
+  }, {
+    label: t('HotMigrated'),
+    value: 'pump_out_hot',
+    progressVisible: false
+  }]
+})
 const activeTab = ref('pump_in_new')
 const progressVisible = computed(() => {
   return tabList.value.find(el => el.value === activeTab.value)?.progressVisible
@@ -125,7 +127,7 @@ async function _getHomePumpList() {
 <template>
   <div v-loading="listStatus.loading && query.pageNO===1&&listData.length===0">
     <div
-      class="mt-12px  px-12px mb-16px flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
+      class="mt-12px  px-12px mb-16px flex items-center gap-10px whitespace-nowrap scrollbar-hide">
         <span
           v-for="(item,index) in tabList"
           :key="index"
@@ -144,7 +146,7 @@ async function _getHomePumpList() {
       {{ t('amountB') }}
       <Icon
         name="custom:price"
-        :class="`ml-1px mr-1px cursor-pointer ${isVolUSDT?'color-#FFF':'color-#666'}`"
+        :class="`ml-1px mr-1px cursor-pointer ${isVolUSDT?'color-[--d-F5F5F5-l-222]':'color-#666'}`"
         @click.stop.self="isVolUSDT=!isVolUSDT"
       />
       /{{ t('Txs') }}

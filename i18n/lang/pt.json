@@ -197,5 +197,21 @@
   "openedTip": "A liquidez foi movida para um novo par",
   "disclaimers": "Isenções ",
   "privacyPolicy": "Política de privacidade ",
-  "partners": "Parceiros"
+  "partners": "Parceiros",
+  "insidersBalance": "Quantidade",
+  "insidersPosition": "Saldo/Posição maior",
+  "insidersBuyOrSell": "Comprar/Vender",
+  "snipersAddress": "Não limpo/Todos",
+  "insidersProfit": "Lucro Total",
+  "insidersHoldings": "Participações",
+  "insidersActivity": "Atividade",
+  "cleared": "Limpo",
+  "insidersOwned": "Propriedade %",
+  "clearance": "Liberação",
+  "insidersBalance1": "Saldo",
+  "addPool": "ADICIONAR",
+  "removePool": "REMOVER",
+  "transferIn1": "TRANSFER_IN",
+  "transferOut1": "TRANSFER_OUT",
+  "value": "Valor "
 }

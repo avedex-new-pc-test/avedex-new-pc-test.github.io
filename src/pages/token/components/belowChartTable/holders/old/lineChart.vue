@@ -1,6 +1,6 @@
 <template>
-    <div class="chart-container">
-      <div :id="chartId" :style="{ height: chartHeight || '170px', width: '100%' }" />
+    <div  v-loading="loading" class="chart-container">
+      <div :id="chartId" :style="{ height: chartHeight || '162px', width: '100%' }" />
     </div>
   </template>
 

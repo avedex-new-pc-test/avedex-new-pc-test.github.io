@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang='ts'>
-import type { IChartingLibraryWidget, ResolutionString, Timezone, SeriesFormat, VisiblePlotsSet, LanguageCode, ChartingLibraryFeatureset } from '~/types/tradingview/charting_library'
+import type { IChartingLibraryWidget, ResolutionString, Timezone, SeriesFormat, VisiblePlotsSet, LanguageCode, ChartingLibraryFeatureset, SubscribeBarsCallback } from '~/types/tradingview/charting_library'
 import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, getWSMessage } from '@/utils'
 import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
@@ -470,6 +470,7 @@ async function initChart() {
       subscribeBars: (symbolInfo, resolution, onTick, listenerGuid, /*onResetCacheNeededCallback*/) => {
         console.log('listenerGuid', listenerGuid)
         if (listenerGuidMap.has(token.value)) {
+          onWsKline(resolution, onTick)
           return
         }
         const { address, chain } = getAddressAndChainFromId(token.value)
@@ -484,39 +485,8 @@ async function initChart() {
           params: params,
           id: 1
         }
-        wsStore.send(data)?.onmessage(e => {
-          const msg = getWSMessage(e)
-          if (!msg) {
-            return
-          }
-          const { event, data } = msg
-          if (event === 'tx') {
-            const tx: WSTx = data?.tx
-            const interval = switchResolution(resolution)
-            if (tx.pair_address === pair.value) {
-              const t = token.value?.replace?.(/-.*$/, '')
-              const newBar1 = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
-              if (newBar1) {
-                lastBar = {...newBar1}
-              }
-              const newBar = {...newBar1} as KLineBar
-              if (showMarket.value && newBar) {
-                newBar.open = new BigNumber(newBar.open || 0).times(tokenStore?.circulation || 0).toNumber()
-                newBar.high = new BigNumber(newBar.high || 0).times(tokenStore?.circulation || 0).toNumber()
-                newBar.low = new BigNumber(newBar.low || 0).times(tokenStore?.circulation || 0).toNumber()
-                newBar.close = new BigNumber(newBar.close || 0).times(tokenStore?.circulation || 0).toNumber()
-              }
-              if (newBar) {
-                onTick(newBar)
-              }
-            }
-            wsTxUpdateMarks({
-              tx,
-              interval: Number(interval),
-              user: user.value
-            }, _widget)
-          }
-        }, 'kline')
+        const ws = wsStore.send(data)
+        onWsKline(resolution, onTick, ws)
         listenerGuidMap.set(token.value, data)
       },
       unsubscribeBars: (listenerGuid) => {
@@ -544,7 +514,7 @@ async function initChart() {
         const interval = switchResolution(resolution)
         getMarks({
           from,
-          to,
+          to: Math.min(to, Math.ceil(Date.now() / 1000)),
           interval,
           pair: pair.value,
           token: token.value,
@@ -601,6 +571,42 @@ async function initChart() {
   _widget?.subscribe('onMarkClick', (markId) => {
     console.log('markId', markId)
   })
+}
+
+function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsStore.getWSInstance()) {
+  ws?.onmessage(e => {
+    const msg = getWSMessage(e)
+    if (!msg) {
+      return
+    }
+    const { event, data } = msg
+    if (event === 'tx') {
+      const tx: WSTx = data?.tx
+      const interval = switchResolution(resolution)
+      if (tx.pair_address === pair.value) {
+        const t = token.value?.replace?.(/-.*$/, '')
+        const newBar1 = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
+        if (newBar1) {
+          lastBar = {...newBar1}
+        }
+        const newBar = {...newBar1} as KLineBar
+        if (showMarket.value && newBar) {
+          newBar.open = new BigNumber(newBar.open || 0).times(tokenStore?.circulation || 0).toNumber()
+          newBar.high = new BigNumber(newBar.high || 0).times(tokenStore?.circulation || 0).toNumber()
+          newBar.low = new BigNumber(newBar.low || 0).times(tokenStore?.circulation || 0).toNumber()
+          newBar.close = new BigNumber(newBar.close || 0).times(tokenStore?.circulation || 0).toNumber()
+        }
+        if (newBar) {
+          onTick(newBar)
+        }
+      }
+      wsTxUpdateMarks({
+        tx,
+        interval: Number(interval),
+        user: user.value
+      }, _widget)
+    }
+  }, 'kline')
 }
 
 // 拖动缩放
