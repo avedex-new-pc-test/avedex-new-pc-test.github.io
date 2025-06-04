@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 export const useGlobalStore = defineStore('global', () => {
-  const { t } = useI18n()
   const wsStore = useWSStore()
   const localeStore = useLocaleStore()
   const themeStore = useThemeStore()
@@ -68,7 +67,6 @@ export const useGlobalStore = defineStore('global', () => {
   }
    const footerTokensPriceIds = computed(() => footerTokensPrice.value?.map(i => i.id))
   return {
-    t,
     lang: computed(() => localeStore.locale),
     token_logo_url: computed(() => configStore.token_logo_url),
     mode: computed(() => themeStore.isDark ? 'dark' : 'light'),
