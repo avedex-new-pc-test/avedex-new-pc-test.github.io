@@ -38,7 +38,7 @@
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
               row?.inTokenSymbol :
               row.outTokenSymbol
-            }}</span>
+              }}</span>
           </div>
         </template>
       </el-table-column>
@@ -192,6 +192,7 @@ const props = defineProps({
   }
 })
 
+const botStore = useBotStore()
 const tokenStore = useTokenStore()
 const route = useRoute()
 const router = useRouter()
@@ -266,7 +267,7 @@ const getUserPendingTx = async () => {
     const data = {
       chain: props.chain,
       token: props.currentToken ? String(route.params.id).split('-')[0] : '',
-      walletAddress: props.userAddress,
+      walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === props.chain)?.address,
     }
     const res = await bot_getUserPendingTx({
       ...data
