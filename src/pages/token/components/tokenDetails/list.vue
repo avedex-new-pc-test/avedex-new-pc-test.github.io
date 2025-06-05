@@ -192,7 +192,7 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
     </div>
     <div
       v-for="(row, $index) in tableList" :key="$index"
-      class="text-13px flex h-42px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-1D2232-l-F5F5F5)] cursor-pointer"
+      class="text-13px flex h-42px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-333-l-F5F5F5)] cursor-pointer"
       @click="tableRowClick(row)"
     >
       <div class="flex items-center flex-[2]">
