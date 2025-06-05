@@ -798,10 +798,12 @@ function resetMakerAddress() {
           <div class="flex justify-end gap-8px">
             <img v-if="row.amm === 'unknown'" v-tooltip="getSwapInfo(row.chain, row.amm)?.show_name"
               class="w-16px h-16px cursor-pointer rounded-full" :src="IconUnknown" alt="">
-            <img v-else v-tooltip="getSwapInfo(row.chain, row.amm)?.show_name"
+            <img v-else
+              @click.stop.self="goBrowser(row)"
+              v-tooltip="getSwapInfo(row.chain, row.amm)?.show_name"
               class="w-16px h-16px cursor-pointer rounded-full" :src="formatIconSwap(row.amm)" alt="">
             <Icon name="custom:browser" class="text-16px color-[--d-999-l-666] cursor-pointer"
-              @click.self="goBrowser(row)" />
+              @click.stop.self="goBrowser(row)" />
           </div>
         </template>
       </AveTable>
