@@ -55,7 +55,6 @@ export function useBotSwap(type: number = 0) {
       tokens: [address, chainMainToken[chain] || NATIVE_TOKEN],
       walletAddress: walletAddress
     }).then(tokens => {
-      console.log('tokens', tokens)
       const t1 = tokens[0]
       const t2 = tokens[1]
       tokenStore.swap.token = {...tokenStore.token, ...t1, address: (t1.token || t1.address), chain: chain}
@@ -101,7 +100,6 @@ export function useBotSwap(type: number = 0) {
       tokens: [address],
       walletAddress: walletAddress
     }).then(tokens => {
-      console.log('tokens', tokens)
       const t1 = tokens[0]
       tokenStore.swap.token = {...tokenStore.token, ...t1, address: (t1.token || t1.address), chain: chain}
     }).finally(() => {
@@ -123,7 +121,6 @@ export function useBotSwap(type: number = 0) {
       tokens: [chainMainToken[chain] || NATIVE_TOKEN],
       walletAddress: walletAddress
     }).then(tokens => {
-      console.log('tokens', tokens)
       const t2 = tokens[0]
       tokenStore.swap.native = {...t2, symbol: getChainInfo(chain)?.main_name, chain: chain, address: t2.token || t2.address, decimals: t2?.decimals || t2?.decimal}
     }).finally(() => {
