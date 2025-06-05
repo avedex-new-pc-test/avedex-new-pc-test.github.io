@@ -18,7 +18,6 @@ import sell from 'assets/images/mark/sell.png'
 import T_Trading from 'assets/images/mark/T_Trading.png'
 import transfer_in from 'assets/images/mark/transfer_in.png'
 import transfer_out from 'assets/images/mark/transfer_out.png'
-import { formatter } from 'element-plus'
 
 // 注册使用组件
 echarts.use([

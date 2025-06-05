@@ -125,7 +125,7 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
 <template>
   <div class="min-h-400px">
     <div
-      class="flex justify-between items-center py-8px text-10px border-b-0.5px border-b-solid border-b-[--d-333-l-F2F2F2]"
+      class="flex justify-between items-center py-8px text-12px border-b-0.5px border-b-solid border-b-[--d-333-l-F2F2F2] color-[--d-666-l-999] h-32px"
     >
       <div class="flex items-center flex-[2] gap-3px">
         <span>{{ $t('time') }}</span>
@@ -192,7 +192,7 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
     </div>
     <div
       v-for="(row, $index) in tableList" :key="$index"
-      class="text-13px flex h-42px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-333-l-F5F5F5)] cursor-pointer"
+      class="text-13px flex h-40px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-333-l-F5F5F5)] cursor-pointer"
       @click="tableRowClick(row)"
     >
       <div class="flex items-center flex-[2]">
