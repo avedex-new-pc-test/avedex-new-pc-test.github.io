@@ -72,9 +72,9 @@ const Component = computed(() => {
       </a>
       <OneClick />
     </div>
-    <OrdersTab v-show="activeTab === 'Orders'" />
+    <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
     <KeepAlive v-show="activeTab !== 'Orders'">
-      <component :is="Component" />
+      <component :currentActiveTab="activeTab" :is="Component" />
     </KeepAlive>
   </div>
 </template>
