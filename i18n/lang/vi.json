@@ -385,5 +385,15 @@
   "transferOut1": "Chuyển ra",
   "value": "Giá trị",
   "returnToLogin": "Quay lại đăng nhập",
-  "startBotFooter21": "Chưa có tài khoản?"
+  "startBotFooter21": "Chưa có tài khoản?",
+  "transactionsDetails": "Chi tiết giao dịch",
+  "myTxsNotice": "Dữ liệu từ khi địa chỉ được nhập vào ave.ai",
+  "buyFrequency": "Tần suất mua",
+  "buyAmount": "Số tiền mua",
+  "sellFrequency": "Tần suất bán",
+  "sellAmount": "Số tiền bán",
+  "currentPosition": "Vị thế hiện tại",
+  "tokenValue": "Giá trị vị thế",
+  "sellTax1": "Thuế bán",
+  "positionCostPrice": "Giá vị thế"
 }

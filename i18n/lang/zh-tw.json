@@ -605,8 +605,20 @@
   "value": "金額",
   "returnToLogin": "返回登入",
   "startBotFooter21": "還沒有錢包，",
+  "transactionsDetails": "交易明細",
+  "myTxsNotice": "以下數據，追溯至該地址首次導入 ave.ai 的時刻",
+  "buyFrequency": "買入次數",
+  "buyAmount": "買入金額",
+  "sellFrequency": "賣出次數",
+  "sellAmount": "賣出金額",
+  "currentPosition": "當前持倉",
+  "tokenValue": "持倉價值",
+  "sellTax1": "賣稅",
+  "positionCostPrice": "持倉成本價",
   "NewPairs": "新內盤",
   "FinalStretch": "即將打滿",
   "Migrated": "外盤",
-  "HotMigrated": "熱外盤"
+  "HotMigrated": "熱外盤",
+  "Expand": "展開",
+  "Collapse": "收起"
 }
