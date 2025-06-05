@@ -401,7 +401,7 @@
 
     <div class="flex-1" />
     <div
-      v-if="pair?.progress || (0 > 0 && pair?.progress) || 0 < 100"
+      v-if="(pair?.progress??0) > 0 && (pair?.progress??0) < 100"
       class="item"
     >
       <div class="flex items-center">
