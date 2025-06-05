@@ -78,7 +78,7 @@ const columns = computed(() => {
     key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
     minWidth: 120
   },
-  { key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 120 },
+  { key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 160 },
   {
     key: 'SOLBalance',
     dataKey: 'SOLBalance',

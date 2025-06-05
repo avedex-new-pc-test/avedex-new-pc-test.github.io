@@ -442,7 +442,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
         <div class="pr-10px pb-20px">
           <NuxtLink
             v-for="(row,$index) in listData" :key="$index"
-            class="text-12px flex justify-between pl-10px py-10px cursor-pointer hover:bg-[var(--d-1D2232-l-F5F5F5)]"
+            class="text-12px flex justify-between pl-10px py-10px cursor-pointer hover:bg-[var(--d-333-l-F5F5F5)]"
             :to="`/token/${row.token}-${row.chain}`"
           >
             <div class="flex-[1.5] flex items-center">
