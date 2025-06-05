@@ -986,7 +986,7 @@ function getEstimatedGas() {
     // let botSettings = this.botSettings?.[this.chain]?.[] || {}
     const botSettings = botSettingStore.botSettings?.[chain]?.[botSettingStore.botSettings?.[chain]?.selected as 's1' | 's2' | 's3']
     const mev = botSettings?.mev
-    const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain)?.current_price_usd || tokenStore.swap.native.price || 0
+    const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain && item.token === getChainInfo(chain)?.wmain_wrapper)?.current_price_usd || tokenStore.swap.native.price || 0
     const { gasTip1List, gasTip2List } = formatBotGasTips(botSwapStore.gasTip, chain)
     const gasTips = mev ? gasTip1List : gasTip2List
     const settings = mev ? botSettings?.gas[0] : botSettings?.gas[1]
@@ -1176,6 +1176,8 @@ onMounted(() => {
     --el-input-border-color: transparent;
     --el-input-focus-border-color: transparent;
     --el-input-hover-border-color: transparent;
+    font-size: 18px;
+    font-weight: 500;
     :deep() .el-input-group__append, .el-input-group__prepend {
       padding: 0 10px;
     }

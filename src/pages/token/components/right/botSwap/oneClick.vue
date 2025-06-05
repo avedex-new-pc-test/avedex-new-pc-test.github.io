@@ -1,49 +1,56 @@
 <template>
-  <button class="one-click-btn ml-auto clickable" :class="{ 'active': visible }" @click.stop="visible = !visible">
+  <button v-show="botStore.isSupportChains?.includes(chain)" class="one-click-btn ml-auto clickable" :class="{ 'active': visible }" @click.stop="visible = !visible">
     <Icon name="ion:flash" />
     <span class="ml-5px">{{ $t('oneClick') }}</span>
   </button>
   <div v-show="botStore.isSupportChains?.includes(chain) && visible" class="fixed-one-click">
-    <div class="flex-between">
-      <div class="flex-start">
-        <span>{{ $t('oneClick') }}</span>
-        <div class="tabs-1 ml-5px">
-          <button
-            v-for="item in ['s1', 's2', 's3']" :key="item"
-            :class="{ 'active': item === botSettings?.[chain]?.selected }" type="button"
-            @click.stop="botSettings[chain as string]!.selected = item">{{ item.toUpperCase() }}</button>
+    <template v-if="botStore.isSupportChains?.includes(chain) && visible">
+      <div class="flex-between">
+        <div class="flex-start">
+          <span>{{ $t('oneClick') }}</span>
+          <div class="tabs-1 ml-5px">
+            <button
+              v-for="item in ['s1', 's2', 's3']" :key="item"
+              :class="{ 'active': item === botSettings?.[chain]?.selected }" type="button"
+              @click.stop="botSettings[chain as string]!.selected = item">{{ item.toUpperCase() }}</button>
+          </div>
+          <SlippageSetMarket :chain="chain" />
         </div>
-        <SlippageSetMarket :chain="chain" />
+        <Icon
+          class="text-14px clickable color-[--d-999-l-666] clickable" name="ri:close-large-fill"
+          @click.stop="visible = false" />
       </div>
-      <Icon class="text-14px clickable color-[--d-999-l-666] clickable" name="ri:close-large-fill" @click.stop="visible = false"  />
-    </div>
-    <div class="content">
-      <div class="flex-between mt-10px">
-        <span class="">{{ $t('buy1') }}</span>
-        <span class="color-#999 ml-auto">{{ $t('balance1') }}: {{ formatNumber(tokenStore.swap.native?.balance || 0)
-          }}&nbsp;{{ getChainInfo(chain)?.main_name }}</span>
-        <RefreshBalance class="color-#999" :type="0" />
+      <div class="content">
+        <div class="flex-between mt-10px">
+          <span class="">{{ $t('buy1') }}</span>
+          <span class="color-#999 ml-auto">{{ $t('balance1') }}: {{ formatNumber(tokenStore.swap.native?.balance || 0)
+            }}&nbsp;{{ getChainInfo(chain)?.main_name }}</span>
+          <RefreshBalance class="color-#999" :type="0" />
+        </div>
+        <div class="mt-10px tabs">
+          <el-button
+            v-for="(item, $index) in botSettings?.[chain as string]![selected as 's1' | 's2' | 's3']?.buyValueList"
+            :key="$index" class="one-click-button green clickable" :loading="loadingSwapBuy[$index]"
+            :disabled="loadingSwapBuy[$index]" @click.stop.prevent="submitBotSwap(item, 'buy', $index)">{{
+              !loadingSwapBuy[$index] ? item : '' }}</el-button>
+        </div>
+        <div class="flex-between mt-15px">
+          <span class="">{{ $t('sell1') }}</span>
+          <span class="color-#999 ml-auto">{{ $t('balance1') }}: {{ formatNumber(tokenStore.swap.token?.balance || 0)
+            }}&nbsp;{{ tokenStore.token?.symbol || '' }}</span>
+          <RefreshBalance class="color-#999" :type="1" />
+        </div>
+        <div class="mt-10px tabs">
+          <el-button
+            v-for="(item, $index) in botSettings?.[chain as string]![selected as 's1' | 's2' | 's3']?.sellPerList"
+            :key="$index" class="one-click-button red clickable" :loading="loadingSwapSell[$index]"
+            :disabled="loadingSwapSell[$index]" @click.stop.prevent="handleSellAmount(item, $index)">{{
+              !loadingSwapSell[$index] ? item + '%' : ''
+            }}</el-button>
+        </div>
       </div>
-      <div class="mt-10px tabs">
-        <el-button
-          v-for="(item, $index) in botSettings?.[chain as string]![selected as 's1' | 's2' | 's3']?.buyValueList" :key="$index"
-          class="one-click-button green clickable" :loading="loadingSwapBuy[$index]" :disabled="loadingSwapBuy[$index]"
-          @click.stop.prevent="submitBotSwap(item, 'buy', $index)">{{ !loadingSwapBuy[$index] ? item : '' }}</el-button>
-      </div>
-      <div class="flex-between mt-15px">
-        <span class="">{{ $t('sell1') }}</span>
-        <span class="color-#999 ml-auto">{{ $t('balance1') }}: {{ formatNumber(tokenStore.swap.token?.balance || 0)
-          }}&nbsp;{{ tokenStore.token?.symbol || '' }}</span>
-        <RefreshBalance class="color-#999" :type="1" />
-      </div>
-      <div class="mt-10px tabs">
-        <el-button
-          v-for="(item, $index) in botSettings?.[chain as string]![selected as 's1' | 's2' | 's3']?.sellPerList" :key="$index"
-          class="one-click-button red clickable" :loading="loadingSwapSell[$index]" :disabled="loadingSwapSell[$index]"
-          @click.stop.prevent="handleSellAmount(item, $index)">{{ !loadingSwapSell[$index] ? item + '%' : ''
-          }}</el-button>
-      </div>
-    </div>
+    </template>
+
   </div>
 </template>
 
@@ -329,7 +336,7 @@ async function handleSellAmount(item: string, index: number) {
 
 function enableDragScroll() {
   const label = document.querySelector('.fixed-one-click') as HTMLElement
-  if(!label) return
+  if (!label) return
   label.style.position = 'fixed'
   // 初始化位置
   const position = JSON.parse(localStorage.getItem('fixed-one-click-position') || '{}') || { top: '180px', left: '115px' }
@@ -386,7 +393,7 @@ function enableDragScroll() {
     // 防止拖动到屏幕外
     label.style.left = `${Math.min(Math.max(newLeft, 0), bounds.width - label.offsetWidth)}px`
     label.style.top = `${Math.min(Math.max(newTop, 0), bounds.height - label.offsetHeight)}px`
-      // 记录移动后的位置到localStorage
+    // 记录移动后的位置到localStorage
     label.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.2)'
     label.style.opacity = '0.9'
     // 背面加一个遮罩层，防止鼠标移动过快导致鼠标失焦

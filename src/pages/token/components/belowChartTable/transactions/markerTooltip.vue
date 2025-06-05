@@ -25,8 +25,6 @@ watch(() => props.currentRow, () => {
   if (props.currentRow) {
     _getTxsUserBrief()
   }
-}, {
-  immediate: true
 })
 
 async function _getTxsUserBrief() {
