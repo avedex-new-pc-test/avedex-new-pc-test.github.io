@@ -85,8 +85,8 @@
               </el-col>
             </el-row>
 
-            <div class="mt-20px flex-between  flex items-center justify-between" style="padding-bottom: 10px">
-              <span class="text-12px font-500">
+            <div class="mt-30px flex-between  flex items-center justify-between" style="padding-bottom: 10px">
+              <span class="text-16px font-500">
                 {{ $t('runPullHistory') }}：<template
                   v-if="rugPull?.rates?.total"
                 >
@@ -105,13 +105,9 @@
               </span>
               <div v-if="rugPull?.dev" class="flex-end">
                 <span class="color-#999 text-12px">{{ $t('devAddress') }}：</span>
-                <span
-                  class="color-#999 text-12px"
-                >
-                  {{
-                    rugPull?.dev?.slice(0, 4) + '...' + rugPull?.dev?.slice(-4)
-                  }}
-                </span>
+                <NuxtLink :to="`/address/${rugPull?.dev}/${chain}`" class="py-7px px-8px color-#999 text-12px underline">
+                  {{ rugPull?.dev?.slice(0, 4) + '...' + rugPull?.dev?.slice(-4) }}
+                </NuxtLink>
               </div>
             </div>
             <div class="top">
@@ -212,7 +208,7 @@
                   </div>
                   <div @click.stop>
                     <div class="flex-start">
-                      <span class="token-symbol ellipsis">
+                      <span class="token-symbol ellipsis color-[--d-F5F5F5-l-333]">
                         {{ row.Symbol }}
                       </span>
                       <!-- <i
@@ -342,6 +338,7 @@ import { isJSON, getAddressAndChainFromId, formatNewTags ,formatDate,formatTime 
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 const {token_logo_url} = useConfigStore()
+const tokenDetailStore = useTokenDetailsStore()
 const props = defineProps({
   modelValue: Boolean,
   obj: {
