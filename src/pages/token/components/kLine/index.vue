@@ -437,6 +437,9 @@ async function initChart() {
             klinePair.value = res?.pair || ''
             if (firstDataRequest) {
               lastBar = bars1?.[bars1?.length - 1] || null
+              if (lastBar) {
+                lastBar.time = lastBar.time * 1000
+              }
               noData = bars?.length < 100
             }
             if (bars1?.length > 0) {

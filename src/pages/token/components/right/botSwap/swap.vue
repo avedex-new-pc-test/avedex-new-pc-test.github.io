@@ -270,7 +270,7 @@ watch(priceLimitRange, (val) => {
 })
 
 let isLineChange = false
-useEventBus<string>('priceLimit_move').on(price => {
+useEventBus<string>('priceLimit_move').on((price) => {
   if (props.swapType !== 'limit') return
   if (!Number.isNaN(Number(price))) {
     isLineChange = true
