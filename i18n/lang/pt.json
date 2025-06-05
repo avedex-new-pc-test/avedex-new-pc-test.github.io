@@ -223,5 +223,7 @@
   "currentPosition": "Posição Atual",
   "tokenValue": "Valor da Posição",
   "sellTax1": "imposto sobre venda",
-  "positionCostPrice": "Preço da Posição"
+  "positionCostPrice": "Preço da Posição",
+  "attention1Success": "Seguindo com sucesso",
+  "attention1Canceled": "Seguindo foi cancelado"
 }

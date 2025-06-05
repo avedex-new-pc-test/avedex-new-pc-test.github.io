@@ -623,5 +623,7 @@
   "Migrated": "外盘",
   "HotMigrated": "热外盘",
   "Expand": "展开",
-  "Collapse": "收起"
+  "Collapse": "收起",
+  "attention1Success": "关注成功",
+  "attention1Canceled": "取消关注"
 }
