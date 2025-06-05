@@ -76,7 +76,7 @@ function getColorClass(val: string) {
     virtual-triggering
     trigger="hover"
     raw-content
-    popper-class="[&&]:p-20px [&&]:[--el-text-color-primary:--d-222-l-FFF]"
+    popper-class="[&&]:p-20px [&&]:[--el-text-color-primary:--d-222-l-FFF]!"
     style="--el-text-color-primary:var(--d-222-l-FFF)"
   >
     <template #content>
