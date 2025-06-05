@@ -14,8 +14,14 @@
   import en from 'element-plus/es/locale/lang/en'
   const elementLocale = shallowRef(en)
 
+  const elementLocaleMap: Map<string, typeof en> = new Map()
+
   watch(() => useLocaleStore().locale, async (val) => {
     if (!val) return
+    if (elementLocaleMap[val]) {
+      elementLocale.value = elementLocaleMap[val]
+      return
+    }
     if (val === 'zh-cn') {
       elementLocale.value = (await import('element-plus/es/locale/lang/zh-cn')).default
     } else if (val === 'zh-tw') {
@@ -31,8 +37,9 @@
     } else if (val === 'vi') {
       elementLocale.value = (await import('element-plus/es/locale/lang/vi')).default
     } else {
-      elementLocale.value = (await import('element-plus/es/locale/lang/en')).default
+      elementLocale.value = en
     }
+    elementLocaleMap[val] = elementLocale.value
   }, { immediate: true })
 
 
