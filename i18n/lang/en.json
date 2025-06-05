@@ -616,8 +616,10 @@
   "tokenValue": "Position Value",
   "sellTax1": "sell tax",
   "positionCostPrice": "Position Price",
-  "NewPairs":"New Pairs",
-  "FinalStretch":"Final Stretch",
-  "Migrated":"Migrated",
-  "HotMigrated":"Hot Migrated"
+  "NewPairs": "New Pairs",
+  "FinalStretch": "Final Stretch",
+  "Migrated": "Migrated",
+  "HotMigrated": "Hot Migrated",
+  "Expand": "Expand",
+  "Collapse": "Collapse"
 }
