@@ -23,18 +23,28 @@
     <ul v-show="!['all']?.includes?.(activeTab)" class="section-4">
       <li>
         <div>{{ $t('balance1') }}</div>
-        <div :class="!Number(aggregateStats?.balance || 0) ? 'color-text-2' : ''">
+        <div
+          :class="!Number(aggregateStats?.balance || 0) ? 'color-text-2' : ''"
+        >
           ${{ formatNumber((aggregateStats?.balance || 0) * (price || 0), 2) }}
         </div>
       </li>
       <li>
         <div>{{ $t('amount') }}/{{ $t('largestPosition') }}</div>
         <div>
-          <span :class="!Number(aggregateStats?.balance || 0) ? 'color-text-2' : ''">
+          <span
+            :class="!Number(aggregateStats?.balance || 0) ? 'color-text-2' : ''"
+          >
             {{ formatNumber(aggregateStats?.balance || 0, 2) }}
           </span>
           <span class="color-text-2">/</span>
-          <span :class="!Number(aggregateStats?.largestPosition || 0) ? 'color-text-2' : ''">
+          <span
+            :class="
+              !Number(aggregateStats?.largestPosition || 0)
+                ? 'color-text-2'
+                : ''
+            "
+          >
             {{ formatNumber(aggregateStats?.largestPosition || 0, 2) }}
           </span>
         </div>
@@ -42,20 +52,33 @@
           <span
             :style="{
               width:
-                ((aggregateStats?.balance || 0) * 100) / (aggregateStats?.largestPosition || 1) +
-                '%'
+                ((aggregateStats?.balance || 0) * 100) /
+                  (aggregateStats?.largestPosition || 1) +
+                '%',
             }"
-          ></span>
+          />
         </div>
       </li>
       <li>
         <div>{{ $t('buy') }}/{{ $t('sell') }}</div>
         <div>
-          <span :class="!Number(aggregateStats?.buy || 0) ? 'color-text-2' : 'color-#12B886'">
+          <span
+            :class="
+              !Number(aggregateStats?.buy || 0)
+                ? 'color-text-2'
+                : 'color-#12B886'
+            "
+          >
             ${{ formatNumber(aggregateStats?.buy || 0, 2) }}
           </span>
           <span class="color-text-2">/</span>
-          <span :class="!Number(aggregateStats?.sell || 0) ? 'color-text-2' : 'color-#F6465D'">
+          <span
+            :class="
+              !Number(aggregateStats?.sell || 0)
+                ? 'color-text-2'
+                : 'color-#F6465D'
+            "
+          >
             ${{ formatNumber(aggregateStats?.sell || 0, 2) }}
           </span>
         </div>
@@ -64,23 +87,13 @@
         <div>{{ $t('soldAll') }}/{{ $t('all') }}</div>
         <div>
           <span
-            :class="
-              !Number( aggregateStats?.soldAll || 0)
-                ? 'color-text-2'
-                : ''
-            "
+            :class="!Number(aggregateStats?.soldAll || 0) ? 'color-text-2' : ''"
           >
-            {{
-              formatNumber(aggregateStats?.soldAll || 0, 2)
-            }}
+            {{ formatNumber(aggregateStats?.soldAll || 0, 2) }}
           </span>
           <span class="color-text-2">/</span>
           <span
-            :class="
-              !Number(aggregateStats?.all || 0)
-                ? 'color-text-2'
-                : ''
-            "
+            :class="!Number(aggregateStats?.all || 0) ? 'color-text-2' : ''"
           >
             {{ formatNumber(aggregateStats?.all || 0, 2) }}
           </span>
@@ -97,13 +110,87 @@
               : 'color-#F6465D'
           "
         >
-          {{ !Number(totalProfit || 0) ? '' : Number(totalProfit || 0) > 0 ? '+' : '-' }}${{
-            formatNumber(totalProfit || 0, 2)?.replace('-', '')
-          }}
+          {{
+            !Number(totalProfit || 0)
+              ? ''
+              : Number(totalProfit || 0) > 0
+              ? '+'
+              : '-'
+          }}${{ formatNumber(totalProfit || 0, 2)?.replace('-', '') }}
         </div>
       </li>
     </ul>
-    <List ref="holdersRef" :tableList="holderList"  :loading="loadingHolders" :tabActive="activeTab" @handleSortChange="handleSortChange"/>
+
+    <el-row :gutter="30">
+      <el-col
+        :span="show_bubble && ['solana', 'bsc']?.includes(chain) ? 12 : 24"
+      >
+        <div class="relative">
+          <List
+            ref="holdersRef"
+            :tableList="holderList"
+            :loading="loadingHolders"
+            :tabActive="activeTab"
+            :searchOriginKeyword="searchOriginKeyword"
+            :searchOriginType="searchOriginType"
+            @handleSortChange="handleSortChange"
+            @filterOriginAddress="filterOriginAddress"
+          />
+          <el-tooltip
+            v-if="['solana', 'bsc']?.includes(chain) && !show_bubble"
+            placement="top"
+
+            :content="
+              (show_bubble ? $t('Collapse') : $t('Expand')) + ' Bubble map'
+            "
+          >
+            <a
+              v-if="['solana', 'bsc']?.includes(chain)"
+              class="bubble"
+              href=""
+              @click.stop.prevent="show_bubble = true"
+            >
+              <!-- <i class="iconfont icon-bubble color-999" /> -->
+              <Icon name="custom:bubble" class="color-#999 icon-bubble" />
+            </a>
+          </el-tooltip>
+        </div>
+      </el-col>
+      <el-col
+        :span="show_bubble && ['solana', 'bsc']?.includes(chain) ? 12 : 0"
+      >
+        <div class="relative">
+          <el-tooltip
+            placement="top"
+            :content="
+              (show_bubble ? $t('Collapse') : $t('Expand')) + ' Bubble map'
+            "
+          >
+            <a
+              class="bubble-arrow"
+              href=""
+              @click.stop.prevent="show_bubble = false"
+            >
+              <Icon name="material-symbols:keyboard-double-arrow-right-rounded" class="color-#999" />
+            </a>
+          </el-tooltip>
+          <iframe
+            style="
+              width: 100%;
+              height: 100%;
+              border: none;
+              height: 700px;
+              min-height: 500px;
+              max-height: 700px;
+            "
+            :src="`https://app.insightx.network/bubblemaps/${
+              chain == 'bsc' ? 56 : chain
+            }/${tokenAddress}`"
+            allow="clipboard-write"
+          />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -132,7 +219,7 @@ const holderListSortObj = useLocalStorage('holderListSortObj', {
     order: 'desc',
   },
 })
-const { price } = storeToRefs(useTokenStore())
+const { price ,token} = storeToRefs(useTokenStore())
 const route = useRoute()
 const botStore = useBotStore()
 const { t } = useI18n()
@@ -144,6 +231,11 @@ const loadingHolders = shallowRef(false)
 
 const holderListObj = ref<Record<string, HolderStat[]>>({})
 const aggregateStatsObj = ref<Record<string, AggregateStats>>({})
+
+  const show_bubble = shallowRef(false)
+
+const searchOriginKeyword = shallowRef('')
+const searchOriginType = shallowRef('')
 
 const tabs = computed(() => {
   const arr: Array<{ label: string; value: string }> = []
@@ -185,41 +277,59 @@ const tabs = computed(() => {
 })
 const id = computed(() => route.params.id as string)
 const holderList = computed(() => {
-      // if (this.searchKeyword) {
-      //   return this.filterList || []
-      // }
-      const list = holderListObj?.value?.[activeTab.value] || []
-      // list = list?.map(i => {
-      //   if (
-      //     this.$store.state.token_user?.remark &&
-      //     i.holder === this.$store.state.token_user?.address
-      //   ) {
-      //     i.remark = this.$store.state.token_user?.remark
-      //   }
-      //   return i
-      // })
-      // if (this.searchOriginKeyword) {
-      //   if (this.searchOriginType == 'sol') {
-      //     return list?.filter(i => i.sol_first_transfer_in_from == this.searchOriginKeyword) || []
-      //   } else {
-      //     console.log('------------111-----', this.filterList)
-      //     return list?.filter(i => i.token_first_transfer_in_from == this.searchOriginKeyword) || []
-      //   }
-      // }
-      return list || []
+  // if (this.searchKeyword) {
+  //   return this.filterList || []
+  // }
+  const list = holderListObj?.value?.[activeTab.value] || []
+  // list = list?.map(i => {
+  //   if (
+  //     this.$store.state.token_user?.remark &&
+  //     i.holder === this.$store.state.token_user?.address
+  //   ) {
+  //     i.remark = this.$store.state.token_user?.remark
+  //   }
+  //   return i
+  // })
+  if (searchOriginKeyword.value) {
+    if (searchOriginType.value == 'sol') {
+      return list?.filter(i => i.sol_first_transfer_in_from == searchOriginKeyword.value) || []
+    } else {
+      return list?.filter(i => i.token_first_transfer_in_from == searchOriginKeyword.value) || []
+    }
+  }
+  return list || []
 })
-const aggregateStats = computed(() => aggregateStatsObj?.value?.[activeTab.value] || {})
+
+const aggregateStats = computed(
+  () => aggregateStatsObj?.value?.[activeTab.value] || {}
+)
 const totalProfit = computed(() => {
   return holderList.value
-        ?.reduce((p, row) => {
-          const amount = Math.max((row?.bought || 0) - (row?.sold || 0), 0)
-          const c = new BigNumber(price?.value || 0 - (row?.avg_purchase_price || 0)).times(amount)
-          return c.plus(p)
-        }, new BigNumber('0'))
-        ?.toFixed(0)
-    })
-
-
+    ?.reduce((p, row) => {
+      const amount = Math.max((row?.bought || 0) - (row?.sold || 0), 0)
+      const c = new BigNumber(
+        price?.value || 0 - (row?.avg_purchase_price || 0)
+      ).times(amount)
+      return c.plus(p)
+    }, new BigNumber('0'))
+    ?.toFixed(0)
+})
+const addressAndChain = computed(() => {
+  const id = route.params.id as string
+  if (id) {
+    return getAddressAndChainFromId(id)
+  }
+  return {
+    address: token.value?.token || '',
+    chain: token.value?.chain || '',
+  }
+})
+const tokenAddress= computed(()=>{
+  return addressAndChain.value?.address
+})
+const chain= computed(()=>{
+  return addressAndChain.value?.chain
+})
 watch(
   () => id.value,
   (newId) => {
@@ -312,9 +422,18 @@ function getHoldersList(sortObj?: { sort_by: string; order: string }) {
       loadingHolders.value = false
     })
 }
-function handleSortChange(obj:{ prop: string, order:string }) {
-    getHoldersList({ sort_by: obj.prop, order: obj.order?.replace('ending', '') })
+function handleSortChange(obj: { prop: string; order: string }) {
+  getHoldersList({ sort_by: obj.prop, order: obj.order?.replace('ending', '') })
 }
+function filterOriginAddress(row:{ address: string, type: string }) {
+      if (searchOriginKeyword.value) {
+        searchOriginKeyword.value = ''
+        searchOriginType.value = ''
+      } else {
+        searchOriginKeyword.value = row.address || ''
+        searchOriginType.value = row.type || ''
+      }
+    }
 </script>
 <style lang="scss" scoped>
 .section-4 {
@@ -351,6 +470,86 @@ function handleSortChange(obj:{ prop: string, order:string }) {
     }
     .color-\#F6465D {
       color: #f6465d;
+    }
+  }
+}
+.bubble {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 8px 5px;
+  border-radius: 4px 0px 0px 4px;
+  background: var(--d-2D3037-l-999);
+  position: absolute;
+  right: 0px;
+  top: 4px;
+  z-index: 2;
+  transition: all 0.2s;
+  &:hover {
+    opacity: 0.8;
+    padding: 8px 8px;
+  }
+  i {
+    color: var(--d-696E7C-l-fff);
+  }
+}
+.bubble-arrow {
+  height: 36px;
+  border-radius: 4px 0px 0px 4px;
+  background: var(--d-2D3037-l-999);
+  padding: 10px 3px;
+  position: absolute;
+  left: -17px;
+  top: 0px;
+  z-index: 2;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  &:hover {
+    left: -23px;
+    opacity: 0.8;
+    padding: 10px 6px;
+  }
+  i {
+    font-size: 10px;
+    color: var(--d-696E7C-l-fff);
+  }
+}
+:deep(.el-dropdown-menu__item) {
+  font-size: 12px;
+  padding: 8px 16px;
+}
+
+:deep(.el-dropdown-menu) {
+  background-color: var(--custom-bg-1-color);
+  // border: 1px solid var(--d-33353D-l-f5f5f5);
+}
+
+:deep(.el-table) {
+  --el-table-tr-bg-color: #0A0B0D;
+  --el-table-bg-color: #0A0B0D;
+  --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
+  --el-fill-color-lighter: #0A0B0D;
+  --el-table-header-text-color: var(--d-999-l-666);
+  // --el-table-border-color: var(--d-33353D-l-f5f5f5);
+  --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
+  background: #0A0B0D;
+  --el-bg-color: #0A0B0D;
+  // --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
+  font-size: 13px;
+
+  th {
+    padding: 6px 0;
+    border-bottom: none !important;
+    height: 32px;
+
+    &.el-table__cell.is-leaf {
+      border-bottom: none;
+    }
+
+    .cell {
+      font-weight: 400;
+      font-size: 12px;
     }
   }
 }

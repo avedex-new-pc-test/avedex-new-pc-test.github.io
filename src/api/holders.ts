@@ -250,3 +250,46 @@ export function _getAllTagsActivityList(params: {
     query: params,
   })
 }
+
+export interface UserTxs {
+  amm: string
+  amount_eth: number
+  amount_usd: number
+  block_number: number
+  chain: string
+  from_address: string
+  from_amount: number
+  from_price_eth: number
+  from_price_usd: number
+  from_reserve: number
+  from_symbol: string
+  id: string
+  network: string
+  pair_address: string
+  pair_liquidity_eth: string
+  pair_liquidity_usd: string
+  sender: string
+  time: number
+  timestamp: number
+  to: string
+  to_address: string
+  to_amount: number
+  to_price_eth: number
+  to_price_usd: number
+  to_reserve: number
+  to_symbol: string
+  transaction: string
+  transactionAddress: string
+  walletAddress: string
+  wallet_address: string
+}
+export function _getUserTxs(params: {
+  token_id: string
+  user_address: string
+}): Promise<UserTxs[]> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v2/pairs/userMergedTxs', {
+    method: 'get',
+    query: params,
+  })
+}

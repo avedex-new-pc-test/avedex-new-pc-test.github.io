@@ -183,8 +183,8 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
       <div class="flex items-center flex-[2] justify-end gap-3px">
         <span>{{ $t('swapPrice') }}</span>
         <Icon
-          :name="`${isVolUSDT?'custom:u':'custom:b'}`"
-          class="color-[--d-666-l-999] cursor-pointer"
+          name="custom:price"
+          :class="`${isVolUSDT?'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
           @click.self="isVolUSDT=!isVolUSDT"
         />
       </div>
@@ -253,7 +253,7 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
             ${{ formatNumber(row.token_price_u || 0, 2) }}
           </template>
           <template v-else>
-            ${{ formatNumber(Number(row.token_price_u) / Number(row.main_token_price) || 0, 2) }}
+            {{ formatNumber(Number(row.token_price_u) / Number(row.main_token_price) || 0, 2) }}
             <span class="color-[--d-666-l-999]">{{ row.main_token_symbol }}</span>
           </template>
         </div>

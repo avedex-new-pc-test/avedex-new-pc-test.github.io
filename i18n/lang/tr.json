@@ -208,5 +208,15 @@
   "removePool": "Havuz çıkarma",
   "transferIn1": "Transfer girişi",
   "transferOut1": "Transfer çıkışı",
-  "value": "Değer"
+  "value": "Değer",
+  "transactionsDetails": "İşlem Detayları",
+  "myTxsNotice": "Aşağıdaki veriler, adresin ilk kez ave.ai'ye eklendiği zamana kadar izlenebilir",
+  "buyFrequency": "Satın Alma Sıklığı",
+  "buyAmount": "Alış Miktarı",
+  "sellFrequency": "Satış Sıklığı",
+  "sellAmount": "Satış Miktarı",
+  "currentPosition": "Mevcut Pozisyon",
+  "tokenValue": "Pozisyon Değeri",
+  "sellTax1": "Satış Vergisi",
+  "positionCostPrice": "Maliyet Fiyatı"
 }

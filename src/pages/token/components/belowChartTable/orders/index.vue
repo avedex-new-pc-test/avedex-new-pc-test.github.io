@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { useBotStore } from '@/stores/bot'
 import { getChainInfo } from '@/utils'
 import unified from './unified.vue'
 import { cancelAllLimitOrdersByGuid } from '@/api/token'
+
+const props = defineProps({
+  currentActiveTab: {
+    type: String,
+    required: true
+  }
+})
+
 
 const botStore = useBotStore()
 const { t } = useI18n()
@@ -53,6 +61,13 @@ function toggleCancelAll() {
     }).catch(() => { })
 }
 
+watch(() => props.currentActiveTab, () => {
+  if (props.currentActiveTab === 'Orders') {
+    unifiedRef.value.getUserPendingTx()
+  }
+})
+
+
 onMounted(() => {
   const chain = String(route.params.id).split('-')[1]
   if (tabs.value.find(i => i?.chain === chain)) {
@@ -65,8 +80,7 @@ onMounted(() => {
   <div>
     <div class="px-12px mb-10px flex justify-between">
       <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
-        <a
-          v-for="(item) in tabs" :key="item.chain" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+        <a v-for="(item) in tabs" :key="item.chain" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
           ${activeTab === item.chain ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
           @click="setActiveTab(item.chain)">
           {{ getChainInfo(item.chain).name }}
@@ -78,8 +92,7 @@ onMounted(() => {
           :class="[botOrderOnlyCurrentToken && '!bg-[#3F80F7] !text-white']" @click="toggleCurrentToken">
           {{ t('currentToken') }}
         </button>
-        <button
-          class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer bg-[#222325] text-[#696E7C] whitespace-nowrap"
+        <button class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer bg-[#222325] text-[#696E7C] whitespace-nowrap"
           :class="[unifiedRef?.txOrder?.length > 0 && '!bg-[#221115] !text-[#F6465D]']" @click="toggleCancelAll">
           {{ t('cancelAll') }}
         </button>

@@ -269,6 +269,18 @@ watch(priceLimitRange, (val) => {
   }
 })
 
+let isLineChange = false
+useEventBus<string>('priceLimit_move').on(price => {
+  if (props.swapType !== 'limit') return
+  if (!Number.isNaN(Number(price))) {
+    isLineChange = true
+    priceLimitRange.value = Number(new BigNumber(price || 0).minus(tokenStore.price || 0).div(tokenStore.price || 0).times(100).toFixed(3))
+    nextTick(() => {
+      isLineChange = false
+    })
+  }
+})
+
 watch(priceLimit, () => {
   if (props.swapType !== 'limit') return
   watchAmount(props.activeTab)
@@ -277,7 +289,7 @@ watch(priceLimit, () => {
 
 watch(() => props.swapType, (val) => {
   if (val !== 'limit') {
-    botSwapStore.priceLimit = 0
+    useEventBus<number>('priceLimit').emit(0)
   } else {
     updateStorePriceLimit()
   }
@@ -295,10 +307,11 @@ watch(isPriceLimit, (val) => {
 })
 
 function updateStorePriceLimit() {
-   if(!isPriceLimit.value) {
-    botSwapStore.priceLimit = Number(formatDec(new BigNumber(priceLimit.value).div(tokenStore.circulation || 1).toFixed(), 4))
+  if (isLineChange) return
+  if(!isPriceLimit.value) {
+    useEventBus<number>('priceLimit').emit(Number(formatDec(new BigNumber(priceLimit.value).div(tokenStore.circulation || 1).toFixed(), 4)))
   } else {
-    botSwapStore.priceLimit = Number(priceLimit.value)
+    useEventBus<number>('priceLimit').emit(Number(priceLimit.value))
   }
 }
 
@@ -657,6 +670,7 @@ async function submitBotSwap() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.historyUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'myBotHistory'
@@ -739,6 +753,7 @@ async function submitBotSwap() {
     bot_createSwapEvmTx(data).then(res => {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           loadingSwap.value = false
           amountNative.value = ''

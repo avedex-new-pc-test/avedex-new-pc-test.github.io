@@ -8,7 +8,7 @@ import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
-import { JsonRpcProvider, formatUnits, parseUnits,FixedNumber, ethers } from 'ethers'
+import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
 
 export function isJSON(str: string) {
   try {
@@ -600,12 +600,14 @@ export function getRpcProvider(chain: string) {
   if (!chainInfo || chainInfo?.vm_type !== 'evm') {
     return null
   }
-  const rpcUrl = chainInfo?.rpc_url || ''
+  const RPC: Record<string, string> = {
+    base: 'https://1rpc.io/base'
+  }
+  const rpcUrl = RPC?.[chain] || chainInfo?.rpc_url || ''
   return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
 }
 
 export const evm_utils = {
-  ...ethers,
   formatUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
     const decimals = Number(arg?.[1])
     if (!decimals) {
@@ -618,7 +620,6 @@ export const evm_utils = {
     if (!decimals) {
       return FixedNumber.fromString(String(arg?.[0] ?? '0')).value
     }
-    // Ensure the value is a string as required by ethers' parseUnits
     const valueStr = String(arg?.[0] ?? '')
     return parseUnits(valueStr, decimals)
   }
@@ -660,7 +661,7 @@ export function addSign(val: number) {
 export function getTextWidth(text: string, min = 0) {
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')!
-  context.font = '12px DINPro-Medium'
+  context.font = '12px DINPro-regular'
   const metrics = context.measureText(text)
   return Math.max(metrics.width, min)
 }
@@ -710,11 +711,11 @@ export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: 
   const container = tabsContainer.value
   const tab = container.children[index] as HTMLElement
   if (!tab) return
-  
+
   const containerWidth = container.offsetWidth
   const tabLeft = tab.offsetLeft
   const tabWidth = tab.offsetWidth
-  
+
   container.scrollTo({
     left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
     behavior: 'smooth'

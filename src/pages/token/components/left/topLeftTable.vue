@@ -27,7 +27,7 @@ const Component = computed(() => {
 })
 const activeHeight = computed(() => {
   if (activeTab.value === 'PositionsTable') {
-    return props.height - 10
+    return props.height - 4
   }
   return props.height
 })
