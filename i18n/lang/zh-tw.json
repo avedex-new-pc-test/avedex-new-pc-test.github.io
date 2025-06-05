@@ -620,5 +620,7 @@
   "Migrated": "外盤",
   "HotMigrated": "熱外盤",
   "Expand": "展開",
-  "Collapse": "收起"
+  "Collapse": "收起",
+  "attention1Success": "關注成功",
+  "attention1Canceled": "取消關注"
 }

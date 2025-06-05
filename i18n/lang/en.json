@@ -621,5 +621,7 @@
   "Migrated": "Migrated",
   "HotMigrated": "Hot Migrated",
   "Expand": "Expand",
-  "Collapse": "Collapse"
+  "Collapse": "Collapse",
+  "attention1Success": "Following successfully",
+  "attention1Canceled": "Following has been canceled"
 }
