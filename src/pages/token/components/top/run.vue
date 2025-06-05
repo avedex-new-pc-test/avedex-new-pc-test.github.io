@@ -644,8 +644,10 @@ onMounted(() => {
 .token-info {
   display: flex;
   .icon-token-container {
+    position: relative;
     margin-right: 4px;
     .icon-symbol {
+      position: absolute;
       left: 15px;
       top: 15px;
     }
