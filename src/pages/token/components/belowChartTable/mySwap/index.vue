@@ -4,6 +4,7 @@ import { useBotStore } from '@/stores/bot'
 import { getChainInfo } from '@/utils'
 import unified from './unified.vue'
 import { bot_getUserWalletTxInfo } from '@/api/token'
+import { formatNumber } from '@/utils/formatNumber'
 
 const botStore = useBotStore()
 const { t } = useI18n()
@@ -29,39 +30,35 @@ const tabs = computed(() => {
 const balance = computed(() => {
   return walletTxData.value ? parseFloat(walletTxData.value.balance_usd || 0) : 0
 })
-
 const changePercentage = computed(() => {
-  return walletTxData.value ? parseFloat(walletTxData.value.balance_ratio * 100 || 0) : 0
+  return walletTxData.value ? parseFloat((walletTxData.value.balance_ratio * 100).toString() || '0') : 0
 })
 
 const totalProfit = computed(() => {
   return walletTxData.value ? parseFloat(walletTxData.value.total_profit || 0) : 0
 })
-
 const profitPercentage = computed(() => {
-  return walletTxData.value ? parseFloat(walletTxData.value.total_profit_ratio * 100 || 0) : 0
+  return walletTxData.value ? parseFloat((walletTxData.value.total_profit_ratio * 100).toString() || '0') : 0
 })
 
 const tokenSymbol = computed(() => {
   return walletTxData.value ? walletTxData.value.symbol : tokenStore.tokenInfo?.token?.symbol
 })
-
 const realizedProfit = computed(() => {
-  return walletTxData.value ? parseFloat(walletTxData.value.realized_profit * 100 || 0) : 0
+  return walletTxData.value ? parseFloat((walletTxData.value.realized_profit * 100).toString() || '0') : 0
 })
 
 const realizedProfitPercentage = computed(() => {
   const ratio = walletTxData.value && walletTxData.value.realized_ratio !== '--' ?
-    parseFloat(walletTxData.value.realized_ratio * 100 || 0) : 0
+    parseFloat((walletTxData.value.realized_ratio * 100).toString() || '0') : 0
   return ratio
 })
 
 const unrealizedProfit = computed(() => {
   return walletTxData.value ? parseFloat(walletTxData.value.unrealized_profit || 0) : 0
 })
-
 const unrealizedProfitPercentage = computed(() => {
-  return walletTxData.value ? parseFloat(walletTxData.value.unrealized_ratio * 100 || 0) : 0
+  return walletTxData.value ? parseFloat((walletTxData.value.unrealized_ratio * 100).toString() || '0') : 0
 })
 
 const buyTokenAmount = computed(() => {
