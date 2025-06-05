@@ -103,12 +103,12 @@
           <span class="text-[var(--d-999-l-959A9F)]">
             <span class="text-[var(--d-999-l-959A9F)] text-right">
               <template v-if="row.swapType === 2 || row.swapType === 6">
-                {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0), 4)
+                {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0).toString(), 4)
                 }}
                 {{ row?.inTokenSymbol }}
               </template>
               <template v-else>
-                {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0),
+                {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0).toString(),
                   4)
                 }}
                 {{ row?.outTokenSymbol }}
@@ -170,7 +170,7 @@
 <script setup lang="ts">
 // import { useStorage } from '@vueuse/core'
 import BigNumber from 'bignumber.js'
-import { formatDate, getChainDefaultIcon, formatExplorerUrl } from '~/utils'
+import { formatDate, getChainDefaultIcon, formatExplorerUrl, getAddressAndChainFromId } from '~/utils'
 import { formatNumber } from '~/utils/formatNumber'
 import { bot_getUserPendingTx, bot_cancelLimitOrdersByBatch } from '@/api/token'
 import { evm_utils } from '@/utils'
@@ -264,11 +264,16 @@ function tableRowClick(row: any) {
 const getUserPendingTx = async () => {
   loading.value = true
   try {
-    const data = {
-      chain: props.chain,
-      token: props.currentToken ? String(route.params.id).split('-')[0] : '',
-      walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === props.chain)?.address,
+    if (!botStore.accessToken) {
+      return
     }
+    const chain = props.chain || getAddressAndChainFromId(route.params.id as string).chain
+    const data = {
+      chain: chain,
+      token: props.currentToken ? getAddressAndChainFromId(route.params.id as string).address : '',
+      walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === chain)?.address || '',
+    }
+    if (!data.token || !data.walletAddress || !data.chain) return
     const res = await bot_getUserPendingTx({
       ...data
     })
@@ -283,7 +288,8 @@ const getUserPendingTx = async () => {
     }
     tokenStore.registrationNum = txOrder.value.length
   } catch (error: any) {
-    ElMessage.error(error)
+    // ElMessage.error(error)
+    console.log(error)
   } finally {
     loading.value = false
   }

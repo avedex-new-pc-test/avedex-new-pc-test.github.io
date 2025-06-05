@@ -84,7 +84,11 @@ async function getWalletTxData() {
   })
 }
 
-watch([() => tokenStore.placeOrderSuccess, () => route.params.id], () => {
+watch(() => route.params.id, () => {
+  getWalletTxData()
+})
+
+watch(() => tokenStore.placeOrderSuccess, () => {
   getWalletTxDataPoll()
 })
 

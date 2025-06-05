@@ -9,7 +9,7 @@
     <div class="pop-right bg-[--d-222-l-fff] h-100vh px-20px">
       <div
         class="content"
-        style="flex: 1; max-width: 450px; overflow-x: hidden"
+        style="max-width: 450px; overflow-x: hidden;overflow-y: auto;height: 100vh;"
       >
         <div class="right-container run">
           <div class="sticky">
@@ -224,7 +224,6 @@
                       >
                         <i class="iconfont icon-search font_10"/>
                       </a>
-
                       <div
                         v-if="row?.medias?.length > 0"
                         class="media-list flex-start text-12px"
@@ -303,7 +302,7 @@
               </li>
             </ul>
             <div
-              class="font-12 tc width100"
+              class="text-12px tc width100 text-center"
               :style="{
                 color: themeStore.theme === 'light' ? '#666' : '#999',
               }"
@@ -657,11 +656,11 @@ onMounted(() => {
   color: var(--custom-text-2-color);
 }
 .pop-right {
-  background: var(--custom-bg-1-color);
+  background: var(--d-222-l-FFF);
   .right-container {
     padding-top: 0;
     border-radius: 0;
-    background: var(--custom-bg-1-color);
+    background: var(--d-222-l-FFF);;
     min-height: auto;
     // overflow-y: scroll;
     // overflow-x: hidden;
@@ -674,7 +673,7 @@ onMounted(() => {
   position: sticky;
   top: 0px;
   padding-top: 20px;
-  background: var(--custom-bg-1-color);
+  background: var(--d-222-l-FFF);
   z-index: 2;
 }
 </style>

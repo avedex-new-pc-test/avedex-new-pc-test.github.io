@@ -45,7 +45,6 @@ const holderNum = ref(0)
 const fetchHolderNum = async () => {
   try {
     const res = await getUserBalance({pageNO: 1, pageSize: 1, ...tableFilter.value})
-    console.log('fetchHolderNum', res)
     holderNum.value = res.total
   } catch (e) {
     console.error('Error fetching user balance:', e)
@@ -65,8 +64,8 @@ function handleChange(newUserIds: string[]) {
   // fetchHolderNum()
 }
 
-watch(tableFilter, (val) => {
-  console.log('tableFilter changed', val)
+watch(tableFilter, () => {
+  // console.log('tableFilter changed', val)
   fetchHolderNum()
 }, { deep: true })
 
@@ -85,11 +84,6 @@ watch(() => botStore.userInfo, (newValue) => {
 
 onMounted(() => {
   // fetchHolderNum()
-  console.log('mounted positions')
-})
-
-onMounted(() => {
-  console.log('mounted')
 })
 
 </script>

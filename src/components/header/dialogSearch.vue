@@ -18,7 +18,7 @@
       <template #prefix>
         <Icon
           class="text-20px text-[var(--d-666-l-999)]"
-          name="material-symbols:search-rounded"
+          name="ep:search"
         />
       </template>
     </el-input>
