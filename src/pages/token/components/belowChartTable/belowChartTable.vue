@@ -3,10 +3,12 @@ import Transactions from './transactions/transactions.vue'
 import OrdersTab from './orders/index.vue'
 import OneClick from '../right/botSwap/oneClick.vue'
 import { useBotStore } from '@/stores/bot'
-
+const { globalConfig } = storeToRefs(useConfigStore())
+const route = useRoute()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const { t } = useI18n()
+const {token, tokenInfoExtra } = storeToRefs(useTokenStore())
 const activeTab = shallowRef<keyof typeof components>('Transactions')
 const tabs = shallowRef([
   { name: t('transactions'), component: 'Transactions' as const },
@@ -55,6 +57,26 @@ const tabsList = computed(() => {
 const Component = computed(() => {
   return components[activeTab.value]
 })
+const holders= computed(()=>{
+  return token?.value?.holders || 0
+})
+const addressAndChain = computed(() => {
+  const id = route.params.id as string
+  if (id) {
+    return getAddressAndChainFromId(id)
+  }
+  return {
+    address: token.value?.token || '',
+    chain: token.value?.chain || '',
+  }
+})
+const isInsiderOrSniperSupported= computed(()=>{
+  const chain = addressAndChain.value.chain
+  const chainsSupport =
+    globalConfig.value?.chains_support_data_analysis_insider_sniper
+  return chainsSupport?.includes(chain) || false
+
+})
 </script>
 
 <template>
@@ -68,6 +90,22 @@ const Component = computed(() => {
           :class="`b-b-solid b-b-2px pb-8px ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
           {{ item.name }}
           <span v-if="item.component === 'Orders'">({{ tokenStore.registrationNum }})</span>
+          <span v-if="item.component == 'Holders' && holders">
+            ({{ holders ? formatNumber(holders) : '' }})
+              <template v-if="isInsiderOrSniperSupported && isInsiderOrSniperSupported">
+                <img class="align-middle"  v-if="tokenInfoExtra?.insiders_balance_ratio_cur??0 > 0.3" src="@/assets/images/insiders.svg" :width="14">
+                <img  class="align-middle" v-else src="@/assets/images/insiders-gray.svg" :width="14">
+                <template v-if="(tokenInfoExtra?.insiders_balance_ratio_cur ??0) * 100 > 0.1">
+                  {{ formatNumber((tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100, 2) + '%' }}
+                </template>
+                <template v-else-if="(tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100 > 0.01">
+                  {{ Number((tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100 || 0)?.toFixed(2) + '%' }}
+                </template>
+                <template v-else>
+                  {{ '&lt;0.01%' }}
+                </template>
+              </template>
+          </span>
         </div>
       </a>
       <OneClick />

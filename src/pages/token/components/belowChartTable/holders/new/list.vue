@@ -350,7 +350,7 @@
         class-name="bg-12B8861A"
         :label="$t('realized')"
         align="right"
-        min-width="100"
+        min-width="120"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="realized_profit"
@@ -386,7 +386,7 @@
         class-name="bg-12B8861A"
         :label="$t('unrealized')"
         align="right"
-        min-width="100"
+        min-width="120"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="unrealized_profit"
@@ -539,36 +539,38 @@
                 goLink(row.sol_first_transfer_in_from, row.chain)
               "
             >
-              <!-- <UserRemark
+              <UserRemark
+                :key="row.sol_first_transfer_in_from"
+                addressClass="token-symbol ellipsis"
+                addressStyle="max-width: 80px;display: inline-block; color:#959a9f"
                 :remark="row.sol_first_transfer_in_from_remark"
-                :addressStyle="
-                  addressStyle({
-                    ...row,
-                    remark: row.sol_first_transfer_in_from_remark,
-                  })
-                "
                 :address="row.sol_first_transfer_in_from"
                 :chain="row.chain"
+                iconEditColor="var(--d-666-l-999)"
+                iconEditSize="12px"
+                showAddressTitle
                 :formatAddress="
-                  (address) => address?.slice(0, 4) + '...' + address?.slice(-4)
+                  (address) =>
+                    address?.slice(0, 4) + '...' + address?.slice(-4)
                 "
-              /> -->
+              />
             </a>
 
             <span v-else>-</span>
-            <!-- <i
+            <Icon
               v-if="row?.sol_first_transfer_in_from"
-              class="iconfont icon-fitter1 text-12px ml-3 clickable"
+              name="custom:filter"
+              class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
               :style="{
                 color:
                   searchOriginKeyword && searchOriginType == 'sol'
-                    ? 'var(--a-btn-bg-2-color)'
-                    : '#959A9F',
+                    ? 'var(--d-F5F5F5-l-222)'
+                    : '',
               }"
               @click.stop.prevent="
                 filterOriginAddress(row?.sol_first_transfer_in_from, 'sol')
               "
-            /> -->
+            />
           </div>
           <div
             class="text-12px"
@@ -590,9 +592,9 @@
           </div>
         </template>
       </el-table-column>
-      <!-- <el-table-column
+      <el-table-column
         class-name="bg-286DFF1A"
-        :label="tokenInfo?.symbol + $t('origin') + '/' + $t('time')"
+        :label="token?.symbol + $t('origin') + '/' + $t('time')"
         align="right"
         min-width="150"
       >
@@ -608,35 +610,37 @@
             <a
               v-if="row?.token_first_transfer_in_from"
               class="address"
-              href
+              href=""
               @click.stop.prevent="
                 goLink(row.token_first_transfer_in_from, row.chain)
               "
             >
               <UserRemark
+                :key="row.token_first_transfer_in_from"
+                addressClass="token-symbol ellipsis"
+                addressStyle="max-width: 80px;display: inline-block; color:#959a9f"
                 :remark="row.token_first_transfer_in_from_remark"
-                :addressStyle="
-                  addressStyle({
-                    ...row,
-                    remark: row.token_first_transfer_in_from_remark,
-                  })
-                "
                 :address="row.token_first_transfer_in_from"
                 :chain="row.chain"
+                iconEditColor="var(--d-666-l-999)"
+                iconEditSize="12px"
+                showAddressTitle
                 :formatAddress="
-                  (address) => address?.slice(0, 4) + '...' + address?.slice(-4)
+                  (address) =>
+                    address?.slice(0, 4) + '...' + address?.slice(-4)
                 "
               />
             </a>
             <span v-else>-</span>
-            <i
+            <Icon
               v-if="row?.token_first_transfer_in_from"
-              class="iconfont icon-fitter1 text-12px ml-3 clickable"
+              name="custom:filter"
+              class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
               :style="{
                 color:
                   searchOriginKeyword && searchOriginType == 'other'
-                    ? 'var(--a-btn-bg-2-color)'
-                    : '#959A9F',
+                    ? 'var(--d-F5F5F5-l-222)'
+                    : '',
               }"
               @click.stop.prevent="
                 filterOriginAddress(row?.token_first_transfer_in_from, 'other')
@@ -654,7 +658,7 @@
           >
             {{
               row.token_first_transfer_in_time
-                ? $f.formatDate(
+                ? formatDate(
                     row.token_first_transfer_in_time,
                     'YYYY-MM-DD HH:mm:ss'
                   )
@@ -662,7 +666,7 @@
             }}
           </div>
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <el-table-column
         class-name="bg-286DFF1A"
         :label="$t('TFInOut')"
@@ -933,8 +937,16 @@ const props = defineProps({
     type: [String, Number],
     default: 'all',
   },
+  searchOriginKeyword: {
+    type: String,
+    default: '',
+  },
+  searchOriginType: {
+    type: String,
+    default: '',
+  },
 })
-const $emit = defineEmits(['filterAddress', 'handleSortChange'])
+const $emit = defineEmits(['filterAddress', 'handleSortChange', 'filterOriginAddress'])
 const { tableList, loading } = toRefs(props)
 const { mode } = storeToRefs(useGlobalStore())
 const { token, price } = storeToRefs(useTokenStore())
@@ -956,7 +968,6 @@ const addressAndChain = computed(() => {
     chain: token.value?.chain || '',
   }
 })
-
 function tableRowClick() {}
 function formatUnrealizedProfit(
   row: { bought?: number, sold?: number, avg_purchase_price?: number },
@@ -982,6 +993,9 @@ function handleSortChange(obj:{prop: string, order:string }) {
   console.log('----------obj-------', obj)
   $emit('handleSortChange', obj)
 }
+function filterOriginAddress(address: string, type: string) {
+  $emit('filterOriginAddress', { address, type })
+}
 </script>
 <style lang="scss" scoped>
   :deep(.el-table) {
@@ -998,4 +1012,17 @@ function handleSortChange(obj:{prop: string, order:string }) {
       }
     }
   }
+  .line-bar {
+  width: 100px;
+  height: 3px;
+  display: flex;
+  background: var(--d-666-l-999);
+  border-radius: 1.5px;
+  margin-top: 4px;
+  > span {
+    height: 3px;
+    border-radius: 1.5px;
+    background: #999;
+  }
+}
 </style>

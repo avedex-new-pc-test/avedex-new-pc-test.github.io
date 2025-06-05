@@ -31,8 +31,8 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'DINPro-Medium',
-        src: '/fonts/DINPro-Medium.woff2',
+        name: 'DINPro-regular',
+        src: '/fonts/DINPro-regular.otf',
         global: true,
         weight: 'normal',
         style: 'normal',

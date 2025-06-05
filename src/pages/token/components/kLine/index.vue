@@ -120,7 +120,7 @@ watch(() => themeStore.theme, (val) => {
       _widget?.applyOverrides?.({
         'scalesProperties.textColor': themeStore.isDark ? '#d5d5d5' : '#333',
         'paneProperties.backgroundType': 'solid',
-        'paneProperties.background': themeStore.isDark ? '#0A0B0D' : '#fff',
+        'paneProperties.background': themeStore.isDark ? '#111' : '#fff',
       })
     })
   }
@@ -287,7 +287,7 @@ async function initChart() {
       // "scalesProperties.lineColor": '#333',
       'scalesProperties.textColor': themeStore.isDark ? '#d5d5d5' : '#333',
       'paneProperties.backgroundType': 'solid',
-      'paneProperties.background': themeStore.isDark ? '#0A0B0D' : '#fff',
+      'paneProperties.background': themeStore.isDark ? '#111' : '#fff',
       'paneProperties.vertGridProperties.style': 2,
       // "paneProperties.vertGridProperties.color": style.grid,
       // "paneProperties.horzGridProperties.style": 2,
@@ -422,7 +422,7 @@ async function initChart() {
             pair_id: pair.value + '-' + chain.value,
             token_id: route.params.id as string,
             from,
-            to: Math.max(to, firstBarTime || 0)
+            to: firstDataRequest ? 0 : Math.max(to, firstBarTime || 0)
           }
           getKlineHistoryData(params).then(res => {
             const bars1 = res?.kline_data || []
@@ -514,7 +514,7 @@ async function initChart() {
         const interval = switchResolution(resolution)
         getMarks({
           from,
-          to: Math.min(to, Math.ceil(Date.now() / 1000)),
+          to: to,
           interval,
           pair: pair.value,
           token: token.value,
@@ -596,7 +596,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
           newBar.low = new BigNumber(newBar.low || 0).times(tokenStore?.circulation || 0).toNumber()
           newBar.close = new BigNumber(newBar.close || 0).times(tokenStore?.circulation || 0).toNumber()
         }
-        if (newBar) {
+        if (newBar && newBar?.time) {
           onTick(newBar)
         }
       }

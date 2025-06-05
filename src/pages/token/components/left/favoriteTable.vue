@@ -149,25 +149,7 @@ function setActiveTab(groupId: number,index:number) {
   activeTab.value = groupId
   resetListStatus()
   loadMoreFavorites()
-  scrollTabToCenter(index)
-}
-
-function scrollTabToCenter(index: number) {
-  if (!tabsContainer.value) {
-    return
-  }
-  const container = tabsContainer.value
-  const tab = container.children[index] as HTMLElement
-  if (!tab) return
-  
-  const containerWidth = container.offsetWidth
-  const tabLeft = tab.offsetLeft
-  const tabWidth = tab.offsetWidth
-  
-  container.scrollTo({
-    left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
-    behavior: 'smooth'
-  })
+  scrollTabToCenter(tabsContainer,index)
 }
 
 async function loadMoreFavorites() {
@@ -218,7 +200,7 @@ function resetListStatus() {
         ref="tabsContainer"
         class="flex items-center gap-10px whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-80% scrollbar-hide">
         <span
-          :class="`text-12px cursor-pointer ${activeTab===0?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
+          :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-4px py-2px rounded-4px cursor-pointer ${activeTab===0? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
           @click="setActiveTab(0,0)"
         >
           {{ $t('defaultGroup') }}
@@ -226,7 +208,7 @@ function resetListStatus() {
         <span
           v-for="(item,index) in userFavoriteGroups.slice(1)"
           :key="index"
-          :class="`text-12px cursor-pointer ${activeTab===item.group_id?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
+          :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-4px py-2px rounded-4px cursor-pointer ${activeTab===item.group_id?'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
           @click="setActiveTab(item.group_id,index+1)"
         >
         {{ item.name }}
