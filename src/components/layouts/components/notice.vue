@@ -10,7 +10,7 @@
       <div
         class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
       >
-        <el-badge color="#F6465D">
+        <el-badge class="h-20px" color="#F6465D">
           <Icon
             class="text-20px text-[--d-999-l-666] cursor-pointer"
             name="material-symbols:notifications"
@@ -90,7 +90,7 @@
             >
               {{ item.symbol }} {{ $t('limitOrderFail') }} {{
                 formatNumber(formatUnits(new BigNumber(item.inAmount || 0).toFixed(0), item.inTokenDecimals || 0).toString(), 3)
-              }} {{ item.inTokenSymbol }} {{ $t('failReason') }}: {{ $f.formatBotError(item.errorLog) }}
+              }} {{ item.inTokenSymbol }} {{ $t('failReason') }}: {{ formatBotError(item.errorLog) }}
             </div>
             <div v-else-if="item.status === 'cancelled'" class="text-12px mt-5px">{{ item.symbol }} {{
                 $t('limitOrderCancel')
