@@ -112,7 +112,7 @@ const isInsiderOrSniperSupported= computed(()=>{
     </div>
     <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
     <KeepAlive v-show="activeTab !== 'Orders'">
-      <component :currentActiveTab="activeTab" :is="Component" />
+      <component :is="Component" />
     </KeepAlive>
   </div>
 </template>
