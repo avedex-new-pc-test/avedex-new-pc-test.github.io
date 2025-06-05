@@ -12,7 +12,7 @@
       </template>
       <el-table-column :label="t('token')" align="left">
         <template #default="{ row }">
-          <div class="flex items-center justify-start">
+          <div class="flex items-center justify-start" @click="handleTokenClick(row)">
             <div class="icon-token-container mr-5px">
               <div class="relative">
                 <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
@@ -35,32 +35,44 @@
                   :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
               </div>
             </div>
-            <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ !row?.isBuy ? row?.inTokenSymbol :
+            <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
+              row?.inTokenSymbol :
               row.outTokenSymbol
-            }}</span>
+              }}</span>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column :label="t('type')" align="right" prop="isBuy">
         <template #header>
-          <span>{{ t('type') }}</span>
-          <el-dropdown trigger="click" @command="handleTypeCommand">
-            <Icon name="custom:filter" class="color-[--d-666-l-999] cursor-pointer text-10px mt-7px" />
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
-                <el-dropdown-item command="5">{{ t('limitBuy') }}</el-dropdown-item>
-                <el-dropdown-item command="6">{{ t('limitSell') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div class="flex flex-row-reverse">
+            <div class="flex items-center">
+              <div>{{ t('type') }}</div>
+              <el-dropdown trigger="click" @command="handleTypeCommand">
+                <Icon name="custom:filter" :class="[filterConditions.swapType?.length === 1 && 'color-#286DFF']"
+                  class="color-[--d-666-l-999] cursor-pointer text-10px" />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="all">{{ t('all') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.swapType.length === 1 && filterConditions.swapType[0] === 'buy' && 'active-dropdown-item']"
+                      command="5">{{ t('limitBuy') }}</el-dropdown-item>
+                    <el-dropdown-item
+                      :class="[filterConditions.swapType.length === 1 && filterConditions.swapType[0] === 'sell' && 'active-dropdown-item']"
+                      command="6">{{ t('limitSell') }}</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 6"
+            class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px bg-[#221115]">
             {{ t('limit') }}/{{ t('sell') }}
           </div>
-          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px bg-[#0b1d19]">
+          <div v-if="row.swapType === 5"
+            class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px bg-[#0b1d19]">
             {{ t('limit') }}/{{ t('buy') }}
           </div>
         </template>
@@ -89,20 +101,19 @@
         </template>
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)]">
-            <template v-if="!row?.isBuy">
-              {{ !!Number(row?.inAmount) ? formatNumber(new BigNumber(row?.inAmount || 0).div(new
-                BigNumber(10).pow(row.inTokenDecimals || 0)).toFixed(), 4) : '--' }}
-              <span v-if="isUnit" class="color-[--d-999-l-666]">
-                &nbsp;{{ getChainInfo(row.chain)?.main_name }}
-              </span>
-            </template>
-            <template v-else>
-              {{ !!Number(row?.outputAmount) ? formatNumber(new BigNumber(row?.outputAmount || 0).div(new
-                BigNumber(10).pow(row.outTokenDecimals || 0)).toFixed(), 4) : '--' }}
-              <span v-if="isUnit" class="color-[--d-999-l-666]">
-                &nbsp;{{ getChainInfo(row.chain)?.main_name }}
-              </span>
-            </template>
+            <span class="text-[var(--d-999-l-959A9F)] text-right">
+              <template v-if="row.swapType === 2 || row.swapType === 6">
+                {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0), 4)
+                }}
+                {{ row?.inTokenSymbol }}
+              </template>
+              <template v-else>
+                {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0),
+                  4)
+                }}
+                {{ row?.outTokenSymbol }}
+              </template>
+            </span>
           </span>
         </template>
       </el-table-column>
@@ -144,8 +155,7 @@
       </el-table-column>
       <el-table-column :label="t('operate')" align="right">
         <template #default="{ row }">
-          <div
-            v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
+          <div v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
             @click.stop="handleCancelOrder(row)">
             {{ t('cancel') }}
           </div>
@@ -163,9 +173,10 @@ import BigNumber from 'bignumber.js'
 import { formatDate, getChainDefaultIcon, formatExplorerUrl } from '~/utils'
 import { formatNumber } from '~/utils/formatNumber'
 import { bot_getUserPendingTx, bot_cancelLimitOrdersByBatch } from '@/api/token'
-
+import { evm_utils } from '@/utils'
 import { ref } from 'vue'
 
+const { formatUnits } = evm_utils
 const props = defineProps({
   chain: {
     type: String,
@@ -181,8 +192,10 @@ const props = defineProps({
   }
 })
 
+const botStore = useBotStore()
 const tokenStore = useTokenStore()
 const route = useRoute()
+const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
 const configStore = useConfigStore()
@@ -193,9 +206,9 @@ const filterConditions = ref({
 
 const txOrder = ref([])
 const loading = ref(false)
-const isUnit = ref(true)
+// const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate], () => {
+watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate, () => tokenStore.placeOrderSuccess, () => route.params.id], () => {
   getUserPendingTx()
 })
 
@@ -213,6 +226,14 @@ function handleCancelOrder(row: any) {
       getUserPendingTx()
     }).catch(() => { })
 }
+
+const handleTokenClick = (row: any) => {
+  const token = row.swapType === 2 || row.swapType === 6 ? row?.inTokenAddress : row.outTokenAddress
+  if (!token) {
+    return
+  }
+  router.push(`/token/${token}-${row.chain}`)
+}
 function handleTypeCommand(command: string) {
   if (command === 'all') {
     filterConditions.value.swapType = ['buy', 'sell']
@@ -221,6 +242,7 @@ function handleTypeCommand(command: string) {
   } else if (command === '6') {
     filterConditions.value.swapType = ['sell']
   }
+  getUserPendingTx()
 }
 
 // function handleStatusCommand(command: string) {
@@ -245,12 +267,20 @@ const getUserPendingTx = async () => {
     const data = {
       chain: props.chain,
       token: props.currentToken ? String(route.params.id).split('-')[0] : '',
-      walletAddress: props.userAddress,
+      walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === props.chain)?.address,
     }
     const res = await bot_getUserPendingTx({
       ...data
     })
     txOrder.value = res || []
+    if (filterConditions.value.swapType.length === 1) {
+      if (filterConditions.value.swapType[0] === 'buy') {
+        txOrder.value = txOrder.value.filter((item: any) => item.swapType === 5)
+      }
+      if (filterConditions.value.swapType[0] === 'sell') {
+        txOrder.value = txOrder.value.filter((item: any) => item.swapType === 6)
+      }
+    }
     tokenStore.registrationNum = txOrder.value.length
   } catch (error: any) {
     ElMessage.error(error)
@@ -260,7 +290,9 @@ const getUserPendingTx = async () => {
 }
 
 onMounted(() => {
-  getUserPendingTx()
+  setTimeout(() => {
+    getUserPendingTx()
+  }, 300)
 })
 defineExpose({
   txOrder,
@@ -272,7 +304,13 @@ defineExpose({
 :deep(.el-dropdown-menu__item) {
   font-size: 12px;
   padding: 8px 16px;
+
+  &.active-dropdown-item {
+    color: #286DFF;
+    font-weight: bold;
+  }
 }
+
 
 :deep(.el-dropdown-menu) {
   background-color: var(--custom-bg-1-color);
