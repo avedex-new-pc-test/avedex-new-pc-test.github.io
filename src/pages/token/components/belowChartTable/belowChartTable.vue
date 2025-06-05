@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Transactions from './transactions/transactions.vue'
+import OrdersTab from './orders/index.vue'
 import OneClick from '../right/botSwap/oneClick.vue'
 import { useBotStore } from '@/stores/bot'
 const { globalConfig } = storeToRefs(useConfigStore())
@@ -22,7 +23,7 @@ const components = {
   Holders: defineAsyncComponent(() => import('./holders/index.vue')),
   LP: '',
   Attention: '',
-  Orders: defineAsyncComponent(() => import('./orders/index.vue')),
+  // Orders: defineAsyncComponent(() => import('./orders/index.vue')),
   MySwap: defineAsyncComponent(() => import('./mySwap/index.vue')),
 }
 
@@ -47,7 +48,7 @@ watch(
 const tabsList = computed(() => {
   return tabs.value.filter(item => {
     if (item.component === 'Orders' && !botStore?.userInfo?.evmAddress) {
-      // return false
+      return false
     }
     return true
   })
@@ -80,8 +81,7 @@ const isInsiderOrSniperSupported= computed(()=>{
 
 <template>
   <div class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1">
-    <div
-      class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-#FFFFFF08 mb-12px">
+    <div class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-#FFFFFF08 mb-12px">
       <a v-for="(item) in tabsList" :key="item.component" href="javascript:;" :class="`flex items-center decoration-none text-12px lh-16px text-center color-[--d-999-l-666]
          ${activeTab === item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`"
         @click="activeTab = item.component">
@@ -110,7 +110,8 @@ const isInsiderOrSniperSupported= computed(()=>{
       </a>
       <OneClick />
     </div>
-    <KeepAlive>
+    <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
+    <KeepAlive v-show="activeTab !== 'Orders'">
       <component :is="Component" />
     </KeepAlive>
   </div>

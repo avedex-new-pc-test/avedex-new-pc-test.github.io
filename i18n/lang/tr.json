@@ -218,5 +218,7 @@
   "currentPosition": "Mevcut Pozisyon",
   "tokenValue": "Pozisyon Değeri",
   "sellTax1": "Satış Vergisi",
-  "positionCostPrice": "Maliyet Fiyatı"
+  "positionCostPrice": "Maliyet Fiyatı",
+  "attention1Success": "Başarıyla favorilere eklendi",
+  "attention1Canceled": "Favori iptal edildi"
 }

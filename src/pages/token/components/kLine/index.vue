@@ -13,7 +13,7 @@ import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, get
 import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
 import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine, useAvgPriceLine } from './utils'
-import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
+import { useLocalStorage, useElementBounding, useWindowSize, useEventBus } from '@vueuse/core'
 import type { WSTx, KLineBar } from './types'
 import BigNumber from 'bignumber.js'
 import { useKlineMarks } from './mark'
@@ -437,12 +437,19 @@ async function initChart() {
             klinePair.value = res?.pair || ''
             if (firstDataRequest) {
               lastBar = bars1?.[bars1?.length - 1] || null
+              if (lastBar) {
+                lastBar.time = lastBar.time * 1000
+              }
               noData = bars?.length < 100
             }
             if (bars1?.length > 0) {
               firstBarTime = bars1?.[0]?.time || 0
             }
             onResult(bars, {noData: !bars?.length})
+
+            setTimeout(() => {
+              useEventBus('klineDataReady').emit()
+            }, 10)
           })
           // if (firstDataRequest) {
           //   getKlineHistoryData(params).then(res => {

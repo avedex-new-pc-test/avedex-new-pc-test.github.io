@@ -1,14 +1,14 @@
 :root.dark {
   .el-popper[role="tooltip"] {
-    // --el-bg-color: #ccc;
-    // --el-text-color-primary: #17191C;
+    --el-bg-color: #fff;
+    --el-text-color-primary: #333;
   }
 }
 
 :root.light {
   .el-popper[role="tooltip"] {
-    // --el-bg-color: #17191C;
-    // --el-text-color-primary: #FFFFFF;
+    --el-bg-color: #fff;
+    --el-text-color-primary: #333;
   }
 }
 

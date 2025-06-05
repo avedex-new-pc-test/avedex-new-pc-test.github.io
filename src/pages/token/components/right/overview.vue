@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="text-16px py-12px border-b-solid border-b border-[--d-333-l-DDD] color-#999">{{ $t('tokenInfo') }}</div>
-    <ul class="text-12px mt-10px border-b-solid border-b border-[--d-333-l-DDD]">
+    <div class="text-16px py-12px color-#999">{{ $t('tokenInfo') }}</div>
+    <ul class="text-12px mt-10px">
       <li v-if="token?.token" class="flex justify-between mb-12px">
         <span class="color-[--d-666-l-999]">{{ $t('token') }}</span>
         <div class="flex items-center justify-end color-[--d-999-l-666]">
@@ -56,7 +56,7 @@
         </template>
       </template>
     </ul>
-    <ul v-if="pair" class="text-12px mt-10px border-b-solid border-b border-[--d-333-l-DDD]">
+    <ul v-if="pair" class="text-12px mt-10px">
       <li class="flex justify-between mb-12px">
         <span class="color-[--d-666-l-999]">{{ $t('pair') }}</span>
         <div class="flex items-center justify-end color-[--d-999-l-666]">

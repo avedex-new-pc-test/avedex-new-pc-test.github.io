@@ -54,12 +54,12 @@
       </el-input>
       <div class="slider-swap" :class="activeTab">
         <div class="slider-swap_left">
-          <el-slider v-model="priceLimitRange" :show-tooltip="false" :show-input-controls="false" :min="-100" :max="100" />
+          <el-slider :model-value="priceLimitRange1" :show-tooltip="false" :show-input-controls="false" :min="-100" :max="100" @input="onSliderInput" />
           <div class="slider-swap_left-mark">
-            <span v-for="(item, index) in [-100, -50, 0, 50, 100]" :key="index" class="clickable" @click.stop="priceLimitRange=item">{{item}}%</span>
+            <span v-for="(item, index) in [-100, -50, 0, 50, 100]" :key="index" class="clickable" @click.stop="priceLimitRange1=item">{{item}}%</span>
           </div>
         </div>
-        <el-input v-model.number="priceLimitRange" placeholder="0" class="input-number max-w-70px ml-15px text-14px" @update:model-value="value => priceLimit = value?.replace?.(/\-|[^\d.]/g, '')">
+        <el-input v-model.number="priceLimitRange" placeholder="0" class="input-number max-w-70px ml-15px text-14px!" @update:model-value="value => priceLimit = value?.replace?.(/\-|[^\d.]/g, '')">
           <template #prefix>
             <div class="w-10px" />
           </template>
@@ -262,6 +262,14 @@ const isPriceLimit = ref(true)
 const priceLimit = ref('')
 const priceLimitRange = ref<undefined | number>(undefined)
 
+const priceLimitRange1 = computed(() => {
+  return Number(priceLimitRange.value) > 100 ? 100 : priceLimitRange.value
+})
+
+function onSliderInput(val: number) {
+  priceLimitRange.value = val
+}
+
 watch(priceLimitRange, (val) => {
   if (props.swapType !== 'limit') return
   if (!Number.isNaN(Number(val))) {
@@ -270,11 +278,11 @@ watch(priceLimitRange, (val) => {
 })
 
 let isLineChange = false
-useEventBus<string>('priceLimit_move').on(price => {
+useEventBus<string>('priceLimit_move').on((price) => {
   if (props.swapType !== 'limit') return
   if (!Number.isNaN(Number(price))) {
     isLineChange = true
-    priceLimitRange.value = Number(new BigNumber(price || 0).minus(tokenStore.price || 0).div(tokenStore.price || 0).times(100).toFixed(3))
+    priceLimitRange.value = Number(new BigNumber(price || 0).minus(tokenStore.price || 0).div(tokenStore.price || 0).times(100).toFixed(0))
     nextTick(() => {
       isLineChange = false
     })
@@ -304,6 +312,11 @@ watch(isPriceLimit, (val) => {
       priceLimit.value = formatDec(new BigNumber(priceLimit.value || 0).div(tokenStore.circulation || 1).toFixed(), 4)
     }
   }
+})
+
+useEventBus('klineDataReady').on(() => {
+  if (props.swapType !== 'limit') return
+  updateStorePriceLimit()
 })
 
 function updateStorePriceLimit() {
@@ -670,6 +683,7 @@ async function submitBotSwap() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.historyUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'myBotHistory'
@@ -752,6 +766,7 @@ async function submitBotSwap() {
     bot_createSwapEvmTx(data).then(res => {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           loadingSwap.value = false
           amountNative.value = ''
@@ -984,7 +999,7 @@ function getEstimatedGas() {
     // let botSettings = this.botSettings?.[this.chain]?.[] || {}
     const botSettings = botSettingStore.botSettings?.[chain]?.[botSettingStore.botSettings?.[chain]?.selected as 's1' | 's2' | 's3']
     const mev = botSettings?.mev
-    const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain)?.current_price_usd || tokenStore.swap.native.price || 0
+    const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain && item.token === getChainInfo(chain)?.wmain_wrapper)?.current_price_usd || tokenStore.swap.native.price || 0
     const { gasTip1List, gasTip2List } = formatBotGasTips(botSwapStore.gasTip, chain)
     const gasTips = mev ? gasTip1List : gasTip2List
     const settings = mev ? botSettings?.gas[0] : botSettings?.gas[1]
@@ -1174,6 +1189,8 @@ onMounted(() => {
     --el-input-border-color: transparent;
     --el-input-focus-border-color: transparent;
     --el-input-hover-border-color: transparent;
+    font-size: 18px;
+    font-weight: 500;
     :deep() .el-input-group__append, .el-input-group__prepend {
       padding: 0 10px;
     }

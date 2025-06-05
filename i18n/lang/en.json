@@ -506,8 +506,8 @@
   "totalProfit": "Total Profit",
   "realizedProfit": "Realized Profit",
   "unrealizedProfit": "Unrealized Profit",
-  "buyPriceWithSlash": "Buy/Buy Price",
-  "sellPriceWithSlash": "Sell/Sell Price",
+  "buyPriceWithSlash": "Buy/Avg Price",
+  "sellPriceWithSlash": "Sell/Avg Price",
   "status": "Status",
   "CreateTime": "Creation Time",
   "ExpirationTime": "Expiration Time",
@@ -621,5 +621,7 @@
   "Migrated": "Migrated",
   "HotMigrated": "Hot Migrated",
   "Expand": "Expand",
-  "Collapse": "Collapse"
+  "Collapse": "Collapse",
+  "attention1Success": "Following successfully",
+  "attention1Canceled": "Following has been canceled"
 }

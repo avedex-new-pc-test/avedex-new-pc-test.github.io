@@ -8,7 +8,7 @@ import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
-import { JsonRpcProvider, formatUnits, parseUnits,FixedNumber, ethers } from 'ethers'
+import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
 
 export function isJSON(str: string) {
   try {
@@ -608,7 +608,6 @@ export function getRpcProvider(chain: string) {
 }
 
 export const evm_utils = {
-  ...ethers,
   formatUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
     const decimals = Number(arg?.[1])
     if (!decimals) {
@@ -621,7 +620,6 @@ export const evm_utils = {
     if (!decimals) {
       return FixedNumber.fromString(String(arg?.[0] ?? '0')).value
     }
-    // Ensure the value is a string as required by ethers' parseUnits
     const valueStr = String(arg?.[0] ?? '')
     return parseUnits(valueStr, decimals)
   }
@@ -713,11 +711,11 @@ export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: 
   const container = tabsContainer.value
   const tab = container.children[index] as HTMLElement
   if (!tab) return
-  
+
   const containerWidth = container.offsetWidth
   const tabLeft = tab.offsetLeft
   const tabWidth = tab.offsetWidth
-  
+
   container.scrollTo({
     left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
     behavior: 'smooth'

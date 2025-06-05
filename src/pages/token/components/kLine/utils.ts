@@ -347,7 +347,8 @@ export function useLimitPriceLine(getWidget: () => IChartingLibraryWidget | null
             if (!points?.length) return
             const price = points?.[0]?.price || 0
             if (!price) return
-            useEventBus<string>('priceLimit_move').emit(formatDec(Number(price), 4))
+            const price1 = showMarket.value ? new BigNumber(price).div(useTokenStore().circulation || '1')?.toNumber() : price
+            useEventBus<string>('priceLimit_move').emit(formatDec(Number(price1), 4))
           })
         }
       })

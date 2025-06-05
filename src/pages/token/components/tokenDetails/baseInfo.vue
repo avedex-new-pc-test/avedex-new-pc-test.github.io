@@ -197,7 +197,6 @@ function attention() {
               :chain="tokenDetailStore.tokenInfo!.chain"
               :wallet_logo="statistics.wallet_logo"
               address-class="max-w-95px whitespace-nowrap text-ellipsis overflow-x-hidden text-14px"
-              @updateRemark="updateRemark"
               :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
             />
             <div v-if="statistics.newTags?.length > 0" class="ml-6px">

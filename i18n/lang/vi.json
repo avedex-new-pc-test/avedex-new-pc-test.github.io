@@ -395,5 +395,7 @@
   "currentPosition": "Vị thế hiện tại",
   "tokenValue": "Giá trị vị thế",
   "sellTax1": "Thuế bán",
-  "positionCostPrice": "Giá vị thế"
+  "positionCostPrice": "Giá vị thế",
+  "attention1Success": "Theo dõi thành công",
+  "attention1Canceled": "Đã hủy theo dõi"
 }

@@ -395,5 +395,7 @@
   "currentPosition": "Текущая позиция",
   "tokenValue": "Стоимость позиции",
   "sellTax1": "Налог на продажу",
-  "positionCostPrice": "Цена позиции"
+  "positionCostPrice": "Цена позиции",
+  "attention1Success": "Подписка успешна",
+  "attention1Canceled": "Подписка отменена"
 }

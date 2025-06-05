@@ -183,7 +183,7 @@ function getColorClass(val: string) {
           >
             <div class="lh-46px h-46px mt-5px font-700">
             {{ addSign(Number(statistics.total_profit_ratio)) }}{{
-              formatNumber(Number(statistics.total_profit_ratio) * 100 || 0, 2)
+              formatNumber(Math.abs(Number(statistics.total_profit_ratio)) * 100 || 0, 2)
             }}%
             </div>
           </ExcludeError>

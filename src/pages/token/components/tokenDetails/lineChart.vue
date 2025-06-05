@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import * as echarts from 'echarts'
+import * as echarts from 'echarts/core'
+import { LineChart } from 'echarts/charts'
+import {
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  MarkPointComponent,
+} from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
 import type {GetTokenDetailMarksResponse} from '~/api/token'
 
 import add_liquidity from 'assets/images/mark/add_liquidity.png'
@@ -11,6 +19,15 @@ import T_Trading from 'assets/images/mark/T_Trading.png'
 import transfer_in from 'assets/images/mark/transfer_in.png'
 import transfer_out from 'assets/images/mark/transfer_out.png'
 
+// 注册使用组件
+echarts.use([
+  LineChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  MarkPointComponent,
+  CanvasRenderer
+])
 const images: any = {
   add_liquidity,
   burn,
@@ -255,7 +272,7 @@ function init() {
       appendToBody: true
     },
     grid: {
-      left: '13', //图表距边框的距离
+      left: '16', //图表距边框的距离
       right: '0',
       top: '40',
       bottom: '0',
@@ -273,7 +290,10 @@ function init() {
       },
       axisLabel: {
         color: '#696E7C',
-        fontFamily: 'Outfit-Medium'
+        fontFamily: 'Outfit-Medium',
+        formatter:(value:string)=>{
+           return value.split(' ').join('\n')
+        }
       },
       nameTextStyle: {
         fontSize: 10

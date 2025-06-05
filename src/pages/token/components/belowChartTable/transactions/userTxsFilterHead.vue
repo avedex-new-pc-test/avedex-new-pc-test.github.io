@@ -63,9 +63,14 @@ const totalBuySell = computed(() => {
     buyUSD, sellUSD, buyAmount, sellAmount
   }
 })
+const tokenValue = computed(() => {
+  let sellTax = (tokenStore.tokenInfoExtra?.sell_tax || 0) / 100
+  sellTax = sellTax > 1 ? 1 : sellTax
+  return (tokenStore.tokenPrice || 0) * (balance.value.amount || 0) * (1 - sellTax)
+})
 const profit = computed(() => {
   const {buyUSD, sellUSD} = totalBuySell.value
-  return buyUSD + sellUSD
+  return buyUSD + tokenValue.value - sellUSD
 })
 const profitChange = computed(() => {
   const {buyUSD} = totalBuySell.value
@@ -75,9 +80,17 @@ const profitChange = computed(() => {
   return 0
 })
 const avgSellPrice = computed(() => {
+  const {sellAmount, sellUSD} = totalBuySell.value
+  if (sellAmount > 0) {
+    return sellUSD / sellAmount
+  }
   return 0
 })
 const avgBuyPrice = computed(() => {
+  const {buyAmount, buyUSD} = totalBuySell.value
+  if (buyAmount > 0) {
+    return buyUSD / buyAmount
+  }
   return 0
 })
 
@@ -132,7 +145,9 @@ async function _getTokenBalance() {
     </div>
     <div>
       <span class="color-#959A9F">{{ $t('profit') }}:</span>
-      <span :class="`ml-4px ${getColorClass(String(profit))}`">{{ formatNumber(profit, 2) }}</span>
+      <span :class="`ml-4px ${getColorClass(String(profit))}`">{{ addSign(profit) }}${{
+          formatNumber(Math.abs(profit), 2)
+        }}</span>
       <span :class="`ml-4px ${getColorClass(String(profitChange))}`">{{ formatNumber(profitChange * 100, 1) }}%</span>
     </div>
     <div>
