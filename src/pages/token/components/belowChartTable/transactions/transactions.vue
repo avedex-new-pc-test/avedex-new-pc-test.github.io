@@ -299,8 +299,10 @@ function confirmVolFilter(amountU: string[] = []) {
 }
 
 function confirmMakersFilter(markerAddress = '') {
+  txCount.value = {}
   tableFilterVisible.value.markers = false
   tableFilter.value.markerAddress = markerAddress
+  _getTokenTxs()
 }
 
 async function _getTokenTxs() {
@@ -309,7 +311,8 @@ async function _getTokenTxs() {
     const { tag_type } = tableFilter.value
     const getPairTxsParams = {
       token_id: route.params.id as string,
-      tag_type
+      tag_type,
+      maker: tableFilter.value.markerAddress
     }
     const res = await getTokenTxs(getPairTxsParams)
     realAddress.value = getAddressAndChainFromId(getPairTxsParams.token_id).address
@@ -542,7 +545,9 @@ function setActiveTab(val: string,index:number) {
 }
 
 function setMakerAddress(address: string) {
+  txCount.value = {}
   tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
+  _getTokenTxs()
 }
 
 function onRowClick({ rowData }: RowEventHandlerParams) {
@@ -623,7 +628,9 @@ function resetMakerAddress() {
         <UserTxsFilterHead
           :makerAddress="tableFilter.markerAddress" :isLiquidity="isLiquidity" :pairLiq="pairLiq"
           :isBuy="isBuy" :getAmount="getAmount" :getPrice="getPrice" :chain="addressAndChain.chain"
-          :tagType="tableFilter.tag_type" />
+          :tagType="tableFilter.tag_type"
+          :tokenTxs="tokenTxs"
+        />
       </template>
     </template>
     <div
@@ -654,7 +661,7 @@ function resetMakerAddress() {
         </template>
         <template #cell-time="{ row,rowIndex }">
           <TimerCount
-            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60"
+            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60 && Number(formatTimeFromNow(row.time, true))>0"
             :key="`${row.time}${rowIndex}`" :timestamp="row.time" :end-time="60">
             <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">

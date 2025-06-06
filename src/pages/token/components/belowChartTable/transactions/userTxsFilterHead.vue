@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
-import {getPairTxs, type GetPairTxsResponse, getUserBalances} from '~/api/token'
+import {getUserBalances, type IGetTokenTxsResponse} from '~/api/token'
 
 const props = defineProps({
   makerAddress: {
@@ -10,6 +10,10 @@ const props = defineProps({
   isLiquidity: Boolean,
   pairLiq: {
     type: Array,
+    default: () => []
+  },
+  tokenTxs: {
+    type: Array<IGetTokenTxsResponse>,
     default: () => []
   },
   tagType: {
@@ -36,11 +40,12 @@ const props = defineProps({
     }
   }
 })
+// const emit = defineEmits(['updateTokenTxs'])
 
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const route = useRoute()
-const pairTxs = shallowRef<GetPairTxsResponse[]>([])
+// const tokenTxs = shallowRef<IGetTokenTxsResponse[]>([])
 const balance = shallowRef({
   amount: 0,
   value: ''
@@ -50,7 +55,7 @@ const totalBuySell = computed(() => {
   let sellUSD = 0
   let buyAmount = 0
   let sellAmount = 0
-  pairTxs.value.forEach(tx => {
+  props.tokenTxs.forEach(tx => {
     if (props.isBuy(tx)) {
       buyUSD += props.getAmount(tx, true, true)
       buyAmount += props.getAmount(tx)
@@ -70,7 +75,7 @@ const tokenValue = computed(() => {
 })
 const profit = computed(() => {
   const {buyUSD, sellUSD} = totalBuySell.value
-  return buyUSD + tokenValue.value - sellUSD
+  return sellUSD + tokenValue.value - buyUSD
 })
 const profitChange = computed(() => {
   const {buyUSD} = totalBuySell.value
@@ -95,26 +100,28 @@ const avgBuyPrice = computed(() => {
 })
 
 watch(() => props.makerAddress, () => {
-  _getPairTxs()
+  // _getTokenTxs()
   _getTokenBalance()
 }, {
   immediate: true
 })
 
-async function _getPairTxs() {
-  try {
-    const {tagType, chain} = props
-    const getPairTxsParams = {
-      pair: tokenStore.pairAddress + '-' + chain,
-      tag_type: tagType,
-      maker: props.makerAddress
-    }
-    const res = await getPairTxs(getPairTxsParams)
-    pairTxs.value = res || []
-  } catch (e) {
-    console.log('=>(userTxsFilterHead.vue:40) e', e)
-  }
-}
+// async function _getTokenTxs() {
+//   const id = route.params.id as string
+//   if (!id) return
+//   try {
+//     const {tagType} = props
+//     const getTokenTxsParams = {
+//       token_id: id,
+//       tag_type: tagType,
+//       maker: props.makerAddress
+//     }
+//     const res = await getTokenTxs(getTokenTxsParams)
+//     tokenTxs.value = res || []
+//   } catch (e) {
+//     console.log('=>(userTxsFilterHead.vue:40) e', e)
+//   }
+// }
 
 async function _getTokenBalance() {
   try {
