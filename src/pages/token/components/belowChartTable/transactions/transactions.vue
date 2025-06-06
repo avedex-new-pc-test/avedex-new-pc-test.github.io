@@ -14,8 +14,9 @@ import {
   getTokenTxs,
   type Profile
 } from '~/api/token'
-import { formatDate, getAddressAndChainFromId, getChainInfo } from '~/utils'
+import {formatDate, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 import dayjs from 'dayjs'
+
 import { useThrottleFn } from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
@@ -233,7 +234,8 @@ watch(() => wsStore.wsResult[WSEventType.TX], data => {
     topN, wallet_tag,
     senderProfile: JSON.parse(data.tx.profile || '{}'),
     count: txCount.value[wallet_address],
-    time: Math.min(Math.floor(Date.now() / 1000), data.tx.time)
+    time: Math.min(Math.floor(Date.now() / 1000), data.tx.time),
+    uuid: uuid()
   }
   wsPairCache.value.unshift(item)
   if (!isPausedTxs.value) {
@@ -248,6 +250,7 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
   // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
+    uuid: uuid()
     // count: txCount.value[wallet_address]
   })
   if (!isPausedTxs.value) {
@@ -326,7 +329,8 @@ async function _getTokenTxs() {
         wallet_tag,
         topN,
         count: txCount.value[val.wallet_address],
-        senderProfile: JSON.parse(val.profile || '{}')
+        senderProfile: JSON.parse(val.profile || '{}'),
+        uuid: uuid()
       }
     }).reverse()
   } catch (e) {
@@ -365,6 +369,7 @@ async function _getPairLiq() {
       // txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       return {
         ...val,
+        uuid: uuid()
         // count: txCount.value[val.wallet_address],
       }
     }).reverse()
@@ -639,6 +644,7 @@ function resetMakerAddress() {
       v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
       element-loading-background="transparent">
       <AveTable
+        rowKey="uuid"
         fixed :data="filterTableList"
         :columns="columns"
         class="h-560px"
