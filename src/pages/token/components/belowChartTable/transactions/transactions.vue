@@ -29,7 +29,7 @@ const wsStore = useWSStore()
 const tagStore = useTagStore()
 const route = useRoute()
 // 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
-const realAddress = shallowRef(route.params.id as string)
+const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
@@ -662,7 +662,7 @@ function resetMakerAddress() {
         </template>
         <template #cell-time="{ row,rowIndex }">
           <TimerCount
-            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60 && Number(formatTimeFromNow(row.time, true))>0"
+            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60"
             :key="`${row.time}${rowIndex}`" :timestamp="row.time" :end-time="60">
             <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
