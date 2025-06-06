@@ -508,7 +508,7 @@ async function quoteBot(chain: string, type = props.activeTab, isGetPrice = true
   if (isGetPrice) {
     await _getTokensPrice()
   }
-  const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain)?.current_price_usd || 0
+  const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain && item.token === getChainInfo(chain)?.wmain_wrapper)?.current_price_usd || tokenStore.swap.native.price || 0
 
   let price: number = tokenStore.price || tokenStore.swap.token?.price || 0
   if (props.swapType === 'limit') {
