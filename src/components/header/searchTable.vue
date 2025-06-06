@@ -167,7 +167,7 @@
                 </el-image>
                 <img
                   v-if="row?.chain"
-                  class="icon-svg icon-symbol"
+                  class="icon-svg icon-symbol rounded-100%"
                   :src="`${token_logo_url}chain/${row?.chain}.png`"
                   alt=""
                   srcset=""
@@ -617,8 +617,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
       }
       > :nth-child(6) {
         flex: 1;
-        text-align: right;
-        color: #eaecef;
+        text-align: right
       }
       > :nth-child(7) {
         flex: 1;
