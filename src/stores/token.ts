@@ -63,12 +63,13 @@ export const useTokenStore = defineStore('token', () => {
   })
 
   function switchPair(pair1: TokenInfo['pairs'][0]['pair']) {
-    if (!pairs.value) return
-    const isPair = pairs.value?.some(pair2 => pair2.pair === pair1)
+    const pairs = tokenInfo.value?.pairs || []
+    if (!pairs) return
+    const isPair = pairs?.some(pair2 => pair2.pair === pair1)
     if (isPair) {
       pairAddress.value = pair1
     } else {
-      pairAddress.value = pairs.value?.[0]?.pair
+      pairAddress.value = pairs?.[0]?.pair
     }
   }
 
@@ -209,7 +210,7 @@ export const useTokenStore = defineStore('token', () => {
       switchPair(newPair.pair)
     }
   }
-  
+
   return {
     tokenInfo,
     tokenInfoExtra,
