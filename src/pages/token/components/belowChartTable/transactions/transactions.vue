@@ -26,6 +26,7 @@ const { totalHolders, pairAddress, token, pair } = storeToRefs(useTokenStore())
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
+const tagStore = useTagStore()
 const route = useRoute()
 // 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
 const realAddress = shallowRef(route.params.id as string)
@@ -802,7 +803,8 @@ function resetMakerAddress() {
               v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
               name="custom:big" class="mr-3px shrink-0"/>
           </template>
-          <SignalTags tagClass="mr-3px" :tags="row.newTags" :walletAddress="row.wallet_address" :chain="row.chain" />
+          <SignalTags tagClass="mr-3px" :tags="(row.newTags||[]).map(el=>tagStore.matchTag(el.type))"
+                      :walletAddress="row.wallet_address" :chain="row.chain"/>
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
               :remark="row.remark"
