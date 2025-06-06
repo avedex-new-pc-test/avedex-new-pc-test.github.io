@@ -266,13 +266,13 @@ function attention() {
               name="bxs:copy"
               class="cursor-pointer color-[--d-666-l-696E7C] text-10px"
             />
-            <Icon
-              name="custom:attention"
-              :class="`cursor-pointer ${isAttention
-                  ?'color-#f45469'
-                  :'color-[--d-666-l-696E7C]'} text-10px hover:color-#f45469`"
-              @click.self.stop="attention"
-            />
+            <!--<Icon-->
+            <!--  name="custom:attention"-->
+            <!--  :class="`cursor-pointer ${isAttention-->
+            <!--      ?'color-#f45469'-->
+            <!--      :'color-[&#45;&#45;d-666-l-696E7C]'} text-10px hover:color-#f45469`"-->
+            <!--  @click.self.stop="attention"-->
+            <!--/>-->
           </div>
         </div>
       </div>
