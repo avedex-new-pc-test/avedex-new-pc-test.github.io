@@ -11,9 +11,6 @@ export function updatePriceFromTx(tx: WSTx, fullPath: string) {
   if (tx.pair_address === tokenStore.pairAddress) {
     if (price) {
       tokenStore.tokenPrice = price
-      if (fullPath?.includes?.('/token')) {
-        useHead({ title: '$' + formatNumber(price, 4) + ' ' + tokenStore.token?.symbol + ' | Ave' })
-      }
     }
   }
   tokenStore?.pairs?.forEach(pair => {
