@@ -405,7 +405,7 @@ async function initChart() {
       },
       getBars: (symbolInfo, resolution, periodParams, onResult, onError) => {
         const { from, to, firstDataRequest } = periodParams
-        console.log('[getBars]: Method call', symbolInfo, resolution, from, to, firstDataRequest)
+        // console.log('[getBars]: Method call', symbolInfo, resolution, from, to, firstDataRequest)
         try {
           if (firstDataRequest) {
             noData = false
