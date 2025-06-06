@@ -45,7 +45,7 @@
             >{{ token?.symbol }}</span
           >
           <span class="ml-8px text-12px font-500">{{ token?.name }}</span>
-          <div v-if="medias?.length > 0" class="ml-46px flex">
+          <div v-if="medias?.length > 0" class="ml-8px flex">
             <div v-for="(item, index) in medias" :key="index" class="tag-btn">
               <template v-if="item.url">
                 <span
@@ -251,7 +251,7 @@
             </template>
           </el-popover>
         </div>
-        <div class="clickable text-12px font-500 flex items-center">
+        <div class="text-12px font-500 flex items-center mt-5px">
           <a
             v-if="token?.token !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
             class="hover:color-[--d-F5F5F5-l-333]"
@@ -262,7 +262,7 @@
               token?.token?.replace(new RegExp('(.{4})(.+)(.{4}$)'), '$1...$3')
             }}
           </a>
-          <Icon v-copy="token?.token" name="bxs:copy" class="ml-5px" />
+          <Icon v-copy="token?.token" name="bxs:copy" class="ml-5px clickable" />
           <span
             v-if="pair"
             v-tooltip="formatDate(pair?.created_at)"
@@ -825,6 +825,7 @@ function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
     moveFavoriteGroup(tokenId, id, evmAddress)
       .then(() => {
         ElMessage.success(t('success'))
+        editableGroup.value = false
         getTokenFavoriteCheck()
         topEventBus.emit()
       })
@@ -834,7 +835,7 @@ function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
       })
       .finally(() => {
         loadingGroupEdit.value = false
-        editableGroup.value = false
+
       })
   } else {
     loadingGroupEdit.value = false
@@ -863,6 +864,7 @@ function confirmEditRemark(tokenId: string, remark2: string) {
     .then(() => {
       ElMessage.success(t('success'))
       remark.value = remark2
+      editableRemark.value = false
       topEventBus.emit()
     })
     .catch((err) => {

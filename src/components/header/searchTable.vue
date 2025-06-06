@@ -214,31 +214,30 @@
                 </div>
               </div>
             </div>
-            <div>
-              <!-- {{ row.opening_at > 0 ? formatDate(row.opening_at) : '--' }} -->
-
-          <TimerCount v-if="!isShowDate && row.opening_at && Number(formatTimeFromNow(row.opening_at, true)) < 60 && Number(formatTimeFromNow(row.opening_at, true)) > 0"
-            :key="row.opening_at" :timestamp="row.opening_at" :end-time="60">
-            <template #default="{ seconds }">
-              <span>
-                <template v-if="seconds < 60">
-                  {{ seconds }}{{ $t('ss') }}
-                </template>
-                <template v-else>
-                  {{ dayjs(row.opening_at * 1000).fromNow() }}
-                </template>
-              </span>
-            </template>
-          </TimerCount>
-          <span v-else >
-            {{
-              isShowDate
-                ? formatDate(row.opening_at, 'HH:mm:ss')
-                : dayjs(row.opening_at * 1000).fromNow()
-            }}
-          </span>
-            </div>
             <template v-if="row.current_price_usd > 0">
+              <div v-if="row.opening_at">
+                <TimerCount v-if="!isShowDate && row.opening_at && Number(formatTimeFromNow(row.opening_at, true)) < 60 && Number(formatTimeFromNow(row.opening_at, true)) > 0"
+                  :key="row.opening_at" :timestamp="row.opening_at" :end-time="60">
+                  <template #default="{ seconds }">
+                    <span>
+                      <template v-if="seconds < 60">
+                        {{ seconds }}{{ $t('ss') }}
+                      </template>
+                      <template v-else>
+                        {{ dayjs(row.opening_at * 1000).fromNow() }}
+                      </template>
+                    </span>
+                  </template>
+                </TimerCount>
+                <span v-else >
+                  {{
+                    isShowDate
+                      ? formatDate(row.opening_at)
+                      : dayjs(row.opening_at * 1000).fromNow()
+                  }}
+                </span>
+              </div>
+              <span>--</span>
               <div>
                 <span
                   :class="
@@ -283,32 +282,20 @@
               </div>
               <div
                 class="flex-end"
-                :style="{ color: getColor(row.risk_score) }"
               >
-                <img
-                  v-if="row.risk_score == 0"
-                  src="@/assets/images/zhuyi1.svg"
-                  :width="14"
-                />
-                <img
-                  v-else-if="row.risk_score > 0 && row.risk_score < 40"
-                  src="@/assets/images/安全.svg"
-                  :width="14"
-                />
-                <img
-                  v-else-if="row.risk_score >= 40 && row.risk_score < 60"
-                  src="@/assets/images/yichang1-gaoliang.svg"
-                  :width="14"
-                />
-                <img
-                  v-else
-                  src="@/assets/images/risk-gaoliang.svg"
-                  :width="14"
-                />
-                &nbsp;{{ formatNumber(row.risk_score) || 0 }}
+                <arc-progress
+                :progress="Number(row.risk_score / 100) || 0"
+                :width="40"
+                :thickness="2"
+                :big="false"
+                :height="20"
+                :textHeight="15"
+                :end="true"
+                class="arc-progress"
+              />
               </div>
             </template>
-            <div v-else>
+            <div v-else class="flex-end">
               <!-- <count-down
                 v-if="showTime"
                 class="count-down mt-8"
@@ -353,7 +340,7 @@
               </div>
 
               <template v-else>
-                <img src="@/assets/images/icon-unknown.png" alt="" />
+                <img class="mr-5px" src="@/assets/images/icon-unknown.png" alt="" :width="12">
                 {{ $t('unknownRisk') }}
               </template>
             </div>
@@ -424,12 +411,7 @@ function tableRowClick(id: string) {
   emit('close')
 }
 const isShowHighRisk = shallowRef(true)
-const getColor = (progress: number): string => {
-  if (progress === 0) return '#eaecef'
-  if (progress > 0 && progress < 40) return '#81c54e'
-  if (progress >= 40 && progress < 60) return '#f8be46'
-  return '#e74e54'
-}
+
 function getActiveClass(
   activeSort1: SortValue,
   sortBy1: string,

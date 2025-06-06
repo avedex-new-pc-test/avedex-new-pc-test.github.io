@@ -29,7 +29,7 @@
             color: profit.value >= 0 ? upColor[0] : downColor[0],
           }"
         >
-          ${{ formatNumber(profit.value) }}
+          {{ profit.value >= 0? '$'+ formatNumber(profit.value) : '-$'+ formatNumber(Math.abs(profit.value)) }}
         </span>
         <span
           v-else-if="label.type === 'profitChange'"

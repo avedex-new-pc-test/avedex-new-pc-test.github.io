@@ -10,14 +10,6 @@ const botStore = useBotStore()
 const { t } = useI18n()
 const {token, tokenInfoExtra } = storeToRefs(useTokenStore())
 const activeTab = shallowRef<keyof typeof components>('Transactions')
-const tabs = shallowRef([
-  { name: t('transactions'), component: 'Transactions' as const },
-  { name: t('holders'), component: 'Holders' as const },
-  { name: 'LP', component: 'LP' as const },
-  { name: t('attention1'), component: 'Attention' as const },
-  { name: t('orders'), component: 'Orders' as const },
-  { name: t('mySwap'), component: 'MySwap' as const },
-])
 const components = {
   Transactions,
   Holders: defineAsyncComponent(() => import('./holders/index.vue')),
@@ -26,6 +18,16 @@ const components = {
   // Orders: defineAsyncComponent(() => import('./orders/index.vue')),
   MySwap: defineAsyncComponent(() => import('./mySwap/index.vue')),
 }
+const tabs = computed(() => {
+  return [
+  { name: t('transactions'), component: 'Transactions' as const },
+  { name: t('holders'), component: 'Holders' as const },
+  { name: 'LP', component: 'LP' as const },
+  { name: t('attention1'), component: 'Attention' as const },
+  { name: t('orders'), component: 'Orders' as const },
+  { name: t('mySwap'), component: 'MySwap' as const },
+  ]
+})
 
 watch(
   () => tokenStore.placeOrderUpdate,
@@ -91,7 +93,7 @@ const isInsiderOrSniperSupported= computed(()=>{
           {{ item.name }}
           <span v-if="item.component === 'Orders'">({{ tokenStore.registrationNum }})</span>
           <span v-if="item.component == 'Holders' && holders">
-            ({{ holders ? formatNumber(holders) : '' }})
+            ({{ token?.holders ? formatNumber(token?.holders || 0, 2) : '' }})
               <template v-if="isInsiderOrSniperSupported && isInsiderOrSniperSupported">
                 <img class="align-middle"  v-if="tokenInfoExtra?.insiders_balance_ratio_cur??0 > 0.3" src="@/assets/images/insiders.svg" :width="14">
                 <img  class="align-middle" v-else src="@/assets/images/insiders-gray.svg" :width="14">
