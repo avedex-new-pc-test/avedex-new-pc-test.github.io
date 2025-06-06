@@ -1577,7 +1577,6 @@ const riskSimulateList = computed(() => {
   return a
 })
 const statistics_risk = computed(() => {
-  console.log('--------riskList?.value----', riskList?.value)
   let num = riskList?.value?.filter((i) => i[0] == 2)?.length || 0
   if (riskSimulateList?.value) {
     riskSimulateList?.value?.forEach((item) => {
@@ -1883,7 +1882,6 @@ function formatRisk(checkResult?: Check) {
     }
   }
   const b = a.sort((a, b) => b[0] - a[0])
-  console.log('----------b---------', b)
   return b
 }
 
@@ -1937,7 +1935,6 @@ function formatNote(checkResult?: Check) {
   if (checkResult?.selfdestruct === '1') {
     a.push(t('selfdeStruct'))
   }
-  console.log('------------------formatNote-----', a)
   return a
 }
 //获取assets下的图片

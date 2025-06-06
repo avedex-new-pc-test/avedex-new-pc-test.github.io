@@ -401,7 +401,7 @@
 
     <div class="flex-1" />
     <div
-      v-if="pair?.progress || (0 > 0 && pair?.progress) || 0 < 100"
+      v-if="(pair?.progress??0) > 0 && (pair?.progress??0) < 100"
       class="item"
     >
       <div class="flex items-center">
@@ -683,7 +683,6 @@ const appendix = computed(() => {
   return {}
 })
 const medias = computed(() => {
-  console.log('--------appendix----', appendix.value)
   return [
     { name: t('website'), icon: 'web', url: appendix.value?.website },
     { name: 'Btok', icon: 'btok', url: appendix.value?.btok },
@@ -750,7 +749,6 @@ const loading = shallowRef(false)
 function getTokenFavoriteCheck() {
   getFavoriteCheck(id.value, evmAddress.value)
     .then((res) => {
-      console.log('------getFavoriteCheck---------', res, typeof res)
       collected.value = res?.address ? true : false
       remark.value = res?.remark || ''
       remark2.value = res?.remark || ''

@@ -33,7 +33,7 @@ export function getHot(): Promise<
   }>
 > {
   const { $api } = useNuxtApp()
-  return $api('/v2api/token/v1/hot', {
+  return $api('/v1api/v2/tokens/hot', {
     method: 'get',
   })
 }

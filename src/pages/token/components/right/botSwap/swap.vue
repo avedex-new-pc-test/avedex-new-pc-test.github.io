@@ -54,12 +54,12 @@
       </el-input>
       <div class="slider-swap" :class="activeTab">
         <div class="slider-swap_left">
-          <el-slider v-model="priceLimitRange" :show-tooltip="false" :show-input-controls="false" :min="-100" :max="100" />
+          <el-slider :model-value="priceLimitRange1" :show-tooltip="false" :show-input-controls="false" :min="-100" :max="100" @input="onSliderInput" />
           <div class="slider-swap_left-mark">
-            <span v-for="(item, index) in [-100, -50, 0, 50, 100]" :key="index" class="clickable" @click.stop="priceLimitRange=item">{{item}}%</span>
+            <span v-for="(item, index) in [-100, -50, 0, 50, 100]" :key="index" class="clickable" @click.stop="priceLimitRange1=item">{{item}}%</span>
           </div>
         </div>
-        <el-input v-model.number="priceLimitRange" placeholder="0" class="input-number max-w-70px ml-15px text-14px" @update:model-value="value => priceLimit = value?.replace?.(/\-|[^\d.]/g, '')">
+        <el-input v-model.number="priceLimitRange" placeholder="0" class="input-number max-w-70px ml-15px text-14px!" @update:model-value="value => priceLimit = value?.replace?.(/\-|[^\d.]/g, '')">
           <template #prefix>
             <div class="w-10px" />
           </template>
@@ -262,6 +262,14 @@ const isPriceLimit = ref(true)
 const priceLimit = ref('')
 const priceLimitRange = ref<undefined | number>(undefined)
 
+const priceLimitRange1 = computed(() => {
+  return Number(priceLimitRange.value) > 100 ? 100 : priceLimitRange.value
+})
+
+function onSliderInput(val: number) {
+  priceLimitRange.value = val
+}
+
 watch(priceLimitRange, (val) => {
   if (props.swapType !== 'limit') return
   if (!Number.isNaN(Number(val))) {
@@ -274,7 +282,7 @@ useEventBus<string>('priceLimit_move').on((price) => {
   if (props.swapType !== 'limit') return
   if (!Number.isNaN(Number(price))) {
     isLineChange = true
-    priceLimitRange.value = Number(new BigNumber(price || 0).minus(tokenStore.price || 0).div(tokenStore.price || 0).times(100).toFixed(3))
+    priceLimitRange.value = Number(new BigNumber(price || 0).minus(tokenStore.price || 0).div(tokenStore.price || 0).times(100).toFixed(0))
     nextTick(() => {
       isLineChange = false
     })
@@ -304,6 +312,11 @@ watch(isPriceLimit, (val) => {
       priceLimit.value = formatDec(new BigNumber(priceLimit.value || 0).div(tokenStore.circulation || 1).toFixed(), 4)
     }
   }
+})
+
+useEventBus('klineDataReady').on(() => {
+  if (props.swapType !== 'limit') return
+  updateStorePriceLimit()
 })
 
 function updateStorePriceLimit() {

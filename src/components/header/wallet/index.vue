@@ -376,7 +376,6 @@ async function setChainQr() {
   if (!canvas) {
     return
   }
-  console.log('canvas', token_logo_url.value, depositChain.value)
   QrCodeWithLogo.toCanvas({
     canvas: canvas,
     content: address,

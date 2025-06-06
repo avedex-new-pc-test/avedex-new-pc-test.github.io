@@ -231,7 +231,6 @@ function getEarlyholders() {
           (y) => ['25', '30', '31'].includes(y?.type ?? '')
         ),
       }))
-      console.log('------list------', list)
     })
     .catch((err) => {
       console.log(err)
