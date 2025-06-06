@@ -232,7 +232,8 @@ watch(() => wsStore.wsResult[WSEventType.TX], data => {
     ...data.tx,
     topN, wallet_tag,
     senderProfile: JSON.parse(data.tx.profile || '{}'),
-    count: txCount.value[wallet_address]
+    count: txCount.value[wallet_address],
+    time: Math.min(Math.floor(Date.now() / 1000), data.tx.time)
   }
   wsPairCache.value.unshift(item)
   if (!isPausedTxs.value) {
@@ -638,9 +639,11 @@ function resetMakerAddress() {
       v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
       element-loading-background="transparent">
       <AveTable
-        fixed :data="filterTableList" :columns="columns" class="h-560px"
-      row-class='cursor-pointer'
-      :rowEventHandlers="{
+        fixed :data="filterTableList"
+        :columns="columns"
+        class="h-560px"
+        row-class='cursor-pointer'
+        :rowEventHandlers="{
         onMouseenter: () => {
           isPausedTxs = true
         },
@@ -803,7 +806,8 @@ function resetMakerAddress() {
               v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
               name="custom:big" class="mr-3px shrink-0"/>
           </template>
-          <SignalTags tagClass="mr-3px" :tags="(row.newTags||[]).map(el=>tagStore.matchTag(el.type))"
+          <SignalTags
+            tagClass="mr-3px" :tags="(row.newTags||[]).map(el=>tagStore.matchTag(el.type))"
                       :walletAddress="row.wallet_address" :chain="row.chain"/>
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
