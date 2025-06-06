@@ -108,10 +108,11 @@ async function _getHomePumpList() {
     })
     const {pageNO} = query.value
     if (Array.isArray(res?.data)) {
+      const formatedDate = formatData(res?.data || [])
       if (pageNO === 1) {
-        listData.value = res?.data
+        listData.value = formatedDate
       } else {
-        listData.value = listData.value.concat(res?.data)
+        listData.value = listData.value.concat(formatedDate)
       }
       listStatus.value.finished = res?.data.length < query.value.pageSize
       if (!listStatus.value.finished) {
@@ -123,6 +124,10 @@ async function _getHomePumpList() {
   } finally {
     listStatus.value.loading = true
   }
+}
+
+function formatData() {
+
 }
 </script>
 

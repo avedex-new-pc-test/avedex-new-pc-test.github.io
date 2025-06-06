@@ -111,7 +111,7 @@ onBeforeMount(() => {
 })
 
 onBeforeRouteLeave(() => {
-  tokenStore.reset()
+  // tokenStore.reset()
   wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline', 'price'])
   document.removeEventListener('visibilitychange', visibilitychangeFn)
 })
