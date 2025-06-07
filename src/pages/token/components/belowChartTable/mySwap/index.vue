@@ -131,7 +131,12 @@ let lastUpdateTime = 0
 const maxUpdateNum = 15
 
 watch([() => tokenStore.placeOrderSuccess], () => {
+  const chain = String(route.params.id).split('-')[1]
+  if (tabs.value.find(i => i?.chain === chain)) {
+    activeTab.value = chain
+  }
   getWalletTxData()
+  unifiedRef.value?.getTxHistory()
   if (!timer) {
     timer = setInterval(() => {
       if (lastUpdateTime >= maxUpdateNum) {
@@ -245,7 +250,8 @@ onMounted(() => {
       </div>
     </div>
 
-    <unified ref="unifiedRef" :chain="activeTab" :currentToken="botOrderOnlyCurrentToken" :userAddress="userAddress || ''" />
+    <unified ref="unifiedRef" :chain="activeTab" :currentToken="botOrderOnlyCurrentToken"
+      :userAddress="userAddress || ''" />
   </div>
 </template>
 

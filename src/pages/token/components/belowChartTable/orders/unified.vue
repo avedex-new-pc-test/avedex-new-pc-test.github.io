@@ -87,7 +87,7 @@
       </el-table-column>
       <el-table-column :label="t('volume4')" align="right">
         <template #default="{ row }">
-          <span class="text-[var(--d-999-l-959A9F)]">{{ formatNumber(Number(row?.inValue) || 0, 2) }}</span>
+          <span class="text-[var(--d-999-l-959A9F)]">${{ formatNumber(Number(row?.inValue) || 0, 2) }}</span>
         </template>
       </el-table-column>
 
@@ -210,7 +210,7 @@ const txOrder = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate, () => tokenStore.placeOrderSuccess, () => route.params.id], () => {
+watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderSuccess], () => {
   getUserPendingTx()
 })
 

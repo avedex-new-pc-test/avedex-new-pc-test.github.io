@@ -13,7 +13,7 @@ const props = defineProps({
   }
 })
 
-
+const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const { t } = useI18n()
 const route = useRoute()
@@ -63,11 +63,15 @@ function toggleCancelAll() {
 
 watch(() => props.currentActiveTab, () => {
   if (props.currentActiveTab === 'Orders') {
+    const chain = String(route.params.id).split('-')[1]
+    if (tabs.value.find(i => i?.chain === chain)) {
+      activeTab.value = chain
+    }
     unifiedRef.value.getUserPendingTx()
   }
 })
 
-watch([() => route.params.id], () => {
+watch([() => route.params.id, () => tokenStore.placeOrderUpdate], () => {
   const chain = String(route.params.id).split('-')[1]
   if (tabs.value.find(i => i?.chain === chain)) {
     activeTab.value = chain
