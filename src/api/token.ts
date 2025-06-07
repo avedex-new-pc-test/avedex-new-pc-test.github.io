@@ -410,6 +410,51 @@ export async function getPairLiq(pair: string, address?: string): Promise<GetPai
     },
   })
 }
+export async function getPairLiqNew(pair:string, interval = 7) {
+  if (!pair) {
+    return []
+  }
+  const { $api } = useNuxtApp()
+  return $api(`/v1api/v3/pairs/${pair}/liq`, {
+    method: 'get',
+    params: {
+      interval
+    },
+  }).catch(() => {
+    return Promise.resolve([])
+  })
+}
+export interface IHolder {
+  add_total: number;
+  address: string;
+  lock: [];
+  main_token_amount: number;
+  main_token_amount_usd: number;
+  mark: string;
+  percent: string;
+  quantity: string;
+  remove_total: number;
+  target_token_amount: number;
+  target_token_amount_usd: number;
+}
+export interface GetLPHoldersResponse {
+  main_token: string;
+  main_token_symbol: string;
+  target_token: string;
+  target_token_symbol: string;
+  Holders: IHolder[] | null;
+}
+export function getLPHolders(tokenId: string) : Promise<GetLPHoldersResponse>{
+  const { $api } = useNuxtApp()
+  return $api(testDomain+'/v2api/token/v1/lp_holders',{
+    method: 'get',
+    params: {
+      token_id: tokenId,
+    }
+  }).then(res => {
+    return JSON.parse(window.decodeURIComponent(window.atob(res).replace(/\+/g, ' ')))
+  })
+}
 
 export interface GetTxsUserBriefResponse {
   remark: string;

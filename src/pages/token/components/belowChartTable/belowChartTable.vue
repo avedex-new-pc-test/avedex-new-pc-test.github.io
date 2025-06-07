@@ -13,7 +13,7 @@ const activeTab = shallowRef<keyof typeof components>('Transactions')
 const components = {
   Transactions,
   Holders: defineAsyncComponent(() => import('./holders/index.vue')),
-  LP: '',
+  LP: defineAsyncComponent(() => import('./lp/index.vue')),
   Attention: '',
   // Orders: defineAsyncComponent(() => import('./orders/index.vue')),
   MySwap: defineAsyncComponent(() => import('./mySwap/index.vue')),
