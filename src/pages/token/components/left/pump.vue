@@ -12,6 +12,7 @@ defineProps({
   }
 })
 const {t} = useI18n()
+const localeStore = useLocaleStore()
 // const tokenStore = useTokenStore()
 const sort = ref({
   sortBy: undefined,
@@ -123,7 +124,7 @@ async function _getHomePumpList() {
   } catch (e) {
     console.log('=>(pump.vue:28) e', e)
   } finally {
-    listStatus.value.loading = true
+    listStatus.value.loading = false
   }
 }
 
@@ -136,7 +137,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
 </script>
 
 <template>
-  <div v-loading="listStatus.loading && query.pageNO===1&&listData.length===0">
+  <div v-loading="listStatus.loading && query.pageNO===1">
     <div
       ref="tabsContainer"
       class="mt-12px  mx-12px mb-16px flex items-center gap-10px whitespace-nowrap scrollbar-hide overflow-x-auto overflow-y-hidden">
@@ -203,7 +204,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
               </span>
                 </template>
               </TimerCount>
-              <span v-else class="color-[--d-999-l-666]">
+              <span v-else :key="localeStore.locale+$index" class="color-[--d-999-l-666]">
                 {{ dayjs(row.created_at).fromNow()}}
               </span>
               <span
