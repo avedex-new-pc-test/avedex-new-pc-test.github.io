@@ -32,7 +32,7 @@
         />
       </el-col>
       <el-col :span="24">
-        <div class="title flex items-center justify-between mt-17px">
+        <div class="title flex items-center justify-between mt-20px mb-10px">
           <span class="text-12px color-[--d-FFF-l-000]">{{
             $t('mainChip')
           }}</span>
@@ -81,7 +81,7 @@
               </div>
               <span v-else />
             </template>
-            <el-table-column type="index" label="#" width="40" />
+            <el-table-column type="index" label="#" width="50" />
             <el-table-column :label="$t('ratio')" prop="time" align="right">
               <template #default="{ row }">
                 {{ formatProportion(row) }}

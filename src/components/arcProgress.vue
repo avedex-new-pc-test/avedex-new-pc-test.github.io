@@ -18,7 +18,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 // import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import ArcProgress from 'arc-progress'
-// import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 const props = defineProps({
   progress: {
       type: Number,
@@ -62,7 +62,7 @@ const props = defineProps({
 const { t } = useI18n()
 // const store = useStore()
 
-const id = 'progress-container'
+const id = 'progress-container' + '-' + uuidv4()
 const arcProgress = ref<any>(null)
 
 const w = computed(() => Math.round(props.width / 2))

@@ -189,6 +189,12 @@ watch(query, (newval) => {
   }
 })
 
+watch(visible, (val) => {
+  if (val) {
+    query.value =''
+  }
+})
+
 function formatLength(item: string) {
   if (item.length <= 10) {
     return item

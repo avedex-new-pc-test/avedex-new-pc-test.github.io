@@ -2,6 +2,7 @@
   .el-popper[role="tooltip"] {
     --el-bg-color: #fff;
     --el-text-color-primary: #333;
+    border: none;
   }
 }
 
@@ -64,4 +65,11 @@
 }
 .el-drawer__body{
   --el-drawer-padding-primary: 0
+}
+.is-light.el-popper[data-popper-placement^=bottom] > .el-popper__arrow::before{
+  border: none
+}
+.el-loading-mask {
+  background: rgba(var(--d-222-l-FFF), 0.7)!important;
+
 }
