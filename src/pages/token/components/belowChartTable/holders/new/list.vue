@@ -6,7 +6,7 @@
       :data="tableList"
       fit
       scrollbar-always-on
-      max-height="700"
+      max-height="560"
       style="width: 100%; min-height: 250px"
       @sort-change="handleSortChange"
       @row-click="tableRowClick"
@@ -93,7 +93,7 @@
         </template>
         <template #default="{ row, $index }">
           <div style="display: inline-flex; align-items: center">
-            <span class="color-666 mr-5">{{ $index + 1 }}</span>
+            <span class="color-666 mr-5;">{{ $index + 1 }}</span>
             <div class="relative">
               <div class="flex-start">
                 <div
@@ -536,7 +536,7 @@
               class="address"
               href=""
               @click.stop.prevent="
-                goLink(row.sol_first_transfer_in_from, row.chain)
+              tableRowClick({holder:row.sol_first_transfer_in_from,remark:row?.sol_first_transfer_in_from_remark})
               "
             >
               <UserRemark
@@ -612,7 +612,7 @@
               class="address"
               href=""
               @click.stop.prevent="
-                goLink(row.token_first_transfer_in_from, row.chain)
+                tableRowClick({holder:row.token_first_transfer_in_from,remark:row?.token_first_transfer_in_from_remark})
               "
             >
               <UserRemark
@@ -921,7 +921,8 @@
 
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
-import { getChainInfo,formatDate, formatTimeFromNow, getAddressAndChainFromId } from '@/utils/index'
+import { getChainInfo, formatDate, formatTimeFromNow, getAddressAndChainFromId } from '@/utils/index'
+import type { RowEventHandlerParams, } from 'element-plus'
 import dayjs from 'dayjs'
 const props = defineProps({
   modelValue: Boolean,
@@ -949,7 +950,8 @@ const props = defineProps({
 const $emit = defineEmits(['filterAddress', 'handleSortChange', 'filterOriginAddress'])
 const { tableList, loading } = toRefs(props)
 const { mode } = storeToRefs(useGlobalStore())
-const { token, price } = storeToRefs(useTokenStore())
+const { token, price,pair } = storeToRefs(useTokenStore())
+const tokenDetailSStore = useTokenDetailsStore()
 
 const { t } = useI18n()
 const route = useRoute()
@@ -968,7 +970,33 @@ const addressAndChain = computed(() => {
     chain: token.value?.chain || '',
   }
 })
-function tableRowClick() {}
+function tableRowClick(rowData: {holder: string, remark: string}) {
+  console.log('----------rowData----------',rowData)
+  if (!token.value) {
+    return
+  }
+  const { symbol, logo_url, chain, token: _token } = token.value
+  const { target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress } = pair.value!
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: route.params.id! as string,
+      symbol,
+      logo_url,
+      chain,
+      address: _token,
+      remark: rowData.remark!,
+    },
+    pairInfo: {
+      target_token,
+      token0_address,
+      token0_symbol,
+      token1_symbol,
+      pairAddress
+    },
+    user_address: rowData.holder
+  })
+}
 function formatUnrealizedProfit(
   row: { bought?: number, sold?: number, avg_purchase_price?: number },
   price = 0
@@ -987,8 +1015,7 @@ function handleFilterQuery(k: string) {
   $emit('filterAddress', k)
   keyword.value = k || ''
 }
-
-function goLink() {}
+function goLink() { }
 function handleSortChange(obj:{prop: string, order:string }) {
   console.log('----------obj-------', obj)
   $emit('handleSortChange', obj)

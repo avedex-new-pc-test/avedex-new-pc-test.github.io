@@ -50,6 +50,7 @@
           column-key="op"
           :filters="typeFilters"
           :filter-method="filterHandler"
+          :filtered-value="defaultSelectedFilters"
           align="right"
         >
           <template #default="{ row }">
@@ -229,6 +230,9 @@ const typeFilters = computed(() => [
   { text: t('transferIn1'), value: 'TRANSFER_IN' },
   { text: t('transferOut1'), value: 'TRANSFER_OUT' },
 ])
+const defaultSelectedFilters = computed(() => {
+   return typeFilters.value.map(item => item.value)
+})
 </script>
 
 <style scoped lang="scss">

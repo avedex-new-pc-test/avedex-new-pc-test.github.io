@@ -123,7 +123,7 @@ import {useStorage} from '@vueuse/core'
 import {evm_utils} from '@/utils'
 import BigNumber from 'bignumber.js'
 import {getAnnounces} from '~/api/user'
-import {bot_getMarketCompletedLimitTx, type IGetMarketCompletedLimitResponse} from '~/api/bot'
+import {getCompletedLimitTx, type IGetMarketCompletedLimitResponse} from '~/api/bot'
 
 const NOTICE_FILTER_TIME = 1744460716
 const {formatUnits} = evm_utils
@@ -170,28 +170,29 @@ watch(visible, (val) => {
 
 watch(() => wsStore.wsResult[WSEventType.TGBOT], (val) => {
   if (val && val?.swapType > 2) {
-    getCompletedLimitTx()
+    _getCompletedLimitTx()
   }
 })
 
 watch(() => botStore.evmAddress, () => {
-  getCompletedLimitTx()
+  if (botStore.evmAddress) {
+    _getCompletedLimitTx()
+  }
+}, {
+  immediate: true
 })
 
 onMounted(() => {
-  if (isBotLogin.value) {
-    getCompletedLimitTx()
-  }
   getNoticeList()
 })
 
-async function getCompletedLimitTx() {
+async function _getCompletedLimitTx() {
   try {
     const chainMainToken: Record<string, string> = {
       solana: 'sol',
       ton: 'TON'
     }
-    const res = await bot_getMarketCompletedLimitTx(botStore.evmAddress)
+    const res = await getCompletedLimitTx(botStore.evmAddress)
     completedLimitTx.value = (res || []).map(el => {
       const isBuy = (el.inTokenAddress === (chainMainToken[el.chain] || NATIVE_TOKEN))
       let inAmount: any = new BigNumber(el.inAmount || 0).toFixed(0)

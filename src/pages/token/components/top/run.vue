@@ -105,9 +105,10 @@
               </span>
               <div v-if="rugPull?.dev" class="flex-end">
                 <span class="color-#999 text-12px">{{ $t('devAddress') }}：</span>
-                <NuxtLink :to="`/address/${rugPull?.dev}/${chain}`" class="py-7px px-8px color-#999 text-12px underline">
+                <NuxtLink :to="`/address/${rugPull?.dev}/${chain}`" class="color-#999 text-12px underline">
                   {{ rugPull?.dev?.slice(0, 4) + '...' + rugPull?.dev?.slice(-4) }}
                 </NuxtLink>
+                <Icon v-copy="rugPull?.dev" name="bxs:copy" class="text-12px ml-2px cursor-pointer color-#999" @click.stop.prevent/>
               </div>
             </div>
             <div class="top">
@@ -317,6 +318,7 @@
               v-if="(!tableList || tableList?.length === 0) && !loadingRun"
               :image-size="100"
               :image="themeStore.theme === 'light' ? emptyWhite : emptyDark"
+              
             />
           </div>
         </div>

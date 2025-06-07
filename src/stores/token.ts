@@ -41,6 +41,13 @@ export const useTokenStore = defineStore('token', () => {
   const placeOrderUpdate = ref(0)
   const placeOrderSuccess = ref(0)
   const registrationNum = ref(0)
+  watch(price, val => {
+    if (val) {
+      if (route.fullPath?.includes?.('/token')) {
+        useHead({ title: '$' + formatNumber(val, 4) + ' ' + token.value?.symbol + ' | Ave' })
+      }
+    }
+  })
 
   const swap = reactive<{
     native: Token

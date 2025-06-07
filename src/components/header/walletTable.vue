@@ -57,9 +57,9 @@
                 </span>
                 <div
                   style="display: inline-flex; align-items: center"
-                  class="mt-2"
+                  class="mt-2px"
                 >
-                  <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" />
+                  <UserRemark class="" :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" />
                   <!-- <a
                     href=""
                     class="ml-8 fav_address a-gray"
@@ -76,9 +76,10 @@
                   >
                     <i class="attention iconfont icon-fav1 font-12"></i>
                   </a> -->
-                  <i
+                  <Icon
                     v-copy="row.wallet_address"
-                    class="iconfont icon-copy color-666 text-14px ml-5"
+                    name="bxs:copy"
+                    class="text-12px cursor-pointer color-[--d-666-l-999] ml-8px"
                     @click.stop.prevent
                   />
                   <!--  <el-tooltip
@@ -152,7 +153,7 @@
                     : '#F6465D',
                 }"
               >
-                ${{ formatNumber(row?.total_profit || 0, 2) }}
+                {{ row?.total_profit>=0? '$'+ formatNumber(row?.total_profit || 0, 2) : '-$'+ formatNumber(Math.abs(row?.total_profit || 0), 2)}}
               </div>
               <div
                 :style="{
@@ -260,9 +261,13 @@ const isLoading = computed(() => {
 const themeStore = useThemeStore()
 
 function tableRowClick(row: { wallet_address: string; chain: string }) {
+  // $router.push({
+  //   name: 'Balance',
+  //   params: { userAddress: row.wallet_address, chain: row.chain },
+  // })
+
   $router.push({
-    name: 'Balance',
-    params: { userAddress: row.wallet_address, chain: row.chain },
+    path: `/address/${row.wallet_address}/${row.chain}`,
   })
 }
 

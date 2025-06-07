@@ -1413,7 +1413,6 @@
 <script setup lang="ts">
 import emptyWhite from '@/assets/images/empty-white.svg'
 import emptyDark from '@/assets/images/empty-black.svg'
-import ArcProgress from './arcProgress.vue'
 
 import {
   _voteSupport,

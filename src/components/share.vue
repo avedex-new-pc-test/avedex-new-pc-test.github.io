@@ -253,12 +253,12 @@ function getColorClass(val: string) {
         </table>
         <div class="absolute right-30px bottom-30px flex justify-end text-center">
           <div class="text-right mt-10px">
-            <span class="font-20 font_weight_700 block">{{ $t('campaignSubTitle') }}</span>
-            <span class="font-12 font_weight_400 mt_10">{{ $t('campaignDesc') }}</span>
+            <span class="font-20 font_weight_700 block color-#FFF">{{ $t('campaignSubTitle') }}</span>
+            <span class="font-12 font_weight_400 mt_10 color-#FFF">{{ $t('campaignDesc') }}</span>
           </div>
           <div class="ml-10px">
             <img :src="qrcodeUrl" :alt="$t('campaignScan')" width="60px" height="60px">
-            <span class="text-14px font-400 mt-5px block">{{ $t('campaignScan') }}</span>
+            <span class="text-14px font-400 mt-5px block color-#FFF">{{ $t('campaignScan') }}</span>
           </div>
         </div>
       </div>
