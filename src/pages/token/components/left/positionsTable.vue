@@ -459,7 +459,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                   <Icon
                     v-if="row.risk_score > 55 || row.risk_level < 0"
                     name="custom:danger"
-                    class="font-14 ml-2px"/>
+                    class="font-14 ml-2px color-#F72121"/>
                 </div>
                 <div class="mt-2px color-[var(--d-999-l-666)]">
                   <template v-if="row.balance === 0">$0</template>
