@@ -6,13 +6,16 @@
     :show-close="false"
     class="search-dialog"
     header-class="p-0!"
+    @opened="openDialog"
 
   >
     <el-input
+      ref="inputSearch"
       v-model.trim="query"
       class="search-input"
       :placeholder="$t('enterAddress/token')"
       clearable
+      autofocus
       @keydown.enter="tokenSearch"
     >
       <template #prefix>
@@ -90,7 +93,7 @@ import WalletTable from './walletTable.vue'
 import { _getSmartTop10, _tokenSearchV3 } from '@/api/hot'
 import type { SearchWalletInfo, SearchInfo } from '@/api/types/search'
 import { useDebounceFn, useLocalStorage } from '@vueuse/core'
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, type ElInput } from 'element-plus'
 const { modelValue } = defineProps({
   modelValue: Boolean,
 })
@@ -107,6 +110,7 @@ const visible = computed({
   },
 })
 const tabActive = shallowRef('token')
+const inputSearch = useTemplateRef<HTMLElement | null>('inputSearch')
 const tabs = computed(() => {
   return [
     { id: 'token', name: i18n.t('popularSearches') },
@@ -191,10 +195,12 @@ watch(query, (newval) => {
 
 watch(visible, (val) => {
   if (val) {
-    query.value =''
+    query.value = ''
   }
 })
-
+function openDialog() {
+  inputSearch.value?.focus()
+}
 function formatLength(item: string) {
   if (item.length <= 10) {
     return item
