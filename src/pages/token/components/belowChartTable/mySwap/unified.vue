@@ -51,7 +51,7 @@
               <div>{{ t('type') }}</div>
               <el-dropdown trigger="click" @command="handleTypeCommand">
                 <Icon name="custom:filter"
-                  :class="[filterConditions.isBuy >= 0 && filterConditions.isLimit >= 0 && 'color-#286DFF']"
+                  :class="[filterConditions?.isBuy >= 0 && filterConditions?.isLimit >= 0 && 'color-#286DFF']"
                   class=" color-[--d-666-l-999] cursor-pointer text-10px" />
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -109,11 +109,13 @@
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">
             <template v-if="row.swapType === 2 || row.swapType === 6">
-              {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0), 4) }}
+              {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0) as
+                string, 4) }}
               {{ row?.inTokenSymbol }}
             </template>
             <template v-else>
-              {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0), 4)
+              {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0) as
+                string, 4)
               }}
               {{ row?.outTokenSymbol }}
             </template>
@@ -166,7 +168,7 @@
       <el-table-column :label="t('CreateTime')" align="right">
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">{{ formatDate(row.createTime, 'YYYY/MM/DD HH:mm')
-          }}</span>
+            }}</span>
         </template>
       </el-table-column>
 
@@ -219,9 +221,9 @@ const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
 const configStore = useConfigStore()
-const filterConditions = ref({
-  isLimit: undefined as number | undefined,
-  isBuy: undefined as number | undefined,
+const filterConditions = ref<any>({
+  isLimit: undefined,
+  isBuy: undefined,
   statusType: ''
 })
 
@@ -314,6 +316,9 @@ const getTxHistory = async () => {
 
 onMounted(() => {
   getTxHistory()
+})
+defineExpose({
+  getTxHistory
 })
 </script>
 

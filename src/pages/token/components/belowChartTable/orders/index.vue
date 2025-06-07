@@ -67,6 +67,13 @@ watch(() => props.currentActiveTab, () => {
   }
 })
 
+watch([() => route.params.id], () => {
+  const chain = String(route.params.id).split('-')[1]
+  if (tabs.value.find(i => i?.chain === chain)) {
+    activeTab.value = chain
+  }
+  unifiedRef.value.getUserPendingTx()
+})
 
 onMounted(() => {
   const chain = String(route.params.id).split('-')[1]

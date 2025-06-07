@@ -38,7 +38,7 @@
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
               row?.inTokenSymbol :
               row.outTokenSymbol
-              }}</span>
+            }}</span>
           </div>
         </template>
       </el-table-column>
@@ -103,15 +103,17 @@
           <span class="text-[var(--d-999-l-959A9F)]">
             <span class="text-[var(--d-999-l-959A9F)] text-right">
               <template v-if="row.swapType === 2 || row.swapType === 6">
-                {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0), 4)
+                {{ !!Number(row?.inAmount) ? formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0),
+                  row.inTokenDecimals || 0) as string, 4) : '--'
                 }}
-                {{ row?.inTokenSymbol }}
+                {{ !!Number(row?.inAmount) ? row?.inTokenSymbol : '' }}
               </template>
               <template v-else>
-                {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0),
-                  4)
+                {{ !!Number(row?.outputAmount) ? formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0),
+                  row.outTokenDecimals || 0) as string,
+                  4) : '--'
                 }}
-                {{ row?.outTokenSymbol }}
+                {{ !!Number(row?.outputAmount) ? row?.outTokenSymbol : '' }}
               </template>
             </span>
           </span>
@@ -270,7 +272,7 @@ const getUserPendingTx = async () => {
       walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === props.chain)?.address,
     }
     const res = await bot_getUserPendingTx({
-      ...data
+      ...data as any
     })
     txOrder.value = res || []
     if (filterConditions.value.swapType.length === 1) {
