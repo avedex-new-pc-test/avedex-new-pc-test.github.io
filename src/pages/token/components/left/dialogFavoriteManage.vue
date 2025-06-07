@@ -158,13 +158,14 @@ async function handleEditRemark(item: GetFavListResponse) {
       return true
     }
   })
-  confirmEditRemark(value, tokenId)
+  confirmEditRemark(value, tokenId, item)
 }
 
-async function confirmEditRemark(remark: string, tokenId: string) {
+async function confirmEditRemark(remark: string, tokenId: string, item: GetFavListResponse) {
   try {
     await editTokenFavRemark(tokenId, remark, evmAddress)
-    _getFavoriteList()
+    item.remark = remark
+    triggerRef(favoritesList)
     ElMessage.success(t('success'))
     favDialogEvent.emit({
       type: 'remark',
