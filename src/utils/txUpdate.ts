@@ -1,9 +1,8 @@
 import type { WSTx } from '~/pages/token/components/kLine/types'
 import BigNumber from 'bignumber.js'
-import { formatNumber } from './formatNumber'
 import type { Profile } from '~/api/token'
 
-export function updatePriceFromTx(tx: WSTx, fullPath: string) {
+export function updatePriceFromTx(tx: WSTx) {
   const tokenStore = useTokenStore()
   if (tx.to_address !== tokenStore.token?.token && tx.from_address !== tokenStore.token?.token) return
   const isBuy = tx.to_address?.toLowerCase?.() === tokenStore.token?.token?.toLowerCase?.()
@@ -11,9 +10,6 @@ export function updatePriceFromTx(tx: WSTx, fullPath: string) {
   if (tx.pair_address === tokenStore.pairAddress) {
     if (price) {
       tokenStore.tokenPrice = price
-      if (fullPath?.includes?.('/token')) {
-        useHead({ title: '$' + formatNumber(price, 4) + ' ' + tokenStore.token?.symbol + ' | Ave' })
-      }
     }
   }
   tokenStore?.pairs?.forEach(pair => {

@@ -223,7 +223,18 @@ function getAllTagsActivityList() {
   }
   _getAllTagsActivityList(paramas)
     .then((res) => {
-      tableDataActivity.value = Array.isArray(res) ? res : []
+      tableDataActivity.value = Array.isArray(res) ? res.map(i => ({
+              ...i,
+              time:
+                i?.time !== '1970-01-01T00:00:00Z' && i?.time !== '0001-01-01T00:00:00Z'
+                  ? new Date(i?.time).getTime() / 1000
+                  : 0,
+              volume:
+                i?.type === 'ADD' || i?.type === 'REMOVE'
+                  ? i?.quote_token_amount * i.quote_token_price_u +
+                    i?.base_token_amount * i?.base_token_price_u
+                  : i?.base_token_amount * i?.base_token_price_u
+            })) : []
     })
     .catch(() => {})
     .finally(() => {
