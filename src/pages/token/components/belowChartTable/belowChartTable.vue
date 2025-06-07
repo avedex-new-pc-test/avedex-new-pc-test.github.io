@@ -23,7 +23,7 @@ const tabs = computed(() => {
   { name: t('transactions'), component: 'Transactions' as const },
   { name: t('holders'), component: 'Holders' as const },
   { name: 'LP', component: 'LP' as const },
-  { name: t('attention1'), component: 'Attention' as const },
+  // { name: t('attention1'), component: 'Attention' as const },
   { name: t('orders'), component: 'Orders' as const },
   { name: t('mySwap'), component: 'MySwap' as const },
   ]

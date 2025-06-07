@@ -700,12 +700,37 @@ export interface IGetMarketCompletedLimitResponse {
 // 查询该代币的全部限价单委托(二期)
 // /swap/getTokenPendingTx GET
 // curl --location 'http://18.166.11.27:8081/v2/swap/getTokenPendingTx?chain=solana&token=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr
-export function bot_getMarketCompletedLimitTx(evmAddress: string): Promise<IGetMarketCompletedLimitResponse[]> {
+export function getCompletedLimitTx(evmAddress: string): Promise<IGetMarketCompletedLimitResponse[]> {
   const {$api} = useNuxtApp()
-  return $api(`/botapi/swap/getMarketCompletedLimitTx`, {
+  return $api('/botapi/swap/getCompletedLimitTx', {
     method: 'get',
     query: {
       evmAddress
     }
+  })
+}
+
+//  /swap/getAddressAllBalances
+export function bot_getAddressAllBalances(query: {
+  evmAddress: string
+  chains?: string
+  pinToken?: string
+  ignoreHighRisk?: boolean
+}): Promise<Array<{
+  avgPrice: string
+  chain: string
+  token: string
+  value_decimal: string
+  value: number
+  symbol: string
+  logo_url: string
+  current_price_usd: string
+  profit: string
+  profitRate: number
+}>> {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/getAddressAllBalancesV2', {
+    method: 'get',
+    query
   })
 }

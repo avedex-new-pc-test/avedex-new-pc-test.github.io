@@ -31,11 +31,13 @@ const tabList = computed(()=>{
     label: t('Migrated'),
     value: 'pump_out_new',
     progressVisible: false
-  }, {
-    label: t('HotMigrated'),
-    value: 'pump_out_hot',
-    progressVisible: false
-  }]
+  },
+    //   {
+    //   label: t('HotMigrated'),
+    //   value: 'pump_out_hot',
+    //   progressVisible: false
+    // }
+  ]
 })
 const activeTab = ref('pump_in_new')
 const progressVisible = computed(() => {
@@ -108,11 +110,10 @@ async function _getHomePumpList() {
     })
     const {pageNO} = query.value
     if (Array.isArray(res?.data)) {
-      const formatedDate = formatData(res?.data || [])
       if (pageNO === 1) {
-        listData.value = formatedDate
+        listData.value = res?.data
       } else {
-        listData.value = listData.value.concat(formatedDate)
+        listData.value = listData.value.concat(res?.data)
       }
       listStatus.value.finished = res?.data.length < query.value.pageSize
       if (!listStatus.value.finished) {
@@ -126,8 +127,11 @@ async function _getHomePumpList() {
   }
 }
 
-function formatData() {
-
+function getTargetToken(row: GetHomePumpListResponse) {
+  if (row.target_token === row.token0_address) {
+    return {logo: row.token0_logo_url, symbol: row.token0_symbol}
+  }
+  return {logo: row.token1_logo_url, symbol: row.token1_symbol}
 }
 </script>
 
@@ -168,18 +172,18 @@ function formatData() {
         v-for="(row,$index) in listData"
         :key="$index"
         class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-333-l-F5F5F5] text-12px"
-        :to="`/token/${row.token0_address}-${row.chain}`"
+        :to="`/token/${row.target_token}-${row.chain}`"
       >
         <div class="flex-[2] flex items-center">
           <TokenImg
             :row="{
             chain:row.chain,
-            logo_url:row.token0_logo_url
+            logo_url:getTargetToken(row).logo
           }"
           />
           <div class="ml-6px">
             <div class="flex">
-              <span class="color-[--d-F5F5F5-l-333]">{{ row.token0_symbol }}</span>
+              <span class="color-[--d-F5F5F5-l-333]">{{ getTargetToken(row).symbol }}</span>
             </div>
             <div class="mt-2px color-[--d-999-l-666] text-10px">
               <TimerCount

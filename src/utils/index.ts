@@ -721,3 +721,7 @@ export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: 
     behavior: 'smooth'
   })
 }
+
+export function uuid() {
+  return Math.random().toString(36).slice(-8) + Date.now()
+}

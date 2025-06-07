@@ -36,6 +36,7 @@ import { bot_getUserWalletTxInfo } from '@/api/token'
 import type { WalletTokenInfo } from '@/api/types/token'
 import { formatNumber } from '@/utils/formatNumber'
 import { useEventBus } from '@vueuse/core'
+import { bot_getAddressAllBalances } from '@/api/bot'
 const route = useRoute()
 const botStore = useBotStore()
 const tokenStore = useTokenStore()
@@ -50,6 +51,7 @@ const userAddress = computed(() => {
 watch(userAddress, (val) => {
   if (val) {
     getWalletTxData()
+    _bot_getAddressAllBalances()
   }
 })
 
@@ -84,13 +86,48 @@ async function getWalletTxData() {
   })
 }
 
+const avgPrice = ref(0)
+
+async function _bot_getAddressAllBalances() {
+  const [token, chain] = getAddressAndChainFromId(route.params?.id as string, 1)
+  if (!token || !chain) {
+    return
+  }
+  if (!botStore.isSupportChains?.includes?.(chain)) {
+    return
+  }
+  const params = {
+    evmAddress: botStore.evmAddress,
+    chains: chain,
+    pinToken: route.params?.id as string
+
+  }
+  return bot_getAddressAllBalances(params).then(async res => {
+    avgPrice.value = Number(res?.[0]?.avgPrice || 0)
+    if (res?.[0]?.value > 0) {
+      useEventBus('updateAvgPrice').emit(avgPrice.value)
+    }
+    return res
+  }).catch(async () => {
+    return null
+  })
+}
+
+
 watch(() => route.params.id, () => {
   getWalletTxData()
+  _bot_getAddressAllBalances()
 })
 
 watch(() => tokenStore.placeOrderSuccess, () => {
   getWalletTxDataPoll()
 })
+
+// watch(() => tokenStore.pairAddress, (val) => {
+//   if (val && avgPrice.value > 0) {
+//     useEventBus('updateAvgPrice').emit(avgPrice.value)
+//   }
+// })
 
 let time = 0
 function getWalletTxDataPoll() {
@@ -99,11 +136,18 @@ function getWalletTxDataPoll() {
     return
   }
   getWalletTxData()
+  _bot_getAddressAllBalances()
   time++
   setTimeout(getWalletTxDataPoll, 5000)
 }
 
 const isShowB = ref(false)
+
+useEventBus('klineDataReady').on(() => {
+  if (avgPrice.value > 0) {
+    useEventBus('updateAvgPrice').emit(avgPrice.value)
+  }
+})
 
 </script>
 

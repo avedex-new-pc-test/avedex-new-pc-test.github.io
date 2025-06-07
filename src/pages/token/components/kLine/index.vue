@@ -363,7 +363,7 @@ async function initChart() {
           // const { chain, symbol, price, amm } = props
           const isSupportSecChains = !!(chain.value && supportSecChains?.includes?.(chain.value))
           const symbolUp = symbol.value?.toUpperCase?.() || tokenStore?.token?.symbol || '-'
-          const p = Number(price) || 0
+          const p = Number(price || tokenStore?.price) || 0
           const symbolInfo = {
             symbol: symbolUp,
             name: symbolUp,
@@ -376,8 +376,8 @@ async function initChart() {
             minmov2: 0, // 格式化复杂情况下的价格 如价格增量
             pricescale: p > 0
               ? 10 ** formatDecimals(p).precision
-              : 10000000,
-            volume_precision: 10, // 小数位
+              : 10000000000,
+            volume_precision: 2, // 小数位
             fractional: false, // 分数显示价格,1 - xx'yy（例如，133'21)或 2 - xx'yy'zz （例如，133'21'5）
             session: '24x7',
             has_intraday: true, // 显示商品是否具有日内（分钟）历史数据
@@ -405,7 +405,7 @@ async function initChart() {
       },
       getBars: (symbolInfo, resolution, periodParams, onResult, onError) => {
         const { from, to, firstDataRequest } = periodParams
-        console.log('[getBars]: Method call', symbolInfo, resolution, from, to, firstDataRequest)
+        // console.log('[getBars]: Method call', symbolInfo, resolution, from, to, firstDataRequest)
         try {
           if (firstDataRequest) {
             noData = false

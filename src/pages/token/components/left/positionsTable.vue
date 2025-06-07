@@ -434,6 +434,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
       :height="scrollbarHeight"
     >
       <div
+        v-infinite-scroll="_getUserBalance"
         :infinite-scroll-disabled="listStatus.finished|| listStatus.loading"
         infinite-scroll-distance="200"
         :infinite-scroll-delay="10"

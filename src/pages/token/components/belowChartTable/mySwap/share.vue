@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import QRCode from 'qrcode'
-import config from '@/utils/json/config.json'
 import Cookies from 'js-cookie'
 import html2canvas from 'html2canvas'
 import { getCampaignToken } from '~/api/token'
@@ -32,11 +31,11 @@ const qrcodeUrl = ref('')
 const localeStore = useLocaleStore()
 const configStore = useConfigStore()
 const imgList = computed(() => {
-  const upShareImg = config.pc_share_image.replace(/^.*\|/, '')
+  const upShareImg = configStore.globalConfig.pc_share_image.replace(/^.*\|/, '')
   const ups = upShareImg.split(',').map(img => {
     return configStore.token_logo_url + 'pc_share/' + img
   })
-  const downShareImg = config.pc_share_image?.replace(/\|.*$/, '')
+  const downShareImg = configStore.globalConfig.pc_share_image?.replace(/\|.*$/, '')
   const downs = downShareImg.split(',').map(img => {
     return configStore.token_logo_url + 'pc_share/' + img
   })
@@ -64,7 +63,7 @@ async function openDialog() {
 }
 
 function getQRCode() {
-  const inviterUrl = config.inviter_url_v2 || 'https://share.ave.ai'
+  const inviterUrl = configStore.globalConfig.inviter_url_v2 || 'https://share.ave.ai'
   const refCode = Cookies.get('refCode') || ''
   const refCodeParams = refCode ? '&code=' + refCode : ''
   const shareLink = inviterUrl + '?lang=' + localeStore.locale + refCodeParams

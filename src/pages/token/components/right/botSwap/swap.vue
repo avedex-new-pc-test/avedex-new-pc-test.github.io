@@ -108,14 +108,14 @@
           <Icon v-tooltip="$t('priorityFee')" name="custom:gas" class="text-12px color-[--d-666-l-999] ml-auto mr-4px cursor-pointer" />
           <span>{{ botPriorityFee }} SOL</span>
         </template>
-        <!-- <template v-if="activeTab === 'buy' && swapType === 'market' && botSettings?.[chain || '']">
+        <template v-if="activeTab === 'buy' && swapType === 'market' && botSettings?.[chain || '']">
           <span class="mr-4px ml-auto color-[--d-666-l-999]">{{ $t('autoSellHalf') }}</span>
           <el-switch
             v-model="botSettings[chain as string]![botSettings[chain as string]!.selected as 's1' | 's2' | 's3'].autoSell"
             size="small"
             style="--el-switch-on-color: #3c6cf6;zoom: 0.9;height: 14px;"
           />
-        </template> -->
+        </template>
         <template v-if="botSettings[chain || ''] && isCanMev">
           <span class="ml-auto color-[--d-666-l-999] mr-4px cursor-pointer">{{ $t('mev') }}</span>
           <el-switch
@@ -508,7 +508,7 @@ async function quoteBot(chain: string, type = props.activeTab, isGetPrice = true
   if (isGetPrice) {
     await _getTokensPrice()
   }
-  const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain)?.current_price_usd || 0
+  const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain && item.token === getChainInfo(chain)?.wmain_wrapper)?.current_price_usd || tokenStore.swap.native.price || 0
 
   let price: number = tokenStore.price || tokenStore.swap.token?.price || 0
   if (props.swapType === 'limit') {

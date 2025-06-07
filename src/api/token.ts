@@ -811,3 +811,26 @@ export async function getCampaignToken(query: any) {
   })
 }
 
+
+export interface IGetAllTagsResponse {
+  type: string;
+  en: string;
+  cn: string;
+  tw: string;
+  es: string;
+  pt: string;
+  tr: string;
+  ja: string;
+  icon: string;
+  color: string;
+  extra_info: any;
+  nick_name: string;
+}
+
+export function getAllTags(): Promise<IGetAllTagsResponse[]> {
+  const {$api} = useNuxtApp()
+  return $api('https://0ftrfsdb.xyz/v2api/token_info/v1/tags', {
+    method: 'get',
+  })
+}
+

@@ -32,6 +32,7 @@ definePageMeta({
   },
 })
 const route = useRoute()
+const tagStore = useTagStore()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const addresses = computed(() => {
@@ -94,6 +95,7 @@ function init() {
   _getTokenInfoExtra()
   // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
+  tagStore.getTagArr()
 }
 
 watch(() => route.params.id, () => {

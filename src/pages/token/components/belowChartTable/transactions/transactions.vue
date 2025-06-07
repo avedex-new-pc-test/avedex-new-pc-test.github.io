@@ -14,8 +14,9 @@ import {
   getTokenTxs,
   type Profile
 } from '~/api/token'
-import { formatDate, getAddressAndChainFromId, getChainInfo } from '~/utils'
+import {formatDate, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 import dayjs from 'dayjs'
+
 import { useThrottleFn } from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
@@ -26,9 +27,10 @@ const { totalHolders, pairAddress, token, pair } = storeToRefs(useTokenStore())
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
+const tagStore = useTagStore()
 const route = useRoute()
 // 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
-const realAddress = shallowRef(route.params.id as string)
+const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
@@ -231,7 +233,9 @@ watch(() => wsStore.wsResult[WSEventType.TX], data => {
     ...data.tx,
     topN, wallet_tag,
     senderProfile: JSON.parse(data.tx.profile || '{}'),
-    count: txCount.value[wallet_address]
+    count: txCount.value[wallet_address],
+    time: Math.min(Math.floor(Date.now() / 1000), data.tx.time),
+    uuid: uuid()
   }
   wsPairCache.value.unshift(item)
   if (!isPausedTxs.value) {
@@ -246,6 +250,7 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
   // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
+    uuid: uuid()
     // count: txCount.value[wallet_address]
   })
   if (!isPausedTxs.value) {
@@ -324,7 +329,8 @@ async function _getTokenTxs() {
         wallet_tag,
         topN,
         count: txCount.value[val.wallet_address],
-        senderProfile: JSON.parse(val.profile || '{}')
+        senderProfile: JSON.parse(val.profile || '{}'),
+        uuid: uuid()
       }
     }).reverse()
   } catch (e) {
@@ -363,6 +369,7 @@ async function _getPairLiq() {
       // txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       return {
         ...val,
+        uuid: uuid()
         // count: txCount.value[val.wallet_address],
       }
     }).reverse()
@@ -637,9 +644,12 @@ function resetMakerAddress() {
       v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
       element-loading-background="transparent">
       <AveTable
-        fixed :data="filterTableList" :columns="columns" class="h-560px"
-      row-class='cursor-pointer'
-      :rowEventHandlers="{
+        rowKey="uuid"
+        fixed :data="filterTableList"
+        :columns="columns"
+        class="h-560px"
+        row-class='cursor-pointer'
+        :rowEventHandlers="{
         onMouseenter: () => {
           isPausedTxs = true
         },
@@ -661,7 +671,7 @@ function resetMakerAddress() {
         </template>
         <template #cell-time="{ row,rowIndex }">
           <TimerCount
-            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60 && Number(formatTimeFromNow(row.time, true))>0"
+            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60"
             :key="`${row.time}${rowIndex}`" :timestamp="row.time" :end-time="60">
             <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
@@ -802,7 +812,9 @@ function resetMakerAddress() {
               v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
               name="custom:big" class="mr-3px shrink-0"/>
           </template>
-          <SignalTags tagClass="mr-3px" :tags="row.newTags" :walletAddress="row.wallet_address" :chain="row.chain" />
+          <SignalTags
+            tagClass="mr-3px" :tags="(row.newTags||[]).map(el=>tagStore.matchTag(el.type))"
+                      :walletAddress="row.wallet_address" :chain="row.chain"/>
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
               :remark="row.remark"
