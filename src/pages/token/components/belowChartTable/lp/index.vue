@@ -6,7 +6,12 @@
           :align="col.align">
           <template #default="{ row }">
             <div>
-              <span v-if="row[col.prop] === '--'" :class="col?.getClassName ? col?.getClassName(row) : ''">--</span>
+              <span v-if="col.prop == 'mark'" :class="col?.getClassName ? col.getClassName(row) : ''">
+                <!--  v-if="Number(row?.analysis_show_creator) === 1" -->
+                <tag>{{ $t('contractCreator') }}</tag>
+                {{ col.formatter ? col.formatter(row):row[col.prop] }}
+              </span>
+              <span v-else-if="row[col.prop] === '--'" :class="col?.getClassName ? col?.getClassName(row) : ''">--</span>
               <span v-else-if="row[col.prop] === 0" :class="col?.getClassName ? col.getClassName(row) : ''">0</span>
               <span v-else :class="col?.getClassName ? col.getClassName(row) : ''">{{ col.formatter ? col.formatter(row)
                 :row[col.prop] }}</span>
@@ -34,6 +39,7 @@
 
 <script setup lang="ts">
 import { getLPHolders, getPairLiqNew, type GetLPHoldersResponse, type IHolder } from '~/api/token'
+import tag from './components/tag.vue'
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 
@@ -47,6 +53,9 @@ const columns = computed(() => {
       align: 'left',
       sortable: false,
       getClassName: (row: any) => { },
+      formatter: (row: any) => {
+        return row.mark?row.mark:(row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
+      }
     },
     {
       label: t('devote'),

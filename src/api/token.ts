@@ -451,8 +451,6 @@ export function getLPHolders(tokenId: string) : Promise<GetLPHoldersResponse>{
     params: {
       token_id: tokenId,
     }
-  }).then(res => {
-    return JSON.parse(window.decodeURIComponent(window.atob(res).replace(/\+/g, ' ')))
   })
 }
 
