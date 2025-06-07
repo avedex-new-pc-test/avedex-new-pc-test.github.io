@@ -87,12 +87,17 @@
       <Icon name="solar:alt-arrow-down-line-duotone" :class="show ? 'collapse' : 'expand'" class="text-20px font-bold color-[--d-666-l-999]" />
     </button>
   </div>
+  <el-dialog v-model="visible" width="600px" :title="'LP ' + $t('holdersDetail')" append-to-body>
+    <LPHolders />
+  </el-dialog>
+
 </template>
 
 <script setup lang='ts'>
 import { formatNumber } from '@/utils/formatNumber'
 import { formatIconSwap, getSwapInfo } from '@/utils/index'
 import BigNumber from 'bignumber.js'
+import LPHolders from './lpHolders.vue'
 const tokenStore = useTokenStore()
 const show = shallowRef(false)
 const percent = computed(() => (tokenStore?.tokenInfoExtra?.pair_lock_percent || 0) * 100 || 0)

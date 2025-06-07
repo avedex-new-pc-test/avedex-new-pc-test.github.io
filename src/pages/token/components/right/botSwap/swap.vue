@@ -93,7 +93,6 @@
         native-type="button"
         @click.stop="submitBotSwap"
       >
-      {{ checkAmountMessage() }}
         {{ checkAmountMessage() || (activeTab === 'buy' ? $t('buy') : $t('sell')) }}
       </el-button>
       <div class="mt-10px flex items-center text-11px color-[--d-F5F5F5-l-333]">

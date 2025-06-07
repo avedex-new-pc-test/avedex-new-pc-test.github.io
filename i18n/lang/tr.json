@@ -220,5 +220,7 @@
   "sellTax1": "Satış Vergisi",
   "positionCostPrice": "Maliyet Fiyatı",
   "attention1Success": "Başarıyla favorilere eklendi",
-  "attention1Canceled": "Favori iptal edildi"
+  "attention1Canceled": "Favori iptal edildi",
+  "holders2": "Sahip Adresleri Sayısı",
+  "details": "Detaylar"
 }
