@@ -14,6 +14,7 @@ const botSettingStore = useBotSettingStore()
 const botStore = useBotStore()
 const botSwapStore = useBotSwap()
 const priceV2Store = usePriceV2Store()
+const tokenStore = useTokenStore()
 watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
   const idToPriceMap: { [key: string]: IPriceV2Response['prices'][0] } = {}
   val.prices.forEach((item) => {
@@ -377,6 +378,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
   if (res) {
     let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
       ElNotification({type: 'success', message: t('transactionsSubmitted')})
+      tokenStore.placeOrderUpdate++
       loadingSwap.value[tokenId] = false
     }, 500)
     const unwatch = watch(() => wsStore.wsResult.tgbot, (subscribeResult) => {
@@ -386,6 +388,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
           clearTimeout(Timer)
           Timer = null
         }
+        tokenStore.placeOrderSuccess++
         if (subscribeResult?.txList?.[0]?.success) {
           ElNotification({type: 'success', message: t('tradeSuccess')})
           unwatch()
