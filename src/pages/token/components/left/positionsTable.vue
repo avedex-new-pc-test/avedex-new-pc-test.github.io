@@ -422,7 +422,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
       <NetSelect
         v-if="botStore.evmAddress"
         v-model:userIds="tableFilter.user_ids"
-        @update:user-ids="_getUserBalance"
+        @update:user-ids="resetStatus();_getUserBalance()"
       />
     </div>
     <t-head
