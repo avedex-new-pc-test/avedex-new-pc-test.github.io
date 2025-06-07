@@ -137,8 +137,8 @@ function _getTokenDetailsList() {
       if (!listStatus.value.finished) {
         listQuery.value.pageNO++
       }
-      listQuery.value.max_block_number = arr[arr?.length - 1].block_number
-      listQuery.value.max_event_id = arr[arr?.length - 1].event_id
+      listQuery.value.max_block_number = arr[arr?.length - 1]?.block_number
+      listQuery.value.max_event_id = arr[arr?.length - 1]?.event_id
     }).finally(() => {
     listStatus.value.loading = false
   })
