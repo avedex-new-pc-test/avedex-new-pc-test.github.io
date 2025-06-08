@@ -1,35 +1,56 @@
 <template>
   <div class="w-lp">
     <div class="m-table">
-      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content :row-key="getRowKey" height="245">
+      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
+        :row-key="getRowKey" height="245">
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
           :align="col.align">
           <template #default="{ row }">
-            <div :class="row.customClassName ? (typeof row.customClassName === 'function' ? row.customClassName(row) : row.customClassName) : ''">
-              <span v-if="col.prefix" class="prefix">{{ typeof col.prefix === 'function' ? col.prefix(row) : col.prefix }}</span>
-              <span v-if="col.prop == 'mark'">
+            <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns','percent']">
+              <div v-if="col.prop == 'mark'" class="flex flex-col">
+
                 <!--  v-if="Number(row?.analysis_show_creator) === 1" -->
-                <tag>{{ $t('contractCreator') }}</tag>
-                {{ col.customFormatter ? col.customFormatter(row):row[col.prop] }}
-              </span>
-              <span v-else-if="row[col.prop] === '--'">--</span>
-              <span v-else-if="row[col.prop] === 0">0</span>
-              <span v-else>{{ col.customFormatter ? col.customFormatter(row):row[col.prop] }}</span>
-              <span v-if="col.suffix" class="suffix">{{ typeof col.suffix === 'function' ? col.suffix(row) : col.suffix }}</span>
-            </div>
+                <tag v-if="Number(row?.analysis_show_creator) === 1">{{ $t('contractCreator') }}</tag>
+                {{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}
+              </div>
+              <div v-else-if="col.prop == 'addAmt'" class="flex flex-col">
+                <div>
+                  <span class="color-#12B886">{{ formatNumber(row.main_token_amount, 1) }}&nbsp;</span>
+                  <span>{{ lpRest?.main_token_symbol }}</span>
+                </div>
+                <span>${{ formatNumber(row.main_token_amount_usd, 1) }}</span>
+              </div>
+              <div v-else-if="col.prop == 'netAmt'" class="flex flex-col">
+                <div>
+                  <span class="color-#12B886">{{ formatNumber(row.target_token_amount, 1) }}&nbsp;</span>
+                  <span>{{ lpRest?.target_token_symbol }}</span>
+                </div>
+                <span>${{ formatNumber(row.target_token_amount_usd, 1) }}</span>
+              </div>
+              <div v-else-if="col.prop == 'txns'" class="flex flex-col">
+
+                <div :class="`color-${upColor[0]} flex-end`">
+                  <tag type="success" class="p-3px! h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
+                </div>
+                <div :class="`color-${downColor[0]} flex-end`">
+                  <tag type="danger" class="p-3px! h-12px w-12px mr-4px">-</tag>{{ row.add_total }}
+                </div>
+              </div>
+              <div v-else-if="col.prop == 'percent'" class="flex flex-col">
+                <div class="line-bar">
+                  <span :style="{ width:row.percent+'%'}"/>
+                </div>
+              </div>
+            </Column>
           </template>
         </el-table-column>
         <el-table-column type="expand">
           <template #default="{ row }">
-            <el-table v-if="row?.lock&&row?.lock.length" :data="row?.lock" style="width: 100%">
-              <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" :width="col2?.width" :prop="col2.prop" :align="col2.align">
-                <template #default="{ row:row2 }">
-                  <div :class="row.customClassName ? (typeof row.customClassName === 'function' ? row.customClassName(row) : row.customClassName) : ''">
-                    <span v-if="row2[col2.prop] === '--'">--</span>
-                    <span v-else-if="row2[col2.prop] === 0">0</span>
-                    <span v-else>{{ col2.customFormatter ? col2.customFormatter(row2)
-                      :row2[col2.prop] }}</span>
-                  </div>
+            <el-table v-if="row?.lock && row?.lock.length" :data="row?.lock" style="width: 100%">
+              <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" :width="col2?.width"
+                :prop="col2.prop" :align="col2.align">
+                <template #default="{ row: row2 }">
+                  <Column :row="row2" :col="col2" />
                 </template>
               </el-table-column>
             </el-table>
@@ -43,77 +64,48 @@
 <script setup lang="ts">
 import { getLPHolders, getPairLiqNew, type GetLPHoldersResponse, type IHolder } from '~/api/token'
 import tag from './components/tag.vue'
-import type {IColumn}  from './components/columns.vue'
+// import type {IColumn}  from './components/columns.vue'
+import { upColor, downColor } from '@/utils/constants'
+import Column from './components/columns.vue'
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 
 const dataSource = ref<(IHolder & { index: string })[]>([])
 const { t } = useI18n()
-const lpRest=ref({})
+const lpRest = ref<any>({})
 
-const columns = computed<IColumn[]>(() => {
+const columns = computed(() => {
   return [
     {
       label: t('provider'),
       prop: 'mark',
       align: 'left',
+      width: 78,
       sortable: false,
       customClassName: (row: any) => { },
       customFormatter: (row: any) => {
-        return row.mark?row.mark:(row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
+        return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
       }
     },
     {
-      label: t('devote')+'%',
-      prop: 'percent',
+      label: t('devote') + '%',
+      prop: 'devote',
       align: 'right',
       sortable: false,
       customClassName: (row: any) => { },
       customFormatter: (row: any) => {
-        return row.percent+'%'
+        return formatNumber(row.percent, 1) + '%'
       }
     },
     {
       label: t('addAmt'),
       prop: 'addAmt',
       align: 'right',
-      sortable: false,
-      customClassName: (row: any) => { },
-      multiple: [
-        {
-          prop: 'main_token_amount',
-          customFormatter: (row: any) => {
-            return `${formatNumber(row.main_token_amount, 1)}`
-          }
-        },
-        {
-          prop: 'main_token_amount_usd',
-          customFormatter: (row: any) => {
-            return `$${formatNumber(row.main_token_amount_usd, 1)}`
-          }
-        }
-      ],
     },
     {
       label: t('netAmt'),
       prop: 'netAmt',
       align: 'right',
-      sortable: false,
-      customClassName: (row: any) => { },
-      multiple: [
-        {
-          prop: 'target_token_amount',
-          customFormatter: (row: any) => {
-            return `${formatNumber(row.target_token_amount, 1)}`
-          }
-        },
-        {
-          prop: 'target_token_amount_usd',
-          customFormatter: (row: any) => {
-            return `$${formatNumber(row.target_token_amount_usd, 1)}`
-          }
-        }
-      ],
     },
     {
       label: t('amount'),
@@ -122,7 +114,7 @@ const columns = computed<IColumn[]>(() => {
       sortable: false,
       customClassName: (row: any) => { },
       customFormatter: (row: any) => {
-        return Array.isArray(row.lock) ?formatNumber((row.lock.reduce((prev:any, cur:any) => prev.amount||0 + cur.amount||0, 0)),2)   : 0
+        return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
       }
     },
     {
@@ -150,8 +142,6 @@ const columns = computed<IColumn[]>(() => {
       label: t('txns'),
       prop: 'txns',
       align: 'right',
-      sortable: false,
-      customClassName: (row: any) => { },
       // customFormatter: (row: any) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
@@ -163,12 +153,12 @@ const columns = computed<IColumn[]>(() => {
       sortable: false,
       customClassName: undefined,
       customFormatter: (row: any) => {
-        return formatTimeFromNow(row?.last_tx_time)
+        return formatTimeFromNow(row?.last_tx_time)||''
       }
     },
   ]
 })
-const expandedRowKeys=shallowRef<string[]>([])
+const expandedRowKeys = shallowRef<string[]>([])
 const columns2 = computed(() => {
   return [
     {
@@ -198,7 +188,7 @@ const columns2 = computed(() => {
       sortable: false,
       customClassName: (row: any) => { },
       customFormatter: (row: any) => {
-       return formatDate(row.unlockDate, 'YYYY-MM-DD')
+        return formatDate(row.unlockDate, 'YYYY-MM-DD')
       }
     },
     {
@@ -239,51 +229,83 @@ const addressAndChain = computed(() => {
   }
 })
 function init1() {
-  if (pairAddress.value&&addressAndChain.value.chain) {
+  if (pairAddress.value && addressAndChain.value.chain) {
     getPairLiqNew(pairAddress.value + '-' + addressAndChain.value.chain).then((res: any) => {
       console.log('pairLiqNew', res)
     })
   }
 }
 function init2() {
-  const expandedRowKeys1=[] as string[]
+  const expandedRowKeys1 = [] as string[]
   if (token?.value?.token && addressAndChain.value?.chain) {
     getLPHolders((token?.value?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
       console.log('getLPHolders', res)
       if (res?.Holders && Array.isArray(res?.Holders)) {
-        const {Holders,...rest}=res
+        const { Holders, ...rest } = res
         dataSource.value = res.Holders.map((item: IHolder, idx: number) => ({
           ...item,
           index: (idx + 1).toString(),
         }))
         expandedRowKeys1.push(...dataSource.value.filter(item => item?.lock?.length).map(item => item.index))
         console.log('dataSource', dataSource.value)
-        lpRest.value=rest
+        lpRest.value = rest
       } else {
         dataSource.value = []
-        lpRest.value={}
+        lpRest.value = {}
       }
     }).catch((err: any) => {
       console.log(err)
       dataSource.value = []
     }).finally(() => {
     })
-  }else{
+  } else {
     dataSource.value = []
-    lpRest.value={}
+    lpRest.value = {}
   }
-  expandedRowKeys.value=expandedRowKeys1
+  expandedRowKeys.value = expandedRowKeys1
 }
 
 </script>
 
 <style scoped lang="scss">
-.m-table{
-  :deep() .el-table__expand-column{
+.m-table {
+  :deep() .el-table__expand-column {
     /* display: none; */
   }
-  :deep() .el-table__expand-icon{
+
+  :deep() .el-table__expand-icon {
     display: none;
+  }
+
+  :deep() th {
+    font-family: Poppins;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0px;
+    color: var(--d-666-l-999);
+  }
+
+  :deep() td {
+    font-family: Poppins;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 20px;
+    letter-spacing: 0px;
+    color: var(--d-999-l-666);
+  }
+}
+.line-bar {
+  width: 100%;
+  height: 3px;
+  display: flex;
+  background: var(--d-222-l-f5f5f5);
+  border-radius: 1.5px;
+  margin-top: 4px;
+  > span {
+    height: 3px;
+    border-radius: 1.5px;
+    background: var(--d-999-l-666);
   }
 }
 </style>

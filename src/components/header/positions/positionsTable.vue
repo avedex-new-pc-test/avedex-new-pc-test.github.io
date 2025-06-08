@@ -116,7 +116,7 @@ const columns = computed(() => {
       width: 100,
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => Number(row.total_profit_ratio) > 0 ? `color-${upColor}` : `color-${downColor}`,
+      getClassName: (row: any) => Number(row.total_profit_ratio) > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`,
       formatter: (row: any) => {
         return `${Number(row.total_profit_ratio) > 0 ? '+' : '-'}${formatNumber(Math.abs(Number(row.total_profit_ratio) * 100), 2)}%`
       }

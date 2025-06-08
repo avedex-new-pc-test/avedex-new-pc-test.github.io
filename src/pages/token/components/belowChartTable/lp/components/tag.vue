@@ -37,11 +37,11 @@ watch(props , (val) => {
 
 <style lang="scss" scoped>
 .default{
-  display: flex;
+  display: inline-flex;
   position: relative;
-  vertical-align: middle;
   justify-content: center;
   align-items: center;
+  vertical-align: middle;
   color: #3F80F7;
   background-color: #3F80F71A;
   font-family: SF Pro;
@@ -50,7 +50,6 @@ watch(props , (val) => {
   font-size: 12px;
   line-height: 120%;
   letter-spacing: 0%;
-  vertical-align: middle;
   border-radius: 4px;
   border: 0 none;
   &.primary{
@@ -69,14 +68,17 @@ watch(props , (val) => {
     padding: 4px 12px;
     font-size: 13px;
     border-radius: 6px;
+    height: 24px;
   }
   &.default{
     padding: 3px 8px;
     font-size: 12px;
+    height: 20px;
   }
   &.small{
     padding: 2px 4px;
     font-size: 10px;
+    height: 16px;
   }
   &.noRound{
     border-radius: 0px;
