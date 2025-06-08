@@ -397,5 +397,7 @@
   "sellTax1": "Налог на продажу",
   "positionCostPrice": "Цена позиции",
   "attention1Success": "Подписка успешна",
-  "attention1Canceled": "Подписка отменена"
+  "attention1Canceled": "Подписка отменена",
+  "holders2": "Держатели",
+  "details": "Подробности"
 }

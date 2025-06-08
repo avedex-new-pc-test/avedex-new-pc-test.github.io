@@ -50,6 +50,7 @@ const userAddress = computed(() => {
 
 watch(userAddress, (val) => {
   if (val) {
+    avgPrice.value = 0
     getWalletTxData()
     _bot_getAddressAllBalances()
   }
@@ -100,9 +101,13 @@ async function _bot_getAddressAllBalances() {
     evmAddress: botStore.evmAddress,
     chains: chain,
     pinToken: route.params?.id as string
-
   }
   return bot_getAddressAllBalances(params).then(async res => {
+    if (!res?.[0]?.value || res?.[0]?.value > 0 && res?.[0]?.token !== token) {
+      avgPrice.value = 0
+      useEventBus('updateAvgPrice').emit(0)
+      return
+    }
     avgPrice.value = Number(res?.[0]?.avgPrice || 0)
     if (res?.[0]?.value > 0) {
       useEventBus('updateAvgPrice').emit(avgPrice.value)
@@ -115,6 +120,7 @@ async function _bot_getAddressAllBalances() {
 
 
 watch(() => route.params.id, () => {
+  avgPrice.value = 0
   getWalletTxData()
   _bot_getAddressAllBalances()
 })

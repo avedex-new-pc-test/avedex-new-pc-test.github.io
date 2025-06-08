@@ -93,7 +93,6 @@
         native-type="button"
         @click.stop="submitBotSwap"
       >
-      {{ checkAmountMessage() }}
         {{ checkAmountMessage() || (activeTab === 'buy' ? $t('buy') : $t('sell')) }}
       </el-button>
       <div class="mt-10px flex items-center text-11px color-[--d-F5F5F5-l-333]">
@@ -706,18 +705,10 @@ async function submitBotSwap() {
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
               loadingSwap.value = false
-              setTimeout(() => {
-                // this.getTokenDetails()
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-              }, 1000)
             }
           }
         })
@@ -786,9 +777,6 @@ async function submitBotSwap() {
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
@@ -888,16 +876,10 @@ function submitBotLimit() {
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
               loadingSwap.value = false
-              setTimeout(() => {
-                emit('getTokenBalance')
-              }, 1000)
             }
           }
         })
@@ -957,18 +939,10 @@ function submitBotLimit() {
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
               loadingSwap.value = false
-              setTimeout(() => {
-                // this.getTokenDetails()
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-              }, 1000)
             }
           }
         })
@@ -1081,6 +1055,12 @@ function initPriceLimit() {
 
 watch(() => tokenStore.token?.token, () => {
   initPriceLimit()
+})
+
+watch(() => tokenStore.placeOrderSuccess, () => {
+  setTimeout(() => {
+    emit('getTokenBalance')
+  }, 1000)
 })
 
 // 生命周期钩子

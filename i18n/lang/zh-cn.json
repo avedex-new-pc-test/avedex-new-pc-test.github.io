@@ -625,5 +625,7 @@
   "Expand": "展开",
   "Collapse": "收起",
   "attention1Success": "关注成功",
-  "attention1Canceled": "取消关注"
+  "attention1Canceled": "取消关注",
+  "holders2": "持币地址",
+  "details": "明细"
 }

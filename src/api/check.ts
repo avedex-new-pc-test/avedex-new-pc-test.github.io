@@ -201,3 +201,31 @@ export function _getVote(token_id: string, user_address?: string) {
     },
   })
 }
+
+// getLPHolders
+export function getLPHolders(tokenId: string): Promise<Array<{
+  address: string
+  quantity: string
+  mark: string
+  lock: null | Array<{
+    id: number
+    token: string
+    owner: string
+    amount: number
+    lockDate: number
+    unlockDate: number
+    vesting_end?: number
+  }>
+  percent: string
+  analysis_show_creator?: string
+  analysis_show_warning?: string
+  is_contract?: number
+}>> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v2/tokens/lp_holders', {
+    method: 'get',
+    query: {
+      token_id: tokenId,
+    }
+  })
+}

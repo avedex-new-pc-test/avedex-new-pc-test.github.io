@@ -237,7 +237,7 @@
                   }}
                 </span>
               </div>
-              <span>--</span>
+              <span v-else>--</span>
               <div>
                 <span
                   :class="
