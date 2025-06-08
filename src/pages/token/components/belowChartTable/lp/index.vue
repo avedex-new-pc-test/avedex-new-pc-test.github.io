@@ -1,12 +1,13 @@
 <template>
   <div class="w-lp">
-    <div class="m-table">
+    <Bar :dataList="dataList" :loading="loading" :showSeries="showSeries" v-if="dataList.length > 0 || loading" />
+    <div class="m-table mt20px">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
         :row-key="getRowKey" height="245">
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
           :align="col.align">
           <template #default="{ row }">
-            <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns','percent']">
+            <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns', 'percent']">
               <div v-if="col.prop == 'mark'" class="flex flex-col">
 
                 <!--  v-if="Number(row?.analysis_show_creator) === 1" -->
@@ -38,7 +39,7 @@
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
                 <div class="line-bar">
-                  <span :style="{ width:row.percent+'%'}"/>
+                  <span :style="{ width: row.percent + '%' }" />
                 </div>
               </div>
             </Column>
@@ -47,8 +48,8 @@
         <el-table-column type="expand">
           <template #default="{ row }">
             <el-table v-if="row?.lock && row?.lock.length" :data="row?.lock" style="width: 100%">
-              <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" 
-                :prop="col2.prop" :align="col2.align">
+              <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" :prop="col2.prop"
+                :align="col2.align">
                 <template #default="{ row: row2 }">
                   <Column :row="row2" :col="col2" />
                 </template>
@@ -62,18 +63,21 @@
 </template>
 
 <script setup lang="ts">
-import { getLPHolders, getPairLiqNew, type GetLPHoldersResponse, type IHolder } from '~/api/token'
+import { getLPHolders, getPairLiqNew, type GetLPHoldersResponse, type IHolder, type GetPairLiqNewResponse } from '~/api/token'
 import tag from './components/tag.vue'
 // import type {IColumn}  from './components/columns.vue'
 import { upColor, downColor } from '@/utils/constants'
 import Column from './components/columns.vue'
+import Bar from './components/bar.vue'
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 
 const dataSource = ref<(IHolder & { index: string })[]>([])
+const dataList = ref<(GetPairLiqNewResponse & { time: string })[]>([])
 const { t } = useI18n()
 const lpRest = ref<any>({})
-
+const showSeries = shallowRef([true, true])
+const loading = ref(false)
 const columns = computed(() => {
   return [
     {
@@ -153,7 +157,7 @@ const columns = computed(() => {
       sortable: false,
       customClassName: undefined,
       customFormatter: (row: any) => {
-        return formatTimeFromNow(row?.last_tx_time)||''
+        return formatTimeFromNow(row?.last_tx_time) || ''
       }
     },
   ]
@@ -230,8 +234,22 @@ const addressAndChain = computed(() => {
 })
 function init1() {
   if (pairAddress.value && addressAndChain.value.chain) {
-    getPairLiqNew(pairAddress.value + '-' + addressAndChain.value.chain).then((res: any) => {
-      console.log('pairLiqNew', res)
+    loading.value = true
+    getPairLiqNew(pairAddress.value + '-' + addressAndChain.value.chain,30).then((res: GetPairLiqNewResponse[]) => {
+      dataList.value =
+        res
+          ?.map((i) => {
+            return {
+              ...i,
+              time: formatDate(new Date(i?.time).getTime() / 1000, 'MM-DD')
+            }
+          })
+          ?.reverse() || []
+    }).finally(() => {
+      loading.value = false
+    }).catch((err: any) => {
+      console.error(err)
+      dataList.value = []
     })
   }
 }
@@ -295,6 +313,7 @@ function init2() {
     color: var(--d-999-l-666);
   }
 }
+
 .line-bar {
   width: 100%;
   height: 3px;
@@ -302,7 +321,8 @@ function init2() {
   background: var(--d-222-l-f5f5f5);
   border-radius: 1.5px;
   margin-top: 4px;
-  > span {
+
+  >span {
     height: 3px;
     border-radius: 1.5px;
     background: var(--d-999-l-666);

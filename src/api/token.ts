@@ -410,7 +410,13 @@ export async function getPairLiq(pair: string, address?: string): Promise<GetPai
     },
   })
 }
-export async function getPairLiqNew(pair:string, interval = 7) {
+
+export interface GetPairLiqNewResponse {
+  time: string;
+  removeliquidity_total: number;
+  addliquidity_total: number
+}
+export async function getPairLiqNew(pair:string, interval = 7):Promise<GetPairLiqNewResponse[]> {
   if (!pair) {
     return []
   }

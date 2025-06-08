@@ -623,5 +623,7 @@
   "Expand": "Expand",
   "Collapse": "Collapse",
   "attention1Success": "Following successfully",
-  "attention1Canceled": "Following has been canceled"
+  "attention1Canceled": "Following has been canceled",
+  "add": "Add",
+  "remove": "Remove"
 }

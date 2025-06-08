@@ -225,5 +225,7 @@
   "sellTax1": "imposto sobre venda",
   "positionCostPrice": "Preço da Posição",
   "attention1Success": "Seguindo com sucesso",
-  "attention1Canceled": "Seguindo foi cancelado"
+  "attention1Canceled": "Seguindo foi cancelado",
+  "add": "Adicionar",
+  "remove": "Remover"
 }
