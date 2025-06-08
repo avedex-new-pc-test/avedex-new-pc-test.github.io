@@ -1,6 +1,6 @@
 <template>
   <div class="w-lp">
-    <Bar :dataList="dataList" :loading="loading" :showSeries="showSeries" v-if="dataList.length > 0 || loading" />
+    <Line :dataList="dataList" :loading="loading" :showSeries="showSeries" v-if="dataList.length > 0 || loading" />
     <div class="m-table mt20px">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
         :row-key="getRowKey" height="245">
@@ -68,7 +68,7 @@ import tag from './components/tag.vue'
 // import type {IColumn}  from './components/columns.vue'
 import { upColor, downColor } from '@/utils/constants'
 import Column from './components/columns.vue'
-import Bar from './components/bar.vue'
+import Line from './components/line.vue'
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 

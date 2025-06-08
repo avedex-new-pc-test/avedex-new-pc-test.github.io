@@ -144,17 +144,22 @@ const init = () => {
       right: '20',
       top: '20',
       bottom: '40',
-      containLabel: true
+      containLabel: true,
+      tooltip: {
+        axisPointer: {
+          type: 'cross'
+        }
+      }
     },
     xAxis: {
       type: 'category',
       data: dataX.value,
-      boundaryGap: ['0', '20'],
+      boundaryGap: ['20%', '20%'],
       splitLine: {
         show: false
       },
       axisTick: {
-        show: false
+        show: true
       },
       axisLabel: {
         color: mode.value  === 'light' ? '#999' : '#666',
