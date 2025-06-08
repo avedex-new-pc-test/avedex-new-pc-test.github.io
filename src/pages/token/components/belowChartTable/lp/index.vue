@@ -5,16 +5,17 @@
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
           :align="col.align">
           <template #default="{ row }">
-            <div>
-              <span v-if="col.prop == 'mark'" :class="col?.getClassName ? col.getClassName(row) : ''">
+            <div :class="row.customClassName ? (typeof row.customClassName === 'function' ? row.customClassName(row) : row.customClassName) : ''">
+              <span v-if="col.prefix" class="prefix">{{ typeof col.prefix === 'function' ? col.prefix(row) : col.prefix }}</span>
+              <span v-if="col.prop == 'mark'">
                 <!--  v-if="Number(row?.analysis_show_creator) === 1" -->
                 <tag>{{ $t('contractCreator') }}</tag>
-                {{ col.formatter ? col.formatter(row):row[col.prop] }}
+                {{ col.customFormatter ? col.customFormatter(row):row[col.prop] }}
               </span>
-              <span v-else-if="row[col.prop] === '--'" :class="col?.getClassName ? col?.getClassName(row) : ''">--</span>
-              <span v-else-if="row[col.prop] === 0" :class="col?.getClassName ? col.getClassName(row) : ''">0</span>
-              <span v-else :class="col?.getClassName ? col.getClassName(row) : ''">{{ col.formatter ? col.formatter(row)
-                :row[col.prop] }}</span>
+              <span v-else-if="row[col.prop] === '--'">--</span>
+              <span v-else-if="row[col.prop] === 0">0</span>
+              <span v-else>{{ col.customFormatter ? col.customFormatter(row):row[col.prop] }}</span>
+              <span v-if="col.suffix" class="suffix">{{ typeof col.suffix === 'function' ? col.suffix(row) : col.suffix }}</span>
             </div>
           </template>
         </el-table-column>
@@ -23,10 +24,12 @@
             <el-table v-if="row?.lock&&row?.lock.length" :data="row?.lock" style="width: 100%">
               <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" :width="col2?.width" :prop="col2.prop" :align="col2.align">
                 <template #default="{ row:row2 }">
-                  <span v-if="row2[col2.prop] === '--'" :class="col2?.getClassName ? col2.getClassName(row2) : ''">--</span>
-                  <span v-else-if="row2[col2.prop] === 0" :class="col2?.getClassName ? col2.getClassName(row2) : ''">0</span>
-                  <span v-else :class="col2?.getClassName ? col2.getClassName(row2) : ''">{{ col2.formatter ? col2.formatter(row2)
-                    :row2[col2.prop] }}</span>
+                  <div :class="row.customClassName ? (typeof row.customClassName === 'function' ? row.customClassName(row) : row.customClassName) : ''">
+                    <span v-if="row2[col2.prop] === '--'">--</span>
+                    <span v-else-if="row2[col2.prop] === 0">0</span>
+                    <span v-else>{{ col2.customFormatter ? col2.customFormatter(row2)
+                      :row2[col2.prop] }}</span>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -40,61 +43,86 @@
 <script setup lang="ts">
 import { getLPHolders, getPairLiqNew, type GetLPHoldersResponse, type IHolder } from '~/api/token'
 import tag from './components/tag.vue'
+import type {IColumn}  from './components/columns.vue'
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 
 const dataSource = ref<(IHolder & { index: string })[]>([])
 const { t } = useI18n()
-const columns = computed(() => {
+const lpRest=ref({})
+
+const columns = computed<IColumn[]>(() => {
   return [
     {
       label: t('provider'),
       prop: 'mark',
       align: 'left',
       sortable: false,
-      getClassName: (row: any) => { },
-      formatter: (row: any) => {
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
         return row.mark?row.mark:(row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
       }
     },
     {
-      label: t('devote'),
-      prop: 'quantity',
+      label: t('devote')+'%',
+      prop: 'percent',
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => { },
-      // formatter: (row: any) => {
-      //   return row.quantity
-      // }
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
+        return row.percent+'%'
+      }
     },
     {
       label: t('addAmt'),
-      prop: 'quantity',
+      prop: 'addAmt',
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => { },
-      // formatter: (row: any) => {
-      //   return row.quantity
-      // }
+      customClassName: (row: any) => { },
+      multiple: [
+        {
+          prop: 'main_token_amount',
+          customFormatter: (row: any) => {
+            return `${formatNumber(row.main_token_amount, 1)}`
+          }
+        },
+        {
+          prop: 'main_token_amount_usd',
+          customFormatter: (row: any) => {
+            return `$${formatNumber(row.main_token_amount_usd, 1)}`
+          }
+        }
+      ],
     },
     {
       label: t('netAmt'),
-      prop: 'quantity',
+      prop: 'netAmt',
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => { },
-      // formatter: (row: any) => {
-      //  return row.quantity
-      // }
+      customClassName: (row: any) => { },
+      multiple: [
+        {
+          prop: 'target_token_amount',
+          customFormatter: (row: any) => {
+            return `${formatNumber(row.target_token_amount, 1)}`
+          }
+        },
+        {
+          prop: 'target_token_amount_usd',
+          customFormatter: (row: any) => {
+            return `$${formatNumber(row.target_token_amount_usd, 1)}`
+          }
+        }
+      ],
     },
     {
       label: t('amount'),
-      prop: 'target_token_amount',
+      prop: 'amount',
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => { },
-      formatter: (row: any) => {
-        return `$${formatNumber(row.current_price_usd, 4)}`
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
+        return Array.isArray(row.lock) ?formatNumber((row.lock.reduce((prev:any, cur:any) => prev.amount||0 + cur.amount||0, 0)),2)   : 0
       }
     },
     {
@@ -103,19 +131,19 @@ const columns = computed(() => {
       width: 100,
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => { },
-      // formatter: (row: any) => {
+      customClassName: (row: any) => { },
+      // customFormatter: (row: any) => {
       //   return `${Number(row.total_profit_ratio) > 0 ? '+' : '-'}${formatNumber(Math.abs(Number(row.total_profit_ratio) * 100), 2)}%`
       // }
     },
     {
       label: t('balance1'),
-      prop: 'current_price_usd',
+      prop: 'quantity',
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => { },
-      formatter: (row: any) => {
-        return `$${formatNumber(row.current_price_usd, 4)}`
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
+        return `$${formatNumber(row.quantity, 4)}`
       }
     },
     {
@@ -123,8 +151,8 @@ const columns = computed(() => {
       prop: 'txns',
       align: 'right',
       sortable: false,
-      getClassName: (row: any) => { },
-      // formatter: (row: any) => {
+      customClassName: (row: any) => { },
+      // customFormatter: (row: any) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
     },
@@ -133,8 +161,8 @@ const columns = computed(() => {
       prop: 'last_tx_time',
       align: 'right',
       sortable: false,
-      getClassName: undefined,
-      formatter: (row: any) => {
+      customClassName: undefined,
+      customFormatter: (row: any) => {
         return formatTimeFromNow(row?.last_tx_time)
       }
     },
@@ -148,8 +176,8 @@ const columns2 = computed(() => {
       prop: 'amount',
       align: 'center',
       sortable: false,
-      getClassName: (row: any) => { },
-      formatter: (row: any) => {
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
         return `$${formatNumber(row.amount, 4)}`
       }
     },
@@ -158,8 +186,8 @@ const columns2 = computed(() => {
       prop: 'lockDate',
       align: 'center',
       sortable: false,
-      getClassName: (row: any) => { },
-      formatter: (row: any) => {
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
         return formatDate(row.lockDate, 'YYYY-MM-DD')
       }
     },
@@ -168,8 +196,8 @@ const columns2 = computed(() => {
       prop: 'unlockDate',
       align: 'center',
       sortable: false,
-      getClassName: (row: any) => { },
-      formatter: (row: any) => {
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
        return formatDate(row.unlockDate, 'YYYY-MM-DD')
       }
     },
@@ -178,8 +206,8 @@ const columns2 = computed(() => {
       prop: 'unlockDateEnd',
       align: 'center',
       sortable: false,
-      getClassName: (row: any) => { },
-      formatter: (row: any) => {
+      customClassName: (row: any) => { },
+      customFormatter: (row: any) => {
         return formatDate(row.vesting_end || row.unlockDate, 'YYYY-MM-DD')
       }
     },
@@ -223,14 +251,17 @@ function init2() {
     getLPHolders((token?.value?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
       console.log('getLPHolders', res)
       if (res?.Holders && Array.isArray(res?.Holders)) {
+        const {Holders,...rest}=res
         dataSource.value = res.Holders.map((item: IHolder, idx: number) => ({
           ...item,
           index: (idx + 1).toString(),
         }))
         expandedRowKeys1.push(...dataSource.value.filter(item => item?.lock?.length).map(item => item.index))
         console.log('dataSource', dataSource.value)
+        lpRest.value=rest
       } else {
         dataSource.value = []
+        lpRest.value={}
       }
     }).catch((err: any) => {
       console.log(err)
@@ -239,6 +270,7 @@ function init2() {
     })
   }else{
     dataSource.value = []
+    lpRest.value={}
   }
   expandedRowKeys.value=expandedRowKeys1
 }

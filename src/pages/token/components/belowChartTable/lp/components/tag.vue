@@ -40,6 +40,7 @@ watch(props , (val) => {
   display: flex;
   position: relative;
   vertical-align: middle;
+  justify-content: center;
   align-items: center;
   color: #3F80F7;
   background-color: #3F80F71A;
