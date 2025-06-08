@@ -47,7 +47,7 @@
         <el-table-column type="expand">
           <template #default="{ row }">
             <el-table v-if="row?.lock && row?.lock.length" :data="row?.lock" style="width: 100%">
-              <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" :width="col2?.width"
+              <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" 
                 :prop="col2.prop" :align="col2.align">
                 <template #default="{ row: row2 }">
                   <Column :row="row2" :col="col2" />
@@ -82,7 +82,7 @@ const columns = computed(() => {
       align: 'left',
       width: 78,
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
       }
@@ -92,7 +92,7 @@ const columns = computed(() => {
       prop: 'devote',
       align: 'right',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return formatNumber(row.percent, 1) + '%'
       }
@@ -112,7 +112,7 @@ const columns = computed(() => {
       prop: 'amount',
       align: 'right',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
       }
@@ -123,7 +123,7 @@ const columns = computed(() => {
       width: 100,
       align: 'right',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       // customFormatter: (row: any) => {
       //   return `${Number(row.total_profit_ratio) > 0 ? '+' : '-'}${formatNumber(Math.abs(Number(row.total_profit_ratio) * 100), 2)}%`
       // }
@@ -133,7 +133,7 @@ const columns = computed(() => {
       prop: 'quantity',
       align: 'right',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return `$${formatNumber(row.quantity, 4)}`
       }
@@ -166,7 +166,7 @@ const columns2 = computed(() => {
       prop: 'amount',
       align: 'center',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return `$${formatNumber(row.amount, 4)}`
       }
@@ -176,7 +176,7 @@ const columns2 = computed(() => {
       prop: 'lockDate',
       align: 'center',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return formatDate(row.lockDate, 'YYYY-MM-DD')
       }
@@ -186,7 +186,7 @@ const columns2 = computed(() => {
       prop: 'unlockDate',
       align: 'center',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return formatDate(row.unlockDate, 'YYYY-MM-DD')
       }
@@ -196,7 +196,7 @@ const columns2 = computed(() => {
       prop: 'unlockDateEnd',
       align: 'center',
       sortable: false,
-      customClassName: (row: any) => { },
+      customClassName: () => { },
       customFormatter: (row: any) => {
         return formatDate(row.vesting_end || row.unlockDate, 'YYYY-MM-DD')
       }
