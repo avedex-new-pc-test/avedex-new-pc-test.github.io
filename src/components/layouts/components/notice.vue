@@ -10,7 +10,7 @@
       <div
         class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
       >
-        <el-badge color="#F6465D">
+        <el-badge class="h-20px" color="#F6465D">
           <Icon
             class="text-20px text-[--d-999-l-666] cursor-pointer"
             name="material-symbols:notifications"
@@ -90,7 +90,7 @@
             >
               {{ item.symbol }} {{ $t('limitOrderFail') }} {{
                 formatNumber(formatUnits(new BigNumber(item.inAmount || 0).toFixed(0), item.inTokenDecimals || 0).toString(), 3)
-              }} {{ item.inTokenSymbol }} {{ $t('failReason') }}: {{ $f.formatBotError(item.errorLog) }}
+              }} {{ item.inTokenSymbol }} {{ $t('failReason') }}: {{ formatBotError(item.errorLog) }}
             </div>
             <div v-else-if="item.status === 'cancelled'" class="text-12px mt-5px">{{ item.symbol }} {{
                 $t('limitOrderCancel')
@@ -123,7 +123,7 @@ import {useStorage} from '@vueuse/core'
 import {evm_utils} from '@/utils'
 import BigNumber from 'bignumber.js'
 import {getAnnounces} from '~/api/user'
-import {bot_getMarketCompletedLimitTx, type IGetMarketCompletedLimitResponse} from '~/api/bot'
+import {getCompletedLimitTx, type IGetMarketCompletedLimitResponse} from '~/api/bot'
 
 const NOTICE_FILTER_TIME = 1744460716
 const {formatUnits} = evm_utils
@@ -170,28 +170,29 @@ watch(visible, (val) => {
 
 watch(() => wsStore.wsResult[WSEventType.TGBOT], (val) => {
   if (val && val?.swapType > 2) {
-    getCompletedLimitTx()
+    _getCompletedLimitTx()
   }
 })
 
 watch(() => botStore.evmAddress, () => {
-  getCompletedLimitTx()
+  if (botStore.evmAddress) {
+    _getCompletedLimitTx()
+  }
+}, {
+  immediate: true
 })
 
 onMounted(() => {
-  if (isBotLogin.value) {
-    getCompletedLimitTx()
-  }
   getNoticeList()
 })
 
-async function getCompletedLimitTx() {
+async function _getCompletedLimitTx() {
   try {
     const chainMainToken: Record<string, string> = {
       solana: 'sol',
       ton: 'TON'
     }
-    const res = await bot_getMarketCompletedLimitTx(botStore.evmAddress)
+    const res = await getCompletedLimitTx(botStore.evmAddress)
     completedLimitTx.value = (res || []).map(el => {
       const isBuy = (el.inTokenAddress === (chainMainToken[el.chain] || NATIVE_TOKEN))
       let inAmount: any = new BigNumber(el.inAmount || 0).toFixed(0)

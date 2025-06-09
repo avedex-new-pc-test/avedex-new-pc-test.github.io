@@ -1,14 +1,15 @@
 :root.dark {
   .el-popper[role="tooltip"] {
-    // --el-bg-color: #ccc;
-    // --el-text-color-primary: #17191C;
+    --el-bg-color: #fff;
+    --el-text-color-primary: #333;
+    border: none;
   }
 }
 
 :root.light {
   .el-popper[role="tooltip"] {
-    // --el-bg-color: #17191C;
-    // --el-text-color-primary: #FFFFFF;
+    --el-bg-color: #fff;
+    --el-text-color-primary: #333;
   }
 }
 
@@ -64,4 +65,10 @@
 }
 .el-drawer__body{
   --el-drawer-padding-primary: 0
+}
+.is-light.el-popper[data-popper-placement^=bottom] > .el-popper__arrow::before{
+  border: none
+}
+.el-loading-mask {
+  background: transparent!important;
 }

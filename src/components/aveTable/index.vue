@@ -27,7 +27,7 @@ const props = defineProps({
 
 const slots = useSlots()
 const attrs = useAttrs()
-const {theme} = useThemeStore()
+const themeStore = useThemeStore()
 const tableRef = useTemplateRef<TableV2Instance>('tableRef')
 defineExpose({
   scrollTo: (...args: Parameters<TableV2Instance['scrollTo']>) => {
@@ -134,7 +134,7 @@ function calculateColumnWidths() {
         <!--如果没有自定义空样式则使用默认值-->
         <template v-if="!defaultSlots.empty && !loading" #empty>
           <div class="h-full flex flex-col items-center justify-center pt-100px">
-            <img v-if="theme==='light'" src="@/assets/images/empty-white.svg" alt="">
+            <img v-if="themeStore.theme==='light'" src="@/assets/images/empty-white.svg" alt="">
             <img v-else src="@/assets/images/empty-black.svg" alt="">
             <span
               v-if="showEmptyText"

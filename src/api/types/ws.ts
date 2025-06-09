@@ -50,3 +50,32 @@ export interface IAssetResponse {
   };
 }
 
+export interface IPumpResponse {
+  amm: string;
+  chain: string;
+  pair: {
+    amm: string;
+    chain: string;
+    current_price_usd: number;
+    market_cap: number;
+    pair: string;
+    reserve0: number;
+    reserve1: number;
+    slot: number;
+    tag: string;
+    target_token: string;
+    token0_address: string;
+    token0_decimal: number;
+    token0_price_usd: number;
+    token0_symbol: string;
+    token1_address: string;
+    token1_decimal: number;
+    token1_price_usd: number;
+    token1_symbol: string;
+    total: number;
+    tvl: number;
+  };
+  pump_pair_address: string;
+  state: string;
+  time: number;
+}

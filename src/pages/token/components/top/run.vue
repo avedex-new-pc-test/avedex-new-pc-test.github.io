@@ -9,7 +9,7 @@
     <div class="pop-right bg-[--d-222-l-fff] h-100vh px-20px">
       <div
         class="content"
-        style="flex: 1; max-width: 450px; overflow-x: hidden"
+        style="max-width: 450px; overflow-x: hidden;overflow-y: auto;height: 100vh;"
       >
         <div class="right-container run">
           <div class="sticky">
@@ -85,8 +85,8 @@
               </el-col>
             </el-row>
 
-            <div class="mt-20px flex-between  flex items-center justify-between" style="padding-bottom: 10px">
-              <span class="text-12px font-500">
+            <div class="mt-30px flex-between  flex items-center justify-between" style="padding-bottom: 10px">
+              <span class="text-16px font-500">
                 {{ $t('runPullHistory') }}：<template
                   v-if="rugPull?.rates?.total"
                 >
@@ -105,13 +105,10 @@
               </span>
               <div v-if="rugPull?.dev" class="flex-end">
                 <span class="color-#999 text-12px">{{ $t('devAddress') }}：</span>
-                <span
-                  class="color-#999 text-12px"
-                >
-                  {{
-                    rugPull?.dev?.slice(0, 4) + '...' + rugPull?.dev?.slice(-4)
-                  }}
-                </span>
+                <NuxtLink :to="`/address/${rugPull?.dev}/${chain}`" class="color-#999 text-12px underline">
+                  {{ rugPull?.dev?.slice(0, 4) + '...' + rugPull?.dev?.slice(-4) }}
+                </NuxtLink>
+                <Icon v-copy="rugPull?.dev" name="bxs:copy" class="text-12px ml-2px cursor-pointer color-#999" @click.stop.prevent/>
               </div>
             </div>
             <div class="top">
@@ -212,7 +209,7 @@
                   </div>
                   <div @click.stop>
                     <div class="flex-start">
-                      <span class="token-symbol ellipsis">
+                      <span class="token-symbol ellipsis color-[--d-F5F5F5-l-333]">
                         {{ row.Symbol }}
                       </span>
                       <!-- <i
@@ -228,7 +225,6 @@
                       >
                         <i class="iconfont icon-search font_10"/>
                       </a>
-
                       <div
                         v-if="row?.medias?.length > 0"
                         class="media-list flex-start text-12px"
@@ -307,7 +303,7 @@
               </li>
             </ul>
             <div
-              class="font-12 tc width100"
+              class="text-12px tc width100 text-center"
               :style="{
                 color: themeStore.theme === 'light' ? '#666' : '#999',
               }"
@@ -322,6 +318,7 @@
               v-if="(!tableList || tableList?.length === 0) && !loadingRun"
               :image-size="100"
               :image="themeStore.theme === 'light' ? emptyWhite : emptyDark"
+              
             />
           </div>
         </div>
@@ -342,6 +339,7 @@ import { isJSON, getAddressAndChainFromId, formatNewTags ,formatDate,formatTime 
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 const {token_logo_url} = useConfigStore()
+const tokenDetailStore = useTokenDetailsStore()
 const props = defineProps({
   modelValue: Boolean,
   obj: {
@@ -647,8 +645,10 @@ onMounted(() => {
 .token-info {
   display: flex;
   .icon-token-container {
+    position: relative;
     margin-right: 4px;
     .icon-symbol {
+      position: absolute;
       left: 15px;
       top: 15px;
     }
@@ -658,11 +658,11 @@ onMounted(() => {
   color: var(--custom-text-2-color);
 }
 .pop-right {
-  background: var(--custom-bg-1-color);
+  background: var(--d-222-l-FFF);
   .right-container {
     padding-top: 0;
     border-radius: 0;
-    background: var(--custom-bg-1-color);
+    background: var(--d-222-l-FFF);;
     min-height: auto;
     // overflow-y: scroll;
     // overflow-x: hidden;
@@ -675,7 +675,7 @@ onMounted(() => {
   position: sticky;
   top: 0px;
   padding-top: 20px;
-  background: var(--custom-bg-1-color);
+  background: var(--d-222-l-FFF);
   z-index: 2;
 }
 </style>

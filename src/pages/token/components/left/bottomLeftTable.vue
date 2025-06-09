@@ -19,8 +19,8 @@ const tabs = computed(()=>{
   ]
 })
 const tabsToHeight = {
-  Trending: 243,
-  Pump: 292
+  Trending: 250,
+  Pump: 299
 }
 const components = {
   Trending,

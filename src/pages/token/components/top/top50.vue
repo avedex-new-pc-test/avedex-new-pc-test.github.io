@@ -9,8 +9,7 @@
     trigger="hover"
   >
     <template #reference>
-      <a class="ml-5 top50" href="" @click.stop.prevent>
-        <!-- <i class="iconfont icon-TOP font-12 mr-2px" /> -->
+      <a class="ml-5 top50 bg-btn" href="" @click.stop.prevent>
         <Icon name="custom:top" class="text-[--d-666-l-999] h-12px mr-2px" />
         <span
           :class="{
@@ -29,7 +28,10 @@
           }}
         </span>
         /{{ Math.min(list?.length || 50) }}
-        <i class="iconfont icon-youjiantou" />
+        <Icon
+          name="material-symbols:arrow-forward-ios-rounded"
+          class="text-10px"
+        />
       </a>
     </template>
     <template #default>
@@ -43,13 +45,14 @@
             placement="top"
           >
             <template #content>{{ t('top50TitleTip') }}</template>
-            <i
-              class="iconfont icon-jiancexiang font-14 ml-5"
-              style="color: #959a9f; margin-top: 2px"
+            <Icon
+              class=" text-14px ml-5px mt-2px"
+              name="mi:circle-warning"
+              color="#959a9f"
             />
           </el-tooltip>
         </div>
-        <div class="border mt_20">
+        <div class="border mt-20px">
           <div class="holder">
             <div v-for="(item, $index) in list" :key="$index">
               <el-tooltip
@@ -60,38 +63,28 @@
                 <template #content>
                   {{ filterTag(item.tag_type)?.text }}
                 </template>
-                <a href="" @click.stop.prevent="jumpBalance(item)">
-                  <div class="item">
-                    <!-- <i
-                      class="dot iconfont"
-                      :class="filterTag(item.tag_type)?.icon"
-                      :style="{ color: filterTag(item.tag_type)?.color }"
-                    /> -->
-                    <Icon
-                      class="dot iconfont font-10 mr-5px color-red-6"
-                      :name="filterTag(item.tag_type)?.icon"
-                      :style="{ color: filterTag(item.tag_type)?.color }"
-                    />
-                    <img
-                      v-if="item?.new_tags?.length > 0"
-                      style="max-width: 10px; max-height: 10px"
-                      class="mr-3"
-                      :src="formatNewTags(item.new_tags[0]?.icon)"
-                      alt=""
-                    >
-                  </div>
-                </a>
+              <NuxtLink :to="`/address/${item.account_address}/${chain}`">
+                <div class="item">
+                  <Icon
+                    class="dot iconfont font-10 mr-5px color-red-6"
+                    :name="filterTag(item.tag_type)?.icon"
+                    :style="{ color: filterTag(item.tag_type)?.color }"
+                  />
+                  <img
+                    v-if="item?.new_tags?.length > 0"
+                    style="max-width: 10px; max-height: 10px"
+                    class="mr-3"
+                    :src="formatNewTags(item.new_tags[0]?.icon)"
+                    alt=""
+                  >
+                </div>
+              </NuxtLink>
               </el-tooltip>
             </div>
           </div>
           <div class="flex-between mt-10px">
             <div>
               <div class="flex-start mt-10px">
-                <!-- <i
-                  class="dot iconfont font-10 mr-5px"
-                  :class="filterTag(1)?.icon"
-                  :style="{ color: filterTag(1)?.color }"
-                /> -->
                 <Icon
                   class="dot iconfont font-10 mr-5px color-red-6"
                   :name="filterTag(1)?.icon"
@@ -102,11 +95,6 @@
                 }}
               </div>
               <div class="flex-start mt-10px">
-                <!-- <i
-                  class="dot iconfont font-10 mr-5px"
-                  :class="filterTag(3)?.icon"
-                  :style="{ color: filterTag(3)?.color }"
-                /> -->
                 <Icon
                   class="dot iconfont font-10 mr-5px color-red-6"
                   :name="filterTag(3)?.icon"
@@ -119,13 +107,8 @@
             </div>
             <div>
               <div class="flex-start mt-10px">
-                <!-- <i
-                  class="dot iconfont font-10 mr-5px"
-                  :class="filterTag(2)?.icon"
-                  :style="{ color: filterTag(2)?.color }"
-                /> -->
                 <Icon
-                  class="dot iconfont font-10 mr-5pxpx color-red-6"
+                  class="dot iconfont font-10 mr-5px color-red-6"
                   :name="filterTag(2)?.icon"
                   :style="{ color: filterTag(2)?.color }"
                 />
@@ -146,7 +129,7 @@
             </div>
           </div>
         </div>
-        <div class="flex-start mt_20">
+        <div class="flex-start mt-20px">
           <img
             src="@/assets/images/avedex_mobile_logo.png"
             style="height: 17px"
@@ -166,13 +149,16 @@
 
 <script setup lang="ts">
 import { _getEarlyholders, type EarlyHolders } from '@/api/top50'
-import { formatNewTags } from '@/utils/index'
+import { formatNewTags, getAddressAndChainFromId } from '@/utils/index'
 const { t } = useI18n()
 const route = useRoute()
+// const router = useRouter()
 const show = shallowRef(false)
 const list = shallowRef<Array<EarlyHolders>>([])
 
-const id = computed(()=> route.params?.id as string)
+const id = computed(() => route.params?.id as string)
+const { chain } = getAddressAndChainFromId(route.params?.id as string)
+
 onMounted(() => {
   getEarlyholders()
 })
@@ -180,16 +166,16 @@ onMounted(() => {
 watch(()=>route.params.id, () => {
   getEarlyholders()
 })
-function jumpBalance() {
-  //   const { chain } =
-  //     this.$f.getAddressAndChainFromId(this.$route.params.id) ||
-  //     this.$store.state.tokenInfo?.chain
-  //   const targetRoute = this.$router.resolve({
-  //     name: 'Balance',
-  //     params: { chain: chain, userAddress: row.account_address },
-  //     query: { from: this.$route.name },
-  //   })
-  //   window.open(targetRoute.href, '_blank')
+function jumpBalance(row: {account_address: string}) {
+    const { chain } = getAddressAndChainFromId(route.params?.id as string)
+    // const targetRoute = router.resolve({
+    //   name: 'Balance',
+    //   params: { chain: chain, userAddress: row.account_address },
+    // })
+    // window.open(targetRoute.href, '_blank')
+    const url = `/address/${row.account_address}/${chain}`
+    window.open(url, '_blank')
+
 }
 function filterTag(type:number) {
   interface TagInfo {
@@ -231,7 +217,6 @@ function getEarlyholders() {
           (y) => ['25', '30', '31'].includes(y?.type ?? '')
         ),
       }))
-      console.log('------list------', list)
     })
     .catch((err) => {
       console.log(err)
@@ -256,7 +241,7 @@ function getEarlyholders() {
   justify-content: center;
 
   .text {
-    color: var(--custom-font-1-color);
+    color: var(--d-FFF-l-000);
     margin-left: 3px;
   }
   .icon-youjiantou {
@@ -268,8 +253,8 @@ function getEarlyholders() {
   padding: 10px 0;
 }
 .border {
-  border-top: 0.5px solid var(--custom-border-4-color);
-  border-bottom: 0.5px solid var(--custom-border-4-color);
+  border-top: 0.5px solid var(--d-333-l-F5F5F5);
+  border-bottom: 0.5px solid var(--d-333-l-F5F5F5);
   padding: 22px 0 30px;
 }
 .holder {
@@ -297,5 +282,17 @@ function getEarlyholders() {
       //   background: #12b886;
     }
   }
+}
+
+.bg-btn{
+    margin-right: 4px;
+    height: 16px;
+    min-width: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    background-color: var(--d-222-l-F2F2F2) /* var(--d-222-l-F2F2F2) */;
+    padding: 2px;
 }
 </style>

@@ -195,6 +195,8 @@ export function formatNumber(n: string | number, config: { decimals?: number; l?
     config1 = {
       decimals: config,
     }
+  } else {
+    config1 = config
   }
   const decimals = config1?.decimals ?? 4
   const l = config1?.l || 4

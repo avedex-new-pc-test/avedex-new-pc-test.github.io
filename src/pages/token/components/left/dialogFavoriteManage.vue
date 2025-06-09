@@ -11,11 +11,12 @@ import TokenImg from '~/components/tokenImg.vue'
 import {useEventBus} from '@vueuse/core'
 import {BusEventType} from '~/utils/constants'
 
-defineProps({
+const props = defineProps({
   list: {
     type: Array<GetUserFavoriteGroupsResponse>,
     default: () => []
   },
+  visible: Boolean
 })
 const favDialogEvent = useEventBus(BusEventType.FAV_DIALOG)
 const {t} = useI18n()
@@ -38,8 +39,8 @@ function setActiveTab(val: number) {
   resetAndGet()
 }
 
-watch(() => evmAddress, () => {
-  _getFavoriteList()
+watch(() => [evmAddress, props.visible], () => {
+  resetAndGet()
 })
 
 async function _getFavoriteList() {
@@ -65,6 +66,9 @@ async function _getFavoriteList() {
     }
     if (res?.length === 0) {
       listStatus.value.finished = true
+    }
+    if (!listStatus.value.finished) {
+      listStatus.value.pageNo++
     }
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:52) (e)', (e))
@@ -154,13 +158,14 @@ async function handleEditRemark(item: GetFavListResponse) {
       return true
     }
   })
-  confirmEditRemark(value, tokenId)
+  confirmEditRemark(value, tokenId, item)
 }
 
-async function confirmEditRemark(remark: string, tokenId: string) {
+async function confirmEditRemark(remark: string, tokenId: string, item: GetFavListResponse) {
   try {
     await editTokenFavRemark(tokenId, remark, evmAddress)
-    _getFavoriteList()
+    item.remark = remark
+    triggerRef(favoritesList)
     ElMessage.success(t('success'))
     favDialogEvent.emit({
       type: 'remark',

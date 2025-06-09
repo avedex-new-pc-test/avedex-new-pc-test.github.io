@@ -32,6 +32,7 @@ definePageMeta({
   },
 })
 const route = useRoute()
+const tagStore = useTagStore()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const addresses = computed(() => {
@@ -94,6 +95,7 @@ function init() {
   _getTokenInfoExtra()
   // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
+  tagStore.getTagArr()
 }
 
 watch(() => route.params.id, () => {
@@ -111,7 +113,7 @@ onBeforeMount(() => {
 })
 
 onBeforeRouteLeave(() => {
-  tokenStore.reset()
+  // tokenStore.reset()
   wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline', 'price'])
   document.removeEventListener('visibilitychange', visibilitychangeFn)
 })
@@ -120,7 +122,7 @@ onBeforeRouteLeave(() => {
 <style>
 .hide-scrollbar {
   > .el-scrollbar {
-    .el-scrollbar__bar {
+    > .el-scrollbar__bar {
       --at-apply: hidden;
     }
   }

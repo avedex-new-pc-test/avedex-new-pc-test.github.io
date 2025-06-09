@@ -45,7 +45,7 @@
             >{{ token?.symbol }}</span
           >
           <span class="ml-8px text-12px font-500">{{ token?.name }}</span>
-          <div v-if="medias?.length > 0" class="ml-46px flex">
+          <div v-if="medias?.length > 0" class="ml-8px flex">
             <div v-for="(item, index) in medias" :key="index" class="tag-btn">
               <template v-if="item.url">
                 <span
@@ -251,7 +251,7 @@
             </template>
           </el-popover>
         </div>
-        <div class="clickable text-12px font-500 flex items-center">
+        <div class="text-12px font-500 flex items-center mt-5px">
           <a
             v-if="token?.token !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
             class="hover:color-[--d-F5F5F5-l-333]"
@@ -262,7 +262,7 @@
               token?.token?.replace(new RegExp('(.{4})(.+)(.{4}$)'), '$1...$3')
             }}
           </a>
-          <Icon v-copy="token?.token" name="bxs:copy" class="ml-5px" />
+          <Icon v-copy="token?.token" name="bxs:copy" class="ml-5px clickable" />
           <span
             v-if="pair"
             v-tooltip="formatDate(pair?.created_at)"
@@ -401,10 +401,10 @@
 
     <div class="flex-1" />
     <div
-      v-if="pair?.progress || (0 > 0 && pair?.progress) || 0 < 100"
+      v-if="(pair?.progress??0) > 0 && (pair?.progress??0) < 100"
       class="item"
     >
-      <div class="flex items-center">
+      <div class="flex items-center min-w-90px justify-between">
         <span>{{ $t('progress') }}</span
         ><span class="ml-5px">{{ formatNumber(pair?.progress || 0, 2) }}%</span>
         <Icon
@@ -434,12 +434,12 @@
         :stroke-width="4"
         color="#1CC982"
         :show-text="false"
-        style="width: 70px"
+        style="width: 90px"
       />
     </div>
-    <div class="item ml-24px">
+    <div class="item ml-24px items-start!">
       <span class="text-20px color-[--d-F5F5F5-l-333]">
-        ${{ formatNumber(price || 0) }}</span
+        ${{ formatNumber(price || 0, { decimals: 4, limit: 6}) }}</span
       >
       <span
         class="block mt-4px"
@@ -471,7 +471,7 @@
     </div>
     <div class="item ml-24px">
       <span>DEV</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{ token?.dev_count }}</span>
+      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{ token?.dev_count? token?.dev_count * 100 + '%' : 0}}</span>
     </div>
     <div class="item ml-24px">
       <span class="cursor-pointer" @click="showCheck = !showCheck">
@@ -683,7 +683,6 @@ const appendix = computed(() => {
   return {}
 })
 const medias = computed(() => {
-  console.log('--------appendix----', appendix.value)
   return [
     { name: t('website'), icon: 'web', url: appendix.value?.website },
     { name: 'Btok', icon: 'btok', url: appendix.value?.btok },
@@ -750,7 +749,6 @@ const loading = shallowRef(false)
 function getTokenFavoriteCheck() {
   getFavoriteCheck(id.value, evmAddress.value)
     .then((res) => {
-      console.log('------getFavoriteCheck---------', res, typeof res)
       collected.value = res?.address ? true : false
       remark.value = res?.remark || ''
       remark2.value = res?.remark || ''
@@ -827,6 +825,7 @@ function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
     moveFavoriteGroup(tokenId, id, evmAddress)
       .then(() => {
         ElMessage.success(t('success'))
+        editableGroup.value = false
         getTokenFavoriteCheck()
         topEventBus.emit()
       })
@@ -836,7 +835,7 @@ function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
       })
       .finally(() => {
         loadingGroupEdit.value = false
-        editableGroup.value = false
+
       })
   } else {
     loadingGroupEdit.value = false
@@ -865,6 +864,7 @@ function confirmEditRemark(tokenId: string, remark2: string) {
     .then(() => {
       ElMessage.success(t('success'))
       remark.value = remark2
+      editableRemark.value = false
       topEventBus.emit()
     })
     .catch((err) => {
@@ -1088,5 +1088,11 @@ function getRugPull() {
 .bg-btn {
   --uno: bg-[--d-222-l-F2F2F2] rounded-2px mr-4px flex items-center
     justify-center h-16px min-w-16px p-2px;
+}
+.item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 </style>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import QRCode from 'qrcode'
-import config from '@/utils/json/config.json'
 import Cookies from 'js-cookie'
 import html2canvas from 'html2canvas'
 import type {GetTokenStatisticsResponse} from '~/api/token'
@@ -40,11 +39,11 @@ const qrcodeUrl = ref('')
 const localeStore = useLocaleStore()
 const configStore = useConfigStore()
 const imgList = computed(() => {
-  const upShareImg = config.pc_share_image.replace(/^.*\|/, '')
+  const upShareImg = configStore.globalConfig.pc_share_image.replace(/^.*\|/, '')
   const ups = upShareImg.split(',').map(img => {
     return configStore.token_logo_url + 'pc_share/' + img
   })
-  const downShareImg = config.pc_share_image?.replace(/\|.*$/, '')
+  const downShareImg = configStore.globalConfig.pc_share_image.replace(/\|.*$/, '')
   const downs = downShareImg.split(',').map(img => {
     return configStore.token_logo_url + 'pc_share/' + img
   })
@@ -61,7 +60,7 @@ function openDialog() {
 }
 
 function getQRCode() {
-  const inviterUrl = config.inviter_url_v2 || 'https://share.ave.ai'
+  const inviterUrl = configStore.globalConfig.inviter_url_v2 || 'https://share.ave.ai'
   const refCode = Cookies.get('refCode') || ''
   const refCodeParams = refCode ? '&code=' + refCode : ''
   const shareLink = inviterUrl + '?lang=' + localeStore.locale + refCodeParams
@@ -183,7 +182,7 @@ function getColorClass(val: string) {
           >
             <div class="lh-46px h-46px mt-5px font-700">
             {{ addSign(Number(statistics.total_profit_ratio)) }}{{
-              formatNumber(Number(statistics.total_profit_ratio) * 100 || 0, 2)
+              formatNumber(Math.abs(Number(statistics.total_profit_ratio)) * 100 || 0, 2)
             }}%
             </div>
           </ExcludeError>
@@ -254,12 +253,12 @@ function getColorClass(val: string) {
         </table>
         <div class="absolute right-30px bottom-30px flex justify-end text-center">
           <div class="text-right mt-10px">
-            <span class="font-20 font_weight_700 block">{{ $t('campaignSubTitle') }}</span>
-            <span class="font-12 font_weight_400 mt_10">{{ $t('campaignDesc') }}</span>
+            <span class="font-20 font_weight_700 block color-#FFF">{{ $t('campaignSubTitle') }}</span>
+            <span class="font-12 font_weight_400 mt_10 color-#FFF">{{ $t('campaignDesc') }}</span>
           </div>
           <div class="ml-10px">
             <img :src="qrcodeUrl" :alt="$t('campaignScan')" width="60px" height="60px">
-            <span class="text-14px font-400 mt-5px block">{{ $t('campaignScan') }}</span>
+            <span class="text-14px font-400 mt-5px block color-#FFF">{{ $t('campaignScan') }}</span>
           </div>
         </div>
       </div>

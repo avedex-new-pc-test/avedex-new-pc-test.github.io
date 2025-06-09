@@ -41,6 +41,13 @@ export const useTokenStore = defineStore('token', () => {
   const placeOrderUpdate = ref(0)
   const placeOrderSuccess = ref(0)
   const registrationNum = ref(0)
+  watch(price, val => {
+    if (val) {
+      if (route.fullPath?.includes?.('/token')) {
+        useHead({ title: '$' + formatNumber(val, 4) + ' ' + token.value?.symbol + ' | Ave' })
+      }
+    }
+  })
 
   const swap = reactive<{
     native: Token
@@ -63,12 +70,13 @@ export const useTokenStore = defineStore('token', () => {
   })
 
   function switchPair(pair1: TokenInfo['pairs'][0]['pair']) {
-    if (!pairs.value) return
-    const isPair = pairs.value?.some(pair2 => pair2.pair === pair1)
+    const pairs = tokenInfo.value?.pairs || []
+    if (!pairs) return
+    const isPair = pairs?.some(pair2 => pair2.pair === pair1)
     if (isPair) {
       pairAddress.value = pair1
     } else {
-      pairAddress.value = pairs.value?.[0]?.pair
+      pairAddress.value = pairs?.[0]?.pair
     }
   }
 
@@ -209,7 +217,7 @@ export const useTokenStore = defineStore('token', () => {
       switchPair(newPair.pair)
     }
   }
-  
+
   return {
     tokenInfo,
     tokenInfoExtra,

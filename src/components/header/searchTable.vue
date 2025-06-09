@@ -3,12 +3,127 @@
     <div class="top">
       <span>#</span>
       <span>{{ $t('tokenName') }}</span>
-      <span>{{ $t('launchTime') }}</span>
-      <span>{{ $t('price') }}</span>
-      <span>{{ $t('24Volume') }}</span>
-      <span>{{ $t('pool') }}</span>
-      <span>{{ $t('holders') }}</span>
-      <span>{{ $t('Txs') }}</span>
+      <div
+        class="flex-end cursor-pointer select-none"
+      >
+        {{ $t('launchTime') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'opening_at', 'b')}
+            `"
+            @click.stop="switchSort('opening_at', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'opening_at', 't')}
+            `"
+            @click.stop="switchSort('opening_at', 1)"
+          />
+        </div>
+        <Icon  :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isShowDate= !isShowDate"/>
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort(isPrice?'current_price_usd': 'mcap')"
+      >
+        {{ isPrice?$t('price'): $t('mCap') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, isPrice?'current_price_usd': 'mcap', 'b')}
+            `"
+            @click.stop="switchSort(isPrice?'current_price_usd': 'mcap', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, isPrice?'current_price_usd': 'mcap', 't')}
+            `"
+            @click.stop="switchSort(isPrice?'current_price_usd': 'mcap', 1)"
+          />
+        </div>
+        <Icon  :name="`custom:${isPrice ? 'price' : 'market'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isPrice= !isPrice" />
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('tx_volume_u_24h')"
+      >
+        {{ $t('24Volume') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'tx_volume_u_24h', 'b')}
+            `"
+            @click.stop="switchSort('tx_volume_u_24h', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'tx_volume_u_24h', 't')}
+            `"
+            @click.stop="switchSort('tx_volume_u_24h', 1)"
+          />
+        </div>
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('pool_size')"
+      >
+        {{ $t('pool') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'pool_size', 'b')}
+            `"
+            @click.stop="switchSort('pool_size', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'pool_size', 't')}
+            `"
+            @click.stop="switchSort('pool_size', 1)"
+          />
+        </div>
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('holders')"
+      >
+        {{ $t('holders') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'holders', 'b')}
+            `"
+            @click.stop="switchSort('holders', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'holders', 't')}
+            `"
+            @click.stop="switchSort('holders', 1)"
+          />
+        </div>
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('tx_count_24h')"
+      >
+        {{ $t('Txs') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'tx_count_24h', 'b')}
+            `"
+            @click.stop="switchSort('tx_count_24h', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'tx_count_24h', 't')}
+            `"
+            @click.stop="switchSort('tx_count_24h', 1)"
+          />
+        </div>
+      </div>
       <span>{{ $t('riskScore') }}</span>
     </div>
     <el-scrollbar
@@ -41,22 +156,22 @@
                     <img
                       class="token-icon"
                       :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    >
+                    />
                   </template>
                   <template #placeholder>
                     <img
                       class="token-icon"
                       :src="getChainDefaultIcon(row.chain, row.symbol)"
-                    >
+                    />
                   </template>
                 </el-image>
                 <img
                   v-if="row?.chain"
-                  class="icon-svg icon-symbol"
+                  class="icon-svg icon-symbol rounded-100%"
                   :src="`${token_logo_url}chain/${row?.chain}.png`"
                   alt=""
                   srcset=""
-                >
+                />
               </div>
               <div style="margin-left: 5px">
                 <div>
@@ -88,21 +203,47 @@
                     </svg>
                   </template>
                 </div>
-                <div class="text-12px color-text-2">
+                <div class="text-12px color-text-2 flex-start">
                   {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
+                  <Icon
+                    v-copy="row.token"
+                    name="bxs:copy"
+                    class="text-12px ml-2px cursor-pointer"
+                    @click.stop.prevent
+                  />
                 </div>
               </div>
             </div>
-            <div>
-              {{ row.opening_at > 0 ? formatDate(row.opening_at) : '--' }}
-            </div>
             <template v-if="row.current_price_usd > 0">
+              <div v-if="row.opening_at">
+                <TimerCount v-if="!isShowDate && row.opening_at && Number(formatTimeFromNow(row.opening_at, true)) < 60 && Number(formatTimeFromNow(row.opening_at, true)) > 0"
+                  :key="row.opening_at" :timestamp="row.opening_at" :end-time="60">
+                  <template #default="{ seconds }">
+                    <span>
+                      <template v-if="seconds < 60">
+                        {{ seconds }}{{ $t('ss') }}
+                      </template>
+                      <template v-else>
+                        {{ dayjs(row.opening_at * 1000).fromNow() }}
+                      </template>
+                    </span>
+                  </template>
+                </TimerCount>
+                <span v-else >
+                  {{
+                    isShowDate
+                      ? formatDate(row.opening_at)
+                      : dayjs(row.opening_at * 1000).fromNow()
+                  }}
+                </span>
+              </div>
+              <span v-else>--</span>
               <div>
                 <span
                   :class="
                     row.current_price_usd > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
                   "
-                  >${{ formatNumber(row.current_price_usd || 0) }}</span
+                  >${{ isPrice ? formatNumber(row.current_price_usd || 0) : formatNumber(row.mcap || 0)}}</span
                 >
                 <div class="text-12px">
                   <span
@@ -139,11 +280,22 @@
               <div class="text-12px color-text-2">
                 {{ formatNumber(row?.tx_count_24h || 0) }}
               </div>
-              <span>
-                {{ formatNumber(row.risk_score) || 0 }}
-              </span>
+              <div
+                class="flex-end"
+              >
+                <arc-progress
+                :progress="Number(row.risk_score / 100) || 0"
+                :width="40"
+                :thickness="2"
+                :big="false"
+                :height="20"
+                :textHeight="15"
+                :end="true"
+                class="arc-progress"
+              />
+              </div>
             </template>
-            <div v-else>
+            <div v-else class="flex-end">
               <!-- <count-down
                 v-if="showTime"
                 class="count-down mt-8"
@@ -188,7 +340,7 @@
               </div>
 
               <template v-else>
-                <img src="@/assets/images/icon-unknown.png" alt="" >
+                <img class="mr-5px" src="@/assets/images/icon-unknown.png" alt="" :width="12">
                 {{ $t('unknownRisk') }}
               </template>
             </div>
@@ -198,8 +350,8 @@
     </el-scrollbar>
     <div v-if="!isLoading && !tokens?.length" class="empty">
       <div>
-        <img :src="themeStore.theme === 'light' ? emptyWhite : emptyDark" >
-        <br >
+        <img :src="themeStore.theme === 'light' ? emptyWhite : emptyDark" />
+        <br />
         <span>{{ $t('noSearchResults') }}</span>
       </div>
     </div>
@@ -209,6 +361,7 @@
 import emptyWhite from '@/assets/images/empty-white.svg'
 import emptyDark from '@/assets/images/empty-black.svg'
 import { formatNumber } from '@/utils/formatNumber'
+import dayjs from 'dayjs'
 import {
   getSymbolDefaultIcon,
   getChainDefaultIcon,
@@ -230,8 +383,21 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const $router = useRouter()
 const { token_logo_url } = useConfigStore()
+
+type SortValue = 0 | -1 | 1
+const activeSort = shallowRef<SortValue>(0)
+const sortBy = shallowRef<string>('')
+const isPrice = shallowRef<boolean>(true)
+  const isShowDate = shallowRef<boolean>(false)
+
+
 const tokens1 = computed(() => {
-  return props.tokens
+  const list = props.tokens?.slice(0)
+  if (activeSort.value === 0 || sortBy.value === '') {
+    return props.tokens
+  } else {
+    return list?.sort((a, b) => ((b[sortBy.value] || 0) - (a[sortBy.value] || 0)) * activeSort.value)
+  }
 })
 
 const isLoading = computed(() => {
@@ -245,6 +411,33 @@ function tableRowClick(id: string) {
   emit('close')
 }
 const isShowHighRisk = shallowRef(true)
+
+function getActiveClass(
+  activeSort1: SortValue,
+  sortBy1: string,
+  direction: string
+) {
+  const isEqual = activeSort.value === activeSort1 && sortBy.value === sortBy1
+  if (direction === 't') {
+    return isEqual ? 'border-t-[--d-F5F5F5-l-333]' : 'border-t-[--d-999-l-666]'
+  }
+  return isEqual ? 'border-b-[--d-F5F5F5-l-333]' : 'border-b-[--d-999-l-666]'
+}
+function switchSort(sortBy1: string, activeSort1?: SortValue) {
+  if (sortBy.value !== sortBy1) {
+    sortBy.value = sortBy1
+    activeSort.value = 1
+    return
+  }
+  // if (activeSort1) {
+  //   activeSort.value = activeSort1
+  //   return
+  // }
+  activeSort.value++
+  if (activeSort.value > 1) {
+    activeSort.value = -1
+  }
+}
 </script>
 <style lang="scss" scoped>
 .histrory {
@@ -406,8 +599,7 @@ const isShowHighRisk = shallowRef(true)
       }
       > :nth-child(6) {
         flex: 1;
-        text-align: right;
-        color: #eaecef;
+        text-align: right
       }
       > :nth-child(7) {
         flex: 1;

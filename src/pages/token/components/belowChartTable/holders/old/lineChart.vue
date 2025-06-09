@@ -7,10 +7,21 @@
   <script setup lang="ts">
   import { formatNumber } from '@/utils/formatNumber'
   import { getAddressAndChainFromId } from '@/utils/index'
-  import * as echarts from 'echarts'
+  // import * as echarts from 'echarts'
   //   import { v4 as uuidv4 } from 'uuid'
   import { filterChartColor } from '@/utils/holders'
   import { filterLanguage } from '~/pages/token/components/kLine/utils'
+
+  import * as echarts from 'echarts/core'
+  // 导入必要的组件和图表类型
+  import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components'
+  import { LineChart } from 'echarts/charts'
+  import { CanvasRenderer } from 'echarts/renderers'
+
+  // 注册所需的组件和渲染器
+  echarts.use([TitleComponent, TooltipComponent, GridComponent, LegendComponent, LineChart, CanvasRenderer])
+
+
   interface DataItem {
     date: string
     total_amount?: number

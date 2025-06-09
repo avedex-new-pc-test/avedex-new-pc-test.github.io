@@ -13,6 +13,7 @@ export const useWSStore = defineStore('ws', () => {
   const isConnected = shallowRef(false)
   const botSwapStore = useBotSwapStore()
   const globalStore = useGlobalStore()
+  // const route = useRoute()
 
   // const tokenStore = useTokenStore()
 
@@ -23,7 +24,8 @@ export const useWSStore = defineStore('ws', () => {
     [WSEventType.PRICEV2]: null,
     [WSEventType.TGBOT]: null,
     [WSEventType.ASSET]: null,
-    [WSEventType.SWITCH_MAIN_PAIR_V2]: null
+    [WSEventType.SWITCH_MAIN_PAIR_V2]: null,
+    [WSEventType.PUMPSTATE]: null
   })
 
   // 将 createWebSocket 重命名为 init

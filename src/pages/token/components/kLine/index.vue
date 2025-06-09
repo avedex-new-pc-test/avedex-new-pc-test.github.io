@@ -13,7 +13,7 @@ import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, get
 import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
 import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine, useAvgPriceLine } from './utils'
-import { useLocalStorage, useElementBounding, useWindowSize } from '@vueuse/core'
+import { useLocalStorage, useElementBounding, useWindowSize, useEventBus } from '@vueuse/core'
 import type { WSTx, KLineBar } from './types'
 import BigNumber from 'bignumber.js'
 import { useKlineMarks } from './mark'
@@ -266,17 +266,23 @@ async function initChart() {
     charts_storage_api_version: '1.1',
     timezone: getTimezone() as Timezone,
     time_frames: [],
-    // loading_screen: {
-    //   backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    //   foregroundColor: '#3F80F7'
-    // },
+    loading_screen: {
+      backgroundColor: themeStore.isDark ? '#111' : '#fff',
+      foregroundColor: '#3F80F7'
+    },
     custom_css_url: `${location.origin}/tv_custom.css`,
     // format: (showMarket.value ? 'volume' : 'price') as SeriesFormat,
     custom_formatters: {
       priceFormatterFactory: () => {
         return {
           format: (price) => {
-            return String(formatNumber(price, showMarket.value ? 2 : 4))
+            if (showMarket.value) {
+              return formatNumber(price, 2)
+            }
+            return String(formatNumber(price, {
+              decimals: 4,
+              limit: 6
+            }))
           },
         }
       }
@@ -363,7 +369,7 @@ async function initChart() {
           // const { chain, symbol, price, amm } = props
           const isSupportSecChains = !!(chain.value && supportSecChains?.includes?.(chain.value))
           const symbolUp = symbol.value?.toUpperCase?.() || tokenStore?.token?.symbol || '-'
-          const p = Number(price) || 0
+          const p = Number(price || tokenStore?.price) || 0
           const symbolInfo = {
             symbol: symbolUp,
             name: symbolUp,
@@ -376,8 +382,8 @@ async function initChart() {
             minmov2: 0, // 格式化复杂情况下的价格 如价格增量
             pricescale: p > 0
               ? 10 ** formatDecimals(p).precision
-              : 10000000,
-            volume_precision: 10, // 小数位
+              : 10000000000,
+            volume_precision: 2, // 小数位
             fractional: false, // 分数显示价格,1 - xx'yy（例如，133'21)或 2 - xx'yy'zz （例如，133'21'5）
             session: '24x7',
             has_intraday: true, // 显示商品是否具有日内（分钟）历史数据
@@ -405,7 +411,7 @@ async function initChart() {
       },
       getBars: (symbolInfo, resolution, periodParams, onResult, onError) => {
         const { from, to, firstDataRequest } = periodParams
-        console.log('[getBars]: Method call', symbolInfo, resolution, from, to, firstDataRequest)
+        // console.log('[getBars]: Method call', symbolInfo, resolution, from, to, firstDataRequest)
         try {
           if (firstDataRequest) {
             noData = false
@@ -437,12 +443,19 @@ async function initChart() {
             klinePair.value = res?.pair || ''
             if (firstDataRequest) {
               lastBar = bars1?.[bars1?.length - 1] || null
+              if (lastBar) {
+                lastBar.time = lastBar.time * 1000
+              }
               noData = bars?.length < 100
             }
             if (bars1?.length > 0) {
               firstBarTime = bars1?.[0]?.time || 0
             }
             onResult(bars, {noData: !bars?.length})
+
+            setTimeout(() => {
+              useEventBus('klineDataReady').emit()
+            }, 10)
           })
           // if (firstDataRequest) {
           //   getKlineHistoryData(params).then(res => {
@@ -583,7 +596,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
     if (event === 'tx') {
       const tx: WSTx = data?.tx
       const interval = switchResolution(resolution)
-      if (tx.pair_address === pair.value) {
+      if (tx.pair_address === pair.value && !tx?.tx_type) {
         const t = token.value?.replace?.(/-.*$/, '')
         const newBar1 = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
         if (newBar1) {

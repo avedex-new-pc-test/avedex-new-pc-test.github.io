@@ -109,7 +109,7 @@ function getMcap(row: GetHotTokensResponse) {
       <NuxtLink
         v-for="(row,$index) in sortedHotList"
         :key="$index"
-        class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-1D2232-l-F5F5F5] text-12px"
+        class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-333-l-F5F5F5] text-12px"
         :to="`/token/${row.token}-${row.chain}`"
       >
         <div class="flex-1 flex items-center">
@@ -118,11 +118,13 @@ function getMcap(row: GetHotTokensResponse) {
           />
           <div class="ml-6px">
             <div class="flex">
-              <span class="color-[--d-F5F5F5-l-333]">{{ row.symbol }}</span>
+              <span class="color-[--d-F5F5F5-l-333] max-w-80px overflow-hidden text-ellipsis whitespace-nowrap">{{
+                  row.symbol
+                }}</span>
               <Icon
                 v-if="row.risk_score > 55"
                 name="custom:danger"
-                class="font-14 ml-2px"/>
+                class="font-14 ml-2px color-#F72121"/>
             </div>
             <div class="mt-2px color-[--d-999-l-666]">
               <template v-if="row.current_price_usd === 0">0</template>

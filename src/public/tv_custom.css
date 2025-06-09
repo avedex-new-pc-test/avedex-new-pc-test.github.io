@@ -11,11 +11,12 @@
     --tv-color-toolbar-button-text-active-hover: #286DFF;       /* 将鼠标悬停在它们上方时，工具栏按钮的文本和图标颜色*/
     --tv-color-item-active-text: rgb(6, 6, 255);        /*切换工具栏按钮的文本颜色（例如，“磁铁模式”，“锁定所有图形”）*/
     --tv-color-toolbar-toggle-button-background-active: #37A6EF;        /*切换工具栏按钮的文本颜色（例如，“磁铁模式”，“锁定所有图形”）*/
-    --tv-color-toolbar-toggle-button-background-active-hover: #37A6EF;      /*将切换工具栏按钮悬停在其上时填充颜色（例如，“磁铁模式”，“锁定所有图形”）*/
+    --tv-color-toolbar-toggle-button-background-active-hover: #37A6EF;
+       /*将切换工具栏按钮悬停在其上时填充颜色（例如，“磁铁模式”，“锁定所有图形”）*/
 }
 
 .theme-dark:root {
-    --custom-bg-1-color: #0A0B0D;
+    --custom-bg-1-color: #111;
     --tv-color-platform-background: var(--custom-bg-1-color);
     --tv-color-pane-background: var(--custom-bg-1-color);
     --tv-color-pane-background-secondary: var(--custom-bg-1-color);
@@ -30,6 +31,7 @@
     --tv-color-toolbar-toggle-button-background-active: #5a66f9;
     --tv-color-toolbar-toggle-button-background-active-hover: #5a66f9;
 }
+
 .customButton--jqJTfH5{
    padding: 2px;
 }

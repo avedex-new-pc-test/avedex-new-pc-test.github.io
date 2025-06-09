@@ -137,8 +137,8 @@ function _getTokenDetailsList() {
       if (!listStatus.value.finished) {
         listQuery.value.pageNO++
       }
-      listQuery.value.max_block_number = arr[arr?.length - 1].block_number
-      listQuery.value.max_event_id = arr[arr?.length - 1].event_id
+      listQuery.value.max_block_number = arr[arr?.length - 1]?.block_number
+      listQuery.value.max_event_id = arr[arr?.length - 1]?.event_id
     }).finally(() => {
     listStatus.value.loading = false
   })
@@ -197,7 +197,6 @@ function attention() {
               :chain="tokenDetailStore.tokenInfo!.chain"
               :wallet_logo="statistics.wallet_logo"
               address-class="max-w-95px whitespace-nowrap text-ellipsis overflow-x-hidden text-14px"
-              @updateRemark="updateRemark"
               :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
             />
             <div v-if="statistics.newTags?.length > 0" class="ml-6px">
@@ -267,13 +266,13 @@ function attention() {
               name="bxs:copy"
               class="cursor-pointer color-[--d-666-l-696E7C] text-10px"
             />
-            <Icon
-              name="custom:attention"
-              :class="`cursor-pointer ${isAttention
-                  ?'color-#f45469'
-                  :'color-[--d-666-l-696E7C]'} text-10px hover:color-#f45469`"
-              @click.self.stop="attention"
-            />
+            <!--<Icon-->
+            <!--  name="custom:attention"-->
+            <!--  :class="`cursor-pointer ${isAttention-->
+            <!--      ?'color-#f45469'-->
+            <!--      :'color-[&#45;&#45;d-666-l-696E7C]'} text-10px hover:color-#f45469`"-->
+            <!--  @click.self.stop="attention"-->
+            <!--/>-->
           </div>
         </div>
       </div>

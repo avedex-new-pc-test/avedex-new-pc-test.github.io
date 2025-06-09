@@ -223,5 +223,18 @@
   "currentPosition": "Posición actual",
   "tokenValue": "Valor de posición",
   "sellTax1": "impuesto de venta",
-  "positionCostPrice": "Precio de posición"
+  "positionCostPrice": "Precio de posición",
+  "attention1Success": "Siguiendo exitosamente",
+  "attention1Canceled": "El seguimiento ha sido cancelado",
+  "holders2": "Portadores",
+  "details": "Detalles",
+  "add": "Agregar",
+  "remove": "Eliminar",
+  "provider": "Proveedor",
+  "devote": "Dedicar",
+  "addAmt": "Agregar AMT",
+  "netAmt": "AMT neto",
+  "percent": "Por ciento",
+  "txns": "Transacciones",
+  "liquidity": "Liquidez"
 }

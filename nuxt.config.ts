@@ -192,10 +192,20 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}'],
+      navigateFallback: null,
+      globPatterns: ['**/*.{js,css,ico,png,jpg,jpeg,svg,webp,json,woff2,otf,ttf,woff}'],
       maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 设置为 3 MiB
-      cleanupOutdatedCaches: true
+      cleanupOutdatedCaches: true,
+      runtimeCaching: [
+        {
+          urlPattern: ({ request }) => request.destination === 'document',
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'html-cache',
+            expiration: { maxAgeSeconds: 0 },
+          },
+        },
+      ],
     },
   },
 

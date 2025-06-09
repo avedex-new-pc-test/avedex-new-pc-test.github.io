@@ -395,5 +395,18 @@
   "currentPosition": "Vị thế hiện tại",
   "tokenValue": "Giá trị vị thế",
   "sellTax1": "Thuế bán",
-  "positionCostPrice": "Giá vị thế"
+  "positionCostPrice": "Giá vị thế",
+  "attention1Success": "Theo dõi thành công",
+  "attention1Canceled": "Đã hủy theo dõi",
+  "holders2": "Người nắm giữ",
+  "details": "Chi tiết",
+  "add": "Thêm",
+  "remove": "Xóa",
+  "provider": "Nhà cung cấp",
+  "devote": "Cứu",
+  "addAmt": "Thêm Amt",
+  "netAmt": "Net Amt",
+  "percent": "Phần trăm",
+  "txns": "Giao dịch",
+  "liquidity": "Thanh khoản"
 }

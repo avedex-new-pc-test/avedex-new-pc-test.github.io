@@ -25,8 +25,6 @@ watch(() => props.currentRow, () => {
   if (props.currentRow) {
     _getTxsUserBrief()
   }
-}, {
-  immediate: true
 })
 
 async function _getTxsUserBrief() {
@@ -78,7 +76,7 @@ function getColorClass(val: string) {
     virtual-triggering
     trigger="hover"
     raw-content
-    popper-class="[&&]:p-20px [&&]:[--el-text-color-primary:--d-222-l-FFF]"
+    popper-class="[&&]:p-20px [&&]:[--el-text-color-primary:--d-222-l-FFF]!"
     style="--el-text-color-primary:var(--d-222-l-FFF)"
   >
     <template #content>
@@ -204,7 +202,7 @@ function getColorClass(val: string) {
           <TimerCount
             v-if="userBriefData.wallet_age && Number(formatTimeFromNow(userBriefData.wallet_age,true)) < 60"
             :key="userBriefData.wallet_age"
-            :timestamp="userBriefData.wallet_age"
+            :timestamp="Number(userBriefData.wallet_age)"
             :end-time="60"
           >
             <template #default="{seconds}">

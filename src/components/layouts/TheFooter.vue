@@ -86,7 +86,6 @@ onMounted(() => {
 const initPage = () => {
   // Initialize the page or perform any setup tasks
   getTokensPrice(ids).then((res) => {
-    console.log('Price data:', res)
     //WETH BTCB SOL
     const newVal = res.map(i=>{
       return {
