@@ -81,6 +81,12 @@ const loading = ref(false)
 const columns = computed(() => {
   return [
     {
+      label: '#',
+      prop: 'index',
+      align: 'left',
+      width: 20,
+    },
+    {
       label: t('provider'),
       prop: 'mark',
       align: 'left',
