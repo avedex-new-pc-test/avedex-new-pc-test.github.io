@@ -560,7 +560,7 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
   return useRemarksStore().getRemarkByAddress({address, chain})
 }
 
-export function getColorClass(val: string) {
+export function getColorClass(val: string|number) {
   if (Number(val) > 0) {
     return 'color-#12b886'
   } else if (Number(val) < 0) {
@@ -733,9 +733,6 @@ export function uuid() {
 }
 
 export function getMCap(row: GetHotTokensResponse | SearchHot) {
-  if (!row.total) {
-    return 0
-  }
   const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
-  return amount.multipliedBy(row.current_price_usd).toString()
+  return amount.gt(0)? amount.multipliedBy(row.current_price_usd).toString() : '0'
 }

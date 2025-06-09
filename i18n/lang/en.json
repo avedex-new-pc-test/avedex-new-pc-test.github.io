@@ -80,7 +80,7 @@
   "pool": "Liquidity",
   "Txs": "Txs",
   "riskScore": "Risk",
-  "launchTime": "Launch Time",
+  "launchTime": "Time",
   "hiddenHighToken": "Collapse high-risk tokens",
   "showHighToken": "Show high-risk tokens",
   "highRisk": "High Risk",

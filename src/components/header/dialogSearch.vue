@@ -55,7 +55,7 @@
       <button
         v-for="item in tabs"
         :key="item.id"
-        class="tab-button clickable-btn"
+        class="tab-button clickable-btn px-0 mr-24px"
         :class="{ active: tabActive === item.id }"
         @click="tabActive = item.id"
       >
@@ -91,16 +91,16 @@
 import SearchTable from './searchTable.vue'
 import WalletTable from './walletTable.vue'
 import { _getSmartTop10, _tokenSearchV3 } from '@/api/hot'
-import type {SearchWalletInfo, SearchInfo, SearchHot} from '@/api/types/search'
+import type {SearchWalletInfo, SearchInfo } from '@/api/types/search'
 import { useDebounceFn, useLocalStorage } from '@vueuse/core'
 import { ElMessageBox, type ElInput } from 'element-plus'
-import {ProvideType} from '~/utils/constants'
+import { ProvideType } from '~/utils/constants'
+import type{ GetHotTokensResponse } from '@/api/token'
 const { modelValue } = defineProps({
   modelValue: Boolean,
 })
 const $emit = defineEmits(['update:modelValue'])
 const i18n = useI18n()
-const hotStore = useHotStore()
 const themeStore = useThemeStore()
 const visible = computed({
   get() {
@@ -119,8 +119,8 @@ const tabs = computed(() => {
   ]
 })
 const hotTokens = inject<{
-  value: Ref<SearchHot[]>;
-  setVal: (val: SearchHot[]) => void
+  value: Ref<GetHotTokensResponse[]>;
+  setVal: (val: GetHotTokensResponse[]) => void
 }>(ProvideType.HOT_TOKENS)
 const hotTokenList = computed(() => {
   if (hotTokens) {
@@ -129,7 +129,6 @@ const hotTokenList = computed(() => {
   return []
 })
 onMounted(() => {
-  useHotStore().getHot()
   getSmartTop10()
 })
 
