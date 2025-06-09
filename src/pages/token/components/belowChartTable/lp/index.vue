@@ -46,10 +46,10 @@
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
                 <div :class="`color-${upColor[0]} flex-end`">
-                  <tag type="success" class="p-3px! h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
+                  <tag type="success" class="h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
                 </div>
                 <div :class="`color-${downColor[0]} flex-end`">
-                  <tag type="danger" class="p-3px! h-12px w-12px mr-4px">-</tag>{{ row.add_total }}
+                  <tag type="danger" class="h-12px w-12px mr-4px">-</tag>{{ row.add_total }}
                 </div>
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
