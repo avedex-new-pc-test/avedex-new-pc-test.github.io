@@ -69,7 +69,7 @@ const totalBuySell = computed(() => {
 const tokenValue = computed(() => {
   let sellTax = (tokenStore.tokenInfoExtra?.sell_tax || 0) / 100
   sellTax = sellTax > 1 ? 1 : sellTax
-  return (tokenStore.tokenPrice || 0) * (balanceAmount.value || 0) * (1 - sellTax)
+  return (tokenStore.tokenPrice || tokenPrice.value || 0) * (balanceAmount.value || 0) * (1 - sellTax)
 })
 const profit = computed(() => {
   const {buyUSD, sellUSD} = totalBuySell.value
