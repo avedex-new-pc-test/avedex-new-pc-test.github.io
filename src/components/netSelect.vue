@@ -13,7 +13,7 @@ const visible = shallowRef(false)
 const options = shallowRef(isSupportChains)
 const selectedChains = shallowRef<string[]>([...isSupportChains])
 
-const {isDark} = useThemeStore()
+const {isDark} = storeToRefs(useThemeStore())
 const displayChains = computed(() => {
   return selectedChains.value.slice(0, 2)
 })
