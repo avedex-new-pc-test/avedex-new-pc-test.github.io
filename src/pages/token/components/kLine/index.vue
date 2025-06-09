@@ -590,7 +590,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
     if (event === 'tx') {
       const tx: WSTx = data?.tx
       const interval = switchResolution(resolution)
-      if (tx.pair_address === pair.value) {
+      if (tx.pair_address === pair.value && !tx?.tx_type) {
         const t = token.value?.replace?.(/-.*$/, '')
         const newBar1 = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
         if (newBar1) {

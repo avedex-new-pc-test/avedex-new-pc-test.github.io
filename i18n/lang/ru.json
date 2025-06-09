@@ -399,5 +399,14 @@
   "attention1Success": "Подписка успешна",
   "attention1Canceled": "Подписка отменена",
   "holders2": "Держатели",
-  "details": "Подробности"
+  "details": "Подробности",
+  "add": "Добавить",
+  "remove": "Удалить",
+  "provider": "Поставщик",
+  "devote": "Посвящать",
+  "addAmt": "Добавить Amt",
+  "netAmt": "Чистый Амт",
+  "percent": "Процент",
+  "txns": "Транзакции",
+  "liquidity": "Ликвидность"
 }

@@ -411,6 +411,65 @@ export async function getPairLiq(pair: string, address?: string): Promise<GetPai
   })
 }
 
+export interface GetPairLiqNewResponse {
+  time: string;
+  removeliquidity_total: number;
+  addliquidity_total: number
+}
+export async function getPairLiqNew(pair:string, interval = 7):Promise<GetPairLiqNewResponse[]> {
+  if (!pair) {
+    return []
+  }
+  const { $api } = useNuxtApp()
+  return $api(`/v1api/v3/pairs/${pair}/liq`, {
+    method: 'get',
+    params: {
+      interval
+    },
+  }).catch(() => {
+    return Promise.resolve([])
+  })
+}
+export type LockType = {
+  amount: number;
+  id: number;
+  lockDate: number;
+  owner: string;
+  token: string;
+  unlockDate: number;
+  vesting_end?: number;
+}
+export interface IHolder {
+  add_total: number;
+  address: string;
+  lock: LockType[];
+  main_token_amount: number;
+  main_token_amount_usd: number;
+  mark: string;
+  percent: string;
+  quantity: string;
+  remove_total: number;
+  target_token_amount: number;
+  target_token_amount_usd: number;
+  last_tx_time?: string
+}
+export interface GetLPHoldersResponse {
+  main_token: string;
+  main_token_symbol: string;
+  target_token: string;
+  target_token_symbol: string;
+  Holders: IHolder[] | null;
+}
+export function getLPHolders(tokenId: string) : Promise<GetLPHoldersResponse>{
+  const { $api } = useNuxtApp()
+  return $api(testDomain+'/v2api/token/v1/lp_holders',{
+    method: 'get',
+    params: {
+      token_id: tokenId,
+    }
+  })
+}
+
 export interface GetTxsUserBriefResponse {
   remark: string;
   is_wallet_address_fav: number;

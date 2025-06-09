@@ -6,6 +6,7 @@ set -e
 
 #del发布文件
 rm -rf dist
+rm -rf .output
 pnpm install
 # 构建
 pnpm generate

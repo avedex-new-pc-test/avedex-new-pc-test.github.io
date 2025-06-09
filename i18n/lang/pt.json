@@ -227,5 +227,14 @@
   "attention1Success": "Seguindo com sucesso",
   "attention1Canceled": "Seguindo foi cancelado",
   "holders2": "Detentores",
-  "details": "Detalhes"
+  "details": "Detalhes",
+  "add": "Adicionar",
+  "remove": "Remover",
+  "provider": "Provedor",
+  "devote": "Dedicar",
+  "addAmt": "Adicione AMT",
+  "netAmt": "NET AMT",
+  "percent": "Por cento",
+  "txns": "Txns",
+  "liquidity": "Liquidez "
 }
