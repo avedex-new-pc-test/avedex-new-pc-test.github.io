@@ -1,14 +1,14 @@
 <template>
   <div class="w-lp">
-    <div v-show="dataList.length > 0" class="w-[100%]">
-      <div class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
+    <div  class="w-[100%]">
+      <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
         <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
         <el-radio-group v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
           <el-radio-button label="7D" :value="7" />
           <el-radio-button label="1M" :value="30" />
         </el-radio-group>
       </div>
-      <Line :dataList="dataList" :loading="loading" :showSeries="showSeries"  />
+      <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"   />
     </div>
     <div class="m-table mt20px">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
