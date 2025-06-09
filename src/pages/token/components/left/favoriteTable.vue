@@ -246,7 +246,7 @@ function resetListStatus() {
               <TokenImg
                 class="mr-8px"
                 :row="row"
-                token-class="w-20px h-20px"
+                token-class="w-24px h-24px"
               />
               <div class="flex flex-col items-start">
                 <span class="text-12px">{{ row.symbol }}</span>
