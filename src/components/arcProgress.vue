@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
+const {isDark} =  storeToRefs(useThemeStore())
 // import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import ArcProgress from 'arc-progress'
@@ -54,7 +55,7 @@ const props = defineProps({
     },
     colorList: {
       type: Array<string>,
-      default: ()=>['#eaecef', '#81c54e', '#f8be46', '#e74e54']
+      default: ()=>['#ccc', '#81c54e', '#f8be46', '#e74e54']
     }
 })
 
