@@ -47,6 +47,7 @@ const botStore = useBotStore()
 const route = useRoute()
 // const tokenTxs = shallowRef<IGetTokenTxsResponse[]>([])
 const balanceAmount = shallowRef(0)
+const tokenPrice = shallowRef(0)
 const totalBuySell = computed(() => {
   let buyUSD = 0
   let sellUSD = 0
@@ -68,7 +69,7 @@ const totalBuySell = computed(() => {
 const tokenValue = computed(() => {
   let sellTax = (tokenStore.tokenInfoExtra?.sell_tax || 0) / 100
   sellTax = sellTax > 1 ? 1 : sellTax
-  return (tokenStore.tokenPrice || 0) * (balanceAmount.value || 0) * (1 - sellTax)
+  return (tokenStore.tokenPrice || tokenPrice.value || 0) * (balanceAmount.value || 0) * (1 - sellTax)
 })
 const profit = computed(() => {
   const {buyUSD, sellUSD} = totalBuySell.value
@@ -127,8 +128,9 @@ async function _getTokenBalance() {
       const {chain} = getAddressAndChainFromId(id)
       const res = await getUserBalances(id, [props.makerAddress + '-' + chain])
       if (res && res[0]) {
-        const {value} = res[0]
+        const {value, current_price_usd} = res[0]
         balanceAmount.value = value
+        tokenPrice.value = current_price_usd
       }
     }
 
@@ -143,7 +145,9 @@ async function _getTokenBalance() {
     <div>
       <span class="color-#959A9F">{{ $t('balance1') }}:</span>
       <span class="ml-4px">{{ formatNumber(balanceAmount, 3) }}</span>
-      <span class="ml-4px">${{ formatNumber((tokenStore.tokenPrice || 0) * (balanceAmount || 0), 3) }}</span>
+      <span class="ml-4px">${{
+          formatNumber((tokenStore.tokenPrice || tokenPrice || 0) * (balanceAmount || 0), 3)
+        }}</span>
     </div>
     <div>
       <span class="color-#959A9F">{{ $t('profit') }}:</span>

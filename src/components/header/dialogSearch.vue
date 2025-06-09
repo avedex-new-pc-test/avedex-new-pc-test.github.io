@@ -66,7 +66,7 @@
       <template v-if="query === ''">
         <SearchTable
           v-if="tabActive === 'token'"
-          :tokens="hotStore.hotList?.slice?.(0, 200) || []"
+          :tokens="hotTokenList.slice(0, 200) || []"
           :loading="loading"
           @close="visible = false"
         />
@@ -91,9 +91,10 @@
 import SearchTable from './searchTable.vue'
 import WalletTable from './walletTable.vue'
 import { _getSmartTop10, _tokenSearchV3 } from '@/api/hot'
-import type { SearchWalletInfo, SearchInfo } from '@/api/types/search'
+import type {SearchWalletInfo, SearchInfo, SearchHot} from '@/api/types/search'
 import { useDebounceFn, useLocalStorage } from '@vueuse/core'
 import { ElMessageBox, type ElInput } from 'element-plus'
+import {ProvideType} from '~/utils/constants'
 const { modelValue } = defineProps({
   modelValue: Boolean,
 })
@@ -116,6 +117,16 @@ const tabs = computed(() => {
     { id: 'token', name: i18n.t('popularSearches') },
     { id: 'wallet', name: i18n.t('wallet') },
   ]
+})
+const hotTokens = inject<{
+  value: Ref<SearchHot[]>;
+  setVal: (val: SearchHot[]) => void
+}>(ProvideType.HOT_TOKENS)
+const hotTokenList = computed(() => {
+  if (hotTokens) {
+    return hotTokens.value.value
+  }
+  return []
 })
 onMounted(() => {
   useHotStore().getHot()
