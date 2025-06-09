@@ -39,7 +39,7 @@
           <span class="color-[--d-666-l-999]">{{ $t('contractOwner') }}</span>
           <span class="color-[--d-999-l-666]">{{ formatAddress(token?.owner) }}</span>
         </li> -->
-      <template v-for="(item, index) in medias?.slice()" :key="index">
+      <!-- <template v-for="(item, index) in medias?.slice()" :key="index">
         <template v-if="item?.url">
           <template v-if="item?.name == 'Telegram'">
             <template v-for="(i, $index) in item?.url?.split(',')" :key="$index">
@@ -54,7 +54,7 @@
             <a class="clickable color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333] text-right line-clamp-1 max-w-200px" style="text-decoration: none;" :href="item?.url" target="_blank">{{ item?.url }}</a>
           </li>
         </template>
-      </template>
+      </template> -->
     </ul>
     <ul v-if="pair" class="text-12px mt-10px">
       <li class="flex justify-between mb-12px">
@@ -71,7 +71,7 @@
       </li>
     </ul>
     <div>
-      <div class="text-14px py-12px color-[--d-666-l-999]">About</div>
+      <div class="text-14px mb-12px color-[--d-666-l-999]">About</div>
       <div class="text-12px color-[--d-999-l-666] token-description">
         <span v-html="showAll ? intro : intro?.slice(0, 250)" />
         <button v-if="intro?.length > 250" class="text-12px color-#3F80F7 bg-transparent outline-none border-none clickable" @click.stop="showAll = !showAll" >{{ !showAll ? $t('more') : $t('expand') }}</button>
