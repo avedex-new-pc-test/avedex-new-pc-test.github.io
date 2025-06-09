@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 
 import { useBotStore } from '@/stores/bot'
 import { getChainInfo } from '@/utils'
@@ -41,6 +41,9 @@ const userAddress = computed(() => {
 
 function setActiveTab(val: string) {
   activeTab.value = val
+  nextTick(() => {
+    unifiedRef.value.getUserPendingTx(activeTab.value)
+  })
 }
 function toggleCurrentToken() {
   botOrderOnlyCurrentToken.value = !botOrderOnlyCurrentToken.value
@@ -67,16 +70,20 @@ watch(() => props.currentActiveTab, () => {
     if (tabs.value.find(i => i?.chain === chain)) {
       activeTab.value = chain
     }
-    unifiedRef.value.getUserPendingTx()
+    nextTick(() => {
+      unifiedRef.value.getUserPendingTx(activeTab.value)
+    })
   }
 })
 
-watch([() => route.params.id, () => tokenStore.placeOrderUpdate], () => {
+watch([() => route.params.id, () => tokenStore.placeOrderUpdate, () => tokenStore.placeOrderSuccess], () => {
   const chain = String(route.params.id).split('-')[1]
   if (tabs.value.find(i => i?.chain === chain)) {
     activeTab.value = chain
   }
-  unifiedRef.value.getUserPendingTx()
+  nextTick(() => {
+    unifiedRef.value.getUserPendingTx(activeTab.value)
+  })
 })
 
 onMounted(() => {

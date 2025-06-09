@@ -38,7 +38,7 @@
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
               row?.inTokenSymbol :
               row.outTokenSymbol
-            }}</span>
+              }}</span>
           </div>
         </template>
       </el-table-column>
@@ -210,7 +210,7 @@ const txOrder = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderSuccess], () => {
+watch([() => props.currentToken], () => {
   getUserPendingTx()
 })
 
@@ -263,13 +263,14 @@ function tableRowClick(row: any) {
   window.open(formatExplorerUrl(row.chain, row.txHash, 'tx'))
 }
 
-const getUserPendingTx = async () => {
+const getUserPendingTx = async (chainValue?: string) => {
   loading.value = true
+  const chain = chainValue || props.chain
   try {
     const data = {
-      chain: props.chain,
+      chain,
       token: props.currentToken ? String(route.params.id).split('-')[0] : '',
-      walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === props.chain)?.address,
+      walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === chain)?.address,
     }
     const res = await bot_getUserPendingTx({
       ...data as any
@@ -292,9 +293,7 @@ const getUserPendingTx = async () => {
 }
 
 onMounted(() => {
-  setTimeout(() => {
-    getUserPendingTx()
-  }, 300)
+  getUserPendingTx()
 })
 defineExpose({
   txOrder,
