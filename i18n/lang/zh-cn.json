@@ -635,5 +635,6 @@
   "addAmt": "添加数",
   "netAmt": "获取数",
   "percent": "比例",
-  "txns": "交易数"
+  "txns": "交易数",
+  "liquidity": "池子大小"
 }

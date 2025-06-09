@@ -235,5 +235,6 @@
   "addAmt": "Adicione AMT",
   "netAmt": "NET AMT",
   "percent": "Por cento",
-  "txns": "Txns"
+  "txns": "Txns",
+  "liquidity": "Liquidez "
 }

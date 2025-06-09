@@ -633,5 +633,6 @@
   "addAmt": "Add Amt",
   "netAmt": "Net Amt",
   "percent": "Percent",
-  "txns": "Txns"
+  "txns": "Txns",
+  "liquidity": "Liquidity"
 }

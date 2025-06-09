@@ -1,6 +1,15 @@
 <template>
   <div class="w-lp">
-    <Line :dataList="dataList" :loading="loading" :showSeries="showSeries" v-if="dataList.length > 0 || loading" />
+    <div v-show="dataList.length > 0 ">
+      <div class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
+        <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
+        <el-radio-group v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
+          <el-radio-button label="7D" :value="7" />
+          <el-radio-button label="1M" :value="30" />
+        </el-radio-group>
+      </div>
+      <Line :dataList="dataList" :loading="loading" :showSeries="showSeries" v-if="dataList.length > 0 || loading" />
+    </div>
     <div class="m-table mt20px">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
         :row-key="getRowKey" height="245">
@@ -8,11 +17,13 @@
           :align="col.align">
           <template #default="{ row }">
             <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns', 'percent']">
-              <div v-if="col.prop == 'mark'" class="flex flex-col">
-
-                <!--  v-if="Number(row?.analysis_show_creator) === 1" -->
+              <div v-if="col.prop == 'mark'" class="flex-end gap-2px hover:color-[--d-FFF-l-000] cursor-pointer" @click.stop="tableRowClick(row)">
+                <Icon v-if="formatLock(row)" color="#B3920E" name="material-symbols:lock" />
+                <Icon v-if="row.is_contract == 1" name="iconamoon:file-document-thin"  />
                 <tag v-if="Number(row?.analysis_show_creator) === 1">{{ $t('contractCreator') }}</tag>
-                {{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}
+                <el-tooltip :effect="mode" placement="top-end" :content="row?.mark||row?.address">
+                  <div style="max-width: 75px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
+                </el-tooltip>
               </div>
               <div v-else-if="col.prop == 'addAmt'" class="flex flex-col">
                 <div>
@@ -69,6 +80,7 @@ import tag from './components/tag.vue'
 import { upColor, downColor } from '@/utils/constants'
 import Column from './components/columns.vue'
 import Line from './components/line.vue'
+const {isDark,mode} = storeToRefs(useGlobalStore())
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 
@@ -84,13 +96,12 @@ const columns = computed(() => {
       label: '#',
       prop: 'index',
       align: 'left',
-      width: 20,
+      width: 40,
     },
     {
       label: t('provider'),
       prop: 'mark',
-      align: 'left',
-      width: 78,
+      align: 'right',
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: any) => {
@@ -168,6 +179,7 @@ const columns = computed(() => {
     },
   ]
 })
+const activeTime = shallowRef<7|30>(7)
 const expandedRowKeys = shallowRef<string[]>([])
 const columns2 = computed(() => {
   return [
@@ -178,7 +190,7 @@ const columns2 = computed(() => {
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: any) => {
-        return `$${formatNumber(row.amount, 4)}`
+        return `${formatNumber(row.amount, 2)}`
       }
     },
     {
@@ -228,6 +240,9 @@ watch([token], (val) => {
 const getRowKey = (row: any) => {
   return row.index
 }
+function tableRowClick(row: any) {
+  window.open(formatExplorerUrl(addressAndChain.value?.chain || '', row.address || '', 'address'), '_blank')
+}
 const addressAndChain = computed(() => {
   const id = route.params.id as string
   if (id) {
@@ -238,10 +253,13 @@ const addressAndChain = computed(() => {
     chain: token.value?.chain || ''
   }
 })
+function formatLock(item:any){
+  return item.lock || /lock|null|(black hole)/gi.test(item.mark || '')
+}
 function init1() {
   if (pairAddress.value && addressAndChain.value.chain) {
     loading.value = true
-    getPairLiqNew(pairAddress.value + '-' + addressAndChain.value.chain,30).then((res: GetPairLiqNewResponse[]) => {
+    getPairLiqNew(pairAddress.value + '-' + addressAndChain.value.chain,activeTime.value).then((res: GetPairLiqNewResponse[]) => {
       dataList.value =
         res
           ?.map((i) => {

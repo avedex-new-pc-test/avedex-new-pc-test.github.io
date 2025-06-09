@@ -407,5 +407,6 @@
   "addAmt": "Thêm Amt",
   "netAmt": "Net Amt",
   "percent": "Phần trăm",
-  "txns": "Giao dịch"
+  "txns": "Giao dịch",
+  "liquidity": "Thanh khoản"
 }

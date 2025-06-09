@@ -230,5 +230,6 @@
   "addAmt": "AMT ekle",
   "netAmt": "Net Amt",
   "percent": "Yüzde",
-  "txns": "Txns"
+  "txns": "Txns",
+  "liquidity": "Likidite"
 }

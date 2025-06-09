@@ -235,5 +235,6 @@
   "addAmt": "Agregar AMT",
   "netAmt": "AMT neto",
   "percent": "Por ciento",
-  "txns": "Transacciones"
+  "txns": "Transacciones",
+  "liquidity": "Liquidez"
 }
