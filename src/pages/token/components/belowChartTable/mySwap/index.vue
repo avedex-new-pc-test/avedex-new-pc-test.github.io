@@ -228,8 +228,7 @@ onMounted(() => {
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('unrealizedProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]"
           :style="{ color: unrealizedProfit >= 0 ? '#12B886' : '#ff646d' }">
-          {{ unrealizedProfit >= 0 ? '+' : '-' }}
-          ${{ removeLeadingMinus(formatNumber(unrealizedProfit, 2)) }}
+          {{ unrealizedProfit >= 0 ? '+' : '-' }}${{ removeLeadingMinus(formatNumber(unrealizedProfit, 2)) }}
         </div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
