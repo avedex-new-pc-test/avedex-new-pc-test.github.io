@@ -30,14 +30,16 @@
                   <span class="color-#12B886">{{ formatNumber(row.main_token_amount, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.main_token_symbol }}</span>
                 </div>
-                <span>${{ formatNumber(row.main_token_amount_usd, 1) }}</span>
+                <span v-if="!row.main_token_amount_usd">0</span>
+                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'netAmt'" class="flex flex-col">
                 <div>
                   <span class="color-#12B886">{{ formatNumber(row.target_token_amount, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.target_token_symbol }}</span>
                 </div>
-                <span>${{ formatNumber(row.target_token_amount_usd, 1) }}</span>
+                <span v-if="!row.target_token_amount_usd">0</span>
+                <span v-else>{{`${Number(row.target_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
