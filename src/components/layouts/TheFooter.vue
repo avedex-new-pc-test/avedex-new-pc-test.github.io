@@ -1,10 +1,11 @@
 <template>
-  <footer class="h-40px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer">
+  <footer class="h-32px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer fixed bottom-0">
     <ul class="left gap-12px">
       <li v-for="item in data" :key="item.symbol || item.logo_url" class="color-[--d-999-l-666]  flex items-center gap-5px">
         <TokenImg
         :row="{
           logo_url: item.logo_url,
+          chain: ''
         }" token-class="w-16px h-16px [&&]:mr-0" />
         <span>{{ item.symbol }}</span>
         <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
@@ -118,10 +119,10 @@ watch(()=>globalStore.footerTokensPrice, (newVal) => {
 <style scoped lang="scss">
 .footer {
   display: flex;
-  padding: 12px 16px;
-  font-weight: 500;
+  align-items: center;
+  padding: 0 16px;
   font-size: 12px;
-  line-height: 16px;
+  line-height: 1;
   letter-spacing: 0px;
   justify-content: space-around;
 
