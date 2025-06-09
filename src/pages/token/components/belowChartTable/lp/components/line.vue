@@ -154,7 +154,7 @@ const init = () => {
     xAxis: {
       type: 'category',
       data: dataX.value,
-      boundaryGap: ['20%', '20%'],
+      boundaryGap: false,
       splitLine: {
         show: false
       },

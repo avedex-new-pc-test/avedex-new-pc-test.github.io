@@ -1,6 +1,6 @@
 <template>
   <div class="w-lp">
-    <div v-show="dataList.length > 0 ">
+    <div v-show="dataList.length > 0" class="w-[100%]">
       <div class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
         <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
         <el-radio-group v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
@@ -8,7 +8,7 @@
           <el-radio-button label="1M" :value="30" />
         </el-radio-group>
       </div>
-      <Line :dataList="dataList" :loading="loading" :showSeries="showSeries" v-if="dataList.length > 0 || loading" />
+      <Line :dataList="dataList" :loading="loading" :showSeries="showSeries"  />
     </div>
     <div class="m-table mt20px">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
@@ -74,7 +74,8 @@
 </template>
 
 <script setup lang="ts">
-import { getLPHolders, getPairLiqNew, type GetLPHoldersResponse, type IHolder, type GetPairLiqNewResponse } from '~/api/token'
+import { getLPHolders, getPairLiqNew } from '~/api/token'
+import type {   GetLPHoldersResponse,  IHolder,  LockType,  GetPairLiqNewResponse} from '~/api/token'
 import tag from './components/tag.vue'
 // import type {IColumn}  from './components/columns.vue'
 import { upColor, downColor } from '@/utils/constants'
@@ -104,7 +105,7 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: IHolder) => {
         return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
       }
     },
@@ -114,7 +115,7 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: IHolder) => {
         return formatNumber(row.percent, 1) + '%'
       }
     },
@@ -134,7 +135,7 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: IHolder) => {
         return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
       }
     },
@@ -145,7 +146,7 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       customClassName: () => { },
-      // customFormatter: (row: any) => {
+      // customFormatter: (row: IHolder) => {
       //   return `${Number(row.total_profit_ratio) > 0 ? '+' : '-'}${formatNumber(Math.abs(Number(row.total_profit_ratio) * 100), 2)}%`
       // }
     },
@@ -155,7 +156,7 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: IHolder) => {
         return `$${formatNumber(row.quantity, 4)}`
       }
     },
@@ -163,7 +164,7 @@ const columns = computed(() => {
       label: t('txns'),
       prop: 'txns',
       align: 'right',
-      // customFormatter: (row: any) => {
+      // customFormatter: (row: IHolder) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
     },
@@ -173,8 +174,8 @@ const columns = computed(() => {
       align: 'right',
       sortable: false,
       customClassName: undefined,
-      customFormatter: (row: any) => {
-        return formatTimeFromNow(row?.last_tx_time) || ''
+      customFormatter: (row: IHolder) => {
+        return row?.last_tx_time?formatTimeFromNow(row?.last_tx_time) : ''
       }
     },
   ]
@@ -189,7 +190,7 @@ const columns2 = computed(() => {
       align: 'center',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: LockType) => {
         return `${formatNumber(row.amount, 2)}`
       }
     },
@@ -199,7 +200,7 @@ const columns2 = computed(() => {
       align: 'center',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: LockType) => {
         return formatDate(row.lockDate, 'YYYY-MM-DD')
       }
     },
@@ -209,7 +210,7 @@ const columns2 = computed(() => {
       align: 'center',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: LockType) => {
         return formatDate(row.unlockDate, 'YYYY-MM-DD')
       }
     },
@@ -219,7 +220,7 @@ const columns2 = computed(() => {
       align: 'center',
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: any) => {
+      customFormatter: (row: LockType) => {
         return formatDate(row.vesting_end || row.unlockDate, 'YYYY-MM-DD')
       }
     },
@@ -240,7 +241,7 @@ watch([token], (val) => {
 const getRowKey = (row: any) => {
   return row.index
 }
-function tableRowClick(row: any) {
+function tableRowClick(row: IHolder) {
   window.open(formatExplorerUrl(addressAndChain.value?.chain || '', row.address || '', 'address'), '_blank')
 }
 const addressAndChain = computed(() => {

@@ -430,13 +430,14 @@ export async function getPairLiqNew(pair:string, interval = 7):Promise<GetPairLi
     return Promise.resolve([])
   })
 }
-type LockType = {
+export type LockType = {
   amount: number;
   id: number;
   lockDate: number;
   owner: string;
   token: string;
   unlockDate: number;
+  vesting_end?: number;
 }
 export interface IHolder {
   add_total: number;
@@ -450,6 +451,7 @@ export interface IHolder {
   remove_total: number;
   target_token_amount: number;
   target_token_amount_usd: number;
+  last_tx_time?: string
 }
 export interface GetLPHoldersResponse {
   main_token: string;
