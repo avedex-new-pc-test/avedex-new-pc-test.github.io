@@ -625,5 +625,11 @@
   "attention1Success": "Following successfully",
   "attention1Canceled": "Following has been canceled",
   "add": "Add",
-  "remove": "Remove"
+  "remove": "Remove",
+  "provider": "Provider",
+  "devote": "Devote",
+  "addAmt": "Add Amt",
+  "netAmt": "Net Amt",
+  "percent": "Percent",
+  "txns": "Txns"
 }

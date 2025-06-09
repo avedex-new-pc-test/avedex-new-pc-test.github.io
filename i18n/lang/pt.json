@@ -227,5 +227,11 @@
   "attention1Success": "Seguindo com sucesso",
   "attention1Canceled": "Seguindo foi cancelado",
   "add": "Adicionar",
-  "remove": "Remover"
+  "remove": "Remover",
+  "provider": "Provedor",
+  "devote": "Dedicar",
+  "addAmt": "Adicione AMT",
+  "netAmt": "NET AMT",
+  "percent": "Por cento",
+  "txns": "Txns"
 }

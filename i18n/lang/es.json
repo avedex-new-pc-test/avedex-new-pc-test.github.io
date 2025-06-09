@@ -227,5 +227,11 @@
   "attention1Success": "Siguiendo exitosamente",
   "attention1Canceled": "El seguimiento ha sido cancelado",
   "add": "Agregar",
-  "remove": "Eliminar"
+  "remove": "Eliminar",
+  "provider": "Proveedor",
+  "devote": "Dedicar",
+  "addAmt": "Agregar AMT",
+  "netAmt": "AMT neto",
+  "percent": "Por ciento",
+  "txns": "Transacciones"
 }

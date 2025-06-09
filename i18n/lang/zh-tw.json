@@ -624,5 +624,11 @@
   "attention1Success": "關注成功",
   "attention1Canceled": "取消關注",
   "add": "添加",
-  "remove": "移除"
+  "remove": "移除",
+  "provider": "流通商",
+  "devote": "佔比",
+  "addAmt": "添加數",
+  "netAmt": "獲取數",
+  "percent": "比例",
+  "txns": "交易數"
 }

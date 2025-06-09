@@ -140,7 +140,7 @@ const init = () => {
       appendToBody: true
     },
     grid: {
-      left: '0',
+      left: '20',
       right: '20',
       top: '20',
       bottom: '40',

@@ -222,5 +222,11 @@
   "attention1Success": "Başarıyla favorilere eklendi",
   "attention1Canceled": "Favori iptal edildi",
   "add": "Ekle",
-  "remove": "Kaldır"
+  "remove": "Kaldır",
+  "provider": "Sağlayıcı",
+  "devote": "Adamak",
+  "addAmt": "AMT ekle",
+  "netAmt": "Net Amt",
+  "percent": "Yüzde",
+  "txns": "Txns"
 }

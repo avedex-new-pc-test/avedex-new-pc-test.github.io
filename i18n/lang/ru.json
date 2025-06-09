@@ -399,5 +399,11 @@
   "attention1Success": "Подписка успешна",
   "attention1Canceled": "Подписка отменена",
   "add": "Добавить",
-  "remove": "Удалить"
+  "remove": "Удалить",
+  "provider": "Поставщик",
+  "devote": "Посвящать",
+  "addAmt": "Добавить Amt",
+  "netAmt": "Чистый Амт",
+  "percent": "Процент",
+  "txns": "Транзакции"
 }

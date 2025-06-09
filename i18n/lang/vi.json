@@ -399,5 +399,11 @@
   "attention1Success": "Theo dõi thành công",
   "attention1Canceled": "Đã hủy theo dõi",
   "add": "Thêm",
-  "remove": "Xóa"
+  "remove": "Xóa",
+  "provider": "Nhà cung cấp",
+  "devote": "Cứu",
+  "addAmt": "Thêm Amt",
+  "netAmt": "Net Amt",
+  "percent": "Phần trăm",
+  "txns": "Giao dịch"
 }
