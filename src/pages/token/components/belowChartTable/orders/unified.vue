@@ -270,7 +270,6 @@ const getUserPendingTx = async (chainValue?: string) => {
     if (!botStore.accessToken) {
       return
     }
-    const chain = props.chain || getAddressAndChainFromId(route.params.id as string).chain
     const data = {
       chain: chain,
       token: props.currentToken ? getAddressAndChainFromId(route.params.id as string).address : '',
