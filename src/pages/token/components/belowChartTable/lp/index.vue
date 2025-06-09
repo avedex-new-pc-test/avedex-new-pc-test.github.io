@@ -10,7 +10,7 @@
       </div>
       <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"   />
     </div>
-    <div class="m-table mt20px">
+    <div class="m-table mt20px" :style="{maxHeight: (dataList.length > 0||loading)?'250px':'500px'}">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
         :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}">
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
