@@ -276,7 +276,13 @@ async function initChart() {
       priceFormatterFactory: () => {
         return {
           format: (price) => {
-            return String(formatNumber(price, showMarket.value ? 2 : 4))
+            if (showMarket.value) {
+              return formatNumber(price, 2)
+            }
+            return String(formatNumber(price, {
+              decimals: 4,
+              limit: 6
+            }))
           },
         }
       }
