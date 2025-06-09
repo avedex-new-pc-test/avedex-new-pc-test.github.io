@@ -9,6 +9,9 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
 import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
+import type {GetHotTokensResponse} from '~/api/token'
+import BigNumber from 'bignumber.js'
+import type {SearchHot} from '~/api/types/search'
 
 export function isJSON(str: string) {
   try {
@@ -726,4 +729,12 @@ export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: 
 
 export function uuid() {
   return Math.random().toString(36).slice(-8) + Date.now()
+}
+
+export function getMCap(row: GetHotTokensResponse | SearchHot) {
+  if (!row.total) {
+    return 0
+  }
+  const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
+  return amount.multipliedBy(row.current_price_usd).toString()
 }

@@ -82,6 +82,10 @@ export const BusEventType = {
   TOP_FAV_CHANGE: 'top-favorite-change',
   FAV_DIALOG: 'fav-dialog',
 }
+
+export const ProvideType = {
+  HOT_TOKENS: 'hot-tokens',
+}
 export const SupportFullDataChain = ['solana', 'bsc']
 
 export const defaultPaginationParams = {
