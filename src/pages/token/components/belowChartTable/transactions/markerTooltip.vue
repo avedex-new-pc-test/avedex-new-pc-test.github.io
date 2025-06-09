@@ -202,7 +202,7 @@ function getColorClass(val: string) {
           <TimerCount
             v-if="userBriefData.wallet_age && Number(formatTimeFromNow(userBriefData.wallet_age,true)) < 60"
             :key="userBriefData.wallet_age"
-            :timestamp="userBriefData.wallet_age"
+            :timestamp="Number(userBriefData.wallet_age)"
             :end-time="60"
           >
             <template #default="{seconds}">
