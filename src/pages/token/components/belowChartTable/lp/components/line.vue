@@ -21,7 +21,7 @@ const props = defineProps({
   loading: Boolean
 })
 
-const {mode} = storeToRefs(useGlobalStore())
+const {mode,lang} = storeToRefs(useGlobalStore())
 // 使用 Vuex
 
 // Data
@@ -98,7 +98,7 @@ const init = () => {
 
   let chart = echarts.getInstanceByDom(document.getElementById(chartId.value))
   if (!chart) {
-    chart = echarts.init(document.getElementById(chartId.value))
+    chart = echarts.init(document.getElementById(chartId.value),null, { renderer: 'svg' })
   }
 
   chart.hideLoading()
@@ -254,8 +254,7 @@ watch(() => props.showSeries[3], val => {
   handlerLegendSelect(val, 3)
 })
 
-watch( mode, () => {
-  console.log('mode changed')
+watch([mode,lang], () => {
   init()
 })
 

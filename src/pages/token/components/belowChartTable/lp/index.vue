@@ -10,9 +10,9 @@
       </div>
       <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"   />
     </div>
-    <div class="m-table mt20px">
+    <div class="m-table mt20px" :style="{maxHeight: (dataList.length > 0||loading)?'250px':'500px'}">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
-        :row-key="getRowKey" height="245">
+        :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}">
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
           :align="col.align">
           <template #default="{ row }">
@@ -30,22 +30,26 @@
                   <span class="color-#12B886">{{ formatNumber(row.main_token_amount, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.main_token_symbol }}</span>
                 </div>
-                <span>${{ formatNumber(row.main_token_amount_usd, 1) }}</span>
+                <span v-if="!row.main_token_amount_usd">0</span>
+                <span v-else-if="row.main_token_amount_usd == '--'">--</span>
+                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'netAmt'" class="flex flex-col">
                 <div>
                   <span class="color-#12B886">{{ formatNumber(row.target_token_amount, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.target_token_symbol }}</span>
                 </div>
-                <span>${{ formatNumber(row.target_token_amount_usd, 1) }}</span>
+                <span v-if="!row.target_token_amount_usd">0</span>
+                <span v-else-if="row.target_token_amount_usd == '--'">--</span>
+                <span v-else>{{`${Number(row.target_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
-                <div :class="`color-${upColor[0]} flex-end`">
-                  <tag type="success" class="p-3px! h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
+                <div :class="`color-${upColor[0]} flex-start`">
+                  <tag type="success" class="h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
                 </div>
-                <div :class="`color-${downColor[0]} flex-end`">
-                  <tag type="danger" class="p-3px! h-12px w-12px mr-4px">-</tag>{{ row.add_total }}
+                <div :class="`color-${downColor[0]} flex-start`">
+                  <tag type="danger" class="h-12px w-12px mr-4px">-</tag>{{ row.remove_total }}
                 </div>
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
@@ -123,11 +127,13 @@ const columns = computed(() => {
       label: t('addAmt'),
       prop: 'addAmt',
       align: 'right',
+      width: 140
     },
     {
       label: t('netAmt'),
       prop: 'netAmt',
       align: 'right',
+      width: 140
     },
     {
       label: t('amount'),
@@ -154,6 +160,7 @@ const columns = computed(() => {
       label: t('balance1'),
       prop: 'quantity',
       align: 'right',
+      width: 140,
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
@@ -163,7 +170,7 @@ const columns = computed(() => {
     {
       label: t('txns'),
       prop: 'txns',
-      align: 'right',
+      align: 'left',
       // customFormatter: (row: IHolder) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
