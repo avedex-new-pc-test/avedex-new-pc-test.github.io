@@ -45,10 +45,10 @@
               </div>
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
-                <div :class="`color-${upColor[0]} flex-end`">
+                <div :class="`color-${upColor[0]} flex-start`">
                   <tag type="success" class="h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
                 </div>
-                <div :class="`color-${downColor[0]} flex-end`">
+                <div :class="`color-${downColor[0]} flex-start`">
                   <tag type="danger" class="h-12px w-12px mr-4px">-</tag>{{ row.remove_total }}
                 </div>
               </div>
@@ -160,6 +160,7 @@ const columns = computed(() => {
       label: t('balance1'),
       prop: 'quantity',
       align: 'right',
+      width: 140,
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
@@ -169,7 +170,7 @@ const columns = computed(() => {
     {
       label: t('txns'),
       prop: 'txns',
-      align: 'right',
+      align: 'left',
       // customFormatter: (row: IHolder) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
