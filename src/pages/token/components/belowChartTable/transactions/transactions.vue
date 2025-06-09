@@ -20,6 +20,7 @@ import dayjs from 'dayjs'
 import { useThrottleFn } from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
+import type {AveTable} from "#components";
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
@@ -29,6 +30,14 @@ const botStore = useBotStore()
 const wsStore = useWSStore()
 const tagStore = useTagStore()
 const route = useRoute()
+const aveTableRef = ref<InstanceType<typeof AveTable> | null>(null)
+const firstActivated = ref(true)
+onActivated(() => {
+  if (!firstActivated.value && aveTableRef.value) {
+    aveTableRef.value.scrollToTop(0)
+  }
+  firstActivated.value = false
+})
 // 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
 const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 const tabs = computed(() => {
@@ -644,6 +653,7 @@ function resetMakerAddress() {
       v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
       element-loading-background="transparent">
       <AveTable
+        ref="aveTableRef"
         rowKey="uuid"
         fixed :data="filterTableList"
         :columns="columns"

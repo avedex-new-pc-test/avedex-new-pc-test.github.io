@@ -13,7 +13,7 @@ export const useWSStore = defineStore('ws', () => {
   const isConnected = shallowRef(false)
   const botSwapStore = useBotSwapStore()
   const globalStore = useGlobalStore()
-  const route = useRoute()
+  // const route = useRoute()
 
   // const tokenStore = useTokenStore()
 

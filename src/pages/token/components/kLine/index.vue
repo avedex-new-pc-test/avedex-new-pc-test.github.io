@@ -266,10 +266,10 @@ async function initChart() {
     charts_storage_api_version: '1.1',
     timezone: getTimezone() as Timezone,
     time_frames: [],
-    // loading_screen: {
-    //   backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    //   foregroundColor: '#3F80F7'
-    // },
+    loading_screen: {
+      backgroundColor: themeStore.isDark ? '#111' : '#fff',
+      foregroundColor: '#3F80F7'
+    },
     custom_css_url: `${location.origin}/tv_custom.css`,
     // format: (showMarket.value ? 'volume' : 'price') as SeriesFormat,
     custom_formatters: {
@@ -590,7 +590,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
     if (event === 'tx') {
       const tx: WSTx = data?.tx
       const interval = switchResolution(resolution)
-      if (tx.pair_address === pair.value) {
+      if (tx.pair_address === pair.value && !tx?.tx_type) {
         const t = token.value?.replace?.(/-.*$/, '')
         const newBar1 = buildOrUpdateLastBarFromTx(tx, t, lastBar, interval)
         if (newBar1) {

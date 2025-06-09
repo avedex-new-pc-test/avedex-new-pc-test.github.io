@@ -14,6 +14,7 @@ const botSettingStore = useBotSettingStore()
 const botStore = useBotStore()
 const botSwapStore = useBotSwap()
 const priceV2Store = usePriceV2Store()
+const tokenStore = useTokenStore()
 watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
   const idToPriceMap: { [key: string]: IPriceV2Response['prices'][0] } = {}
   val.prices.forEach((item) => {
@@ -377,6 +378,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
   if (res) {
     let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
       ElNotification({type: 'success', message: t('transactionsSubmitted')})
+      tokenStore.placeOrderUpdate++
       loadingSwap.value[tokenId] = false
     }, 500)
     const unwatch = watch(() => wsStore.wsResult.tgbot, (subscribeResult) => {
@@ -386,6 +388,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
           clearTimeout(Timer)
           Timer = null
         }
+        tokenStore.placeOrderSuccess++
         if (subscribeResult?.txList?.[0]?.success) {
           ElNotification({type: 'success', message: t('tradeSuccess')})
           unwatch()
@@ -422,7 +425,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
       <NetSelect
         v-if="botStore.evmAddress"
         v-model:userIds="tableFilter.user_ids"
-        @update:user-ids="_getUserBalance"
+        @update:user-ids="resetStatus();_getUserBalance()"
       />
     </div>
     <t-head
@@ -456,7 +459,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                   <Icon
                     v-if="row.risk_score > 55 || row.risk_level < 0"
                     name="custom:danger"
-                    class="font-14 ml-2px"/>
+                    class="font-14 ml-2px color-#F72121"/>
                 </div>
                 <div class="mt-2px color-[var(--d-999-l-666)]">
                   <template v-if="row.balance === 0">$0</template>

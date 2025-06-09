@@ -76,7 +76,7 @@ const Component = computed(() => {
         </a>
       </div>
     </div>
-    <component :is="Component" :list="list" :get-data="getData" :loading="loading"/>
+    <component :is="Component" :visible="show" :list="list" :get-data="getData" :loading="loading"/>
   </el-dialog>
 </template>
 
