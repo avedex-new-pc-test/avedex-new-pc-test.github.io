@@ -12,7 +12,7 @@
     </div>
     <div class="m-table mt20px">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
-        :row-key="getRowKey" height="245">
+        :row-key="getRowKey" :height="(dataList.length > 0||loading)?245:800">
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
           :align="col.align">
           <template #default="{ row }">
@@ -49,7 +49,7 @@
                   <tag type="success" class="h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
                 </div>
                 <div :class="`color-${downColor[0]} flex-end`">
-                  <tag type="danger" class="h-12px w-12px mr-4px">-</tag>{{ row.add_total }}
+                  <tag type="danger" class="h-12px w-12px mr-4px">-</tag>{{ row.remove_total }}
                 </div>
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
@@ -127,11 +127,13 @@ const columns = computed(() => {
       label: t('addAmt'),
       prop: 'addAmt',
       align: 'right',
+      width: 140
     },
     {
       label: t('netAmt'),
       prop: 'netAmt',
       align: 'right',
+      width: 140
     },
     {
       label: t('amount'),
