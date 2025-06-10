@@ -8,7 +8,8 @@ defineProps({
     default: () => []
   }
 })
-const {userInfo, isSupportChains} = useBotStore()
+const {userInfo} = storeToRefs(useBotStore())
+const {isSupportChains} = useBotStore()
 const visible = shallowRef(false)
 const options = shallowRef(isSupportChains)
 const selectedChains = shallowRef<string[]>([...isSupportChains])
@@ -23,9 +24,9 @@ function getDisabled(val: string) {
 }
 
 function onConfirm() {
-  if (userInfo && Array.isArray(userInfo.addresses)) {
+  if (userInfo.value && Array.isArray(userInfo.value.addresses)) {
     const arr: string[] = []
-    userInfo.addresses.map(el => {
+    userInfo.value.addresses.map(el => {
       if (selectedChains.value.includes(el.chain)) {
         arr.push(el.address + '-' + el.chain)
       }
