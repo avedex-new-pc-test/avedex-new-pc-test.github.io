@@ -4,15 +4,10 @@ import THead from './tHead.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
 import dayjs from 'dayjs'
-import type {IPumpResponse} from "~/api/types/ws";
-import {useDocumentVisibility, useThrottleFn} from "@vueuse/core";
+import type {IPumpResponse} from '~/api/types/ws'
+import {useThrottleFn} from '@vueuse/core'
+import {formatTimeFromNow} from "~/utils";
 
-defineProps({
-  scrollbarHeight: {
-    type: Number,
-    required: true
-  }
-})
 const {t} = useI18n()
 const botStore = useBotStore()
 const wsStore = useWSStore()
@@ -72,7 +67,7 @@ const sortedListData = computed(() => {
 })
 const timer = ref<NodeJS.Timeout | number>()
 const columns = computed(() => {
-  const progressVisible = activeTab.value !== 'pump_out_new'
+  const progressVisible = activeTab.value === 'pump_in_almost'
   return [{
     label: `${t('token')}${progressVisible ? `/${t('progress')}` : ''}`,
     value: 'progress',
@@ -305,14 +300,14 @@ function getTargetToken(row: GetHomePumpListResponse) {
       {{ t('amountB') }}
       <Icon
         name="custom:price"
-        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-[--d-F5F5F5-l-222]':'color-#666'}`"
+        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-#3F80F7':'color-#666'}`"
         @click.stop.self="isVolUSDT=!isVolUSDT"
       />
       /{{ t('Txs') }}
     </template>
     </THead>
     <el-scrollbar
-      :height="scrollbarHeight"
+      :height="500"
       class="[&&]:h-auto"
     >
       <NuxtLink
@@ -335,10 +330,6 @@ function getTargetToken(row: GetHomePumpListResponse) {
             <div
               class="flex items-center color-[--d-F5F5F5-l-333] max-w-80px overflow-hidden whitespace-nowrap">
               {{ getTargetToken(row).symbol }}
-              <span v-if="row.target_name"
-                    class="text-10px color-[--d-999-l-666] ml-4px overflow-hidden text-ellipsis">{{
-                  row.target_name
-                }}</span>
             </div>
             <div class="mt-2px color-[--d-999-l-666] text-10px">
               <TimerCount
@@ -350,16 +341,16 @@ function getTargetToken(row: GetHomePumpListResponse) {
                 <template #default="{seconds}">
               <span class="color-[--d-999-l-666]">
                 <template v-if="seconds<60">
-                  {{ seconds }}{{ $t('ss') }}
+                  {{ seconds }}s
                 </template>
                 <template v-else>
-                  {{ dayjs(row.created_at).fromNow() }}
+                  {{ formatTimeFromNow(dayjs(row.created_at).unix()) }}
                 </template>
               </span>
                 </template>
               </TimerCount>
-              <span v-else :key="localeStore.locale+$index" class="color-[--d-999-l-666]">
-                {{ dayjs(row.created_at).fromNow()}}
+              <span v-else class="color-[--d-999-l-666]">
+                {{ formatTimeFromNow(dayjs(row.created_at).unix()) }}
               </span>
               <span
                 v-if="progressVisible"
