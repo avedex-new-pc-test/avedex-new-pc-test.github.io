@@ -3,8 +3,9 @@
     <div>
       <div class="color-[var(--d-666-l-999)]">{{ tabActiveName }} {{ $t('vol') }}</div>
       <div class="color-[var(--d-F5F5F5-l-333)] mt-5px">
-        {{ formatNumber(pair?.[`tx_${tabActive}_count` as TxCount] || 0, 1) }}<span
-          class="color-[var(--d-666-l-999)]">/</span>${{ formatNumber(pair?.[`volume_u_${tabActive}` as VolumeU] || 0,
+        <!-- {{ formatNumber(pair?.[`tx_${tabActive}_count` as TxCount] || 0, 1) }}<span
+          class="color-[var(--d-666-l-999)]">/</span> -->
+          ${{ formatNumber(pair?.[`volume_u_${tabActive}` as VolumeU] || 0,
             2) }}</div>
     </div>
     <div class="text-center">

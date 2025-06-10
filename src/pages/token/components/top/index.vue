@@ -437,9 +437,9 @@
         style="width: 90px"
       />
     </div>
-    <div class="item ml-24px">
+    <div class="item ml-24px items-start!">
       <span class="text-20px color-[--d-F5F5F5-l-333]">
-        ${{ formatNumber(price || 0) }}</span
+        ${{ formatNumber(price || 0, { decimals: 4, limit: 6}) }}</span
       >
       <span
         class="block mt-4px"
