@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'DINPro-regular';
+  src: url("/fonts/DINPro-regular.otf") format(opentype);
+  font-display: swap;
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins-regular';
+  src: url("/fonts/Poppins-Regular.ttf") format(truetype);
+  font-display: swap;
+  font-weight: normal;
+  font-style: normal;
+  unicode-range: U+4E00-9FFF;
+}
