@@ -87,7 +87,7 @@ const columns = computed(() => {
   return [{ key: 'time', dataKey: 'time', title: t('time'), minWidth: 80 },
   { key: 'type', dataKey: 'type', title: t('type'), minWidth: 80 },
   { key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100 },
-  { key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', minWidth: 140 },
+    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), minWidth: 120},
   {
     key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
     minWidth: 120

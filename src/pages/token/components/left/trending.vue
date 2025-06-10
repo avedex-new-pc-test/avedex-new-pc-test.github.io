@@ -52,7 +52,7 @@ const columns = computed(() => {
     flex: 'flex-1 justify-end',
     sort: true
   }, {
-    label: 'Chg%',
+    label: t('Chg'),
     value: 'price_change',
     flex: 'flex-1 justify-end',
     sort: true
