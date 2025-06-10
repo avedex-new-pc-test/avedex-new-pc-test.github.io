@@ -3,7 +3,7 @@
     <div  class="w-[100%]">
       <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
         <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
-        <el-radio-group v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
+        <el-radio-group class="m-radio-group" v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
           <el-radio-button label="7D" :value="7" />
           <el-radio-button label="1M" :value="30" />
         </el-radio-group>
@@ -12,7 +12,7 @@
     </div>
     <div class="m-table mt20px" :style="{maxHeight: (dataList.length > 0||loading)?'250px':'500px'}">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
-        :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}">
+        :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}" size="small">
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
           :align="col.align">
           <template #default="{ row }">
@@ -46,10 +46,14 @@
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
                 <div :class="`color-${upColor[0]} flex-start`">
-                  <tag type="success" class="h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
+                  <img src="@/assets/images/add.svg" alt="" class="h-12px w-12px mr-4px">
+                  <!-- <tag type="success" class="h-12px w-12px mr-4px">+</tag> -->
+                  {{ row.add_total }}
                 </div>
                 <div :class="`color-${downColor[0]} flex-start`">
-                  <tag type="danger" class="h-12px w-12px mr-4px">-</tag>{{ row.remove_total }}
+                  <!-- <tag type="danger" class="h-12px w-12px mr-4px">-</tag> -->
+                  <img src="@/assets/images/remove.svg" alt="" class="h-12px w-12px mr-4px">
+                  {{ row.remove_total }}
                 </div>
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
@@ -321,14 +325,24 @@ function init2() {
 
 <style scoped lang="scss">
 .m-table {
+  .el-table.el-table{
+    /* --el-table-header-text-color: var(--d-666-l-999); */
+    --el-table-header-bg-color: var(--d-222-l-F2F2F2);
+  }
   :deep() .el-table__expand-column {
     /* display: none; */
   }
-
+  :deep() .cell{
+    padding-top: 0;
+    padding-bottom: 0;
+  }
   :deep() .el-table__expand-icon {
     display: none;
   }
-
+  :deep() .el-table__expanded-cell td {
+    --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2);
+     background-color: var(--d-222-l-F2F2F2);
+  }
   :deep() th {
     font-family: Poppins;
     font-weight: 400;
@@ -342,12 +356,23 @@ function init2() {
     font-family: Poppins;
     font-weight: 400;
     font-size: 13px;
-    line-height: 20px;
+    line-height: 1;
     letter-spacing: 0px;
     color: var(--d-999-l-666);
+    /* padding-top: 0;
+    padding-bottom: 0; */
+    .cell{
+      line-height: 1.5;
+    }
   }
 }
-
+.m-radio-group{
+  :deep() .el-radio-button__inner:hover{
+  }
+  :deep() .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
+    border-color: var(--d-333-l-666);
+  }
+}
 .line-bar {
   width: 100%;
   height: 3px;
