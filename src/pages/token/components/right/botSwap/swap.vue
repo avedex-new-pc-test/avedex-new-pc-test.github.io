@@ -1189,8 +1189,9 @@ onMounted(() => {
     border-radius: 6px;
     margin-top: 20px;
     width: 100%;
-    --el-button-text-color: var(--d-F5F5F5-l-333) !important;
-    --el-button-hover-text-color: var(--d-F5F5F5-l-333) !important;
+    // --el-button-text-color: var(--d-F5F5F5-l-333) !important;
+    // --el-button-hover-text-color: var(--d-F5F5F5-l-333) !important;
+    --el-color-black: #F5F5F5;
   }
 
   .slippage-container {
