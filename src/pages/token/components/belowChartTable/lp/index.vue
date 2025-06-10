@@ -341,7 +341,7 @@ function init2() {
   }
   :deep() .el-table__expanded-cell td {
     /* --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2); */
-    --el-table-row-hover-bg-color:var(--d-333-l-F5F5F5);
+    --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
      background-color: var(--d-222-l-F2F2F2);
   }
   :deep() th {
