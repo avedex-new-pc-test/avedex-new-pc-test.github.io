@@ -8,12 +8,12 @@
           <el-radio-button label="1M" :value="30" />
         </el-radio-group>
       </div>
-      <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"   />
+      <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"  :showLeft="showLeft" />
     </div>
     <div class="m-table mt20px" :style="{maxHeight: (dataList.length > 0||loading)?'250px':'500px'}">
-      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
+      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
         :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}">
-        <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
+        <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
           :align="col.align">
           <template #default="{ row }">
             <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns', 'percent']">
@@ -85,10 +85,9 @@ import tag from './components/tag.vue'
 import { upColor, downColor } from '@/utils/constants'
 import Column from './components/columns.vue'
 import Line from './components/line.vue'
-const {isDark,mode} = storeToRefs(useGlobalStore())
+const {isDark,mode,showLeft} = storeToRefs(useGlobalStore())
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
-
 const dataSource = ref<(IHolder & { index: string })[]>([])
 const dataList = ref<(GetPairLiqNewResponse & { time: string })[]>([])
 const { t } = useI18n()
@@ -101,13 +100,14 @@ const columns = computed(() => {
       label: '#',
       prop: 'index',
       align: 'left',
-      width: 40,
+      minWidth: 40,
     },
     {
       label: t('provider'),
       prop: 'mark',
       align: 'right',
       sortable: false,
+      minWidth: 140,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
         return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
@@ -127,13 +127,13 @@ const columns = computed(() => {
       label: t('addAmt'),
       prop: 'addAmt',
       align: 'right',
-      width: 140
+      minWidth: 140
     },
     {
       label: t('netAmt'),
       prop: 'netAmt',
       align: 'right',
-      width: 140
+      minWidth: 140
     },
     {
       label: t('amount'),
@@ -148,7 +148,7 @@ const columns = computed(() => {
     {
       label: t('percent'),
       prop: 'percent',
-      width: 100,
+      minWidth: 100,
       align: 'right',
       sortable: false,
       customClassName: () => { },
@@ -160,7 +160,7 @@ const columns = computed(() => {
       label: t('balance1'),
       prop: 'quantity',
       align: 'right',
-      width: 140,
+      minWidth: 100,
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
@@ -171,6 +171,7 @@ const columns = computed(() => {
       label: t('txns'),
       prop: 'txns',
       align: 'left',
+      width: 80,
       // customFormatter: (row: IHolder) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
@@ -179,6 +180,7 @@ const columns = computed(() => {
       label: t('lastTx'),
       prop: 'last_tx_time',
       align: 'right',
+      width: 80,
       sortable: false,
       customClassName: undefined,
       customFormatter: (row: IHolder) => {
