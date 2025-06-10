@@ -736,3 +736,36 @@ export function getMCap(row: GetHotTokensResponse | SearchHot) {
   const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
   return amount.gt(0)? amount.multipliedBy(row.current_price_usd).toString() : '0'
 }
+
+export function formatCountdown(seconds: number) {
+  if (seconds < 60) {
+    return `${seconds}s`
+  } else if (seconds < 3600) {
+    // 1h
+    const minutes = Math.floor(seconds / 60)
+    let remainingSeconds = seconds % 60
+    remainingSeconds = Math.floor(remainingSeconds)
+    return `${minutes}min ${
+      remainingSeconds > 0 ? remainingSeconds + 's' : ''
+    }`
+  } else if (seconds < 86400) {
+    // 1d
+    const hours = Math.floor(seconds / 3600)
+    let remainingMinutes = Math.floor((seconds % 3600) / 60)
+    remainingMinutes = Math.floor(remainingMinutes)
+    return `${hours}h ${remainingMinutes > 0 ? remainingMinutes + 'min' : ''}`
+  } else if (seconds < 2592000) {
+    // 1m (30 days)
+    const days = Math.floor(seconds / 86400)
+    let remainingHours = Math.floor((seconds % 86400) / 3600)
+    remainingHours = Math.floor(remainingHours)
+    return `${days}d ${remainingHours > 0 ? remainingHours + 'h' : ''} `
+  } else if (seconds < 31536000) {
+    // 1y (12 months)
+    const months = Math.floor(seconds / 2592000)
+    return `${months}m`
+  } else {
+    const years = Math.floor(seconds / 31536000)
+    return `${years}y`
+  }
+}
