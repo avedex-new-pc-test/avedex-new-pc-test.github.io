@@ -24,7 +24,7 @@
       <div class="p-15px bg-[--d-111-l-FFF] mt-4px">
         <BotSwap />
       </div>
-      <div class="p-15px bg-[--d-111-l-FFF] mt-4px">
+      <div class="p-15px pb-5px bg-[--d-111-l-FFF] mt-4px">
         <Pairs />
       </div>
       <Overview class="px-15px pb-10px bg-[--d-111-l-FFF] mt-4px" />

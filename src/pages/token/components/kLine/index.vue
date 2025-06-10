@@ -2,8 +2,11 @@
   <div class="watermark relative" :style="{height: `${kHeight}px`}">
     <div id="tv_chart_container" ref="kline" :style="{ width: '100%', height: '100%' }" />
   </div>
-  <div id="kline-draggable" class="w-full cursor-row-resize bg-[--d-2D3037-l-F5F5F5] flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
-    <Icon name="custom:drag" class="text-4px color-#959A9F"/>
+  <div
+    class="w-full cursor-row-resize bg-[--d-222-l-F2F2F2] gap-1px hover:bg-[--d-666-l-CCC] flex items-center justify-center h-4px"
+    @mousedown.stop.prevent="drag"
+  >
+    <span v-for="i in 4" :key="i" class="bg-#444 w-2px h-2px rounded-full"></span>
   </div>
 </template>
 
@@ -624,7 +627,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
 
 // 拖动缩放
 let isMask = false
-const kHeight = shallowRef(500)
+const kHeight = shallowRef(400)
 const wHeight = useWindowSize().height
 const dom = useTemplateRef('kline')
 function drag(e: MouseEvent) {
