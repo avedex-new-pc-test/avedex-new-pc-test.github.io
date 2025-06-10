@@ -107,7 +107,7 @@
                 })
               }}
             </div>
-            <div v-else-if="item.status === 'auto_cancelled'">{{ item.symbol }}
+            <div class="text-12px" v-else-if="item.status === 'auto_cancelled'">{{ item.symbol }}
               {{ $t('limitOrderAutoCancel', {f: formatBotError(item?.errorLog || '')}) }}
             </div>
             <div class="color-[--d-666-l-999] text-12px">{{ formatDate((item?.updateTime) || item?.createTime) }}</div>
