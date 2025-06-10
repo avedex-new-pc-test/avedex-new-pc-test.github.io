@@ -18,7 +18,8 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  loading: Boolean
+  loading: Boolean,
+  showLeft: Boolean
 })
 
 const {mode,lang} = storeToRefs(useGlobalStore())
@@ -217,7 +218,13 @@ const handlerLegendSelect = (val, index) => {
     name: option.value[index].label
   })
 }
-
+const handlerResize = () => {
+  setTimeout(() => {
+    const chart = echarts.getInstanceByDom(document.getElementById(chartId.value))
+    if (!chart) return
+    chart.resize()
+  },100)
+}
 // Watchers
 watch(() => props.loading, val => {
   const chart = echarts.getInstanceByDom(document.getElementById(chartId.value))
@@ -257,7 +264,10 @@ watch(() => props.showSeries[3], val => {
 watch([mode,lang], () => {
   init()
 })
-
+watch(()=>props.showLeft, (val) => {
+  console.log('showLeft changed', val)
+  handlerResize()
+})
 // Lifecycle
 onMounted(() => {
   init()
