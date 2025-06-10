@@ -2,6 +2,7 @@
 import Transactions from './transactions/transactions.vue'
 import OrdersTab from './orders/index.vue'
 import OneClick from '../right/botSwap/oneClick.vue'
+import Bubble from './holders/new/bubble.vue'
 import { useBotStore } from '@/stores/bot'
 const { globalConfig } = storeToRefs(useConfigStore())
 const route = useRoute()
@@ -114,6 +115,7 @@ const isInsiderOrSniperSupported= computed(()=>{
         </div>
       </a>
       <OneClick />
+      <Bubble />
     </div>
     <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
     <KeepAlive v-show="activeTab !== 'Orders'">

@@ -636,5 +636,6 @@
   "netAmt": "获取数",
   "percent": "比例",
   "txns": "交易数",
-  "liquidity": "池子大小"
+  "liquidity": "池子大小",
+  "holderBubble": "筹码气泡图"
 }
