@@ -58,7 +58,7 @@
   "createdTime": "创建时间",
   "totalSupply": "有效总量",
   "circulation": "流通供应量",
-  "mcap": "流通市值",
+  "mcap": "市值",
   "FDV": "总市值",
   "contractOwner": "拥有者",
   "pair": "池子",
@@ -636,5 +636,6 @@
   "netAmt": "获取数",
   "percent": "比例",
   "txns": "交易数",
-  "liquidity": "池子大小"
+  "liquidity": "池子大小",
+  "Chg": "涨幅"
 }
