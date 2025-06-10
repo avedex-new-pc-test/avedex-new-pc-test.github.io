@@ -20,7 +20,7 @@
         class="text-16px text-[var(--d-666-l-999)]"
         name="ep:search"
       />
-      <span class="text-12px font-500 ml-4px text-[var(--d-666-l-999)]">
+      <span class="text-12px ml-4px text-[var(--d-666-l-999)]">
         {{ $t('enterAddress/token') }}
       </span>
     </a>
