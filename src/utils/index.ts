@@ -9,6 +9,9 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
 import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
+import type {GetHotTokensResponse} from '~/api/token'
+import BigNumber from 'bignumber.js'
+import type {SearchHot} from '~/api/types/search'
 
 export function isJSON(str: string) {
   try {
@@ -557,7 +560,7 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
   return useRemarksStore().getRemarkByAddress({address, chain})
 }
 
-export function getColorClass(val: string) {
+export function getColorClass(val: string|number) {
   if (Number(val) > 0) {
     return 'color-#12b886'
   } else if (Number(val) < 0) {
@@ -727,4 +730,9 @@ export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: 
 
 export function uuid() {
   return Math.random().toString(36).slice(-8) + Date.now()
+}
+
+export function getMCap(row: GetHotTokensResponse | SearchHot) {
+  const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
+  return amount.gt(0)? amount.multipliedBy(row.current_price_usd).toString() : '0'
 }

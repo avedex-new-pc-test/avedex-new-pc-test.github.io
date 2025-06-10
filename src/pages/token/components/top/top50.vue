@@ -9,7 +9,7 @@
     trigger="hover"
   >
     <template #reference>
-      <a class="ml-5 top50 bg-btn" href="" @click.stop.prevent>
+      <a class="top50 bg-btn" href="" @click.stop.prevent>
         <Icon name="custom:top" class="text-[--d-666-l-999] h-12px mr-2px" />
         <span
           :class="{

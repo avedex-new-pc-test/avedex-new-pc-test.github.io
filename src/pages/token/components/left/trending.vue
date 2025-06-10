@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import BigNumber from 'bignumber.js'
 import {getHotTokens, type GetHotTokensResponse} from '~/api/token'
 import THead from './tHead.vue'
 import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
 import type {IPriceV2Response} from '~/api/types/ws'
+import {ProvideType} from '~/utils/constants'
+import {getMCap} from '~/utils'
 
 defineProps({
   scrollbarHeight: {
@@ -23,6 +24,10 @@ const sort = shallowRef({
 })
 const wsStore = useWSStore()
 const priceV2Store = usePriceV2Store()
+const hotTokens = inject<{
+  value: Ref<GetHotTokensResponse[]>;
+  setVal: (val: GetHotTokensResponse[]) => void
+}>(ProvideType.HOT_TOKENS)
 const listData = shallowRef<GetHotTokensResponse[]>([])
 const sortedHotList = computed(() => {
   const {activeSort, sortBy} = sort.value
@@ -35,7 +40,7 @@ const sortedHotList = computed(() => {
       const codeA = a.symbol[0].toLowerCase().charCodeAt(0) || 0
       return (codeB - codeA) * activeSort
     } else if (sortBy === 'mcap') {
-      return (Number(getMcap(b)) - Number(getMcap(a))) * activeSort
+      return (Number(getMCap(b)) - Number(getMCap(a))) * activeSort
     } else {
       return (Number((b[sortBy!] || 0)) - Number((a[sortBy!] || 0))) * activeSort
     }
@@ -76,23 +81,24 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
     }
     return el
   })
+  if (hotTokens) {
+    hotTokens.setVal(listData.value)
+  }
 })
 
 async function _getHotTokens() {
   try {
     const res = await getHotTokens()
     listData.value = res || []
+    if (hotTokens) {
+      hotTokens.setVal(listData.value)
+    }
     priceV2Store.setMultiPriceParams('trending', listData.value.map(el => el.token + '-' + el.chain))
     priceV2Store.sendPriceWs()
   } catch (e) {
     console.log('=>(trending.vue:15) e', e)
 
   }
-}
-
-function getMcap(row: GetHotTokensResponse) {
-  const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
-  return amount.multipliedBy(row.current_price_usd).toString()
 }
 </script>
 
@@ -130,7 +136,7 @@ function getMcap(row: GetHotTokensResponse) {
               <template v-if="row.current_price_usd === 0">0</template>
               <template v-else-if="row.current_price_usd === '--'">--</template>
               <template v-else>
-                {{ formatNumber(getMcap(row)) }}
+                {{ formatNumber(getMCap(row)) }}
               </template>
             </div>
           </div>

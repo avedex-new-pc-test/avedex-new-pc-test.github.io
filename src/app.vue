@@ -12,9 +12,16 @@
   import TokenDetails from '~/pages/token/components/tokenDetails/index.vue'
   import { useRemarksStore } from '@/stores/remarks'
   import en from 'element-plus/es/locale/lang/en'
+  import type {GetHotTokensResponse} from '~/api/token'
+  import {ProvideType} from '~/utils/constants'
   const elementLocale = shallowRef(en)
 
   const elementLocaleMap: Map<string, typeof en> = new Map()
+  const hotTokens = shallowRef<GetHotTokensResponse[]>([])
+  provide(ProvideType.HOT_TOKENS, {
+    value: hotTokens,
+    setVal: (val: GetHotTokensResponse[]) => hotTokens.value = val
+  })
 
   watch(() => useLocaleStore().locale, async (val) => {
     if (!val) return
