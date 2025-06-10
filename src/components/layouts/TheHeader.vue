@@ -2,14 +2,14 @@
   <header
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
-    <NuxtLink to="/"><img src="~/assets/images/logo.svg" ></NuxtLink>
-    <ul class="menu ml-20px">
+    <a href="https://ave.ai" target="_blank"><img src="~/assets/images/logo.svg" ></a>
+    <!-- <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
         <NuxtLink :to="item.src" :class="{ active: item.id == route?.name }">
           {{ item.name }}
         </NuxtLink>
       </li>
-    </ul>
+    </ul> -->
     <div class="flex-1" />
     <a
       class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px w-320px flex items-center no-underline"

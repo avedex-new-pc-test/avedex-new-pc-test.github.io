@@ -165,7 +165,7 @@
                 }"
                 class="mt-2"
               >
-                {{ formatNumber((row?.total_profit_rate || 0) * 100, 2) }}%
+                {{ formatNumber((row?.total_profit_rate * 100 || 0)) }}%
               </div>
             </div>
             <div>

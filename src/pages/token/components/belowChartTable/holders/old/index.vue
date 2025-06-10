@@ -223,14 +223,14 @@ const tabs = computed(() => {
       es: t('topN', { n: 100 }),
       type: '100',
     },
-    ...totalHolders.value,
+    ...totalHolders.value?.filter(i=> i?.total_address >0),
   ]
 })
 const top100balanceC = computed(() => {
   return top100balance.value.slice(0, Number(tabActive.value) || 200)
 })
 
-// console.log('-------totalHolders-------', totalHolders)
+console.log('-------totalHolders-------', totalHolders)
 watch(
   () => id.value,
   (newId) => {
@@ -372,16 +372,15 @@ function handlerDialogProfitLoss(row: { address: string }) {
 }
 
 :deep(.el-table) {
-  --el-table-tr-bg-color: #0A0B0D;
-  --el-table-bg-color: #0A0B0D;
-  --el-table-text-color: var(--d-222-l-F2F2F2);
+  // --el-table-tr-bg-color: #0A0B0D;
+  // --el-table-bg-color: #0A0B0D;
   --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
   --el-fill-color-lighter: #0A0B0D;
   --el-table-header-text-color: var(--d-999-l-666);
   // --el-table-border-color: var(--d-33353D-l-f5f5f5);
   --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
-  background: #0A0B0D;
-  --el-bg-color: #0A0B0D;
+  // background: var(--d-111-l-FFF);
+  --el-bg-color: var(--d-111-l-FFF);
   // --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
   font-size: 13px;
 

@@ -2,7 +2,7 @@
   <div class="holderInfo">
     <div class="px-12px mb-10px flex justify-between">
       <div
-        class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide"
+        class="flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide tab-width"
       >
         <a
           v-for="item in tabs"
@@ -151,7 +151,7 @@
               @click.stop.prevent="show_bubble = true"
             >
               <!-- <i class="iconfont icon-bubble color-999" /> -->
-              <Icon name="custom:bubble" class="color-#999 icon-bubble" />
+              <Icon name="custom:bubble" class="color-[--d-696E7C-l-fff] icon-bubble" />
             </a>
           </el-tooltip>
         </div>
@@ -171,7 +171,7 @@
               href=""
               @click.stop.prevent="show_bubble = false"
             >
-              <Icon name="material-symbols:keyboard-double-arrow-right-rounded" class="color-#999" />
+              <Icon name="material-symbols:keyboard-double-arrow-right-rounded" class="color-[--d-696E7C-l-fff]" />
             </a>
           </el-tooltip>
           <iframe
@@ -338,10 +338,9 @@ watch(
     }
   },
   {
-    immediate: true,
+    // immediate: true,
   }
 )
-
 watch(activeTab, (val) => {
   // if (searchKeyword) {
   //   this.filterAddress(this.searchKeyword)
@@ -361,6 +360,12 @@ watch(activeTab, (val) => {
   //     this.getHoldersList()
   //   }
   // }
+  getHoldersList()
+})
+onMounted(() => {
+  getHoldersList()
+})
+onActivated(() => {
   getHoldersList()
 })
 function setActiveTab(val: string) {
@@ -552,5 +557,8 @@ function filterOriginAddress(row:{ address: string, type: string }) {
       font-size: 12px;
     }
   }
+}
+.tab-width{
+  width: calc(100% - 24px);
 }
 </style>

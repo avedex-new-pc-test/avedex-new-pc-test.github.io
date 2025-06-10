@@ -23,20 +23,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        >
+        />
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -45,75 +45,6 @@
             >{{ token?.symbol }}</span
           >
           <span class="ml-8px text-12px font-500">{{ token?.name }}</span>
-          <div v-if="medias?.length > 0" class="ml-8px flex">
-            <div v-for="(item, index) in medias" :key="index" class="tag-btn">
-              <template v-if="item.url">
-                <span
-                  v-if="item.name === 'QQ'"
-                  v-tooltip="item.url"
-                  class="bg-btn"
-                >
-                  <Icon
-                    :name="`custom:${item.icon}`"
-                    class="text-[--d-666-l-999] h-16px w-16px"
-                  />
-                </span>
-                <a
-                  v-else
-                  v-tooltip="item.url"
-                  :href="item.url"
-                  target="_blank"
-                  class="bg-btn"
-                  @click.stop
-                >
-                  <Icon
-                    :name="`custom:${item.icon}`"
-                    class="text-[--d-666-l-999] h-16px w-16px"
-                  />
-                </a>
-              </template>
-            </div>
-          </div>
-          <a
-            class="media-item bg-btn"
-            :href="`https://x.com/search?q=($${token?.symbol} OR ${token?.token})&src=typed_query&f=live`"
-            target="_blank"
-          >
-            <Icon
-              class="text-[--d-666-l-999] h-16px w-16px"
-              name="material-symbols:search-rounded"
-            />
-          </a>
-          <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
-            <div
-              v-for="(i, index) in getTags(pair)?.normal_tag"
-              :key="index"
-              class="bg-btn flex h-16px"
-            >
-              <el-image
-                v-tooltip="$t(`${i.tag}`)"
-                class="token-icon-tag cursor-pointer h-100%"
-                :src="formatIconTag(i.tag)"
-                lazy
-              >
-                <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
-                </template>
-                <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
-                </template>
-              </el-image>
-              <span
-                v-if="i?.showText"
-                :style="{
-                  color: i?.color == 'green' ? upColor[0] : downColor[0],
-                }"
-                class="text-10px ml-4px"
-              >
-                {{ $t(i?.tag) }}
-              </span>
-            </div>
-          </template>
 
           <el-popover
             v-if="collected"
@@ -251,10 +182,10 @@
             </template>
           </el-popover>
         </div>
-        <div class="text-12px font-500 flex items-center mt-5px">
+        <div class="text-12px font-500 flex items-center mt-8px">
           <a
             v-if="token?.token !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
-            class="hover:color-[--d-F5F5F5-l-333]"
+            class="hover:color-[--d-F5F5F5-l-333] leading-12px font-500"
             :href="formatExplorerUrl(token?.chain as string, token?.token as string)"
             target="_blank"
           >
@@ -262,146 +193,230 @@
               token?.token?.replace(new RegExp('(.{4})(.+)(.{4}$)'), '$1...$3')
             }}
           </a>
-          <Icon v-copy="token?.token" name="bxs:copy" class="ml-5px clickable" />
+          <Icon
+            v-copy="token?.token"
+            name="bxs:copy"
+            class="ml-5px clickable"
+          />
           <span
             v-if="pair"
             v-tooltip="formatDate(pair?.created_at)"
-            class="ml-5px hover:color-[--d-F5F5F5-l-333]"
+            class="ml-5px hover:color-[--d-F5F5F5-l-333] leading-12px font-400"
             >{{ dayjs(pair?.created_at * 1000).fromNow() }}</span
           >
-          <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
-            <div
-              v-for="(i, index) in getTags(pair)?.signal_arr?.slice(0, 3)"
-              :key="index"
-              v-tooltip="
-                getTagTooltip(i) +
-                (i.tag == 'smarter_buy' || i.tag == 'smarter_sell'
-                  ? `（${$t('amountU')}>$10)`
-                  : '')
-              "
-              class="flex bg-btn signal pointer ml-4px"
-            >
-              <el-image
-                class="token-icon-signal-tag h-16px"
-                :src="formatIconTag(i.tag)"
-                lazy
-              >
-                <template #error>
-                  <img
-                    class="token-icon-signal-tag h-16px"
-                    src="/icon-default.png"
-                  >
-                </template>
-                <template #placeholder>
-                  <img
-                    class="token-icon-signal-tag h-16px"
-                    src="/icon-default.png"
-                  >
-                </template>
-              </el-image>
-              <div
-                v-if="
-                  (i?.tag == 'smarter_buy' || i?.tag == 'smarter_sell') &&
-                  ((pair?.smart_money_buy_count_24h??0) > 0 ||
-                    (pair?.smart_money_sell_count_24h??0 > 0))
-                "
-                class="ml-2"
-                style="color: #959a9f"
-              >
-                <span
-                  :style="{
-                    color: (pair?.smart_money_buy_count_24h??0) > 0 ? upColor[0] : '',
-                  }"
-                >
-                  {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
-                </span>
-                /
-                <span
-                  :style="{
-                    color:
-                      (pair?.smart_money_sell_count_24h??0) > 0 ? downColor[0] : '',
-                  }"
-                >
-                  {{ formatNumber(pair?.smart_money_sell_count_24h || 0, 0) }}
-                </span>
-              </div>
+        </div>
+      </div>
+    </div>
 
-              <span
-                class="ml-2"
-                :style="{
-                  color: i.color == 'green' ? upColor[0] : downColor[0],
-                }"
-              >
-                <template v-if="i.tag">
-                  <template v-if="new RegExp('_buy.*$', 'gi').test(i.tag)">
-                    {{ $t('buy') }}
-                  </template>
-                  <template
-                    v-else-if="new RegExp('_sell.*$', 'gi').test(i.tag)"
-                  >
-                    {{ $t('sell') }}
-                  </template>
-                  <template v-else>
-                    {{ $t(i.tag) }}
-                  </template>
-                </template>
-              </span>
-            </div>
-          </template>
+    <div class="item ml-32px" style="align-items: flex-start;">
+      <div class="flex items-center justify-start">
+        <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
           <div
-            v-if="
-              pair && getTags(pair)?.signal_arr?.findIndex(
-                (i) => i?.tag === 'smarter_buy'
-              ) == -1 &&
-              getTags(pair)?.signal_arr?.findIndex(
-                (i) => i?.tag == 'smarter_sell'
-              ) == -1 &&
-              ((pair?.smart_money_buy_count_24h??0) > 0 ||
-                (pair?.smart_money_sell_count_24h??0) >0 )
-            "
-            v-tooltip="
-              getTagTooltip({
-                smart_money_buy_count_24h: pair?.smart_money_buy_count_24h || 0,
-                smart_money_sell_count_24h: pair?.smart_money_sell_count_24h || 0,
-              })
-            "
-            class="minor flex-end color-text-2 tag-btn signal cursor-pointer ml-4px"
+            v-for="(i, index) in getTags(pair)?.normal_tag"
+            :key="index"
+            class="bg-btn flex h-16px tag-btn"
           >
-            <Icon
-              class="text-[--d-666-l-999] h-12px w-12px mr-2px"
-              name="custom:smart"
-            />
-            <span class="mr-2px">{{ $t('smarter') }}</span>
-            <span
-              :style="{
-                color:
-                  (pair?.smart_money_buy_count_24h??0) > 0
-                    ? upColor[0]
-                    : 'var(--custom-text-3-color)',
-              }"
+            <el-image
+              v-tooltip="$t(`${i.tag}`)"
+              class="token-icon-tag cursor-pointer h-100%"
+              :src="formatIconTag(i.tag)"
+              lazy
             >
-              {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
-            </span>
-            /
+              <template #error>
+                <img class="token-icon-tag h-16px" src="/icon-default.png" />
+              </template>
+              <template #placeholder>
+                <img class="token-icon-tag h-16px" src="/icon-default.png" />
+              </template>
+            </el-image>
             <span
+              v-if="i?.showText"
               :style="{
-                color:
-                  (pair?.smart_money_sell_count_24h??0) > 0
-                    ? downColor[0]
-                    : 'var(--custom-text-3-color)',
+                color: i?.color == 'green' ? upColor[0] : downColor[0],
               }"
+              class="text-10px mr-4px"
             >
-              {{ formatNumber(pair?.smart_money_sell_count_24h || 0, 0) }}
+              {{ $t(i?.tag) }}
             </span>
           </div>
-          <top50 />
+        </template>
+        <div v-if="medias?.length > 0" class="flex">
+          <div v-for="(item, index) in medias" :key="index" class="tag-btn">
+            <template v-if="item.url">
+              <span
+                v-if="item.name === 'QQ'"
+                v-tooltip="item.url"
+                class="bg-btn"
+              >
+                <Icon
+                  :name="`custom:${item.icon}`"
+                  class="text-[--d-666-l-999] h-16px w-16px"
+                />
+              </span>
+              <a
+                v-else
+                v-tooltip="item.url"
+                :href="item.url"
+                target="_blank"
+                class="bg-btn"
+                @click.stop
+              >
+                <Icon
+                  :name="`custom:${item.icon}`"
+                  class="text-[--d-666-l-999] h-16px w-16px"
+                />
+              </a>
+            </template>
+          </div>
         </div>
+        <a
+          class="media-item bg-btn"
+          :href="`https://x.com/search?q=($${token?.symbol} OR ${token?.token})&src=typed_query&f=live`"
+          target="_blank"
+        >
+          <Icon
+            class="text-[--d-666-l-999] h-16px w-16px"
+            name="material-symbols:search-rounded"
+          />
+        </a>
+      </div>
+      <div class="flex items-center justify-start mt-7px font-400">
+        <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
+          <div
+            v-for="(i, index) in getTags(pair)?.signal_arr?.slice(0, 3)"
+            :key="index"
+            v-tooltip="
+              getTagTooltip(i) +
+              (i.tag == 'smarter_buy' || i.tag == 'smarter_sell'
+                ? `（${$t('amountU')}>$10)`
+                : '')
+            "
+            class="flex bg-btn signal pointer mr-4px"
+          >
+            <el-image
+              class="token-icon-signal-tag h-16px"
+              :src="formatIconTag(i.tag)"
+              lazy
+            >
+              <template #error>
+                <img
+                  class="token-icon-signal-tag h-16px"
+                  src="/icon-default.png"
+                />
+              </template>
+              <template #placeholder>
+                <img
+                  class="token-icon-signal-tag h-16px"
+                  src="/icon-default.png"
+                />
+              </template>
+            </el-image>
+            <div
+              v-if="
+                (i?.tag == 'smarter_buy' || i?.tag == 'smarter_sell') &&
+                ((pair?.smart_money_buy_count_24h ?? 0) > 0 ||
+                  (pair?.smart_money_sell_count_24h ?? 0 > 0))
+              "
+              class="ml-2px"
+              style="color: #959a9f"
+            >
+              <span
+                :style="{
+                  color:
+                    (pair?.smart_money_buy_count_24h ?? 0) > 0
+                      ? upColor[0]
+                      : '',
+                }"
+              >
+                {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
+              </span>
+              /
+              <span
+                :style="{
+                  color:
+                    (pair?.smart_money_sell_count_24h ?? 0) > 0
+                      ? downColor[0]
+                      : '',
+                }"
+              >
+                {{ formatNumber(pair?.smart_money_sell_count_24h || 0, 0) }}
+              </span>
+            </div>
+
+            <span
+              class="ml-2px"
+              :style="{
+                color: i.color == 'green' ? upColor[0] : downColor[0],
+              }"
+            >
+              <template v-if="i.tag">
+                <template v-if="new RegExp('_buy.*$', 'gi').test(i.tag)">
+                  {{ $t('buy') }}
+                </template>
+                <template v-else-if="new RegExp('_sell.*$', 'gi').test(i.tag)">
+                  {{ $t('sell') }}
+                </template>
+                <template v-else>
+                  {{ $t(i.tag) }}
+                </template>
+              </template>
+            </span>
+          </div>
+        </template>
+        <div
+          v-if="
+            pair &&
+            getTags(pair)?.signal_arr?.findIndex(
+              (i) => i?.tag === 'smarter_buy'
+            ) == -1 &&
+            getTags(pair)?.signal_arr?.findIndex(
+              (i) => i?.tag == 'smarter_sell'
+            ) == -1 &&
+            ((pair?.smart_money_buy_count_24h ?? 0) > 0 ||
+              (pair?.smart_money_sell_count_24h ?? 0) > 0)
+          "
+          v-tooltip="
+            getTagTooltip({
+              smart_money_buy_count_24h: pair?.smart_money_buy_count_24h || 0,
+              smart_money_sell_count_24h: pair?.smart_money_sell_count_24h || 0,
+            })
+          "
+          class="minor flex-end color-text-2 tag-btn signal cursor-pointer mr-4px bg-btn"
+        >
+          <Icon
+            class="text-[--d-666-l-999] h-12px w-12px mr-2px"
+            name="custom:smart"
+          />
+          <span class="mr-2px">{{ $t('smarter') }}</span>
+          <span
+            :style="{
+              color:
+                (pair?.smart_money_buy_count_24h ?? 0) > 0
+                  ? upColor[0]
+                  : 'var(--custom-text-3-color)',
+            }"
+          >
+            {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
+          </span>
+          /
+          <span
+            :style="{
+              color:
+                (pair?.smart_money_sell_count_24h ?? 0) > 0
+                  ? downColor[0]
+                  : 'var(--custom-text-3-color)',
+            }"
+          >
+            {{ formatNumber(pair?.smart_money_sell_count_24h || 0, 0) }}
+          </span>
+        </div>
+        <top50 />
       </div>
     </div>
 
     <div class="flex-1" />
     <div
-      v-if="(pair?.progress??0) > 0 && (pair?.progress??0) < 100"
+      v-if="(pair?.progress ?? 0) > 0 && (pair?.progress ?? 0) < 100"
       class="item"
     >
       <div class="flex items-center min-w-90px justify-between">
@@ -415,7 +430,11 @@
         />
         <a
           v-else
-          v-tooltip="getSwapInfo(pair?.chain || '', pair?.amm || '')?.show_name || pair?.amm || ''"
+          v-tooltip="
+            getSwapInfo(pair?.chain || '', pair?.amm || '')?.show_name ||
+            pair?.amm ||
+            ''
+          "
           :href="pair?.swap_url || '' + pair?.target_token || ''"
           target="_blank"
           class="ml-5px"
@@ -425,7 +444,7 @@
             :src="formatIconSwap(pair?.amm)"
             onerror="this.src='/icon-default.png'"
             height="16"
-          >
+          />
         </a>
       </div>
       <el-progress
@@ -439,7 +458,7 @@
     </div>
     <div class="item ml-24px items-start!">
       <span class="text-20px color-[--d-F5F5F5-l-333]">
-        ${{ formatNumber(price || 0, { decimals: 4, limit: 6}) }}</span
+        ${{ formatNumber(price || 0, { decimals: 4, limit: 6 }) }}</span
       >
       <span
         class="block mt-4px"
@@ -453,25 +472,40 @@
 
     <div class="item ml-24px">
       <span>{{ $t('mcap') }}</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]">{{
         formatNumber(marketCap, 2)
       }}</span>
     </div>
     <div class="item ml-24px">
       <span>{{ $t('24Volume') }}</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]">{{
         formatNumber(volume24, 2)
       }}</span>
     </div>
     <div class="item ml-24px">
       <span>{{ $t('holders') }}</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]">{{
         formatNumber(token?.holders || 0, 2)
       }}</span>
     </div>
     <div class="item ml-24px">
       <span>DEV</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{ token?.dev_count? token?.dev_count * 100 + '%' : 0}}</span>
+      <span
+        class="block mt-8px color-[--d-F5F5F5-l-333]"
+        :style="{
+          color:
+            Number(token?.dev_count || 0) * 100 < 0.1
+              ? 'var(--d-666-l-999)'
+              : (token?.dev_count ?? 0) * 100 > 10
+              ? '#FFA622'
+              : '',
+        }"
+        >{{
+          (token?.dev_count ?? 0) > 0 && (token?.dev_count ?? 0) * 100 < 0.1
+            ? '<0.1'
+            : (token?.dev_count ?? 0) * 100
+        }}%</span
+      >
     </div>
     <div class="item ml-24px">
       <span class="cursor-pointer" @click="showCheck = !showCheck">
@@ -481,7 +515,7 @@
           class="text-12px"
         />
       </span>
-      <div class="color-text-1 mt-5px font-500 text-14px flex-start">
+      <div class="color-text-1 mt-8px font-500 text-14px flex-start">
         <img
           v-if="
             token?.risk_level == -1 ||
@@ -491,13 +525,13 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/risk-gaoliang.svg"
-        >
+        />
         <img
           v-else-if="statistics_warning_store > 0"
           :width="12"
           class="icon-svg1"
           src="@/assets/images/yichang1-gaoliang.svg"
-        >
+        />
         <img
           v-else-if="
             !statistics_risk_store &&
@@ -507,14 +541,14 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/安全.svg"
-        >
+        />
 
         <img
           v-else
           class="icon-svg1"
           :width="12"
           src="@/assets/images/zhuyi1.svg"
-        >
+        />
         <span
           v-if="
             statistics_risk_store ||
@@ -535,7 +569,7 @@
       </div>
       <Check v-model="showCheck" />
     </div>
-    <div class="item ml-24px" v-if="chain === 'solana'">
+    <div v-if="chain === 'solana'" class="item ml-24px">
       <span class="cursor-pointer" @click="showRun = !showRun"
         >{{ t('flag_rug_pull') }}
         <Icon
@@ -548,18 +582,14 @@
         />
       </span>
       <div
-        class="color-text-1 mt-5px font-500 flex-start text-12px"
+        class="color-text-1 mt-8px font-500 flex-start text-12px"
         :style="{
           color:
             (rugPull?.rates?.rugged_rate ?? 0) > 60 ? '#F6465D' : '#959A9F',
         }"
       >
         <!-- <i class="iconfont icon-rug font-12 mr-2px"></i> -->
-        <Icon
-
-          name="custom:rug"
-          class="text-12px mr-2px"
-        />
+        <Icon name="custom:rug" class="text-12px mr-2px" />
         {{
           rugPull?.rates?.rugged_rate == -1
             ? t('unKnown1')
@@ -584,7 +614,7 @@ import {
   isJSON,
   formatIconTag,
   getAddressAndChainFromId,
-  getTagTooltip
+  getTagTooltip,
 } from '@/utils/index'
 import {
   type GetUserFavoriteGroupsResponse,
@@ -597,7 +627,12 @@ import {
 } from '@/api/fav'
 import { _getRugPull, type ResultRugPull } from '@/api/run'
 import type { Token, Pair } from '@/api/types/token'
-import {upColor, downColor, BusEventType,type IFavDialogEventArgs} from '@/utils/constants'
+import {
+  upColor,
+  downColor,
+  BusEventType,
+  type IFavDialogEventArgs,
+} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
@@ -609,7 +644,6 @@ const { evmAddress } = storeToRefs(useBotStore())
 const { theme } = useThemeStore()
 const { t } = useI18n()
 const route = useRoute()
-
 
 const editableGroup = shallowRef(false)
 const groupId = shallowRef(0)
@@ -626,8 +660,8 @@ const showRun = shallowRef(false)
 const rugPull = ref<ResultRugPull>({
   all_tag_rate: 0,
   rates: {
-    rugged_rate: 0
-  }
+    rugged_rate: 0,
+  },
 })
 
 const loadingRun = shallowRef(false)
@@ -638,13 +672,13 @@ onUnmounted(() => {
   favDialogEvent.off(handleFavDialogEvent)
 })
 
-function handleFavDialogEvent({tokenId, type,groupId}: IFavDialogEventArgs) {
+function handleFavDialogEvent({ tokenId, type, groupId }: IFavDialogEventArgs) {
   if (type === 'changeFavoriteGroupName' || type === 'removeFavoriteGroup') {
     getTokenUserFavoriteGroups()
   } else if (tokenId === id.value) {
     getTokenFavoriteCheck()
   }
-  if( groupId && Number(groupId) === selectedGroup.value){
+  if (groupId && Number(groupId) === selectedGroup.value) {
     selectedGroup.value = 0
   }
 }
@@ -715,21 +749,18 @@ onMounted(() => {
     getRugPull()
   }
 })
-watch(
-  evmAddress,
-  (val) => {
-    if (val) {
-      getTokenFavoriteCheck()
-      getTokenUserFavoriteGroups() //获取分组数组
-    } else {
-      collected.value =  false
-      remark.value =  ''
-      remark2.value = ''
-      groupId.value =  0
-      selectedGroup.value = 0
-    }
+watch(evmAddress, (val) => {
+  if (val) {
+    getTokenFavoriteCheck()
+    getTokenUserFavoriteGroups() //获取分组数组
+  } else {
+    collected.value = false
+    remark.value = ''
+    remark2.value = ''
+    groupId.value = 0
+    selectedGroup.value = 0
   }
-)
+})
 watch(
   () => route.params.id,
   () => {
@@ -752,8 +783,8 @@ function getTokenFavoriteCheck() {
       collected.value = res?.address ? true : false
       remark.value = res?.remark || ''
       remark2.value = res?.remark || ''
-      groupId.value = res?.group_id ||  0
-      selectedGroup.value = res?.group_id ||  0
+      groupId.value = res?.group_id || 0
+      selectedGroup.value = res?.group_id || 0
     })
     .catch((err) => {
       console.log(err)
@@ -835,7 +866,6 @@ function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
       })
       .finally(() => {
         loadingGroupEdit.value = false
-
       })
   } else {
     loadingGroupEdit.value = false
@@ -882,16 +912,16 @@ function getTags(i: Pair) {
     timestamp: number
   }
   type Normal = {
-    tag: string,
-    color: string,
+    tag: string
+    color: string
     showText?: boolean
   }
-  let signal_arr: Array<Signal>  = []
+  let signal_arr: Array<Signal> = []
   let normal_tag: Array<Normal> = []
-  let normal_str:Array<string> = []
+  let normal_str: Array<string> = []
   if (i?.dynamic_tag) {
     const tag_arr = JSON.parse(i?.dynamic_tag) || []
-    const signal_str = tag_arr?.filter((i:string) => i?.startsWith('signal'))
+    const signal_str = tag_arr?.filter((i: string) => i?.startsWith('signal'))
     signal_arr = signal_str?.map((y: string) => ({
       tag:
         y?.split('-')[5] &&
@@ -944,7 +974,7 @@ function getTags(i: Pair) {
     normal_str = tag1.concat(normal_str)
   }
   normal_tag =
-  normal_str?.map((i) => ({
+    normal_str?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
@@ -955,7 +985,7 @@ function getTags(i: Pair) {
   const is_shit_coins =
     signal_arr?.some((i) => new RegExp('shitcoin', 'gi').test(i?.tag)) ||
     normal_tag?.some((i) => new RegExp('shitcoin', 'gi').test(i.tag))
-  if ((i?.risk_score??0)  >= 100 && i?.chain == 'solana') {
+  if ((i?.risk_score ?? 0) >= 100 && i?.chain == 'solana') {
     i.lp_locked_percent = 0
     signal_arr = []
     normal_tag = [
@@ -990,7 +1020,7 @@ function getTags(i: Pair) {
   if (token?.value?.tag) {
     const tagti = token?.value?.tag?.split(',') || []
     const tag_t = tagti?.filter((i) => i !== '' && i !== 'newcommunity')
-    const tag_t1: Array<Normal>= tag_t?.map((i) => ({
+    const tag_t1: Array<Normal> = tag_t?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
@@ -1089,10 +1119,10 @@ function getRugPull() {
   --uno: bg-[--d-222-l-F2F2F2] rounded-2px mr-4px flex items-center
     justify-center h-16px min-w-16px p-2px;
 }
-.item{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>

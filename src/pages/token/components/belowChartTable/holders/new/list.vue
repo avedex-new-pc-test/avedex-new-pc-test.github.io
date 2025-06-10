@@ -92,8 +92,9 @@
           </el-popover>
         </template>
         <template #default="{ row, $index }">
-          <div style="display: inline-flex; align-items: center">
-            <span class="color-666 mr-5;">{{ $index + 1 }}</span>
+          <div class="flex items-baseline ">
+
+            <span class="color-[--d-666-l-999] mr-10px">{{ $index +1 < 10? "0" : '' }}{{ $index + 1 }}</span>
             <div class="relative">
               <div class="flex-start">
                 <div
@@ -299,7 +300,7 @@
         class-name="bg-12B8861A"
         :label="$t('totalPnL')"
         align="right"
-        min-width="100"
+        :width="getTextWidth($t('totalPnL'))+ 70"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="total_profit"
@@ -351,6 +352,7 @@
         :label="$t('realized')"
         align="right"
         min-width="120"
+        :width="getTextWidth($t('realized'))+ 70"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="realized_profit"
@@ -386,7 +388,7 @@
         class-name="bg-12B8861A"
         :label="$t('unrealized')"
         align="right"
-        min-width="120"
+        :width="getTextWidth($t('unrealized'))+ 70"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="unrealized_profit"
@@ -423,6 +425,7 @@
         :label="$t('bought1')"
         align="right"
         min-width="100"
+        :width="getTextWidth($t('bought1'))+ 70"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="bought_usd"
@@ -453,7 +456,7 @@
         class-name="bg-12B8861A"
         :label="$t('sold1')"
         align="right"
-        min-width="100"
+        :width="getTextWidth($t('sold1'))+ 70"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="sold_usd"
@@ -483,6 +486,7 @@
       <el-table-column
         class-name="bg-12B8861A"
         :label="$t('avgBuySell')"
+        :width="getTextWidth($t('avgBuySell'))+ 70"
         align="right"
         min-width="120"
       >
@@ -519,6 +523,10 @@
           '/' +
           $t('time')
         "
+        :width="getTextWidth(getChainInfo(addressAndChain.chain)?.main_name +
+          $t('origin') +
+          '/' +
+          $t('time'))+ 70"
         align="right"
         min-width="150"
       >
@@ -597,6 +605,7 @@
         :label="token?.symbol + $t('origin') + '/' + $t('time')"
         align="right"
         min-width="150"
+        :width="getTextWidth(token?.symbol + $t('origin') + '/' + $t('time'))+ 70"
       >
         <template #default="{ row }">
           <div
@@ -671,7 +680,7 @@
         class-name="bg-286DFF1A"
         :label="$t('TFInOut')"
         align="right"
-        min-width="100"
+        :width="getTextWidth($t('TFInOut'))+ 70"
       >
         <template #default="{ row }">
           <div
@@ -701,6 +710,7 @@
         :label="$t('maxTx')"
         align="right"
         min-width="100"
+        :width="getTextWidth($t('maxTx'))+ 70"
       >
         <template #default="{ row }">
           <div
@@ -729,6 +739,7 @@
       <el-table-column
         class-name="bg-F6465D1A"
         :label="$t('lastTx')"
+        :width="getTextWidth($t('lastTx'))+ 70"
         align="right"
       >
         <template #default="{ row }">
