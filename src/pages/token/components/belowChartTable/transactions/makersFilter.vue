@@ -38,8 +38,8 @@ watch(() => props.modelValue, () => {
   >
     <template #reference>
       <Icon
-        name="custom:filter"
-        :class="`${modelValue?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+        name="codicon:filter-filled"
+        :class="`${modelValue?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-12px`"
       />
     </template>
     <template #default>
