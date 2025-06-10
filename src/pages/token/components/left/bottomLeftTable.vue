@@ -1,16 +1,8 @@
 <script setup lang="ts">
 import Trending from './trending.vue'
-import {templateRef} from '@vueuse/core'
 
-defineProps({
-  height: {
-    type: Number,
-    default: 100
-  }
-})
 const {t} = useI18n()
-// const leftBottomBox = templateRef('leftBottomBox')
-// const {height} = useElementSize(leftBottomBox)
+
 const activeTab = shallowRef<keyof typeof components>('Trending')
 const tabs = computed(()=>{
     return [
@@ -18,10 +10,6 @@ const tabs = computed(()=>{
     {name: 'Pump', component: 'Pump' as const},
   ]
 })
-const tabsToHeight = {
-  Trending: 250,
-  Pump: 299
-}
 const components = {
   Trending,
   Pump: defineAsyncComponent(() => import('./pump.vue'))
@@ -29,12 +17,6 @@ const components = {
 const Component = computed(() => {
   return components[activeTab.value]
 })
-// const scrollbarHeight = computed(() => {
-//   if (leftBottomBox.value) {
-//     return leftBottomBox.value.clientHeight - 76
-//   }
-//   return 0
-// })
 </script>
 
 <template>
@@ -54,7 +36,7 @@ const Component = computed(() => {
       <component
         :is="Component"
         class="flex-1 relative"
-        :scrollbarHeight="height - tabsToHeight[activeTab]"/>
+      />
     </KeepAlive>
   </div>
 </template>

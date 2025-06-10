@@ -72,3 +72,9 @@
 .el-loading-mask {
   background: transparent!important;
 }
+
+.el-table-v2__header-cell {
+  &.el-table-v2__header-cell {
+    font-weight: normal;
+  }
+}

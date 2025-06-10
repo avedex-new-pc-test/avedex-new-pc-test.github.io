@@ -6,7 +6,7 @@ import {bot_createSolTx, bot_createSwapEvmTx, bot_getTokenBalance} from '~/api/b
 import {ElNotification} from 'element-plus'
 import {formatBotGasTips} from '~/utils/bot'
 import BigNumber from 'bignumber.js'
-import {useThrottleFn} from '@vueuse/core'
+import {useDebounceFn, useThrottleFn} from '@vueuse/core'
 
 const {t} = useI18n()
 const wsStore = useWSStore()
@@ -79,6 +79,7 @@ watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
             //   卖出所有直接删除数据
           } else if (listData.value[index].balance === val.swap.amount) {
             listData.value.splice(index, 1)
+            triggerRef(listData)
           } else {
             resetHolderList(walletAddress)
           }
@@ -164,6 +165,14 @@ const props = defineProps({
 const scrollbarHeight = computed(() => {
   return Number(props.height) - 110
 })
+const scrollContainerRef = useTemplateRef('scrollContainerRef')
+const getDataOnResize = useDebounceFn(() => {
+  const {value} = scrollContainerRef
+  if (value && value.scrollHeight <= value.clientHeight && !listStatus.value.finished) {
+    _getUserBalance()
+  }
+}, 200)
+watch(scrollbarHeight, getDataOnResize)
 const sort = shallowRef({
   sortBy: undefined,
   activeSort: 0
@@ -433,10 +442,10 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
       :columns="columns"
     />
     <el-scrollbar
-      ref="otherListArea"
       :height="scrollbarHeight"
     >
       <div
+        ref="scrollContainerRef"
         v-infinite-scroll="_getUserBalance"
         :infinite-scroll-disabled="listStatus.finished|| listStatus.loading"
         infinite-scroll-distance="200"

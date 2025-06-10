@@ -94,10 +94,6 @@
       <el-table-column :label="t('amount1')" align="right">
         <template #header>
           <span>{{ t('amountB') }}</span>
-          <!-- <i v-if="!isUnit" @click="isUnit = !isUnit"
-            class="iconify i-custom:u text-10px ml-3px color-[--d-666-l-999] cursor-pointer text-12px"></i>
-          <i v-else @click="isUnit = !isUnit"
-            class="iconify i-custom:b text-10px ml-3px color-[--d-666-l-999] cursor-pointer text-12px"></i> -->
         </template>
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)]">

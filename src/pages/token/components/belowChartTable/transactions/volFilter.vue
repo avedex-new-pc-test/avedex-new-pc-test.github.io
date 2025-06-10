@@ -41,8 +41,8 @@ function onBlur(index: number) {
   >
     <template #reference>
       <Icon
-        name="custom:filter"
-        :class="`${isActive?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+        name="codicon:filter-filled"
+        :class="`${isActive?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-12px`"
       />
     </template>
     <template #default>

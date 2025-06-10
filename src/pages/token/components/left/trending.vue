@@ -7,12 +7,6 @@ import type {IPriceV2Response} from '~/api/types/ws'
 import {ProvideType} from '~/utils/constants'
 import {getMCap} from '~/utils'
 
-defineProps({
-  scrollbarHeight: {
-    type: Number,
-    required: true
-  }
-})
 const {t} = useI18n()
 onMounted(() => {
   _getHotTokens()
@@ -109,7 +103,7 @@ async function _getHotTokens() {
       :columns="columns"
     />
     <el-scrollbar
-      :height="scrollbarHeight"
+      :height="500"
       class="[&&]:h-auto"
     >
       <NuxtLink
@@ -136,7 +130,7 @@ async function _getHotTokens() {
               <template v-if="row.current_price_usd === 0">0</template>
               <template v-else-if="row.current_price_usd === '--'">--</template>
               <template v-else>
-                {{ formatNumber(getMCap(row)) }}
+                {{ formatNumber(getMCap(row), 2) }}
               </template>
             </div>
           </div>

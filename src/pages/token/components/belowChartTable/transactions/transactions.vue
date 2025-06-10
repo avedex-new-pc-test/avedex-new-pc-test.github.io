@@ -14,13 +14,13 @@ import {
   getTokenTxs,
   type Profile
 } from '~/api/token'
-import {formatDate, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
+import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 import dayjs from 'dayjs'
 
 import { useThrottleFn } from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
-import type {AveTable} from "#components";
+import type {AveTable} from '#components'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
@@ -516,10 +516,10 @@ function bigWallet(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderPr
 function getGradient(row: IGetTokenTxsResponse) {
   const str = `${useThemeStore().isDark}-${isBuy(row)}`
   const map = {
-    'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.1)_0%,rgba(18,184,134,0.1)_100%)]',
-    'true-false': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.1)_0%,rgba(246,70,93,0.1)_100%)]',
-    'false-false': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.1)_0%,rgba(246,70,93,0.1)_100%)]',
-    'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.1)_0%,rgba(18,184,134,0.1)_100%)]',
+    'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
+    'true-false': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
+    'false-false': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
+    'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
   } as { [key: string]: string }
   return map[str]
 }
@@ -686,10 +686,10 @@ function resetMakerAddress() {
             <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
                 <template v-if="seconds < 60">
-                  {{ seconds }}{{ $t('ss') }}
+                  {{ seconds }}s
                 </template>
                 <template v-else>
-                  {{ dayjs(row.time * 1000).fromNow() }}
+                  {{ formatTimeFromNow(row.time) }}
                 </template>
               </span>
             </template>
@@ -698,7 +698,7 @@ function resetMakerAddress() {
             {{
               tableView.isShowDate
                 ? formatDate(row.time, 'HH:mm:ss')
-                : dayjs(row.time * 1000).fromNow()
+                : formatTimeFromNow(row.time)
             }}
           </span>
         </template>
@@ -747,7 +747,6 @@ function resetMakerAddress() {
         <template #cell-amountB="{ row }">
           <span v-if="row.type === undefined" :class="getRowColor(row)">
             {{ formatNumber(getAmount(row), 2) }}
-            <span class="color-[--d-999-l-666]">{{ token?.symbol }}</span>
           </span>
           <div v-else>
             <div :class="getRowColor(row)">
@@ -769,7 +768,7 @@ function resetMakerAddress() {
             <span>{{ $t('amountU') }}</span>
             <Icon
               name="custom:price"
-              :class="`${tableView.isVolUSDT ? 'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
+              :class="`${tableView.isVolUSDT ? 'color-#3F80F7' : 'color-#666'} cursor-pointer`"
               @click.self="tableView.isVolUSDT = !tableView.isVolUSDT" />
             <VolFilter
               v-model:visible="tableFilterVisible.amountU" :modelValue="tableFilter.amountU"
@@ -833,15 +832,14 @@ function resetMakerAddress() {
               :chain="row.chain"
               :wallet_logo="row.wallet_logo" class="color-[--d-999-l-666]"
               :mouseoverAddress="e => openMarkerTooltip(row, e)"
-              :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
               @update-remark="updateRemark">
               <div v-if="row.count && row.count > 1">
                 ({{ row.count }})
               </div>
             </UserRemark>
             <Icon
-              name="custom:filter"
-              :class="`${tableFilter.markerAddress ? 'color-[--d-F5F5F5-l-222]' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
+              :name="tableFilter.markerAddress?'codicon:filter-filled':'codicon:filter'"
+              :class="`${tableFilter.markerAddress ? 'color-#3F80F7' : 'color-[--d-666-l-999]'} cursor-pointer text-12px shrink-0`"
               @click.self.stop="setMakerAddress(row.wallet_address)" />
           </div>
         </template>
