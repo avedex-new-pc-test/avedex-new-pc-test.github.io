@@ -79,6 +79,7 @@ watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
             //   卖出所有直接删除数据
           } else if (listData.value[index].balance === val.swap.amount) {
             listData.value.splice(index, 1)
+            triggerRef(listData)
           } else {
             resetHolderList(walletAddress)
           }
