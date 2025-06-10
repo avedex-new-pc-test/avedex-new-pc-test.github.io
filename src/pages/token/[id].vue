@@ -3,8 +3,22 @@
     <div class="flex-1 min-w-0">
       <Top/>
       <div class="flex gap-4px">
-        <Left class="w-292px flex flex-col flex-shrink-0"/>
-        <div class="flex-1 hide-scrollbar min-w-0">
+        <div class="hide-scrollbar">
+          <el-scrollbar height="calc(100vh - 164px)">
+            <Left class="w-292px flex flex-col flex-shrink-0"/>
+          </el-scrollbar>
+        </div>
+        <div class="flex-1 hide-scrollbar min-w-0 relative">
+          <div
+            :class="`absolute bg-[--d-333-l-DDD] w-16px h-38px z-1 cursor-pointer flex items-center justify-center ${
+              globalStore.showLeft ? 'left--20px ' : ''
+            }`"
+            @click="globalStore.$patch({showLeft:!globalStore.showLeft})"
+          >
+            <Icon name="custom:fold" :class="`color-[--d-666-l-999] text-10px ${
+              !globalStore.showLeft?'rotate-180':''
+            }`"/>
+          </div>
           <el-scrollbar height="calc(100vh - 164px)">
             <KLine />
             <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]"/>
@@ -34,6 +48,7 @@ definePageMeta({
 const route = useRoute()
 const tagStore = useTagStore()
 const tokenStore = useTokenStore()
+const globalStore = useGlobalStore()
 const botStore = useBotStore()
 const addresses = computed(() => {
   const result = botStore.userInfo?.addresses

@@ -12,6 +12,7 @@ import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
 import type {GetHotTokensResponse} from '~/api/token'
 import BigNumber from 'bignumber.js'
 import type {SearchHot} from '~/api/types/search'
+import type {ConfigType} from 'dayjs'
 
 export function isJSON(str: string) {
   try {
@@ -737,7 +738,8 @@ export function getMCap(row: GetHotTokensResponse | SearchHot) {
   return amount.gt(0)? amount.multipliedBy(row.current_price_usd).toString() : '0'
 }
 
-export function formatCountdown(seconds: number) {
+export function formatCountdown(time: ConfigType) {
+  const seconds = Math.abs(dayjs(time).diff(dayjs(), 's'))
   if (seconds < 60) {
     return `${seconds}s`
   } else if (seconds < 3600) {
