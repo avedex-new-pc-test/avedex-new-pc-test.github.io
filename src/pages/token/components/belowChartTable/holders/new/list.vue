@@ -92,8 +92,9 @@
           </el-popover>
         </template>
         <template #default="{ row, $index }">
-          <div style="display: inline-flex; align-items: center">
-            <span class="color-666 mr-5;">{{ $index + 1 }}</span>
+          <div class="flex items-baseline ">
+
+            <span class="color-[--d-666-l-999] mr-10px">{{ $index +1 < 10? "0" : '' }}{{ $index + 1 }}</span>
             <div class="relative">
               <div class="flex-start">
                 <div

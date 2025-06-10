@@ -338,10 +338,9 @@ watch(
     }
   },
   {
-    immediate: true,
+    // immediate: true,
   }
 )
-
 watch(activeTab, (val) => {
   // if (searchKeyword) {
   //   this.filterAddress(this.searchKeyword)
@@ -361,6 +360,12 @@ watch(activeTab, (val) => {
   //     this.getHoldersList()
   //   }
   // }
+  getHoldersList()
+})
+onMounted(() => {
+  getHoldersList()
+})
+onActivated(() => {
   getHoldersList()
 })
 function setActiveTab(val: string) {

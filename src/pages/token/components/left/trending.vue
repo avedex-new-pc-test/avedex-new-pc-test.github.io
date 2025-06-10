@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BigNumber from 'bignumber.js'
 import {getHotTokens, type GetHotTokensResponse} from '~/api/token'
 import THead from './tHead.vue'
 import {formatNumber} from '~/utils/formatNumber'

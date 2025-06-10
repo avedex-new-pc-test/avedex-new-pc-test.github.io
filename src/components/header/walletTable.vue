@@ -157,15 +157,15 @@
               </div>
               <div
                 :style="{
-                  color: !row?.total_profit_rate
+                  color: !row?.total_profit_ratio
                     ? '#666'
-                    : row?.total_profit_rate > 0
+                    : row?.total_profit_ratio > 0
                     ? '#12B886'
                     : '#F6465D',
                 }"
                 class="mt-2"
               >
-                {{ formatNumber((row?.total_profit_rate || 0) * 100, 2) }}%
+                {{ formatNumber((row?.total_profit_ratio * 100 || 0)) }}%
               </div>
             </div>
             <div>
