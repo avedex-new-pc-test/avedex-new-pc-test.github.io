@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const {isDark} = useThemeStore()
+const {isDark} = storeToRefs(useThemeStore())
 const props = defineProps({
   visible: Boolean,
   modelValue: {
@@ -65,8 +65,8 @@ const filterTime = ref([])
           {{ $t('reset') }}
         </el-button>
         <el-button
+          type="primary"
           class="h-30px flex-1 m-l-auto"
-          :color="isDark ? '#F5F5F5':'#222'"
           @click="emit('confirm',filterTime.slice())"
         >
           {{ $t('confirm') }}
