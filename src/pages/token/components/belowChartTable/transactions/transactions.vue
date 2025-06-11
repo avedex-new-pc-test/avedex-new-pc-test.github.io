@@ -291,7 +291,7 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
   if (!data || listStatus.value.loadingLiq || !['all', 'liquidity'].includes(activeTab.value)) {
     return
   }
-  const { wallet_address } = data.liq
+  // const { wallet_address } = data.liq
   // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
@@ -850,7 +850,7 @@ function resetMakerAddress() {
               name="custom:big" class="mr-3px shrink-0"/>
           </template>
           <SignalTags
-            tagClass="mr-3px" :tags="(row.newTags||[]).map(el=>tagStore.matchTag(el.type))"
+            tagClass="mr-3px" :tags="(row.newTags||[]).map((el: any)=>tagStore.matchTag(el.type))"
                       :walletAddress="row.wallet_address" :chain="row.chain"/>
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark

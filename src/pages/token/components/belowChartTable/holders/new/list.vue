@@ -933,7 +933,7 @@
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
 import { getChainInfo, formatDate, formatTimeFromNow, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
-import type { RowEventHandlerParams, } from 'element-plus'
+// import type { RowEventHandlerParams, } from 'element-plus'
 import dayjs from 'dayjs'
 const props = defineProps({
   modelValue: Boolean,
@@ -1026,7 +1026,7 @@ function handleFilterQuery(k: string) {
   $emit('filterAddress', k)
   keyword.value = k || ''
 }
-function goLink() { }
+// function goLink() { }
 function handleSortChange(obj:{prop: string, order:string }) {
   console.log('----------obj-------', obj)
   $emit('handleSortChange', obj)
