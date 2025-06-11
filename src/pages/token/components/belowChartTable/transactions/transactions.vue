@@ -291,7 +291,7 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
   if (!data || listStatus.value.loadingLiq || !['all', 'liquidity'].includes(activeTab.value)) {
     return
   }
-  const { wallet_address } = data.liq
+  // const { wallet_address } = data.liq
   // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
@@ -486,7 +486,6 @@ function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = 
     }
     return price
   }
-  debugger
   return 0
 }
 
@@ -690,7 +689,7 @@ function resetMakerAddress() {
         rowKey="uuid"
         fixed :data="filterTableList"
         :columns="columns"
-        class="h-560px"
+        class="min-h-560px h-[calc(100vh-750px)]"
         row-class='cursor-pointer'
         :rowEventHandlers="{
         onMouseenter:()=>isHoverTable=true,
@@ -851,7 +850,7 @@ function resetMakerAddress() {
               name="custom:big" class="mr-3px shrink-0"/>
           </template>
           <SignalTags
-            tagClass="mr-3px" :tags="(row.newTags||[]).map(el=>tagStore.matchTag(el.type))"
+            tagClass="mr-3px" :tags="(row.newTags||[]).map((el: any)=>tagStore.matchTag(el.type))"
                       :walletAddress="row.wallet_address" :chain="row.chain"/>
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
@@ -867,8 +866,8 @@ function resetMakerAddress() {
               </div>
             </UserRemark>
             <Icon
-              :name="tableFilter.markerAddress?'codicon:filter-filled':'codicon:filter'"
-              :class="`${tableFilter.markerAddress ? 'color-#3F80F7' : 'color-[--d-666-l-999]'} cursor-pointer text-12px shrink-0`"
+              name="custom:filter"
+              :class="`${tableFilter.markerAddress ? 'color-#3F80F7' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
               @click.self.stop="setMakerAddress(row.wallet_address)" />
           </div>
         </template>

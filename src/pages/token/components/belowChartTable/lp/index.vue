@@ -46,13 +46,13 @@
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
                 <div :class="`color-${upColor[0]} flex-start`">
-                  <img src="@/assets/images/add.svg" alt="" class="h-12px w-12px mr-4px">
+                  <img src="@/assets/images/add.svg" alt="" class="h-12px w-12px mr-4px mt-2px">
                   <!-- <tag type="success" class="h-12px w-12px mr-4px">+</tag> -->
                   {{ row.add_total }}
                 </div>
                 <div :class="`color-${downColor[0]} flex-start`">
                   <!-- <tag type="danger" class="h-12px w-12px mr-4px">-</tag> -->
-                  <img src="@/assets/images/remove.svg" alt="" class="h-12px w-12px mr-4px">
+                  <img src="@/assets/images/remove.svg" alt="" class="h-12px w-12px mr-4px mt-2px">
                   {{ row.remove_total }}
                 </div>
               </div>
@@ -89,8 +89,22 @@ import tag from './components/tag.vue'
 import { upColor, downColor } from '@/utils/constants'
 import Column from './components/columns.vue'
 import Line from './components/line.vue'
+import type { Token } from '~/api/types/token'
+
+const props=defineProps({
+  pairAddress: {
+    type: String,
+    default: ''
+  },
+  token: {
+    type: Object as PropType<Token>,
+    default: () => ({})
+  }
+})
+
+
 const {isDark,mode,showLeft} = storeToRefs(useGlobalStore())
-const { token, pairAddress } = storeToRefs(useTokenStore())
+// const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 const dataSource = ref<(IHolder & { index: string })[]>([])
 const dataList = ref<(GetPairLiqNewResponse & { time: string })[]>([])
@@ -240,14 +254,18 @@ const columns2 = computed(() => {
   ]
 })
 onMounted(() => {
+  // console.log('mounted')
   init1()
   init2()
 })
-watch([pairAddress], (val) => {
+onActivated(() => {
+  // console.log('activated')
+})
+watch(() => props.pairAddress, (val) => {
   console.log('pairAddress changed', val)
   init1()
 })
-watch([token], (val) => {
+watch(()=>props.token, (val) => {
   console.log('token changed', val)
   init2()
 })
@@ -263,17 +281,17 @@ const addressAndChain = computed(() => {
     return getAddressAndChainFromId(id)
   }
   return {
-    address: token.value?.token || '',
-    chain: token.value?.chain || ''
+    address: props.token?.token || '',
+    chain: props.token?.chain || ''
   }
 })
 function formatLock(item:any){
   return item.lock || /lock|null|(black hole)/gi.test(item.mark || '')
 }
 function init1() {
-  if (pairAddress.value && addressAndChain.value.chain) {
+  if (props.pairAddress && addressAndChain.value.chain) {
     loading.value = true
-    getPairLiqNew(pairAddress.value + '-' + addressAndChain.value.chain,activeTime.value).then((res: GetPairLiqNewResponse[]) => {
+    getPairLiqNew(props.pairAddress + '-' + addressAndChain.value.chain,activeTime.value).then((res: GetPairLiqNewResponse[]) => {
       dataList.value =
         res
           ?.map((i) => {
@@ -293,8 +311,8 @@ function init1() {
 }
 function init2() {
   const expandedRowKeys1 = [] as string[]
-  if (token?.value?.token && addressAndChain.value?.chain) {
-    getLPHolders((token?.value?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
+  if (props.token?.token && addressAndChain.value?.chain) {
+    getLPHolders((props.token?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
       console.log('getLPHolders', res)
       if (res?.Holders && Array.isArray(res?.Holders)) {
         const { Holders, ...rest } = res

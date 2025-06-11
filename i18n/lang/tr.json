@@ -233,5 +233,6 @@
   "txns": "Txns",
   "liquidity": "Likidite",
   "wallet": "Cüzdan",
-  "volume": "Hacim"
+  "volume": "Hacim",
+  "alertNotice": "Doğrulanmamış token. Kendi araştırmanızı yapın"
 }

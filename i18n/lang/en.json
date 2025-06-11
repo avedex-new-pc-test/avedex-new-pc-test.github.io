@@ -637,5 +637,6 @@
   "liquidity": "Liquidity",
   "holderBubble": "Holders Bubble Map",
   "Chg": "Chg",
-  "wallet": "Wallet"
+  "wallet": "Wallet",
+  "alertNotice": "Unverified token. Please DYOR"
 }

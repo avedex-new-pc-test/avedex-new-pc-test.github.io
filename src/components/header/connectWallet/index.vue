@@ -55,7 +55,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 // import connectChainWallet from './connectChainWallet'
 import emailRegisterAndLogin from './emailRegisterAndLogin.vue'
 
-
+// console.log('connectWallet')
 const lazyComponent = shallowRef<Component | null>(null)
 const loadComponent = async () => {
   const component = await import('./reset.vue')
@@ -99,13 +99,11 @@ const title = computed(() => {
   }
 })
 
-// onMounted(() => {
-//   setTimeout(() => {
-//     if ((emailRegisterType.value !== 'reset') && !botStore.evmAddress) {
-//       loadComponent()
-//     }
-//   }, 3000)
-// })
+onMounted(() => {
+  setTimeout(() => {
+    loadComponent()
+  }, 3000)
+})
 // Watchers
 watch(() => emailRegisterType.value, (val) => {
   if (val === 'reset') {

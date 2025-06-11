@@ -3,7 +3,7 @@
     v-model="visible"
     append-to-body
     :with-header="false"
-    :size="430"
+    :size="346"
     class="draw-right"
   >
     <div class="check-container bg-[--d-222-l-FFF] h-100vh">

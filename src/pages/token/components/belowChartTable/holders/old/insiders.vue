@@ -85,7 +85,7 @@
               type="radio"
               :value="item.id"
               class="tab-radio-input"
-            />
+            >
             <label :for="`tab-item-${item.id}`" class="tab-item">
               {{ item.name }}
             </label>

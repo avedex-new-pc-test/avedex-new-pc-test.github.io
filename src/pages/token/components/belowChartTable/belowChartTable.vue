@@ -9,7 +9,7 @@ const route = useRoute()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const { t } = useI18n()
-const {token, tokenInfoExtra } = storeToRefs(useTokenStore())
+const {token, tokenInfoExtra ,pairAddress} = storeToRefs(useTokenStore())
 const activeTab = shallowRef<keyof typeof components>('Transactions')
 const components = {
   Transactions,
@@ -83,6 +83,20 @@ const isInsiderOrSniperSupported= computed(()=>{
   return chainsSupport?.includes(chain) || false
 
 })
+
+const comProps = computed(() => {
+  return {
+    LP: {
+      token: token.value,
+      pairAddress: pairAddress.value,
+    },
+    Transactions: {},
+    Holders: {},
+    Attention: {},
+    Orders: {},
+    MySwap: {},
+  }[activeTab.value] || {}
+})
 </script>
 
 <template>
@@ -119,7 +133,7 @@ const isInsiderOrSniperSupported= computed(()=>{
     </div>
     <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
     <KeepAlive v-show="activeTab !== 'Orders'">
-      <component :is="Component" />
+      <component :is="Component" v-bind="comProps"/>
     </KeepAlive>
   </div>
 </template>

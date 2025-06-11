@@ -92,9 +92,9 @@ const props = defineProps<{
   userAddress: string
 }>()
 
-const emit = defineEmits<{
-  (e: 'changeLoadingHead', value: boolean): void
-}>()
+// const emit = defineEmits<{
+//   (e: 'changeLoadingHead', value: boolean): void
+// }>()
 const { t } = useI18n()
 const botStore = useBotStore()
 

@@ -238,5 +238,6 @@
   "txns": "Transacciones",
   "liquidity": "Liquidez",
   "wallet": "Billetera",
-  "volume": "Volumen"
+  "volume": "Volumen",
+  "alertNotice": "Token no verificado. Por favor, investiga por tu cuenta (DYOR)"
 }

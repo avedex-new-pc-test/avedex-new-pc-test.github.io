@@ -411,5 +411,6 @@
   "liquidity": "Thanh khoản",
   "holderBubble": "Bản đồ bong bóng người nắm giữ",
   "wallet": "Ví",
-  "volume": "Khối lượng"
+  "volume": "Khối lượng",
+  "alertNotice": "Token chưa xác minh"
 }

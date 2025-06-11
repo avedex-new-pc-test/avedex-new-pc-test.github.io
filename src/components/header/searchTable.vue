@@ -1,6 +1,6 @@
 <template>
   <div class="histrory">
-    <div class="top">
+    <div class="top h-39px">
       <span>#</span>
       <span>{{ $t('tokenName') }}</span>
       <div class="flex-end cursor-pointer select-none" @click.stop="switchSort('opening_at')">
@@ -153,7 +153,7 @@
         <li v-for="(row, $index) in tokens1" :key="$index">
           <a
             href=""
-            class="flex no-underline"
+            class="flex no-underline h-50p"
             @click.stop.prevent="tableRowClick(row.token + '-' + row.chain)"
           >
             <div class=" text-12px">
@@ -614,7 +614,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     a:hover {
       text-decoration: none;
-      background-color: var(--custom-bg-3-color);
+      background-color: var(--d-333-l-F2F2F2);
       opacity: 1;
     }
     li:nth-child(1) .flex {
@@ -622,7 +622,8 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     .flex {
       font-size: 12px;
-      padding: 8px 0px;
+      // padding: 8px 0px;
+      height: 50px;
       display: flex;
       justify-content: space-between;
       align-items: center;

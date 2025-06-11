@@ -38,12 +38,12 @@ watch(() => props.modelValue, () => {
   >
     <template #reference>
       <Icon
-        name="codicon:filter-filled"
-        :class="`${modelValue?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-12px`"
+        name="custom:filter"
+        :class="`${modelValue?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
       />
     </template>
     <template #default>
-      <div class="flex mt-10px">
+      <div class="flex">
         <el-input
           v-model.trim="tempAddress"
           :placeholder="$t('enterAddress')"

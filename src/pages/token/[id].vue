@@ -1,10 +1,10 @@
 <template>
-  <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px w-100%" style="min-height: calc(100vh - 100px);">
+  <div class="flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px w-100%" style="min-height: calc(100vh - 92px);">
     <div class="flex-1 min-w-0">
       <Top/>
-      <div class="flex gap-4px">
+      <div class="flex gap-1px">
         <div class="hide-scrollbar">
-          <el-scrollbar height="calc(100vh - 164px)">
+          <el-scrollbar height="calc(100vh - 158px)">
             <Left class="w-292px flex flex-col flex-shrink-0"/>
           </el-scrollbar>
         </div>
@@ -23,7 +23,7 @@
           >
             <Icon name="material-symbols:arrow-forward-ios" :class="`color-[--d-FFF-l-222] text-12px`"/>
           </div>
-          <el-scrollbar height="calc(100vh - 164px)">
+          <el-scrollbar height="calc(100vh - 158px)">
             <KLine />
             <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]"/>
           </el-scrollbar>
