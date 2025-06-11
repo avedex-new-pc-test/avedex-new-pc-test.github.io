@@ -54,7 +54,7 @@
   "createdTime": "創建時間",
   "totalSupply": "有效總量",
   "circulation": "流通供應量",
-  "mcap": "流通市值",
+  "mcap": "市值",
   "FDV": "總市值",
   "contractOwner": "擁有者",
   "pair": "池子",
@@ -634,5 +634,6 @@
   "percent": "比例",
   "txns": "交易數",
   "liquidity": "池子大小",
-  "holderBubble": "籌碼氣泡圖"
+  "holderBubble": "籌碼氣泡圖",
+  "Chg": "涨幅"
 }

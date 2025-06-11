@@ -83,7 +83,7 @@ const columns = computed(() => {
     flex: 'flex-1',
     sort: true
   }, {
-    label: t('price') + '/Chg%',
+    label: t('price') + '/' + t('Chg'),
     value: 'current_price_usd',
     flex: 'flex-1 justify-end',
     sort: true

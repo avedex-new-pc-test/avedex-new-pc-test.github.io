@@ -440,11 +440,11 @@
           class="ml-5px"
         >
           <img
-            class="rounded-50% h-16px w-16px"
+            class="rd-50% h-16px w-16px"
             :src="formatIconSwap(pair?.amm)"
             onerror="this.src='/icon-default.png'"
             height="16"
-          />
+          >
         </a>
       </div>
       <el-progress
@@ -456,7 +456,7 @@
         style="width: 90px"
       />
     </div>
-    <div class="item ml-24px items-start!">
+    <div class="item ml-24px items-end!">
       <span class="text-20px color-[--d-F5F5F5-l-333]">
         ${{ formatNumber(price || 0, { decimals: 4, limit: 6 }) }}</span
       >

@@ -635,5 +635,6 @@
   "percent": "Percent",
   "txns": "Txns",
   "liquidity": "Liquidity",
-  "holderBubble": "Holders Bubble Map"
+  "holderBubble": "Holders Bubble Map",
+  "Chg": "Chg"
 }

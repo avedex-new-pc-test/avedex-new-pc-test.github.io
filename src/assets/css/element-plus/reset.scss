@@ -1,12 +1,20 @@
-:root.dark {
-  .el-popper[role="tooltip"] {
-    --el-bg-color: #fff;
-    --el-text-color-primary: #333;
-    border: none;
-  }
-}
+// :root.dark {
+//   .el-popper[role="tooltip"] {
+//     --el-bg-color: #fff;
+//     --el-text-color-primary: #333;
+//     border: none;
+//   }
+// }
 
-:root.light {
+// :root.light {
+//   .el-popper[role="tooltip"] {
+//     --el-bg-color: #fff;
+//     --el-text-color-primary: #333;
+//   }
+// }
+
+:root:root {
+  --el-text-color-regular: var(--d-F5F5F5-l-333);
   .el-popper[role="tooltip"] {
     --el-bg-color: #fff;
     --el-text-color-primary: #333;
@@ -76,5 +84,6 @@
 .el-table-v2__header-cell {
   &.el-table-v2__header-cell {
     font-weight: normal;
+    color: var(--d-666-l-999);
   }
 }
