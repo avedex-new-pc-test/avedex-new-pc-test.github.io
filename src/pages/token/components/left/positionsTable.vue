@@ -28,18 +28,13 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
       if (!noProfit) {
         const total_purchase_usd = new BigNumber(el.balance_usd || 0).minus(el.total_profit || 0)
         const total_profit = balance_usd.minus(total_purchase_usd)
-        const total_profit_ratio = new BigNumber(current.uprice || 0)
-          .minus(el.average_purchase_price_usd || 0).div(el.average_purchase_price_usd).div(100)
-        if (total_profit_ratio.toNumber() < -1 || Number(el.average_purchase_price_usd) < 0) {
-          return {...el}
-        } else {
-          return {
-            ...el,
-            current_price_usd: current.uprice,
-            balance_usd: balance_usd.toNumber(),
-            total_profit: total_profit.toFixed(),
-            total_profit_ratio: total_profit_ratio.toFixed()
-          }
+        const total_profit_ratio = total_profit.div(total_purchase_usd)
+        return {
+          ...el,
+          current_price_usd: current.uprice,
+          balance_usd: balance_usd.toNumber(),
+          total_profit: total_profit.toFixed(),
+          total_profit_ratio: total_profit_ratio.toFixed()
         }
       } else {
         return {
@@ -79,7 +74,7 @@ watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
           if (isMainToken) {
             getTokenBalance(token, chain)
             //   卖出所有直接删除数据
-          } else if (prevBalance === val.swap.amount) {
+          } else if (Number(prevBalance) === Number(val.swap.amount)) {
             listData.value.splice(index, 1)
             triggerRef(listData)
           } else {

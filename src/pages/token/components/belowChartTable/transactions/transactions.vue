@@ -486,7 +486,6 @@ function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = 
     }
     return price
   }
-  debugger
   return 0
 }
 
@@ -867,8 +866,8 @@ function resetMakerAddress() {
               </div>
             </UserRemark>
             <Icon
-              :name="tableFilter.markerAddress?'codicon:filter-filled':'codicon:filter'"
-              :class="`${tableFilter.markerAddress ? 'color-#3F80F7' : 'color-[--d-666-l-999]'} cursor-pointer text-12px shrink-0`"
+              name="custom:filter"
+              :class="`${tableFilter.markerAddress ? 'color-#3F80F7' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
               @click.self.stop="setMakerAddress(row.wallet_address)" />
           </div>
         </template>
