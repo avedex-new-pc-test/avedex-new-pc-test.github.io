@@ -90,7 +90,7 @@ export function updatePriceFromTx(tx: WSTx) {
     if ((profile.token0Address.toLowerCase() === token && profile.token0HasNewAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasNewAccount)) {
       tokenStore.token.holders = tokenStore.token.holders + 1
     }
-    if ((profile.token0Address.toLowerCase() === token && profile.token0HasClearedAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasClearedAccount)) {
+    if ((profile.token0Address.toLowerCase() === token && profile.token0HasClosedAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasClosedAccount)) {
       tokenStore.token.holders = Math.max(tokenStore.token.holders - 1, 0)
     }
   }
