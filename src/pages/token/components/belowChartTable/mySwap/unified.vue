@@ -39,7 +39,7 @@
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
               row?.inTokenSymbol :
               row.outTokenSymbol
-              }}</span>
+            }}</span>
           </div>
         </template>
       </el-table-column>
@@ -51,7 +51,7 @@
               <div>{{ t('type') }}</div>
               <el-dropdown trigger="click" @command="handleTypeCommand">
                 <Icon name="custom:filter"
-                  :class="[filterConditions.isBuy >= 0 && filterConditions.isLimit >= 0 && 'color-#286DFF']"
+                  :class="[filterConditions?.isBuy >= 0 && filterConditions?.isLimit >= 0 && 'color-#286DFF']"
                   class=" color-[--d-666-l-999] cursor-pointer text-10px" />
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -75,12 +75,12 @@
           </div>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 1 || row.swapType === 5"
-            class="text-13px text-center text-[#12B886] px-5px py-2px rounded-4px bg-[#0b1d19]">
+          <div v-if="row.swapType === 1 || row.swapType === 5" style="background: rgba(18, 184, 134, 0.10)"
+            class="text-13px text-center text-[#12B886] px-5px py-2px rounded-4px">
             {{ row.swapType === 1 ? t('market') : t('limit') }}/{{ t('buy') }}
           </div>
-          <div v-if="row.swapType === 2 || row.swapType === 6"
-            class="text-13px  text-center text-[#F6465D] px-5px py-2px rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 2 || row.swapType === 6" style="background: rgba(246, 70, 93, 0.10)"
+            class="text-13px  text-center text-[#F6465D] px-5px py-2px rounded-4px">
             {{ row.swapType === 2 ? t('market') : t('limit') }}/{{ t('sell') }}
           </div>
         </template>
@@ -109,11 +109,13 @@
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">
             <template v-if="row.swapType === 2 || row.swapType === 6">
-              {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0), 4) }}
+              {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0) as
+                string, 4) }}
               {{ row?.inTokenSymbol }}
             </template>
             <template v-else>
-              {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0), 4)
+              {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0) as
+                string, 4)
               }}
               {{ row?.outTokenSymbol }}
             </template>
@@ -150,14 +152,14 @@
         <template #default="{ row }">
           <div class="text-[var(--d-999-l-959A9F)] text-right truncate">
             <span v-if="row.status === 'confirmed'">{{ t('completed')
-              }}</span>
+            }}</span>
             <span v-else-if="row.status === 'error'" style="color: var(--color-red-500);word-break: break-all;">{{
               t('failed') }}<template v-if="row?.errorLog">({{ formatBotError(row?.errorLog) }})</template></span>
             <span v-else-if="row.status === 'cancelled'">{{ t('cancelled1')
-              }}</span>
+            }}</span>
             <span v-else-if="row.status === 'auto_cancelled'">{{
               t('autoCancelled')
-              }}</span>
+            }}</span>
             <span v-else style="color: var(--custom-text-1-color);">{{ t('pending') }}</span>
           </div>
         </template>
@@ -212,16 +214,16 @@ const props = defineProps({
   }
 })
 
-const tokenStore = useTokenStore()
+// const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const route = useRoute()
 const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
 const configStore = useConfigStore()
-const filterConditions = ref({
-  isLimit: undefined as number | undefined,
-  isBuy: undefined as number | undefined,
+const filterConditions = ref<any>({
+  isLimit: undefined,
+  isBuy: undefined,
   statusType: ''
 })
 
@@ -229,7 +231,7 @@ const txHistory = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderSuccess, () => route.params.id], () => {
+watch([() => props.chain, () => props.currentToken], () => {
   getTxHistory()
 })
 
@@ -315,6 +317,9 @@ const getTxHistory = async () => {
 onMounted(() => {
   getTxHistory()
 })
+defineExpose({
+  getTxHistory
+})
 </script>
 
 <style lang="scss" scoped>
@@ -339,16 +344,16 @@ onMounted(() => {
 }
 
 :deep(.el-table) {
-  --el-table-tr-bg-color: #0A0B0D;
-  --el-table-bg-color: #0A0B0D;
+  --el-table-tr-bg-color: var(--d-0a0b0d-l-fff);
+  --el-table-bg-color: var(--d-0a0b0d-l-fff);
   --el-table-text-color: var(--d-222-l-F2F2F2);
   --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
-  --el-fill-color-lighter: #0A0B0D;
+  --el-fill-color-lighter: var(--d-0a0b0d-l-fff);
   --el-table-header-text-color: var(--d-999-l-666);
   --el-table-border-color: var(--d-33353D-l-f5f5f5);
   --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
-  background: #0A0B0D;
-  --el-bg-color: #0A0B0D;
+  background: var(--d-0a0b0d-l-fff);
+  --el-bg-color: var(--d-0a0b0d-l-fff);
   --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
   font-size: 13px;
 

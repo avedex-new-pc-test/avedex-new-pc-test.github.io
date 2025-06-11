@@ -625,5 +625,14 @@
   "attention1Success": "Following successfully",
   "attention1Canceled": "Following has been canceled",
   "holders2": "Holders",
-  "details": "Details"
+  "details": "Details",
+  "add": "Add",
+  "remove": "Remove",
+  "provider": "Provider",
+  "devote": "Devote",
+  "addAmt": "Add Amt",
+  "netAmt": "Net Amt",
+  "percent": "Percent",
+  "txns": "Txns",
+  "liquidity": "Liquidity"
 }

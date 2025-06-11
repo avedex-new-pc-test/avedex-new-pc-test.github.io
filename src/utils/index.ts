@@ -601,7 +601,8 @@ export function getRpcProvider(chain: string) {
     return null
   }
   const RPC: Record<string, string> = {
-    base: 'https://1rpc.io/base'
+    base: 'https://1rpc.io/base',
+    eth: 'https://rpc.mevblocker.io'
   }
   const rpcUrl = RPC?.[chain] || chainInfo?.rpc_url || ''
   return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
@@ -659,10 +660,12 @@ export function addSign(val: number) {
 }
 
 export function getTextWidth(text: string, min = 0) {
+
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')!
   context.font = '12px DINPro-regular'
   const metrics = context.measureText(text)
+  console.log('-----text--------', text, Math.max(metrics.width, min))
   return Math.max(metrics.width, min)
 }
 

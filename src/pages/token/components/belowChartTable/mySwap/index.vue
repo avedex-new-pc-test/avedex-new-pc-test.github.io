@@ -5,14 +5,16 @@ import { getChainInfo } from '@/utils'
 import unified from './unified.vue'
 import { bot_getUserWalletTxInfo } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
+import { useSessionStorage } from '@vueuse/core'
 
 const botStore = useBotStore()
 const { t } = useI18n()
 const tokenStore = useTokenStore()
 const route = useRoute()
 
+const unifiedRef = ref()
 const activeTab = ref('solana')
-const botOrderOnlyCurrentToken = ref(true)
+const botOrderOnlyCurrentToken = useSessionStorage('mySwapBotOrderOnlyCurrentToken', true)
 const walletTxData = ref<any>()
 const tabs = computed(() => {
   // 获取原始地址数组
@@ -101,9 +103,13 @@ function toggleCurrentToken() {
   botOrderOnlyCurrentToken.value = !botOrderOnlyCurrentToken.value
 }
 
+// 定义移除字符串开头负号的函数
+const removeLeadingMinus = (str: string) => str.startsWith('-') ? str.slice(1) : str
+
 const getWalletTxData = async () => {
   const supportedChains = ['solana', 'bsc']
   if (!supportedChains.includes(activeTab.value)) {
+    walletTxData.value = null
     return
   }
 
@@ -122,10 +128,15 @@ const getWalletTxData = async () => {
 
 let timer: any
 let lastUpdateTime = 0
-const maxUpdateNum = 6
+const maxUpdateNum = 15
 
 watch([() => tokenStore.placeOrderSuccess], () => {
+  const chain = String(route.params.id).split('-')[1]
+  if (tabs.value.find(i => i?.chain === chain)) {
+    activeTab.value = chain
+  }
   getWalletTxData()
+  unifiedRef.value?.getTxHistory()
   if (!timer) {
     timer = setInterval(() => {
       if (lastUpdateTime >= maxUpdateNum) {
@@ -136,14 +147,19 @@ watch([() => tokenStore.placeOrderSuccess], () => {
       }
       getWalletTxData()
       lastUpdateTime += 1
-    }, 5000)
+    }, 2000)
   } else {
     lastUpdateTime = 0
   }
 })
 
 watch([() => route.params.id], () => {
+  const chain = String(route.params.id).split('-')[1]
+  if (tabs.value.find(i => i?.chain === chain)) {
+    activeTab.value = chain
+  }
   getWalletTxData()
+  unifiedRef.value?.getTxHistory()
 })
 
 onMounted(() => {
@@ -190,7 +206,7 @@ onMounted(() => {
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('totalProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]"
           :style="{ color: totalProfit >= 0 ? '#12B886' : '#ff646d' }">
-          ${{ totalProfit >= 0 ? '+' : '' }}{{ formatNumber(totalProfit, 2) }}
+          {{ totalProfit >= 0 ? '+' : '-' }}${{ removeLeadingMinus(formatNumber(totalProfit, 2)) }}
         </div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: profitPercentage >= 0 ? '#12B886' : '#ff646d' }">
@@ -201,7 +217,7 @@ onMounted(() => {
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('realizedProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]"
           :style="{ color: realizedProfit >= 0 ? '#12B886' : '#ff646d' }">
-          ${{ realizedProfit >= 0 ? '+' : '' }}{{ formatNumber(realizedProfit, 2) }}
+          {{ realizedProfit >= 0 ? '+' : '-' }}${{ removeLeadingMinus(formatNumber(realizedProfit, 2)) }}
         </div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: realizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
@@ -212,8 +228,7 @@ onMounted(() => {
         <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('unrealizedProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]"
           :style="{ color: unrealizedProfit >= 0 ? '#12B886' : '#ff646d' }">
-          {{ unrealizedProfit >= 0 ? '+' : '' }}
-          ${{ formatNumber(unrealizedProfit, 2) }}
+          {{ unrealizedProfit >= 0 ? '+' : '-' }}${{ removeLeadingMinus(formatNumber(unrealizedProfit, 2)) }}
         </div>
         <div class="stat-change text-[var(--d-999-l-959A9F)]"
           :style="{ color: unrealizedProfitPercentage >= 0 ? '#12B886' : '#ff646d' }">
@@ -234,7 +249,8 @@ onMounted(() => {
       </div>
     </div>
 
-    <unified :chain="activeTab" :currentToken="botOrderOnlyCurrentToken" :userAddress="userAddress || ''" />
+    <unified ref="unifiedRef" :chain="activeTab" :currentToken="botOrderOnlyCurrentToken"
+      :userAddress="userAddress || ''" />
   </div>
 </template>
 

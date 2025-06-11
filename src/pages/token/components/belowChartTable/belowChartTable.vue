@@ -13,7 +13,7 @@ const activeTab = shallowRef<keyof typeof components>('Transactions')
 const components = {
   Transactions,
   Holders: defineAsyncComponent(() => import('./holders/index.vue')),
-  LP: '',
+  LP: defineAsyncComponent(() => import('./lp/index.vue')),
   Attention: '',
   // Orders: defineAsyncComponent(() => import('./orders/index.vue')),
   MySwap: defineAsyncComponent(() => import('./mySwap/index.vue')),
@@ -22,7 +22,7 @@ const tabs = computed(() => {
   return [
   { name: t('transactions'), component: 'Transactions' as const },
   { name: t('holders'), component: 'Holders' as const },
-  { name: 'LP', component: 'LP' as const },
+  { name: 'LP'+`[${pairHolders.value}]`, component: 'LP' as const },
   // { name: t('attention1'), component: 'Attention' as const },
   { name: t('orders'), component: 'Orders' as const },
   { name: t('mySwap'), component: 'MySwap' as const },
@@ -61,6 +61,9 @@ const Component = computed(() => {
 })
 const holders= computed(()=>{
   return token?.value?.holders || 0
+})
+const pairHolders= computed(()=>{
+  return tokenInfoExtra?.value?.pair_holders || 0
 })
 const addressAndChain = computed(() => {
   const id = route.params.id as string

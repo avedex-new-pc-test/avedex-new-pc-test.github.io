@@ -404,7 +404,7 @@
       v-if="(pair?.progress??0) > 0 && (pair?.progress??0) < 100"
       class="item"
     >
-      <div class="flex items-center">
+      <div class="flex items-center min-w-90px justify-between">
         <span>{{ $t('progress') }}</span
         ><span class="ml-5px">{{ formatNumber(pair?.progress || 0, 2) }}%</span>
         <Icon
@@ -434,12 +434,12 @@
         :stroke-width="4"
         color="#1CC982"
         :show-text="false"
-        style="width: 70px"
+        style="width: 90px"
       />
     </div>
-    <div class="item ml-24px">
+    <div class="item ml-24px items-start!">
       <span class="text-20px color-[--d-F5F5F5-l-333]">
-        ${{ formatNumber(price || 0) }}</span
+        ${{ formatNumber(price || 0, { decimals: 4, limit: 6}) }}</span
       >
       <span
         class="block mt-4px"
@@ -1088,5 +1088,11 @@ function getRugPull() {
 .bg-btn {
   --uno: bg-[--d-222-l-F2F2F2] rounded-2px mr-4px flex items-center
     justify-center h-16px min-w-16px p-2px;
+}
+.item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 </style>

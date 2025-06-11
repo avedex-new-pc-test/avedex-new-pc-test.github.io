@@ -127,6 +127,7 @@ export interface Token {
   main_pair: string
   cto_flag: number
   dev_count: number
+  owner?: string
 }
 
 export interface Volume {
