@@ -206,7 +206,7 @@ const txOrder = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.currentToken], () => {
+watch([() => props.currentToken, () => botStore.userInfo?.evmAddress || ''], () => {
   getUserPendingTx()
 })
 
@@ -263,15 +263,15 @@ const getUserPendingTx = async (chainValue?: string) => {
   loading.value = true
   const chain = chainValue || props.chain
   try {
-    // if (!botStore.accessToken) {
-    //   return
-    // }
+    if (!botStore.accessToken) {
+      return
+    }
     const data = {
       chain: chain,
       token: props.currentToken ? getAddressAndChainFromId(route.params.id as string)?.address : '',
       walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === chain)?.address || '',
     }
-    // if (!data.token || !data.walletAddress || !data.chain) return
+    if (!data.walletAddress || !data.chain) return
     const res = await bot_getUserPendingTx({
       ...data as any
     })
