@@ -635,5 +635,6 @@
   "txns": "交易數",
   "liquidity": "池子大小",
   "holderBubble": "籌碼氣泡圖",
-  "Chg": "涨幅"
+  "Chg": "涨幅",
+  "alertNotice": "該幣暫未收錄，請自行注意風險"
 }

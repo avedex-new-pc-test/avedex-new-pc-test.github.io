@@ -236,5 +236,8 @@
   "netAmt": "AMT neto",
   "percent": "Por ciento",
   "txns": "Transacciones",
-  "liquidity": "Liquidez"
+  "liquidity": "Liquidez",
+  "wallet": "Billetera",
+  "volume": "Volumen",
+  "alertNotice": "Token no verificado. Por favor, investiga por tu cuenta (DYOR)"
 }

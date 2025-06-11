@@ -3,10 +3,10 @@
     v-model="visible"
     append-to-body
     :with-header="false"
-    :size="430"
+    :size="346"
     class="draw-right"
   >
-    <div class="check-container bg-[--d-222-l-fff] h-100vh">
+    <div class="check-container bg-[--d-222-l-FFF] h-100vh">
       <div class="check-content">
         <el-row v-if="showResult" :gutter="20">
           <el-col :span="24">

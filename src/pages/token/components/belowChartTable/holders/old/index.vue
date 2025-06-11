@@ -390,7 +390,7 @@ function handlerDialogProfitLoss(row: { address: string }) {
   --el-fill-color-lighter: #0A0B0D;
   --el-table-header-text-color: var(--d-999-l-666);
   // --el-table-border-color: var(--d-33353D-l-f5f5f5);
-  --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
+  --el-table-row-hover-bg-color: var(--d-333-l-F2F2F2);
   // background: var(--d-111-l-FFF);
   --el-bg-color: var(--d-111-l-FFF);
   // --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);

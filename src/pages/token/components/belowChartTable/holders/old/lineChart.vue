@@ -1,5 +1,5 @@
 <template>
-    <div  v-loading="loading" class="chart-container">
+    <div v-loading="loading" class="chart-container">
       <div :id="chartId" :style="{ height: chartHeight || '162px', width: '100%' }" />
     </div>
   </template>
@@ -53,6 +53,7 @@
   const { token } = storeToRefs(useTokenStore())
   const { globalConfig } = storeToRefs(useConfigStore())
   const { mode } = storeToRefs(useGlobalStore())
+  const globalStore = useGlobalStore()
   // 获取语言、工具函数
   const language = computed(() => useLocaleStore().locale)
 
@@ -192,13 +193,16 @@
       name: label
     })
   }
-
   onMounted(() => {
     nextTick(() => {
       initChart()
     })
   })
+  watch(() => globalStore.showLeft, async () => {
+    await nextTick()
+    myChart?.resize()
 
+  })
   // Watchers
   watch(() => props.dataList, () => initChart())
   watch(() => props.loading, (val) => {
