@@ -190,7 +190,7 @@
                   srcset=""
                 />
               </div>
-              <div style="margin-left: 5px">
+              <div class="ml-8px">
                 <div>
                   <span class="token-symbol">
                     {{ row.symbol }}
@@ -220,12 +220,12 @@
                     </svg>
                   </template>
                 </div>
-                <div class="text-12px color-text-2 flex-start">
+                <div class="text-12px color-text-2 flex-start mt-3px">
                   {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
                   <Icon
                     v-copy="row.token"
                     name="bxs:copy"
-                    class="text-12px ml-2px cursor-pointer"
+                    class="text-10px ml-2px cursor-pointer color-[--d-666-l-999] ml-4px"
                     @click.stop.prevent
                   />
                 </div>
@@ -273,7 +273,7 @@
                   "
                   >${{ formatNumber(row.current_price_usd || 0) }}</span
                 >
-                <div class="text-12px">
+                <div class="text-12px mt-3px">
                   <span
                     v-if="Number(row.price_change) > 0"
                     style="color: #12b886; padding: 10px 0"
@@ -491,9 +491,9 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
 .histrory {
   font-size: 12px;
   padding-bottom: 10px;
-  color: var(--d-666-l-999);
+  color: var(--d-999-l-666);
   .empty {
-    color: var(--d-666-l-999);
+    color: var(--d-999-l-666);
     height: 500px;
     display: flex;
     align-items: center;
@@ -562,7 +562,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
         word-break: break-all;
         padding: 0;
         color: var(--d-F5F5F5-l-333);
-        font-size: 12px;
+        font-size: 14px;
       }
       .icon-collect {
         font-size: 16px;
@@ -582,14 +582,14 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
         margin-left: 9px;
       }
       .token-icon {
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
       }
       .icon-svg {
-        width: 12px;
+        width: 14px;
         position: absolute;
-        bottom: 0px;
+        bottom: 3px;
         right: 0px;
       }
       .ad-tag {
@@ -663,7 +663,6 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
       }
     }
     span {
-      padding: 10px 3px;
       &.green {
         color: #12b886;
       }

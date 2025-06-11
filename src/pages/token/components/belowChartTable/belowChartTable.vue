@@ -97,7 +97,7 @@ const isInsiderOrSniperSupported= computed(()=>{
           {{ item.name }}
           <span v-if="item.component === 'Orders'">({{ tokenStore.registrationNum }})</span>
           <span v-if="item.component == 'Holders' && holders">
-            ({{ token?.holders ? formatNumber(token?.holders || 0, 2) : '' }})
+            ({{ token?.holders ? formatNumber(token?.holders || 0, {limit: 10}) : '' }})
               <template v-if="isInsiderOrSniperSupported && isInsiderOrSniperSupported">
                 <img class="align-middle"  v-if="tokenInfoExtra?.insiders_balance_ratio_cur??0 > 0.3" src="@/assets/images/insiders.svg" :width="14">
                 <img  class="align-middle" v-else src="@/assets/images/insiders-gray.svg" :width="14">

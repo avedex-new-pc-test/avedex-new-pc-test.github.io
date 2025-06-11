@@ -9,9 +9,10 @@
     trigger="hover"
   >
     <template #reference>
-      <a class="top50 bg-btn" href="" @click.stop.prevent>
-        <Icon name="custom:top" class="text-[--d-666-l-999] h-12px mr-2px" />
+      <a class="top50 bg-btn text-10px" href="" @click.stop.prevent>
+        <Icon name="custom:top" class="text-[--d-666-l-999] h-10px mr-2px" />
         <span
+          class="text-10px"
           :class="{
             text:
               (list?.filter(
@@ -284,6 +285,7 @@ function getEarlyholders() {
 }
 
 .bg-btn{
+    font-size: 10px;
     margin-right: 4px;
     height: 16px;
     min-width: 16px;

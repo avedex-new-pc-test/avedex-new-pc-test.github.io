@@ -6,7 +6,7 @@
     :size="430"
     class="draw-right"
   >
-    <div class="pop-right bg-[--d-222-l-fff] h-100vh px-20px">
+    <div class="pop-right bg-[--d-222-l-FFF] h-100vh px-20px">
       <div
         class="content"
         style="max-width: 450px; overflow-x: hidden;overflow-y: auto;height: 100vh;"
@@ -318,7 +318,7 @@
               v-if="(!tableList || tableList?.length === 0) && !loadingRun"
               :image-size="100"
               :image="themeStore.theme === 'light' ? emptyWhite : emptyDark"
-              
+
             />
           </div>
         </div>

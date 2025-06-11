@@ -22,7 +22,7 @@
             class="flex no-underline"
             @click.stop.prevent="tableRowClick(row)"
           >
-            <span class="color-[--d-666-l-999] text-12px" style="width: 40px; flex: none">
+            <span class="color-[--d-999-l-666] text-12px" style="width: 40px; flex: none">
               {{ $index < 9 ? '0' + Number($index + 1) : $index + 1 }}
             </span>
             <div class="token-info">
@@ -31,11 +31,11 @@
                 :wallet_logo="row.wallet_logo"
                 :address="row.wallet_address"
                 :chain="row.chain"
-                iconSize="24px"
+                iconSize="32px"
               />
               <div style="display: flex; flex-direction: column">
                 <span
-                  class="token-symbol ellipsis"
+                  class="token-symbol ellipsis text-14px"
                   style="max-width: 80px; display: inline-block"
                   :title="
                     getRemarkByAddress({
@@ -57,7 +57,7 @@
                 </span>
                 <div
                   style="display: inline-flex; align-items: center"
-                  class="mt-2px"
+                  class="mt-6px"
                 >
                   <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" iconEditSize="10px"/>
                   <!-- <a
@@ -163,7 +163,7 @@
                     ? '#12B886'
                     : '#F6465D',
                 }"
-                class="mt-2px"
+                class="mt-3px"
               >
                 {{ formatNumber((row?.total_profit_rate * 100 || 0)) }}%
               </div>
@@ -178,7 +178,7 @@
                   )
                 }}
               </div>
-              <div class="mt-2px">
+              <div class="mt-3px">
                 <span style="color: #12b886"
                   >${{ formatNumber(row?.total_purchase_usd || 0, 2) }}</span
                 ><span style="color: #999">/</span
@@ -197,7 +197,7 @@
                   )
                 }}
               </div>
-              <div class="flex-end mt-2px">
+              <div class="flex-end mt-3px">
                 <span style="color: #12b886">{{
                   formatNumber(row?.total_purchase || 0, 2)
                 }}</span
@@ -442,7 +442,6 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     }
     > span {
       color: var(--custom-font-1-color);
-      padding: 10px 3px;
       &.green {
         color: #12b886;
       }
