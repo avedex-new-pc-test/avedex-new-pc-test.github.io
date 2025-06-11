@@ -46,13 +46,13 @@
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
                 <div :class="`color-${upColor[0]} flex-start`">
-                  <img src="@/assets/images/add.svg" alt="" class="h-12px w-12px mr-4px">
+                  <img src="@/assets/images/add.svg" alt="" class="h-12px w-12px mr-4px mt-2px">
                   <!-- <tag type="success" class="h-12px w-12px mr-4px">+</tag> -->
                   {{ row.add_total }}
                 </div>
                 <div :class="`color-${downColor[0]} flex-start`">
                   <!-- <tag type="danger" class="h-12px w-12px mr-4px">-</tag> -->
-                  <img src="@/assets/images/remove.svg" alt="" class="h-12px w-12px mr-4px">
+                  <img src="@/assets/images/remove.svg" alt="" class="h-12px w-12px mr-4px mt-2px">
                   {{ row.remove_total }}
                 </div>
               </div>
