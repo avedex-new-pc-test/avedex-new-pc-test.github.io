@@ -689,7 +689,7 @@ function resetMakerAddress() {
         rowKey="uuid"
         fixed :data="filterTableList"
         :columns="columns"
-        class="h-560px"
+        class="min-h-560px h-[calc(100vh-750px)]"
         row-class='cursor-pointer'
         :rowEventHandlers="{
         onMouseenter:()=>isHoverTable=true,
