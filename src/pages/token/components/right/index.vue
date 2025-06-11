@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-scrollbar height="calc(100vh - 98px)">
-      <div class="flex flex-col h-[calc(100vh-100px)] overflow-visible">
+    <el-scrollbar height="calc(100vh - 92px)">
+      <div class="flex flex-col h-[calc(100vh-94px)] overflow-visible">
         <div class="p-15px bg-[--d-111-l-FFF]">
           <PriceTabs v-model="tabActive" :tabs="tabs" />
           <template v-for="item in tabs" :key="item.id">
@@ -22,13 +22,13 @@
           <div class="text-12px color-[--d-666-l-999]">DEV</div>
         </div>
       </div> -->
-        <div class="p-15px bg-[--d-111-l-FFF] mt-4px">
+        <div class="p-15px bg-[--d-111-l-FFF] mt-1px">
           <BotSwap />
         </div>
-        <div class="p-15px pb-5px bg-[--d-111-l-FFF] mt-4px">
+        <div class="p-15px pb-5px bg-[--d-111-l-FFF] mt-1px">
           <Pairs />
         </div>
-        <Overview class="px-15px pb-10px bg-[--d-111-l-FFF] mt-4px" />
+        <Overview class="px-15px pb-10px bg-[--d-111-l-FFF] mt-1px" />
         <div class=" bg-[--d-111-l-FFF] flex-1" />
       </div>
     </el-scrollbar>

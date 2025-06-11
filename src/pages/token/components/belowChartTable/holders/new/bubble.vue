@@ -61,13 +61,13 @@ function openDialog() { }
 <style lang="scss" scoped>
 .bubble{
 //    background: rgba($color: #3F80F7, $alpha: 0.1);
-    display: flex;
-    align-items: center;
-    border: none;
-    font-size: 12px;
-    padding: 6px 8px;
-    border-radius: 4px;
-    background: var(--d-2D3037-l-999);
-    transition: all .2s;
+  display: flex;
+  align-items: center;
+  border: none;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: var(--d-2D3037-l-999);
+  transition: all .2s;
 }
 </style>

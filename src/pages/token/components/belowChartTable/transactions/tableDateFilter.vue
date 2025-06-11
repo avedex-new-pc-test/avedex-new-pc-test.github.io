@@ -31,8 +31,8 @@ const filterTime = ref([])
   >
     <template #reference>
       <Icon
-        name="codicon:filter-filled"
-        :class="`${modelValue.length?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-12px`"
+        name="custom:filter"
+        :class="`${modelValue.length?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
       />
     </template>
     <template #default>

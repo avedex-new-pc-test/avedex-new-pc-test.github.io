@@ -5,13 +5,14 @@ import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
 import dayjs from 'dayjs'
 import type {IPumpResponse} from '~/api/types/ws'
-import {useThrottleFn} from '@vueuse/core'
+import {useThrottleFn, useWindowSize} from '@vueuse/core'
 import {formatTimeFromNow} from "~/utils";
 
 const {t} = useI18n()
 const botStore = useBotStore()
 const wsStore = useWSStore()
 const localeStore = useLocaleStore()
+const {height} = useWindowSize()
 const documentVisible = inject<Ref<boolean>>('documentVisible')
 // const tokenStore = useTokenStore()
 const sort = ref({
@@ -307,7 +308,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
     </template>
     </THead>
     <el-scrollbar
-      :height="500"
+      :height="Math.max(500,height-500)"
       class="[&&]:h-auto"
     >
       <NuxtLink

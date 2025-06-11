@@ -1,6 +1,6 @@
 <template>
   <div class="histrory">
-    <div class="top">
+    <div class="top h-39px">
       <span>#</span>
       <span>{{ $t('tokenName') }}</span>
       <div class="flex-end cursor-pointer select-none" @click.stop="switchSort('opening_at')">
@@ -20,6 +20,26 @@
           />
         </div>
         <!-- <Icon  :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isShowDate= !isShowDate"/> -->
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('tx_volume_u_24h')"
+      >
+        {{ $t('24Volume') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'tx_volume_u_24h', 'b')}
+            `"
+            @click.stop="switchSort('tx_volume_u_24h', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'tx_volume_u_24h', 't')}
+            `"
+            @click.stop="switchSort('tx_volume_u_24h', 1)"
+          />
+        </div>
       </div>
       <div
         class="flex-end cursor-pointer select-none"
@@ -58,26 +78,6 @@
             ${getActiveClass(1, 'mcap', 't')}
             `"
             @click.stop="switchSort('mcap', 1)"
-          />
-        </div>
-      </div>
-      <div
-        class="flex-end cursor-pointer select-none"
-        @click.stop="switchSort('tx_volume_u_24h')"
-      >
-        {{ $t('24Volume') }}
-        <div class="flex flex-col items-center justify-center ml-5px">
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
-            ${getActiveClass(-1, 'tx_volume_u_24h', 'b')}
-            `"
-            @click.stop="switchSort('tx_volume_u_24h', -1)"
-          />
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
-            ${getActiveClass(1, 'tx_volume_u_24h', 't')}
-            `"
-            @click.stop="switchSort('tx_volume_u_24h', 1)"
           />
         </div>
       </div>
@@ -153,7 +153,7 @@
         <li v-for="(row, $index) in tokens1" :key="$index">
           <a
             href=""
-            class="flex no-underline"
+            class="flex no-underline h-50p"
             @click.stop.prevent="tableRowClick(row.token + '-' + row.chain)"
           >
             <div class=" text-12px">
@@ -264,6 +264,13 @@
                 </span>
               </div>
               <span v-else>--</span>
+              <div
+                :class="
+                  row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
+                "
+              >
+                ${{ formatNumber(row?.tx_volume_u_24h || 0, 2) }}
+              </div>
               <div>
                 <span
                   :class="
@@ -298,19 +305,12 @@
                 :class="
                   row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
                 "
-                >{{ formatNumber(getMCap(row) || 0) }}</span
+                >{{ formatNumber(getMCap(row) || 0,2) }}</span
               >
-              <div
-                :class="
-                  row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
-                "
-              >
-                ${{ formatNumber(row?.tx_volume_u_24h || 0, 2) }}
-              </div>
               <div :class="row.pool_size > 0 ? 'color-[--d-F5F5F5-l-333]' : ''">
                 ${{ formatNumber(row?.pool_size || 0, 2) }}
               </div>
-              <div>{{ formatNumber(row?.holders || 0) }}</div>
+              <div>{{ formatNumber(row?.holders || 0, {limit: 10}) }}</div>
               <!-- <div class="text-12px color-text-2">
                 {{ formatNumber(row?.tx_count_24h || 0) }}
               </div> -->
@@ -511,7 +511,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0px;
+    padding: 10px 20px;
     > :nth-child(1) {
       width: 40px;
       font-size: 12px;
@@ -550,6 +550,12 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
   }
   .content {
     padding: 0 0 20px;
+    li {
+      padding: 0 20px;
+      &:hover {
+        background-color: var(--d-333-l-F2F2F2);
+      }
+    }
     .token-info {
       display: flex;
       align-items: center;
@@ -614,7 +620,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     a:hover {
       text-decoration: none;
-      background-color: var(--custom-bg-3-color);
+      background-color: var(--d-333-l-F2F2F2);
       opacity: 1;
     }
     li:nth-child(1) .flex {
@@ -622,7 +628,8 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     .flex {
       font-size: 12px;
-      padding: 8px 0px;
+      // padding: 8px 0px;
+      height: 50px;
       display: flex;
       justify-content: space-between;
       align-items: center;

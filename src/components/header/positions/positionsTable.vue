@@ -31,7 +31,7 @@ class="table-position w-100%" :data="dataSource" :height="400" @row-click="table
                 <Icon
                     v-if="row.risk_score > 55 || row.risk_level < 0"
                     name="custom:danger"
-                    class="font-14 ml-2px color-#F72121 w-14px h-14px"/>
+                    class="font-14 ml-2px color-#F72121 w-14px h-14px mt-2px"/>
               </div>
             </template>
             <span v-else-if="row[col.prop] === '--'" :class="col?.getClassName ? col.getClassName(row) : ''">--</span>

@@ -1,6 +1,6 @@
 <template>
   <div class="history">
-    <div class="top">
+    <div class="top h-39px">
       <span style="width: 40px; flex: none">#</span>
       <span>{{ $t('wallet') }}</span>
       <span style="text-align: right">PnL</span>
@@ -19,7 +19,7 @@
         <li v-for="(row, $index) in tokens" :key="$index">
           <a
             href=""
-            class="flex no-underline"
+            class="flex no-underline h-50px"
             @click.stop.prevent="tableRowClick(row)"
           >
             <span class="color-[--d-999-l-666] text-12px" style="width: 40px; flex: none">
@@ -165,7 +165,7 @@
                 }"
                 class="mt-3px"
               >
-                {{ formatNumber((row?.total_profit_rate * 100 || 0)) }}%
+                {{ formatNumber((row?.total_profit_rate * 100 || 0),2) }}%
               </div>
             </div>
             <div>
@@ -178,14 +178,14 @@
                   )
                 }}
               </div>
-              <div class="mt-3px">
+              <!-- <div class="mt-3px">
                 <span style="color: #12b886"
                   >${{ formatNumber(row?.total_purchase_usd || 0, 2) }}</span
                 ><span style="color: #999">/</span
                 ><span style="color: #f6465d"
                   >${{ formatNumber(row?.total_sold_usd || 0, 2) }}</span
                 >
-              </div>
+              </div> -->
             </div>
             <div>
               <div>
@@ -197,7 +197,7 @@
                   )
                 }}
               </div>
-              <div class="flex-end mt-3px">
+              <!-- <div class="flex-end mt-3px">
                 <span style="color: #12b886">{{
                   formatNumber(row?.total_purchase || 0, 2)
                 }}</span
@@ -205,7 +205,7 @@
                 ><span style="color: #f6465d">{{
                   formatNumber(row?.total_sold || 0, 2)
                 }}</span>
-              </div>
+              </div> -->
             </div>
             <div
               :style="{
@@ -318,7 +318,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0px;
+    padding: 10px 20px;
     > :nth-child(1) {
       // width: 150px;
       font-size: 12px;
@@ -346,6 +346,12 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
   }
   .content {
     padding: 0 0 20px;
+    li {
+      padding: 0 20px;
+      &:hover {
+        background-color: var(--d-333-l-F2F2F2);
+      }
+    }
     .token-info {
       display: flex;
       align-items: center;
@@ -400,7 +406,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     }
     li > a:hover {
       text-decoration: none;
-      background-color: var(--a-table-hover-bg-color);
+      background-color: var(--d-333-l-F2F2F2);
       color: var(--a-text-1-color);
       opacity: 1;
     }
@@ -408,7 +414,8 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
       margin-top: 0;
     }
     .flex {
-      padding: 8px 0;
+      // padding: 8px 0;
+      height: 50px;
       display: flex;
       justify-content: space-between;
       align-items: center;

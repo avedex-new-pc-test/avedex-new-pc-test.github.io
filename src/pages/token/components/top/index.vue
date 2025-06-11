@@ -1,7 +1,35 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
+  <el-alert
+    v-if="(tokenStore?.token?.risk_level??0) < 0"
+    class="myTxs-notice"
+    type="warning"
+    :title="t('myTxsNotice')"
+    show-icon
+    closable
+    :style="{
+      backgroundColor:
+        mode === 'light' ? '#ffa94d0d' : '#36131C',
+      color: '#f00',
+      border: 'none',
+    }"
+  />
+  <el-alert
+    v-else-if="warningStatus"
+    class="myTxs-notice"
+    type="warning"
+    :title="t('alertNotice')"
+    show-icon
+    closable
+    :style="{
+      backgroundColor:
+        mode === 'light' ? '#ffa94d0d' : '#3b1e0c',
+      color: '#ED6A0C',
+      border: 'none',
+    }"
+  />
   <div
-    class="info flex items-center bg-[--d-111-l-FFF] mb-4px h-64px p-x-16px text-12px color-[--d-666-l-999]"
+    class="info flex items-center bg-[--d-111-l-FFF] mb-1px h-64px p-x-16px text-12px color-[--d-666-l-999]"
   >
     <Icon
       name="material-symbols:kid-star"
@@ -494,16 +522,16 @@
         class="block mt-8px color-[--d-F5F5F5-l-333]"
         :style="{
           color:
-            Number(token?.dev_count || 0) * 100 < 0.1
+            Number(token?.dev_balance_ratio_cur || 0) < 0.1
               ? 'var(--d-666-l-999)'
-              : (token?.dev_count ?? 0) * 100 > 10
+              : (token?.dev_balance_ratio_cur ?? 0) > 10
               ? '#FFA622'
               : '',
         }"
         >{{
-          (token?.dev_count ?? 0) > 0 && (token?.dev_count ?? 0) * 100 < 0.1
+          (token?.dev_balance_ratio_cur ?? 0) > 0 && (token?.dev_balance_ratio_cur ?? 0) < 0.1
             ? '<0.1'
-            : (token?.dev_count ?? 0) * 100
+            : formatNumber(token?.dev_balance_ratio_cur ?? 0, 2)
         }}%</span
       >
     </div>
@@ -644,6 +672,7 @@ const { evmAddress } = storeToRefs(useBotStore())
 const { theme } = useThemeStore()
 const { t } = useI18n()
 const route = useRoute()
+const { mode } = storeToRefs(useGlobalStore())
 
 const editableGroup = shallowRef(false)
 const groupId = shallowRef(0)
@@ -733,6 +762,9 @@ const currentGroup = computed(() => {
 const chain = computed(() => {
   const { chain } = getAddressAndChainFromId(id.value, 0)
   return chain
+})
+const warningStatus = computed(() => {
+  return (tokenStore?.token?.risk_level??0) >= 0 && !tokenStore?.token?.logo_url && !tokenStore?.token?.is_audited
 })
 // const tokenInfo = computed(() => {
 //   return tokenStore.tokenInfo || 0
