@@ -136,9 +136,7 @@ const openConnect = () => {
 }
 onMounted(() => {
   setTimeout(() => {
-    if (!botStore.connectVisible && !botStore.evmAddress) {
-      loadComponent()
-    }
+    loadComponent()
   }, 3000)
 })
 </script>
