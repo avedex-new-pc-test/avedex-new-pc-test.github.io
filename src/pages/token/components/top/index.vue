@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
   <div
-    class="info flex items-center bg-[--d-111-l-FFF] mb-4px h-64px p-x-16px text-12px color-[--d-666-l-999]"
+    class="info flex items-center bg-[--d-111-l-FFF] mb-1px h-64px p-x-16px text-12px color-[--d-666-l-999]"
   >
     <Icon
       name="material-symbols:kid-star"

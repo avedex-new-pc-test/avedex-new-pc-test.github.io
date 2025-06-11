@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-scrollbar height="calc(100vh - 98px)">
-      <div class="flex flex-col h-[calc(100vh-100px)] overflow-visible">
+    <el-scrollbar height="calc(100vh - 92px)">
+      <div class="flex flex-col h-[calc(100vh-94px)] overflow-visible">
         <div class="p-15px bg-[--d-111-l-FFF]">
           <PriceTabs v-model="tabActive" :tabs="tabs" />
           <template v-for="item in tabs" :key="item.id">
