@@ -563,11 +563,11 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
 
 export function getColorClass(val: string|number) {
   if (Number(val) > 0) {
-    return 'color-#12b886'
+    return 'color-#12B886'
   } else if (Number(val) < 0) {
-    return 'color-#ff646d'
+    return 'color-#FF646D'
   } else {
-    return 'color-#959a9f'
+    return 'color-#959A9F'
   }
 }
 export function desensitizeEmail(email: string) {
