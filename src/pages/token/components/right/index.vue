@@ -1,33 +1,36 @@
 <template>
   <div>
     <el-scrollbar height="calc(100vh - 98px)">
-      <div class="p-15px bg-[--d-111-l-FFF]">
-        <PriceTabs v-model="tabActive" :tabs="tabs" />
-        <template v-for="item in tabs" :key="item.id">
-          <VolumeStats v-if="tabActive === item.id" :tabActive="item.id" :tabActiveName="item.name" />
-        </template>
+      <div class="flex flex-col h-[calc(100vh-100px)] overflow-visible">
+        <div class="p-15px bg-[--d-111-l-FFF]">
+          <PriceTabs v-model="tabActive" :tabs="tabs" />
+          <template v-for="item in tabs" :key="item.id">
+            <VolumeStats v-if="tabActive === item.id" :tabActive="item.id" :tabActiveName="item.name" />
+          </template>
+        </div>
+        <!-- <div class="flex items-center justify-around color-[--d-F5F5F5-l-333] p-15px bg-[--d-111-l-FFF] mt-4px">
+        <div class="text-center">
+          <div class="text-14px mb-5px">${{ formatNumber(token?.open_price || 0, 3) }}</div>
+          <div class="text-12px color-[--d-666-l-999]">{{ $t('openPrice') }}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-14px mb-5px">{{ tokenStore.circulation?.gt?.(0) ? (formatNumber(((tokenStore?.tokenInfoExtra?.amount_24 || 0) / Number(tokenStore?.circulation.toFixed())) * 100 || 0, 2) + '%') : '-' }}</div>
+          <div class="text-12px color-[--d-666-l-999]">{{ $t('24Exchange') }}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-14px mb-5px">-</div>
+          <div class="text-12px color-[--d-666-l-999]">DEV</div>
+        </div>
+      </div> -->
+        <div class="p-15px bg-[--d-111-l-FFF] mt-4px">
+          <BotSwap />
+        </div>
+        <div class="p-15px pb-5px bg-[--d-111-l-FFF] mt-4px">
+          <Pairs />
+        </div>
+        <Overview class="px-15px pb-10px bg-[--d-111-l-FFF] mt-4px" />
+        <div class=" bg-[--d-111-l-FFF] flex-1" />
       </div>
-      <!-- <div class="flex items-center justify-around color-[--d-F5F5F5-l-333] p-15px bg-[--d-111-l-FFF] mt-4px">
-      <div class="text-center">
-        <div class="text-14px mb-5px">${{ formatNumber(token?.open_price || 0, 3) }}</div>
-        <div class="text-12px color-[--d-666-l-999]">{{ $t('openPrice') }}</div>
-      </div>
-       <div class="text-center">
-         <div class="text-14px mb-5px">{{ tokenStore.circulation?.gt?.(0) ? (formatNumber(((tokenStore?.tokenInfoExtra?.amount_24 || 0) / Number(tokenStore?.circulation.toFixed())) * 100 || 0, 2) + '%') : '-' }}</div>
-        <div class="text-12px color-[--d-666-l-999]">{{ $t('24Exchange') }}</div>
-      </div>
-      <div class="text-center">
-        <div class="text-14px mb-5px">-</div>
-        <div class="text-12px color-[--d-666-l-999]">DEV</div>
-      </div>
-    </div> -->
-      <div class="p-15px bg-[--d-111-l-FFF] mt-4px">
-        <BotSwap />
-      </div>
-      <div class="p-15px pb-5px bg-[--d-111-l-FFF] mt-4px">
-        <Pairs />
-      </div>
-      <Overview class="px-15px pb-10px bg-[--d-111-l-FFF] mt-4px" />
     </el-scrollbar>
   </div>
 </template>
