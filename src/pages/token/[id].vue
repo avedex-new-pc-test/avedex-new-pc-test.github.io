@@ -10,14 +10,18 @@
         </div>
         <div class="flex-1 hide-scrollbar min-w-0 relative">
           <div
-            :class="`absolute bg-[--d-333-l-DDD] w-16px h-38px z-1 cursor-pointer flex items-center justify-center ${
-              globalStore.showLeft ? 'left--20px ' : ''
-            }`"
-            @click="globalStore.$patch({showLeft:!globalStore.showLeft})"
+            v-show="globalStore.showLeft"
+            :class="`absolute bg-[--d-333-l-DDD] w-10px h-32px z-1 cursor-pointer flex items-center justify-center left--14px hover:w-30px hover:left--34px hover:h-36px transition-all`"
+            @click="globalStore.$patch({showLeft:false})"
           >
-            <Icon name="custom:fold" :class="`color-[--d-666-l-999] text-10px ${
-              !globalStore.showLeft?'rotate-180':''
-            }`"/>
+            <Icon name="material-symbols:arrow-back-ios-new-rounded" :class="`color-[--d-FFF-l-222] text-12px`"/>
+          </div>
+          <div
+            v-show="!globalStore.showLeft"
+            :class="`absolute bg-[--d-333-l-DDD] w-10px h-32px z-1 cursor-pointer flex items-center justify-center left-0 hover:w-30px hover:h-36px transition-all`"
+            @click="globalStore.$patch({showLeft:true})"
+          >
+            <Icon name="material-symbols:arrow-forward-ios" :class="`color-[--d-FFF-l-222] text-12px`"/>
           </div>
           <el-scrollbar height="calc(100vh - 164px)">
             <KLine />
