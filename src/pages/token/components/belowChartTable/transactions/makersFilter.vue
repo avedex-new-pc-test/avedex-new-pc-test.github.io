@@ -12,7 +12,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:visible', 'confirm', 'reset'])
 const {evmAddress, getWalletAddress} = useBotStore()
-const {isDark} = useThemeStore()
+const {isDark} = storeToRefs(useThemeStore())
 const tempAddress = shallowRef('')
 
 const computedVisible = computed({
@@ -68,8 +68,8 @@ watch(() => props.modelValue, () => {
           {{ $t('reset') }}
         </el-button>
         <el-button
+          type="primary"
           class="h-30px flex-1 m-l-auto"
-          :color="isDark ? '#F5F5F5':'#222'"
           @click="emit('confirm',tempAddress)"
         >
           {{ $t('confirm') }}

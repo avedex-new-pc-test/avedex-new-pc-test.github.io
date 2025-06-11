@@ -3,6 +3,7 @@ import {getTxsUserBrief} from '~/api/token'
 import {BigNumber} from 'bignumber.js'
 import dayjs from 'dayjs'
 
+const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   virtualRef: {
     type: HTMLElement,
@@ -15,10 +16,19 @@ const props = defineProps({
   addressAndChain: {
     type: Object,
     default: () => ({})
-  }
+  },
+  modelValue: Boolean
 })
 const themeStore = useThemeStore()
-const visible = shallowRef(false)
+// const visible = shallowRef(false)
+const visible = computed({
+  get() {
+    return props.modelValue
+  },
+  set(val: boolean) {
+    emit('update:modelValue', val)
+  }
+})
 const isLoading = shallowRef(false)
 const userBriefData = ref()
 watch(() => props.currentRow, () => {
@@ -53,16 +63,6 @@ async function _getTxsUserBrief() {
     console.log('=>(markerTooltip.vue:38) e', e)
   } finally {
     isLoading.value = false
-  }
-}
-
-function getColorClass(val: string) {
-  if (Number(val) > 0) {
-    return 'color-#12b886'
-  } else if (Number(val) < 0) {
-    return 'color-#ff646d'
-  } else {
-    return 'color-#848E9C'
   }
 }
 </script>

@@ -87,3 +87,10 @@
     color: var(--d-666-l-999);
   }
 }
+
+.el-popover.el-popover, .el-dropdown__popper.el-popper {
+  --el-popover-bg-color: var(--d-222-l-FFF);
+  --el-bg-color-overlay: var(--d-222-l-FFF);
+  --el-popover-border-color: transparent;
+  --el-border-color-light: transparent;
+}

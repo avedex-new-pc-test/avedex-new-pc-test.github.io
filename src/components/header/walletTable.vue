@@ -296,7 +296,9 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
 .history {
   font-size: 12px;
   padding-bottom: 10px;
-
+  :deep() .icon-remark {
+    margin-left: 0
+  }
   .empty {
     color: #999;
     height: 500px;
