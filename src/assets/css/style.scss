@@ -15,6 +15,9 @@
     }
   }
 }
+.el-dialog__headerbtn:hover> .el-dialog__close {
+  color: inherit !important;
+}
 .search-dialog.el-dialog {
   background: var(--d-222-l-FFF);
   .search-input {

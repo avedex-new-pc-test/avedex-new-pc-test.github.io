@@ -515,7 +515,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
       flex: 1.3;
     }
     > :nth-child(3) {
-      flex: 1;
+      flex: 0.7;
       text-align: right;
     }
     > :nth-child(4) {
@@ -629,7 +629,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
         flex: 1.3;
       }
       > :nth-child(3) {
-        flex: 1;
+        flex: 0.7;
         text-align: right;
       }
       > :nth-child(4) {

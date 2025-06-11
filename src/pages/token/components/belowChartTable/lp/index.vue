@@ -3,17 +3,17 @@
     <div  class="w-[100%]">
       <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
         <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
-        <el-radio-group v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
+        <el-radio-group class="m-radio-group" v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
           <el-radio-button label="7D" :value="7" />
           <el-radio-button label="1M" :value="30" />
         </el-radio-group>
       </div>
-      <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"   />
+      <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"  :showLeft="showLeft" />
     </div>
     <div class="m-table mt20px" :style="{maxHeight: (dataList.length > 0||loading)?'250px':'500px'}">
-      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
-        :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}">
-        <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
+      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
+        :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}" size="small">
+        <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
           :align="col.align">
           <template #default="{ row }">
             <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns', 'percent']">
@@ -46,10 +46,14 @@
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
                 <div :class="`color-${upColor[0]} flex-start`">
-                  <tag type="success" class="h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
+                  <img src="@/assets/images/add.svg" alt="" class="h-12px w-12px mr-4px">
+                  <!-- <tag type="success" class="h-12px w-12px mr-4px">+</tag> -->
+                  {{ row.add_total }}
                 </div>
                 <div :class="`color-${downColor[0]} flex-start`">
-                  <tag type="danger" class="h-12px w-12px mr-4px">-</tag>{{ row.remove_total }}
+                  <!-- <tag type="danger" class="h-12px w-12px mr-4px">-</tag> -->
+                  <img src="@/assets/images/remove.svg" alt="" class="h-12px w-12px mr-4px">
+                  {{ row.remove_total }}
                 </div>
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
@@ -85,10 +89,9 @@ import tag from './components/tag.vue'
 import { upColor, downColor } from '@/utils/constants'
 import Column from './components/columns.vue'
 import Line from './components/line.vue'
-const {isDark,mode} = storeToRefs(useGlobalStore())
+const {isDark,mode,showLeft} = storeToRefs(useGlobalStore())
 const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
-
 const dataSource = ref<(IHolder & { index: string })[]>([])
 const dataList = ref<(GetPairLiqNewResponse & { time: string })[]>([])
 const { t } = useI18n()
@@ -101,13 +104,14 @@ const columns = computed(() => {
       label: '#',
       prop: 'index',
       align: 'left',
-      width: 40,
+      minWidth: 40,
     },
     {
       label: t('provider'),
       prop: 'mark',
       align: 'right',
       sortable: false,
+      minWidth: 140,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
         return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
@@ -127,13 +131,13 @@ const columns = computed(() => {
       label: t('addAmt'),
       prop: 'addAmt',
       align: 'right',
-      width: 140
+      minWidth: 140
     },
     {
       label: t('netAmt'),
       prop: 'netAmt',
       align: 'right',
-      width: 140
+      minWidth: 140
     },
     {
       label: t('amount'),
@@ -148,7 +152,7 @@ const columns = computed(() => {
     {
       label: t('percent'),
       prop: 'percent',
-      width: 100,
+      minWidth: 100,
       align: 'right',
       sortable: false,
       customClassName: () => { },
@@ -160,7 +164,7 @@ const columns = computed(() => {
       label: t('balance1'),
       prop: 'quantity',
       align: 'right',
-      width: 140,
+      minWidth: 100,
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
@@ -171,6 +175,7 @@ const columns = computed(() => {
       label: t('txns'),
       prop: 'txns',
       align: 'left',
+      width: 80,
       // customFormatter: (row: IHolder) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
@@ -179,6 +184,7 @@ const columns = computed(() => {
       label: t('lastTx'),
       prop: 'last_tx_time',
       align: 'right',
+      width: 80,
       sortable: false,
       customClassName: undefined,
       customFormatter: (row: IHolder) => {
@@ -319,14 +325,25 @@ function init2() {
 
 <style scoped lang="scss">
 .m-table {
+  .el-table.el-table{
+    /* --el-table-header-text-color: var(--d-666-l-999); */
+    --el-table-header-bg-color: var(--d-222-l-F2F2F2);
+  }
   :deep() .el-table__expand-column {
     /* display: none; */
   }
-
+  :deep() .cell{
+    padding-top: 0;
+    padding-bottom: 0;
+  }
   :deep() .el-table__expand-icon {
     display: none;
   }
-
+  :deep() .el-table__expanded-cell td {
+    /* --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2); */
+    --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
+     background-color: var(--d-222-l-F2F2F2);
+  }
   :deep() th {
     font-family: Poppins;
     font-weight: 400;
@@ -340,12 +357,23 @@ function init2() {
     font-family: Poppins;
     font-weight: 400;
     font-size: 13px;
-    line-height: 20px;
+    line-height: 1;
     letter-spacing: 0px;
     color: var(--d-999-l-666);
+    /* padding-top: 0;
+    padding-bottom: 0; */
+    .cell{
+      line-height: 1.5;
+    }
   }
 }
-
+.m-radio-group{
+  :deep() .el-radio-button__inner:hover{
+  }
+  :deep() .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
+    border-color: var(--d-333-l-666);
+  }
+}
 .line-bar {
   width: 100%;
   height: 3px;
