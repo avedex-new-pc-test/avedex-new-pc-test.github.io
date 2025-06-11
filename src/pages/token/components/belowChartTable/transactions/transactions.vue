@@ -486,7 +486,6 @@ function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = 
     }
     return price
   }
-  debugger
   return 0
 }
 
