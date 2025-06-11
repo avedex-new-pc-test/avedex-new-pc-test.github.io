@@ -14,6 +14,7 @@ export interface SearchWalletInfo {
   remark: string
   total_profit: number
   total_profit_rate: number
+  total_profit_ratio: number
   total_purchase: string
   total_purchase_usd: string
   total_sold: string

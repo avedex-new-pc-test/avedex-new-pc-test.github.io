@@ -33,7 +33,8 @@ export function getTokenInfo(id: string): Promise<null | TokenInfo> {
   return $api(testDomain + '/v2api/token_info/v1/token/detail', {
     method: 'get',
     query: {
-      token_id: id1
+      token_id: id1,
+      cache_use: false
     }
   })
 }
@@ -247,6 +248,7 @@ export interface GetHotTokensResponse {
   mcap: number;
   is_hot: number;
   launchpad: string;
+  risk_level: number
 }
 
 export function getHotTokens(): Promise<GetHotTokensResponse[]> {

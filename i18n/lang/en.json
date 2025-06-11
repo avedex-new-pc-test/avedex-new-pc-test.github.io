@@ -80,7 +80,7 @@
   "pool": "Liquidity",
   "Txs": "Txs",
   "riskScore": "Risk",
-  "launchTime": "Launch Time",
+  "launchTime": "Time",
   "hiddenHighToken": "Collapse high-risk tokens",
   "showHighToken": "Show high-risk tokens",
   "highRisk": "High Risk",
@@ -501,7 +501,7 @@
   "campaignBuyAvg": "Buy Price",
   "outflow": "Outflow",
   "campaignSellAvg": "Sell Price",
-  "limitPrice": "Limit order price",
+  "limitPrice": "Limit Order Price",
   "mev": "MEV",
   "totalProfit": "Total Profit",
   "realizedProfit": "Realized Profit",
@@ -634,5 +634,7 @@
   "netAmt": "Net Amt",
   "percent": "Percent",
   "txns": "Txns",
-  "liquidity": "Liquidity"
+  "liquidity": "Liquidity",
+  "holderBubble": "Holders Bubble Map",
+  "Chg": "Chg"
 }

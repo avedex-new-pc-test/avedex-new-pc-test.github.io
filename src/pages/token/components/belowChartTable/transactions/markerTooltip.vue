@@ -3,6 +3,7 @@ import {getTxsUserBrief} from '~/api/token'
 import {BigNumber} from 'bignumber.js'
 import dayjs from 'dayjs'
 
+const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   virtualRef: {
     type: HTMLElement,
@@ -15,10 +16,19 @@ const props = defineProps({
   addressAndChain: {
     type: Object,
     default: () => ({})
-  }
+  },
+  modelValue: Boolean
 })
 const themeStore = useThemeStore()
-const visible = shallowRef(false)
+// const visible = shallowRef(false)
+const visible = computed({
+  get() {
+    return props.modelValue
+  },
+  set(val: boolean) {
+    emit('update:modelValue', val)
+  }
+})
 const isLoading = shallowRef(false)
 const userBriefData = ref()
 watch(() => props.currentRow, () => {
@@ -55,16 +65,6 @@ async function _getTxsUserBrief() {
     isLoading.value = false
   }
 }
-
-function getColorClass(val: string) {
-  if (Number(val) > 0) {
-    return 'color-#12b886'
-  } else if (Number(val) < 0) {
-    return 'color-#ff646d'
-  } else {
-    return 'color-#848E9C'
-  }
-}
 </script>
 
 <template>
@@ -76,7 +76,7 @@ function getColorClass(val: string) {
     virtual-triggering
     trigger="hover"
     raw-content
-    popper-class="[&&]:p-20px [&&]:[--el-text-color-primary:--d-222-l-FFF]!"
+    popper-class="[&&]:p-12px [&&]:[--el-text-color-primary:--d-222-l-FFF]!"
     style="--el-text-color-primary:var(--d-222-l-FFF)"
   >
     <template #content>
@@ -89,7 +89,7 @@ function getColorClass(val: string) {
           <el-skeleton-item v-for="i in 10" :key="i" variant="p" style="width: 100%"/>
         </template>
       </el-skeleton>
-      <div v-else class="flex flex-col gap-10px w-210px color-[--d-F5F5F5-l-333]">
+      <div v-else class="flex flex-col gap-6px w-210px color-[--d-F5F5F5-l-333]">
         <div class="flex gap-6px items-center">
           <UserAvatar
             class="relative"
@@ -144,7 +144,7 @@ function getColorClass(val: string) {
             </template>
           </span>
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between whitespace-nowrap">
           <span class="color-[--d-999-l-666]">{{ $t('totalBuy2') }}
           <template
             v-if="userBriefData.total_purchase!=='--'&&Number.parseFloat(userBriefData.total_purchase)!==0">
@@ -152,16 +152,16 @@ function getColorClass(val: string) {
           </template>:</span>
           <span>
             <span class="color-#12B886 mr-10px">{{
-                userBriefData.total_purchase_usd ? `$${formatNumber(userBriefData.total_purchase_usd)}` : '--'
+                userBriefData.total_purchase_usd ? `$${formatNumber(userBriefData.total_purchase_usd, 2)}` : '--'
               }}</span>
             <span>{{
                 userBriefData.total_purchase_amount
-                  ? formatNumber(userBriefData.total_purchase_amount)
+                  ? formatNumber(userBriefData.total_purchase_amount, 2)
                   : '--'
               }}</span>
          </span>
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between whitespace-nowrap">
           <span class="color-[--d-999-l-666]">{{ $t('totalSell2') }}
           <template
             v-if="userBriefData.total_sold!=='--'&&Number.parseFloat(userBriefData.total_sold)!==0">
@@ -169,11 +169,11 @@ function getColorClass(val: string) {
           </template>:</span>
           <span>
             <span class="color-#F6465D mr-10px">{{
-                userBriefData.total_sold_usd ? `$${formatNumber(userBriefData.total_sold_usd)}` : '--'
+                userBriefData.total_sold_usd ? `$${formatNumber(userBriefData.total_sold_usd, 2)}` : '--'
               }}</span>
             <span>{{
                 userBriefData.total_sold_amount
-                  ? formatNumber(userBriefData.total_sold_amount)
+                  ? formatNumber(userBriefData.total_sold_amount, 2)
                   : '--'
               }}</span>
          </span>
@@ -184,13 +184,15 @@ function getColorClass(val: string) {
         />
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">7D {{ $t('winRate2') }}:</span>
-          <span>{{ formatNumber(userBriefData.win_ratio) }}%</span>
+          <span>{{ formatNumber(userBriefData.win_ratio, 1) }}%</span>
         </div>
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">7D {{ $t('profit2') }}:</span>
           <span :class="`${getColorClass(userBriefData.profit)}`">
             <template v-if="userBriefData.profit==='0'">--</template>
-            <template v-else-if="userBriefData.profit<0">-</template>${{ formatNumber(Math.abs(userBriefData.profit)) }}
+            <template v-else-if="userBriefData.profit<0">-</template>${{
+              formatNumber(Math.abs(userBriefData.profit,), 2)
+            }}
           </span>
         </div>
         <div class="flex justify-between">

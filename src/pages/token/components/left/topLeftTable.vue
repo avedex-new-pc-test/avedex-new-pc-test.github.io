@@ -35,13 +35,14 @@ const activeHeight = computed(() => {
 
 <template>
   <div
-    :class="`color-[var(--d-F5F5F5-l-333)] bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px
+    :style="`height: ${Math.max(height,0)}px;`"
+    :class="`color-[var(--d-F5F5F5-l-333)] bg-[--d-111-l-FFF] rounded-2px text-14px overflow-hidden
     `">
-    <div class="flex items-center px-12px gap-20px border-b-solid border-b-1px border-b-#FFFFFF08">
+    <div class="pt-10px flex items-center px-12px gap-20px border-b-solid border-b-1px border-b-#FFFFFF08">
       <a
         v-for="(item) in tabs"
         :key="item.component" href="javascript:;"
-        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-999-l-666] b-b-solid b-b-2px
+        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-999-l-666] b-b-solid b-b-2px font-500
          ${activeTab===item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
         @click="activeTab=item.component"
       >

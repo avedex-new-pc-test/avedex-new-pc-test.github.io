@@ -6,7 +6,7 @@ import {bot_createSolTx, bot_createSwapEvmTx, bot_getTokenBalance} from '~/api/b
 import {ElNotification} from 'element-plus'
 import {formatBotGasTips} from '~/utils/bot'
 import BigNumber from 'bignumber.js'
-import {useThrottleFn} from '@vueuse/core'
+import {useDebounceFn, useThrottleFn} from '@vueuse/core'
 
 const {t} = useI18n()
 const wsStore = useWSStore()
@@ -31,7 +31,7 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
         const total_profit_ratio = new BigNumber(current.uprice || 0)
           .minus(el.average_purchase_price_usd || 0).div(el.average_purchase_price_usd)
         if (total_profit_ratio.toNumber() < -1 || Number(el.average_purchase_price_usd) < 0) {
-          return {...el}
+          return el
         } else {
           return {
             ...el,
@@ -51,6 +51,7 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
     }
     return el
   })
+  triggerRef(listData)
 })
 watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
   // 处理 token 交易
@@ -65,22 +66,25 @@ watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
       // 买入信号
       const isBuy = type === '0'
       const isMainToken = token === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
-      const walletAddress = botStore.getWalletAddress(chain)
+      const prevBalance = listData.value[index].balance
       if (index > -1) {
         if (isBuy) {
           if (isMainToken) {
             getTokenBalance(token, chain)
           } else {
-            resetHolderList(walletAddress)
+            listData.value[index].balance = Number(prevBalance) + Number(val.swap.amount)
+            triggerRef(listData)
           }
         } else {
           if (isMainToken) {
             getTokenBalance(token, chain)
             //   卖出所有直接删除数据
-          } else if (listData.value[index].balance === val.swap.amount) {
+          } else if (Number(prevBalance) === Number(val.swap.amount)) {
             listData.value.splice(index, 1)
+            triggerRef(listData)
           } else {
-            resetHolderList(walletAddress)
+            listData.value[index].balance = Number(prevBalance) - Number(val.swap.amount)
+            triggerRef(listData)
           }
         }
       }
@@ -93,13 +97,16 @@ watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
     if (token && chain) {
       const index = listData.value.findIndex(i => i.token === token && i.chain === chain)
       const isBuy = type === '0'
-      const indexObj = listData.value[index]
-      const balance = Number(indexObj.balance)
-      const price = indexObj.current_price_usd
-      const newBalance = new BigNumber(balance).plus(isBuy ? val.transfer.amount : -val.transfer?.amount)
-      const newBalanceUsd = newBalance.multipliedBy(price)
-      indexObj.balance = newBalance.toString()
-      indexObj.balance_usd = newBalanceUsd.toNumber()
+      if (index > -1) {
+        const indexObj = listData.value[index]
+        const balance = Number(indexObj.balance)
+        const price = indexObj.current_price_usd
+        const newBalance = new BigNumber(balance).plus(isBuy ? val.transfer.amount : -val.transfer?.amount)
+        const newBalanceUsd = newBalance.multipliedBy(price)
+        indexObj.balance = newBalance.toString()
+        indexObj.balance_usd = newBalanceUsd.toNumber()
+        triggerRef(listData)
+      }
     }
   }
 })
@@ -164,6 +171,14 @@ const props = defineProps({
 const scrollbarHeight = computed(() => {
   return Number(props.height) - 110
 })
+const scrollContainerRef = useTemplateRef('scrollContainerRef')
+const getDataOnResize = useDebounceFn(() => {
+  const {value} = scrollContainerRef
+  if (value && value.scrollHeight <= value.clientHeight && !listStatus.value.finished) {
+    _getUserBalance()
+  }
+}, 200)
+watch(scrollbarHeight, getDataOnResize)
 const sort = shallowRef({
   sortBy: undefined,
   activeSort: 0
@@ -433,10 +448,10 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
       :columns="columns"
     />
     <el-scrollbar
-      ref="otherListArea"
       :height="scrollbarHeight"
     >
       <div
+        ref="scrollContainerRef"
         v-infinite-scroll="_getUserBalance"
         :infinite-scroll-disabled="listStatus.finished|| listStatus.loading"
         infinite-scroll-distance="200"

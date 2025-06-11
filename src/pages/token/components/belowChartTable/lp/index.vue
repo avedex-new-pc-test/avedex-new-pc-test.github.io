@@ -3,17 +3,17 @@
     <div  class="w-[100%]">
       <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
         <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
-        <el-radio-group v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
+        <el-radio-group class="m-radio-group" v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
           <el-radio-button label="7D" :value="7" />
           <el-radio-button label="1M" :value="30" />
         </el-radio-group>
       </div>
-      <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"   />
+      <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"  :showLeft="showLeft" />
     </div>
-    <div class="m-table mt20px">
-      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content
-        :row-key="getRowKey" height="245">
-        <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
+    <div class="m-table mt20px" :style="{maxHeight: (dataList.length > 0||loading)?'250px':'500px'}">
+      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
+        :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}" size="small">
+        <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
           :align="col.align">
           <template #default="{ row }">
             <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns', 'percent']">
@@ -30,22 +30,30 @@
                   <span class="color-#12B886">{{ formatNumber(row.main_token_amount, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.main_token_symbol }}</span>
                 </div>
-                <span>${{ formatNumber(row.main_token_amount_usd, 1) }}</span>
+                <span v-if="!row.main_token_amount_usd">0</span>
+                <span v-else-if="row.main_token_amount_usd == '--'">--</span>
+                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'netAmt'" class="flex flex-col">
                 <div>
                   <span class="color-#12B886">{{ formatNumber(row.target_token_amount, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.target_token_symbol }}</span>
                 </div>
-                <span>${{ formatNumber(row.target_token_amount_usd, 1) }}</span>
+                <span v-if="!row.target_token_amount_usd">0</span>
+                <span v-else-if="row.target_token_amount_usd == '--'">--</span>
+                <span v-else>{{`${Number(row.target_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
-                <div :class="`color-${upColor[0]} flex-end`">
-                  <tag type="success" class="p-3px! h-12px w-12px mr-4px">+</tag>{{ row.add_total }}
+                <div :class="`color-${upColor[0]} flex-start`">
+                  <img src="@/assets/images/add.svg" alt="" class="h-12px w-12px mr-4px mt-2px">
+                  <!-- <tag type="success" class="h-12px w-12px mr-4px">+</tag> -->
+                  {{ row.add_total }}
                 </div>
-                <div :class="`color-${downColor[0]} flex-end`">
-                  <tag type="danger" class="p-3px! h-12px w-12px mr-4px">-</tag>{{ row.add_total }}
+                <div :class="`color-${downColor[0]} flex-start`">
+                  <!-- <tag type="danger" class="h-12px w-12px mr-4px">-</tag> -->
+                  <img src="@/assets/images/remove.svg" alt="" class="h-12px w-12px mr-4px mt-2px">
+                  {{ row.remove_total }}
                 </div>
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
@@ -81,10 +89,23 @@ import tag from './components/tag.vue'
 import { upColor, downColor } from '@/utils/constants'
 import Column from './components/columns.vue'
 import Line from './components/line.vue'
-const {isDark,mode} = storeToRefs(useGlobalStore())
-const { token, pairAddress } = storeToRefs(useTokenStore())
-const route = useRoute()
+import type { Token } from '~/api/types/token'
 
+const props=defineProps({
+  pairAddress: {
+    type: String,
+    default: ''
+  },
+  token: {
+    type: Object as PropType<Token>,
+    default: () => ({})
+  }
+})
+
+
+const {isDark,mode,showLeft} = storeToRefs(useGlobalStore())
+// const { token, pairAddress } = storeToRefs(useTokenStore())
+const route = useRoute()
 const dataSource = ref<(IHolder & { index: string })[]>([])
 const dataList = ref<(GetPairLiqNewResponse & { time: string })[]>([])
 const { t } = useI18n()
@@ -97,13 +118,14 @@ const columns = computed(() => {
       label: '#',
       prop: 'index',
       align: 'left',
-      width: 40,
+      minWidth: 40,
     },
     {
       label: t('provider'),
       prop: 'mark',
       align: 'right',
       sortable: false,
+      minWidth: 140,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
         return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
@@ -123,11 +145,13 @@ const columns = computed(() => {
       label: t('addAmt'),
       prop: 'addAmt',
       align: 'right',
+      minWidth: 140
     },
     {
       label: t('netAmt'),
       prop: 'netAmt',
       align: 'right',
+      minWidth: 140
     },
     {
       label: t('amount'),
@@ -142,7 +166,7 @@ const columns = computed(() => {
     {
       label: t('percent'),
       prop: 'percent',
-      width: 100,
+      minWidth: 100,
       align: 'right',
       sortable: false,
       customClassName: () => { },
@@ -154,6 +178,7 @@ const columns = computed(() => {
       label: t('balance1'),
       prop: 'quantity',
       align: 'right',
+      minWidth: 100,
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
@@ -163,7 +188,8 @@ const columns = computed(() => {
     {
       label: t('txns'),
       prop: 'txns',
-      align: 'right',
+      align: 'left',
+      width: 80,
       // customFormatter: (row: IHolder) => {
       //   return `$${formatNumber(row.current_price_usd, 4)}`
       // }
@@ -172,6 +198,7 @@ const columns = computed(() => {
       label: t('lastTx'),
       prop: 'last_tx_time',
       align: 'right',
+      width: 80,
       sortable: false,
       customClassName: undefined,
       customFormatter: (row: IHolder) => {
@@ -227,14 +254,18 @@ const columns2 = computed(() => {
   ]
 })
 onMounted(() => {
+  // console.log('mounted')
   init1()
   init2()
 })
-watch([pairAddress], (val) => {
+onActivated(() => {
+  // console.log('activated')
+})
+watch(() => props.pairAddress, (val) => {
   console.log('pairAddress changed', val)
   init1()
 })
-watch([token], (val) => {
+watch(()=>props.token, (val) => {
   console.log('token changed', val)
   init2()
 })
@@ -250,17 +281,17 @@ const addressAndChain = computed(() => {
     return getAddressAndChainFromId(id)
   }
   return {
-    address: token.value?.token || '',
-    chain: token.value?.chain || ''
+    address: props.token?.token || '',
+    chain: props.token?.chain || ''
   }
 })
 function formatLock(item:any){
   return item.lock || /lock|null|(black hole)/gi.test(item.mark || '')
 }
 function init1() {
-  if (pairAddress.value && addressAndChain.value.chain) {
+  if (props.pairAddress && addressAndChain.value.chain) {
     loading.value = true
-    getPairLiqNew(pairAddress.value + '-' + addressAndChain.value.chain,activeTime.value).then((res: GetPairLiqNewResponse[]) => {
+    getPairLiqNew(props.pairAddress + '-' + addressAndChain.value.chain,activeTime.value).then((res: GetPairLiqNewResponse[]) => {
       dataList.value =
         res
           ?.map((i) => {
@@ -280,8 +311,8 @@ function init1() {
 }
 function init2() {
   const expandedRowKeys1 = [] as string[]
-  if (token?.value?.token && addressAndChain.value?.chain) {
-    getLPHolders((token?.value?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
+  if (props.token?.token && addressAndChain.value?.chain) {
+    getLPHolders((props.token?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
       console.log('getLPHolders', res)
       if (res?.Holders && Array.isArray(res?.Holders)) {
         const { Holders, ...rest } = res
@@ -312,14 +343,25 @@ function init2() {
 
 <style scoped lang="scss">
 .m-table {
+  .el-table.el-table{
+    /* --el-table-header-text-color: var(--d-666-l-999); */
+    --el-table-header-bg-color: var(--d-222-l-F2F2F2);
+  }
   :deep() .el-table__expand-column {
     /* display: none; */
   }
-
+  :deep() .cell{
+    padding-top: 0;
+    padding-bottom: 0;
+  }
   :deep() .el-table__expand-icon {
     display: none;
   }
-
+  :deep() .el-table__expanded-cell td {
+    /* --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2); */
+    --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
+     background-color: var(--d-222-l-F2F2F2);
+  }
   :deep() th {
     font-family: Poppins;
     font-weight: 400;
@@ -333,12 +375,23 @@ function init2() {
     font-family: Poppins;
     font-weight: 400;
     font-size: 13px;
-    line-height: 20px;
+    line-height: 1;
     letter-spacing: 0px;
     color: var(--d-999-l-666);
+    /* padding-top: 0;
+    padding-bottom: 0; */
+    .cell{
+      line-height: 1.5;
+    }
   }
 }
-
+.m-radio-group{
+  :deep() .el-radio-button__inner:hover{
+  }
+  :deep() .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
+    border-color: var(--d-333-l-666);
+  }
+}
 .line-bar {
   width: 100%;
   height: 3px;

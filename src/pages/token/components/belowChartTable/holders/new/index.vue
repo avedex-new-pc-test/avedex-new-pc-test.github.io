@@ -2,7 +2,7 @@
   <div class="holderInfo">
     <div class="px-12px mb-10px flex justify-between">
       <div
-        class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide"
+        class="flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide tab-width w-100%"
       >
         <a
           v-for="item in tabs"
@@ -121,11 +121,11 @@
       </li>
     </ul>
 
-    <el-row :gutter="30">
+    <!-- <el-row :gutter="30">
       <el-col
         :span="show_bubble && ['solana', 'bsc']?.includes(chain) ? 12 : 24"
-      >
-        <div class="relative">
+      > -->
+        <!-- <div class="relative"> -->
           <List
             ref="holdersRef"
             :tableList="holderList"
@@ -136,7 +136,7 @@
             @handleSortChange="handleSortChange"
             @filterOriginAddress="filterOriginAddress"
           />
-          <el-tooltip
+          <!-- <el-tooltip
             v-if="['solana', 'bsc']?.includes(chain) && !show_bubble"
             placement="top"
 
@@ -150,12 +150,11 @@
               href=""
               @click.stop.prevent="show_bubble = true"
             >
-              <!-- <i class="iconfont icon-bubble color-999" /> -->
-              <Icon name="custom:bubble" class="color-#999 icon-bubble" />
+              <Icon name="custom:bubble" class="color-[--d-696E7C-l-fff] icon-bubble" />
             </a>
-          </el-tooltip>
-        </div>
-      </el-col>
+          </el-tooltip> -->
+        <!-- </div> -->
+      <!-- </el-col>
       <el-col
         :span="show_bubble && ['solana', 'bsc']?.includes(chain) ? 12 : 0"
       >
@@ -171,7 +170,7 @@
               href=""
               @click.stop.prevent="show_bubble = false"
             >
-              <Icon name="material-symbols:keyboard-double-arrow-right-rounded" class="color-#999" />
+              <Icon name="material-symbols:keyboard-double-arrow-right-rounded" class="color-[--d-696E7C-l-fff]" />
             </a>
           </el-tooltip>
           <iframe
@@ -190,7 +189,7 @@
           />
         </div>
       </el-col>
-    </el-row>
+    </el-row>-->
   </div>
 </template>
 
@@ -204,7 +203,7 @@ import {
   type HolderStat,
 } from '@/api/holders'
 import { useLocalStorage } from '@vueuse/core'
-import List from './list'
+import List from './list.vue'
 const holderListSortObj = useLocalStorage('holderListSortObj', {
   all: {
     sort_by: '',
@@ -218,13 +217,21 @@ const holderListSortObj = useLocalStorage('holderListSortObj', {
     sort_by: 'sold_usd',
     order: 'desc',
   },
+  buy24h: {
+    sort_by: '',
+    order: '',
+  },
+  sell24h: {
+    sort_by: '',
+    order: '',
+  },
 })
-const { price ,token} = storeToRefs(useTokenStore())
+const { price, token} = storeToRefs(useTokenStore())
 const route = useRoute()
 const botStore = useBotStore()
 const { t } = useI18n()
 const { totalHolders } = storeToRefs(useTokenStore())
-const activeTab = shallowRef<string>('all')
+const activeTab = shallowRef<'all' | 'buy' |'sell' | 'buy24h' | 'sell24h'>('all')
 
 const searchKeyword = shallowRef('')
 const loadingHolders = shallowRef(false)
@@ -232,7 +239,7 @@ const loadingHolders = shallowRef(false)
 const holderListObj = ref<Record<string, HolderStat[]>>({})
 const aggregateStatsObj = ref<Record<string, AggregateStats>>({})
 
-  const show_bubble = shallowRef(false)
+  // const show_bubble = shallowRef(false)
 
 const searchOriginKeyword = shallowRef('')
 const searchOriginType = shallowRef('')
@@ -241,7 +248,7 @@ const tabs = computed(() => {
   const arr: Array<{ label: string; value: string }> = []
   if (Array.isArray(totalHolders.value)) {
     totalHolders.value.forEach((i) => {
-      const num = i.total_address
+      const num = i.total_address || 0
       if (num > 0) {
         arr.push({
           ...i,
@@ -314,22 +321,22 @@ const totalProfit = computed(() => {
     }, new BigNumber('0'))
     ?.toFixed(0)
 })
-const addressAndChain = computed(() => {
-  const id = route.params.id as string
-  if (id) {
-    return getAddressAndChainFromId(id)
-  }
-  return {
-    address: token.value?.token || '',
-    chain: token.value?.chain || '',
-  }
-})
-const tokenAddress= computed(()=>{
-  return addressAndChain.value?.address
-})
-const chain= computed(()=>{
-  return addressAndChain.value?.chain
-})
+// const addressAndChain = computed(() => {
+//   const id = route.params.id as string
+//   if (id) {
+//     return getAddressAndChainFromId(id)
+//   }
+//   return {
+//     address: token.value?.token || '',
+//     chain: token.value?.chain || '',
+//   }
+// })
+// const tokenAddress= computed(()=>{
+//   return addressAndChain.value?.address
+// })
+// const chain= computed(()=>{
+//   return addressAndChain.value?.chain
+// })
 watch(
   () => id.value,
   (newId) => {
@@ -338,10 +345,9 @@ watch(
     }
   },
   {
-    immediate: true,
+    // immediate: true,
   }
 )
-
 watch(activeTab, (val) => {
   // if (searchKeyword) {
   //   this.filterAddress(this.searchKeyword)
@@ -363,7 +369,13 @@ watch(activeTab, (val) => {
   // }
   getHoldersList()
 })
-function setActiveTab(val: string) {
+onMounted(() => {
+  getHoldersList()
+})
+onActivated(() => {
+  getHoldersList()
+})
+function setActiveTab(val: typeof activeTab.value) {
   activeTab.value = val
 }
 function getHoldersList(sortObj?: { sort_by: string; order: string }) {
@@ -404,7 +416,10 @@ function getHoldersList(sortObj?: { sort_by: string; order: string }) {
         ? 1
         : undefined,
   }
-  holderListSortObj.value[activeTab.value] = sort
+  holderListSortObj.value[activeTab.value] = sort as {
+    sort_by: string
+    order: string
+  }
   if (searchKeyword.value) {
     return
   }
@@ -416,7 +431,7 @@ function getHoldersList(sortObj?: { sort_by: string; order: string }) {
       aggregateStatsObj.value[activeTab.value] = res?.aggregateStats || {}
     })
     .catch(() => {
-      holderListSortObj.value[activeTab.value] = []
+      holderListObj.value[activeTab.value] = []
     })
     .finally(() => {
       loadingHolders.value = false
@@ -426,14 +441,14 @@ function handleSortChange(obj: { prop: string; order: string }) {
   getHoldersList({ sort_by: obj.prop, order: obj.order?.replace('ending', '') })
 }
 function filterOriginAddress(row:{ address: string, type: string }) {
-      if (searchOriginKeyword.value) {
-        searchOriginKeyword.value = ''
-        searchOriginType.value = ''
-      } else {
-        searchOriginKeyword.value = row.address || ''
-        searchOriginType.value = row.type || ''
-      }
-    }
+  if (searchOriginKeyword.value) {
+    searchOriginKeyword.value = ''
+    searchOriginType.value = ''
+  } else {
+    searchOriginKeyword.value = row.address || ''
+    searchOriginType.value = row.type || ''
+  }
+}
 </script>
 <style lang="scss" scoped>
 .section-4 {

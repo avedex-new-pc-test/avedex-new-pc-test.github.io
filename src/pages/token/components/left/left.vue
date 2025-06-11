@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import TopLeftTable from './topLeftTable.vue'
-import {useWindowSize} from '@vueuse/core'
 import BottomLeftTable from '~/pages/token/components/left/bottomLeftTable.vue'
 
 const topLeftHeight = shallowRef(370)
 const canDrag = shallowRef(false)
-const {height} = useWindowSize()
+const globalStore = useGlobalStore()
 
 function drag(e: MouseEvent) {
   let dy = e.clientY
@@ -15,11 +14,7 @@ function drag(e: MouseEvent) {
       return
     }
     const {clientY} = e
-    // 阈值
-    if (clientY > height.value - 240 || clientY < 310) {
-      return
-    }
-    // document.getElementById('k-line-chart-container').style.pointerEvents = 'none'
+
     if (clientY < dy) {
       topLeftHeight.value -= dy - clientY
     } else {
@@ -38,17 +33,17 @@ function drag(e: MouseEvent) {
 </script>
 
 <template>
-  <div>
+  <div v-show="globalStore.showLeft">
     <div class="relative">
       <TopLeftTable :height="topLeftHeight"/>
       <div
-        class="w-full cursor-row-resize bg-[--d-2D3037-l-F5F5F5] flex items-center justify-center h-6px"
+        class="w-full cursor-row-resize bg-[--d-222-l-F2F2F2] gap-1px hover:bg-[--d-666-l-CCC] flex items-center justify-center h-4px"
         @mousedown.stop.prevent="drag"
       >
-        <Icon name="custom:drag" class="text-4px color-#959A9F"/>
+        <span v-for="i in 4" :key="i" class="bg-#444 w-2px h-2px rounded-full"></span>
       </div>
     </div>
-    <BottomLeftTable :height="height - topLeftHeight"/>
+    <BottomLeftTable/>
   </div>
 </template>
 

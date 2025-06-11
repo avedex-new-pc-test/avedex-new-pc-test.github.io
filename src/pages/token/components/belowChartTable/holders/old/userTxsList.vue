@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import imageEmptyBlack from '@/assets/images/empty-black.svg'
 import imageEmptyWhite from '@/assets/images/empty-white.svg'
-import UserTxsHead from './userTxsHead'
+import UserTxsHead from './userTxsHead.vue'
 import { formatExplorerUrl, getAddressAndChainFromId, formatDate } from '@/utils/index'
 import { formatNumber } from '@/utils/formatNumber'
+import type { UserTxs } from '@/api/holders'
 
 const props = defineProps({
-  tableList: Array as () => any[],
+  tableList: {
+    type: Array as PropType<UserTxs[]>,
+    default: () => {
+      return []
+    }
+  },
   userAddress: {
     type: String,
     default: ''
@@ -33,7 +39,7 @@ const tokenAddress = computed(() => {
   return (getAddressAndChainFromId(data)?.address || '').toLowerCase()
 })
 
-const loading = computed(() => loadingHead.value || props.loadingMyTx)
+// const loading = computed(() => loadingHead.value || props.loadingMyTx)
 
 function isBuy(row: any) {
   if (row.from_address?.toLowerCase?.() === tokenAddress.value) return false
@@ -92,7 +98,7 @@ function changeLoadingHead(val: boolean) {
     </div>
 
     <el-scrollbar :height="props.scrollHeight">
-      <ul class="content" v-if="props.tableList.length > 0">
+      <ul v-if="props.tableList.length > 0" class="content">
         <li
           v-for="(row, index) in props.tableList"
           :key="index"
@@ -104,7 +110,7 @@ function changeLoadingHead(val: boolean) {
             <span>{{ isBuy(row) ? $t('buy') : $t('sell') }}</span>
           </div>
           <div :class="{ green: isBuy(row), red: !isBuy(row) }">
-            <span v-html="formatNumber(getPrice(row) || 0)"></span>
+            <span v-html="formatNumber(getPrice(row) || 0)"/>
           </div>
           <div :class="{ green: isBuy(row), red: !isBuy(row) }">
             {{ formatNumber(getAmount(row)) }}
@@ -112,7 +118,7 @@ function changeLoadingHead(val: boolean) {
           <span>{{ formatNumber(getAmountUSD(row)) }}</span>
           <span>
             {{ row.transactionAddress?.slice(0, 2) }}...{{ row.transactionAddress?.slice(-4) }}
-            <span v-if="row.count && row.count > 1" style="color: #558bed">({{ row.count }})</span>
+            <!-- <span v-if="row.count && row.count > 1" style="color: #558bed">({{ row.count }})</span> -->
           </span>
         </li>
       </ul>

@@ -45,7 +45,7 @@ function getFavoriteList(group = -1, pageNO = 1, address: string): Promise<GetFa
   const {$api} = useNuxtApp()
   return $api('/v1api/v4/tokens/favorite', {
     method: 'get',
-    params: {
+    query: {
       address: address,
       group: group,
       pageNO: pageNO,

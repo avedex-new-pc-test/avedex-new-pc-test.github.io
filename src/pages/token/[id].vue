@@ -1,11 +1,29 @@
 <template>
-  <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px w-100%" style="min-height: calc(100vh - 100px);">
+  <div class="flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px w-100%" style="min-height: calc(100vh - 92px);">
     <div class="flex-1 min-w-0">
       <Top/>
-      <div class="flex gap-4px">
-        <Left class="w-292px flex flex-col flex-shrink-0"/>
-        <div class="flex-1 hide-scrollbar min-w-0">
-          <el-scrollbar height="calc(100vh - 172px)">
+      <div class="flex gap-1px">
+        <div class="hide-scrollbar">
+          <el-scrollbar height="calc(100vh - 158px)">
+            <Left class="w-292px flex flex-col flex-shrink-0"/>
+          </el-scrollbar>
+        </div>
+        <div class="flex-1 hide-scrollbar min-w-0 relative">
+          <div
+            v-show="globalStore.showLeft"
+            :class="`absolute bg-[--d-333-l-DDD] w-10px h-32px z-1 cursor-pointer flex items-center justify-center left--14px hover:w-30px hover:left--34px hover:h-36px transition-all`"
+            @click="globalStore.$patch({showLeft:false})"
+          >
+            <Icon name="material-symbols:arrow-back-ios-new-rounded" :class="`color-[--d-FFF-l-222] text-12px`"/>
+          </div>
+          <div
+            v-show="!globalStore.showLeft"
+            :class="`absolute bg-[--d-333-l-DDD] w-10px h-32px z-1 cursor-pointer flex items-center justify-center left-0 hover:w-30px hover:h-36px transition-all`"
+            @click="globalStore.$patch({showLeft:true})"
+          >
+            <Icon name="material-symbols:arrow-forward-ios" :class="`color-[--d-FFF-l-222] text-12px`"/>
+          </div>
+          <el-scrollbar height="calc(100vh - 158px)">
             <KLine />
             <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]"/>
           </el-scrollbar>
@@ -34,6 +52,7 @@ definePageMeta({
 const route = useRoute()
 const tagStore = useTagStore()
 const tokenStore = useTokenStore()
+const globalStore = useGlobalStore()
 const botStore = useBotStore()
 const addresses = computed(() => {
   const result = botStore.userInfo?.addresses

@@ -2,13 +2,14 @@
 import Transactions from './transactions/transactions.vue'
 import OrdersTab from './orders/index.vue'
 import OneClick from '../right/botSwap/oneClick.vue'
+import Bubble from './holders/new/bubble.vue'
 import { useBotStore } from '@/stores/bot'
 const { globalConfig } = storeToRefs(useConfigStore())
 const route = useRoute()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const { t } = useI18n()
-const {token, tokenInfoExtra } = storeToRefs(useTokenStore())
+const {token, tokenInfoExtra ,pairAddress} = storeToRefs(useTokenStore())
 const activeTab = shallowRef<keyof typeof components>('Transactions')
 const components = {
   Transactions,
@@ -82,17 +83,31 @@ const isInsiderOrSniperSupported= computed(()=>{
   return chainsSupport?.includes(chain) || false
 
 })
+
+const comProps = computed(() => {
+  return {
+    LP: {
+      token: token.value,
+      pairAddress: pairAddress.value,
+    },
+    Transactions: {},
+    Holders: {},
+    Attention: {},
+    Orders: {},
+    MySwap: {},
+  }[activeTab.value] || {}
+})
 </script>
 
 <template>
   <div class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1">
     <div class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-#FFFFFF08 mb-12px">
-      <a v-for="(item) in tabsList" :key="item.component" href="javascript:;" :class="`flex items-center decoration-none text-12px lh-16px text-center color-[--d-999-l-666]
+      <a v-for="(item) in tabsList" :key="item.component" href="javascript:;" :class="`flex items-center decoration-none text-12px lh-20px text-center color-[--d-999-l-666]
          ${activeTab === item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`"
         @click="activeTab = item.component">
         <div v-if="item.component == 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"></div>
         <div
-          :class="`b-b-solid b-b-2px pb-8px ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
+          :class="`b-b-solid b-b-2px pb-12px ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
           {{ item.name }}
           <span v-if="item.component === 'Orders'">({{ tokenStore.registrationNum }})</span>
           <span v-if="item.component == 'Holders' && holders">
@@ -114,10 +129,11 @@ const isInsiderOrSniperSupported= computed(()=>{
         </div>
       </a>
       <OneClick />
+      <Bubble />
     </div>
     <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
     <KeepAlive v-show="activeTab !== 'Orders'">
-      <component :is="Component" />
+      <component :is="Component" v-bind="comProps"/>
     </KeepAlive>
   </div>
 </template>

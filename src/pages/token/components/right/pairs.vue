@@ -37,25 +37,13 @@
         </td>
         <td>
           <span class="main">{{ formatNumber((item.target_token === item.token0_address ? item.reserve0 : item.reserve1) || 0, 2) }}</span>
-            <span class="minor">/
-              <template v-if="item.init_reserve0 || item.init_reserve1">
-                {{ formatNumber((item.target_token === item.token0_address ? item.init_reserve0 : item.init_reserve1) || 0, 2) }}
-              </template>
-              <template v-else>
-                --
-              </template>
-            </span>
+          <span class="minor">/<template v-if="item.init_reserve0 || item.init_reserve1">{{ formatNumber((item.target_token === item.token0_address ? item.init_reserve0 : item.init_reserve1) || 0, 2) }}</template><template v-else>--</template>
+          </span>
           <br >
           <!-- 冲土狗的时候，这个流动性sol是个最容易判断涨跌的指标，需要醒目一点 -->
           <span v-if="item.target_token === item.token0_address" :class="['main', item.isUp ? 'green':'red']">{{ formatNumber(item.reserve1|| 0, 2) }}</span>
           <span v-else class="main" :class="['main', item.isUp ? 'green':'red']">{{ formatNumber(item.reserve0|| 0, 2) }}</span>
-          <span class="minor">/
-            <template v-if="item.init_reserve0 || item.init_reserve1">
-              {{ formatNumber((item.target_token === item.token0_address ? item.init_reserve1 : item.init_reserve0 )|| 0, 2) }}
-            </template>
-            <template v-else>
-              --
-            </template>
+          <span class="minor">/<template v-if="item.init_reserve0 || item.init_reserve1">{{ formatNumber((item.target_token === item.token0_address ? item.init_reserve1 : item.init_reserve0 )|| 0, 2) }}</template><template v-else>--</template>
           </span>
         </td>
         <td>

@@ -22,8 +22,8 @@
             <img
               v-if="mode === 'light'"
               src="@/assets/images/empty-white.svg"
-            />
-            <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" />
+            >
+            <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg" >
             <span>{{ t('emptyNoData') }}</span>
           </div>
           <span v-else />

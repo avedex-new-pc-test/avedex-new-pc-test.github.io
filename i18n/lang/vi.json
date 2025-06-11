@@ -408,5 +408,6 @@
   "netAmt": "Net Amt",
   "percent": "Phần trăm",
   "txns": "Giao dịch",
-  "liquidity": "Thanh khoản"
+  "liquidity": "Thanh khoản",
+  "holderBubble": "Bản đồ bong bóng người nắm giữ"
 }

@@ -72,11 +72,11 @@
                 <img
                   v-if="mode === 'light'"
                   src="@/assets/images/empty-white.svg"
-                />
+                >
                 <img
                   v-if="mode === 'dark'"
                   src="@/assets/images/empty-black.svg"
-                />
+                >
                 <span>{{ t('emptyNoData') }}</span>
               </div>
               <span v-else />
@@ -184,7 +184,19 @@ const tabActive = shallowRef<string>('100')
 const top100balance = ref<Top100Balance[]>([])
 const loadingTop100Balance = shallowRef<boolean>(false)
 
-const insidersObj = ref<AllTagsStats>({})
+const insidersObj = ref<AllTagsStats>({
+  token: '',
+  date: undefined,
+  balance: 0,
+  balance_ratio_cur: 0,
+  balance_ratio_max: 0,
+  vol_buy: 0,
+  vol_sell: 0,
+  unsettled_addresses: 0,
+  all_addresses: 0,
+  vol_profit: 0,
+  vol_profit_ratio: 0
+})
 const loadingStats = shallowRef<boolean>(false)
   const profitLossRef1 = ref()
 
@@ -192,7 +204,7 @@ const supportTags = computed(() => {
   const chain = addressAndChain.value.chain
   const chainsSupport =
     globalConfig.value?.chains_support_data_analysis_insider_sniper_V3
-  const arr = chainsSupport?.[chain] || []
+  const arr = chainsSupport?.[chain as keyof typeof chainsSupport] || []
   return (
     arr?.map((i) => ({ ...i, color: filterChartColor(i.type)?.color })) || []
   )
@@ -223,14 +235,14 @@ const tabs = computed(() => {
       es: t('topN', { n: 100 }),
       type: '100',
     },
-    ...totalHolders.value,
+    ...(totalHolders.value?.filter(i=> (i?.total_address || 0) > 0) || {}),
   ]
 })
 const top100balanceC = computed(() => {
   return top100balance.value.slice(0, Number(tabActive.value) || 200)
 })
 
-// console.log('-------totalHolders-------', totalHolders)
+console.log('-------totalHolders-------', totalHolders)
 watch(
   () => id.value,
   (newId) => {
@@ -372,16 +384,15 @@ function handlerDialogProfitLoss(row: { address: string }) {
 }
 
 :deep(.el-table) {
-  --el-table-tr-bg-color: #0A0B0D;
-  --el-table-bg-color: #0A0B0D;
-  --el-table-text-color: var(--d-222-l-F2F2F2);
+  // --el-table-tr-bg-color: #0A0B0D;
+  // --el-table-bg-color: #0A0B0D;
   --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
   --el-fill-color-lighter: #0A0B0D;
   --el-table-header-text-color: var(--d-999-l-666);
   // --el-table-border-color: var(--d-33353D-l-f5f5f5);
   --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
-  background: #0A0B0D;
-  --el-bg-color: #0A0B0D;
+  // background: var(--d-111-l-FFF);
+  --el-bg-color: var(--d-111-l-FFF);
   // --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
   font-size: 13px;
 

@@ -14,13 +14,12 @@ import {
   getTokenTxs,
   type Profile
 } from '~/api/token'
-import {formatDate, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
-import dayjs from 'dayjs'
+import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 
-import { useThrottleFn } from '@vueuse/core'
+import {useThrottleFn} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
-import type {AveTable} from "#components";
+import type {AveTable} from '#components'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
@@ -79,7 +78,7 @@ const activeTab = shallowRef('all')
 const ignoreWs = computed(() => {
   return !['all', 'buy', 'sell'].includes(activeTab.value)
 })
-const isPausedTxs = shallowRef(false)
+const isHoverTable = shallowRef(false)
 
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
@@ -87,7 +86,7 @@ const columns = computed(() => {
   return [{ key: 'time', dataKey: 'time', title: t('time'), minWidth: 80 },
   { key: 'type', dataKey: 'type', title: t('type'), minWidth: 80 },
   { key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100 },
-  { key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', minWidth: 140 },
+    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), minWidth: 120},
   {
     key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
     minWidth: 120
@@ -188,7 +187,13 @@ const tableFilterVisible = ref({
   markers: false
 })
 const makerTooltip = ref()
+const markerTooltipVisible = shallowRef(false)
 const currentRow = shallowRef<IGetTokenTxsResponse & { senderProfile: Profile }>({} as any)
+const isPausedTxs = computed(() => {
+  return isHoverTable.value
+    || tokenDetailSStore.drawerVisible
+    || markerTooltipVisible.value
+})
 
 const addressAndChain = computed(() => {
   const id = route.params.id as string
@@ -225,6 +230,33 @@ useVisibilityChange(() => {
   _getPairLiq()
 })
 
+// onMounted(() => {
+//   document.addEventListener('mousemove', mouseInsideTxs)
+// })
+// onUnmounted(() => {
+//   document.removeEventListener('mousemove', mouseInsideTxs)
+// })
+//
+// const txsBounding = useElementBounding(aveTableRef)
+// const mouseInsideTxs = useThrottleFn((event: MouseEvent) => {
+//   // 获取鼠标位置
+//   const mouseX = event.clientX
+//   const mouseY = event.clientY
+//
+//   // 判断鼠标是否在元素边界内并且鼠标不在视口外
+//   isPausedTxs.value = (
+//     mouseX >= txsBounding.left.value &&
+//     mouseX <= txsBounding.right.value &&
+//     mouseY >= txsBounding.top.value &&
+//     mouseY <= txsBounding.bottom.value
+//   ) && (
+//     mouseX >= 0 &&
+//     mouseX <= window.innerWidth &&
+//     mouseY >= 0 &&
+//     mouseY <= window.innerHeight
+//   )
+// }, 100, true, false)
+
 function resetCache() {
   txCount.value = {}
   wsPairCache.value.length = 0
@@ -235,7 +267,11 @@ watch(() => wsStore.wsResult[WSEventType.TX], data => {
   if (!data || listStatus.value.loadingTxs || ignoreWs.value) {
     return
   }
-  const { wallet_address } = data.tx
+  const {wallet_address, from_address, to_address} = data.tx
+  // 不是当前币种的数据
+  if (from_address !== realAddress.value && to_address !== realAddress.value) {
+    return
+  }
   txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   const { topN, wallet_tag } = getWalletTag(data.tx)
   const item = {
@@ -255,7 +291,7 @@ watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
   if (!data || listStatus.value.loadingLiq || !['all', 'liquidity'].includes(activeTab.value)) {
     return
   }
-  const { wallet_address } = data.liq
+  // const { wallet_address } = data.liq
   // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   wsLiqCache.value.unshift({
     ...data.liq,
@@ -516,16 +552,12 @@ function bigWallet(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderPr
 function getGradient(row: IGetTokenTxsResponse) {
   const str = `${useThemeStore().isDark}-${isBuy(row)}`
   const map = {
-    'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.1)_0%,rgba(18,184,134,0.1)_100%)]',
-    'true-false': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.1)_0%,rgba(246,70,93,0.1)_100%)]',
-    'false-false': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.1)_0%,rgba(246,70,93,0.1)_100%)]',
-    'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.1)_0%,rgba(18,184,134,0.1)_100%)]',
+    'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
+    'true-false': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
+    'false-false': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
+    'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
   } as { [key: string]: string }
   return map[str]
-}
-
-function updateRemark() {
-
 }
 
 function openMarkerTooltip(row: IGetTokenTxsResponse & { senderProfile: Profile }, e: MouseEvent) {
@@ -657,15 +689,11 @@ function resetMakerAddress() {
         rowKey="uuid"
         fixed :data="filterTableList"
         :columns="columns"
-        class="h-560px"
+        class="min-h-560px h-[calc(100vh-750px)]"
         row-class='cursor-pointer'
         :rowEventHandlers="{
-        onMouseenter: () => {
-          isPausedTxs = true
-        },
-        onMouseleave: () => {
-          isPausedTxs = false
-        },
+        onMouseenter:()=>isHoverTable=true,
+        onMouseleave:()=>isHoverTable=false,
         onClick: onRowClick
       }">
         <template #header-time>
@@ -686,10 +714,10 @@ function resetMakerAddress() {
             <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
                 <template v-if="seconds < 60">
-                  {{ seconds }}{{ $t('ss') }}
+                  {{ seconds }}s
                 </template>
                 <template v-else>
-                  {{ dayjs(row.time * 1000).fromNow() }}
+                  {{ formatTimeFromNow(row.time) }}
                 </template>
               </span>
             </template>
@@ -698,7 +726,7 @@ function resetMakerAddress() {
             {{
               tableView.isShowDate
                 ? formatDate(row.time, 'HH:mm:ss')
-                : dayjs(row.time * 1000).fromNow()
+                : formatTimeFromNow(row.time)
             }}
           </span>
         </template>
@@ -747,7 +775,6 @@ function resetMakerAddress() {
         <template #cell-amountB="{ row }">
           <span v-if="row.type === undefined" :class="getRowColor(row)">
             {{ formatNumber(getAmount(row), 2) }}
-            <span class="color-[--d-999-l-666]">{{ token?.symbol }}</span>
           </span>
           <div v-else>
             <div :class="getRowColor(row)">
@@ -769,7 +796,7 @@ function resetMakerAddress() {
             <span>{{ $t('amountU') }}</span>
             <Icon
               name="custom:price"
-              :class="`${tableView.isVolUSDT ? 'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
+              :class="`${tableView.isVolUSDT ? 'color-#3F80F7' : 'color-#666'} cursor-pointer`"
               @click.self="tableView.isVolUSDT = !tableView.isVolUSDT" />
             <VolFilter
               v-model:visible="tableFilterVisible.amountU" :modelValue="tableFilter.amountU"
@@ -823,7 +850,7 @@ function resetMakerAddress() {
               name="custom:big" class="mr-3px shrink-0"/>
           </template>
           <SignalTags
-            tagClass="mr-3px" :tags="(row.newTags||[]).map(el=>tagStore.matchTag(el.type))"
+            tagClass="mr-3px" :tags="(row.newTags||[]).map((el: any)=>tagStore.matchTag(el.type))"
                       :walletAddress="row.wallet_address" :chain="row.chain"/>
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
@@ -833,15 +860,14 @@ function resetMakerAddress() {
               :chain="row.chain"
               :wallet_logo="row.wallet_logo" class="color-[--d-999-l-666]"
               :mouseoverAddress="e => openMarkerTooltip(row, e)"
-              :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
-              @update-remark="updateRemark">
+            >
               <div v-if="row.count && row.count > 1">
                 ({{ row.count }})
               </div>
             </UserRemark>
             <Icon
               name="custom:filter"
-              :class="`${tableFilter.markerAddress ? 'color-[--d-F5F5F5-l-222]' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
+              :class="`${tableFilter.markerAddress ? 'color-#3F80F7' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
               @click.self.stop="setMakerAddress(row.wallet_address)" />
           </div>
         </template>
@@ -866,7 +892,10 @@ function resetMakerAddress() {
           </div>
         </template>
       </AveTable>
-      <MarkerTooltip :virtual-ref="makerTooltip" :currentRow="currentRow" :addressAndChain="addressAndChain">
+      <MarkerTooltip
+        :virtual-ref="makerTooltip" :currentRow="currentRow" :addressAndChain="addressAndChain"
+        v-model="markerTooltipVisible"
+      >
         <template v-if="['solana', 'bsc'].includes(currentRow.chain) && currentRow.senderProfile">
           <Icon
             v-if="hasNewAccount(currentRow)"

@@ -91,7 +91,7 @@ export function updatePriceFromTx(tx: WSTx) {
       tokenStore.token.holders = tokenStore.token.holders + 1
     }
     if ((profile.token0Address.toLowerCase() === token && profile.token0HasClearedAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasClearedAccount)) {
-      tokenStore.token.holders = tokenStore.token.holders - 1
+      tokenStore.token.holders = Math.max(tokenStore.token.holders - 1, 0)
     }
   }
 }

@@ -3,9 +3,7 @@
     <div class="top">
       <span>#</span>
       <span>{{ $t('tokenName') }}</span>
-      <div
-        class="flex-end cursor-pointer select-none"
-      >
+      <div class="flex-end cursor-pointer select-none">
         {{ $t('launchTime') }}
         <div class="flex flex-col items-center justify-center ml-5px">
           <i
@@ -21,28 +19,47 @@
             @click.stop="switchSort('opening_at', 1)"
           />
         </div>
-        <Icon  :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isShowDate= !isShowDate"/>
+        <!-- <Icon  :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isShowDate= !isShowDate"/> -->
       </div>
       <div
         class="flex-end cursor-pointer select-none"
-        @click.stop="switchSort(isPrice?'current_price_usd': 'mcap')"
+        @click.stop="switchSort('current_price_usd')"
       >
-        {{ isPrice?$t('price'): $t('mCap') }}
+        {{ $t('price') }}
         <div class="flex flex-col items-center justify-center ml-5px">
           <i
             :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
-            ${getActiveClass(-1, isPrice?'current_price_usd': 'mcap', 'b')}
+            ${getActiveClass(-1, 'current_price_usd', 'b')}
             `"
-            @click.stop="switchSort(isPrice?'current_price_usd': 'mcap', -1)"
+            @click.stop="switchSort('current_price_usd', -1)"
           />
           <i
             :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
-            ${getActiveClass(1, isPrice?'current_price_usd': 'mcap', 't')}
+            ${getActiveClass(1, 'current_price_usd', 't')}
             `"
-            @click.stop="switchSort(isPrice?'current_price_usd': 'mcap', 1)"
+            @click.stop="switchSort('current_price_usd', 1)"
           />
         </div>
-        <Icon  :name="`custom:${isPrice ? 'price' : 'market'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isPrice= !isPrice" />
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('mcap')"
+      >
+        {{ $t('mCap') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'mcap', 'b')}
+            `"
+            @click.stop="switchSort('mcap', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'mcap', 't')}
+            `"
+            @click.stop="switchSort('mcap', 1)"
+          />
+        </div>
       </div>
       <div
         class="flex-end cursor-pointer select-none"
@@ -104,7 +121,7 @@
           />
         </div>
       </div>
-      <div
+      <!-- <div
         class="flex-end cursor-pointer select-none"
         @click.stop="switchSort('tx_count_24h')"
       >
@@ -123,8 +140,8 @@
             @click.stop="switchSort('tx_count_24h', 1)"
           />
         </div>
-      </div>
-      <span>{{ $t('riskScore') }}</span>
+      </div> -->
+      <!-- <span>{{ $t('riskScore') }}</span> -->
     </div>
     <el-scrollbar
       v-if="tokens1?.length > 0 || isLoading"
@@ -137,7 +154,7 @@
           <a
             href=""
             class="flex no-underline"
-            @click.stop.prevent="tableRowClick(row.id)"
+            @click.stop.prevent="tableRowClick(row.token + '-' + row.chain)"
           >
             <div class="color-#999 text-12px">
               {{ $index < 9 ? '0' + Number($index + 1) : $index + 1 }}
@@ -214,10 +231,19 @@
                 </div>
               </div>
             </div>
-            <template v-if="row.current_price_usd > 0">
+            <template v-if="Number(row.current_price_usd) > 0">
               <div v-if="row.opening_at">
-                <TimerCount v-if="!isShowDate && row.opening_at && Number(formatTimeFromNow(row.opening_at, true)) < 60 && Number(formatTimeFromNow(row.opening_at, true)) > 0"
-                  :key="row.opening_at" :timestamp="row.opening_at" :end-time="60">
+                <TimerCount
+                  v-if="
+                    !isShowDate &&
+                    row.opening_at &&
+                    Number(formatTimeFromNow(row.opening_at, true)) < 60 &&
+                    Number(formatTimeFromNow(row.opening_at, true)) > 0
+                  "
+                  :key="row.opening_at"
+                  :timestamp="row.opening_at"
+                  :end-time="60"
+                >
                   <template #default="{ seconds }">
                     <span>
                       <template v-if="seconds < 60">
@@ -229,7 +255,7 @@
                     </span>
                   </template>
                 </TimerCount>
-                <span v-else >
+                <span v-else>
                   {{
                     isShowDate
                       ? formatDate(row.opening_at)
@@ -241,31 +267,39 @@
               <div>
                 <span
                   :class="
-                    row.current_price_usd > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
+                    Number(row.current_price_usd) > 0
+                      ? 'color-[--d-F5F5F5-l-333]'
+                      : ''
                   "
-                  >${{ isPrice ? formatNumber(row.current_price_usd || 0) : formatNumber(row.mcap || 0)}}</span
+                  >${{ formatNumber(row.current_price_usd || 0) }}</span
                 >
                 <div class="text-12px">
                   <span
-                    v-if="row.price_change > 0"
+                    v-if="Number(row.price_change) > 0"
                     style="color: #12b886; padding: 10px 0"
                   >
                     +{{ formatNumber(row.price_change || 0) }}%
                   </span>
                   <span
-                    v-if="row.price_change == 0"
+                    v-if="Number(row.price_change) == 0"
                     style="color: #848e9c; padding: 10px 0"
                   >
                     0%
                   </span>
                   <span
-                    v-if="row.price_change < 0"
+                    v-if="Number(row.price_change) < 0"
                     style="color: #ff646d; padding: 10px 0"
                   >
                     {{ formatNumber(row.price_change || 0) }}%
                   </span>
                 </div>
               </div>
+              <span
+                :class="
+                  row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
+                "
+                >{{ formatNumber(getMCap(row) || 0) }}</span
+              >
               <div
                 :class="
                   row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
@@ -277,10 +311,10 @@
                 ${{ formatNumber(row?.pool_size || 0, 2) }}
               </div>
               <div>{{ formatNumber(row?.holders || 0) }}</div>
-              <div class="text-12px color-text-2">
+              <!-- <div class="text-12px color-text-2">
                 {{ formatNumber(row?.tx_count_24h || 0) }}
-              </div>
-              <div
+              </div> -->
+              <!-- <div
                 class="flex-end"
               >
                 <arc-progress
@@ -293,7 +327,7 @@
                 :end="true"
                 class="arc-progress"
               />
-              </div>
+              </div> -->
             </template>
             <div v-else class="flex-end">
               <!-- <count-down
@@ -340,7 +374,12 @@
               </div>
 
               <template v-else>
-                <img class="mr-5px" src="@/assets/images/icon-unknown.png" alt="" :width="12">
+                <img
+                  class="mr-5px"
+                  src="@/assets/images/icon-unknown.png"
+                  alt=""
+                  :width="12"
+                />
                 {{ $t('unknownRisk') }}
               </template>
             </div>
@@ -362,17 +401,19 @@ import emptyWhite from '@/assets/images/empty-white.svg'
 import emptyDark from '@/assets/images/empty-black.svg'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
+import type { GetHotTokensResponse } from '@/api/token'
+import type { SearchHot } from '@/api/types/search'
+import { getMCap } from '~/utils'
 import {
   getSymbolDefaultIcon,
   getChainDefaultIcon,
   formatDate,
 } from '@/utils/index'
 // import CountDown from './countDown.vue'
-import type { SearchHot } from '@/api/types/search'
 const themeStore = useThemeStore()
 const props = defineProps({
   tokens: {
-    type: Array<SearchHot>,
+    type: Array<GetHotTokensResponse | SearchHot>,
     default: () => [],
   },
   loading: {
@@ -388,15 +429,17 @@ type SortValue = 0 | -1 | 1
 const activeSort = shallowRef<SortValue>(0)
 const sortBy = shallowRef<string>('')
 const isPrice = shallowRef<boolean>(true)
-  const isShowDate = shallowRef<boolean>(false)
-
+const isShowDate = shallowRef<boolean>(false)
 
 const tokens1 = computed(() => {
   const list = props.tokens?.slice(0)
   if (activeSort.value === 0 || sortBy.value === '') {
     return props.tokens
   } else {
-    return list?.sort((a, b) => ((b[sortBy.value] || 0) - (a[sortBy.value] || 0)) * activeSort.value)
+    return list?.sort(
+      (a, b) =>
+        ((b[sortBy.value] || 0) - (a[sortBy.value] || 0)) * activeSort.value
+    )
   }
 })
 
@@ -463,7 +506,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 5px;
+    padding: 10px 0px;
     > :nth-child(1) {
       width: 40px;
       font-size: 12px;
@@ -472,7 +515,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
       flex: 1.3;
     }
     > :nth-child(3) {
-      flex: 1;
+      flex: 0.7;
       text-align: right;
     }
     > :nth-child(4) {
@@ -574,7 +617,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     .flex {
       font-size: 12px;
-      padding: 8px 5px;
+      padding: 8px 0px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -586,7 +629,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
         flex: 1.3;
       }
       > :nth-child(3) {
-        flex: 1;
+        flex: 0.7;
         text-align: right;
       }
       > :nth-child(4) {
@@ -599,7 +642,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
       }
       > :nth-child(6) {
         flex: 1;
-        text-align: right
+        text-align: right;
       }
       > :nth-child(7) {
         flex: 1;

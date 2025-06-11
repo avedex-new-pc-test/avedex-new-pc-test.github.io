@@ -109,13 +109,11 @@
         <template #default="{ row }">
           <span class="text-[var(--d-999-l-959A9F)] text-right">
             <template v-if="row.swapType === 2 || row.swapType === 6">
-              {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0) as
-                string, 4) }}
+              {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0).toString(), 4) }}
               {{ row?.inTokenSymbol }}
             </template>
             <template v-else>
-              {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0) as
-                string, 4)
+              {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0).toString(), 4)
               }}
               {{ row?.outTokenSymbol }}
             </template>

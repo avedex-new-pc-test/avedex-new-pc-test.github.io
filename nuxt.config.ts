@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/eslint',
-    '@nuxt/fonts',
+    // '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
@@ -28,23 +28,33 @@ export default defineNuxtConfig({
       ga: process.env.NUXT_PUBLIC_GA
     }
   },
-  fonts: {
-    families: [
-      {
-        name: 'DINPro-regular',
-        src: '/fonts/DINPro-regular.otf',
-        global: true,
-        weight: 'normal',
-        style: 'normal',
-        // unicodeRange: 'U+0030-0039',
-        preload: true
-      }
-    ],
-    providers: {
-      google: false,
-      googleicons: false
-    }
-  },
+  // fonts: {
+  //   families: [
+  //     {
+  //       name: 'DINPro-regular',
+  //       src: '/fonts/DINPro-regular.otf',
+  //       global: true,
+  //       weight: 'normal',
+  //       style: 'normal',
+  //       // unicodeRange: 'U+0030-0039',
+  //       preload: true
+  //     },
+  //     {
+  //       name: 'Poppins-regular',
+  //       src: '/fonts/Poppins-Regular.ttf',
+  //       global: true,
+  //       weight: 'normal',
+  //       style: 'normal',
+  //       unicodeRange: 'U+4E00-9FFF',
+  //       preload: true
+
+  //     }
+  //   ],
+  //   providers: {
+  //     google: false,
+  //     googleicons: false
+  //   }
+  // },
   icon: {
     // 可根据情况配置：
     // mode: 'auto' | 'local' | 'cdn'
@@ -77,6 +87,7 @@ export default defineNuxtConfig({
   css: [
     // 可以在这里添加 UnoCSS 的基础样式（如果需要的话）
     // 'uno.css',
+    '@/assets/css/font.css',
     '@/assets/css/reset.css',
     '@/assets/css/var.scss',
     '@/assets/css/style.scss',
@@ -135,9 +146,14 @@ export default defineNuxtConfig({
         },
       }
     },
-    optimizeDeps: {
-      include: ['lodash-unified'],
+    $client: {
+      optimizeDeps: {
+        include: ['lodash-unified'],
+      }
     },
+    // optimizeDeps: {
+    //   include: ['lodash-unified'],
+    // },
     build: {
       minify: 'terser',
       sourcemap: !isProd,

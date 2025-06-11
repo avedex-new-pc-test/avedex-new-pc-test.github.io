@@ -1,11 +1,12 @@
 <template>
   <el-dialog v-model="dialogVisible" class="dialog-position" :title="$t('myPosition1')" width="680" append-to-body>
     <slot/>
-    <el-table class="table-position w-100%" :data="dataSource" :height="400" @row-click="tableRowClick
+    <el-table
+class="table-position w-100%" :data="dataSource" :height="400" @row-click="tableRowClick
   ">
       <el-table-column
-        v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop"
-        :align="col.align">
+        v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col?.minWidth"
+        :align="col.align" :show-overflow-tooltip="col?.showOverflowTooltip || false">
         <template #header="{ column }">
           <div v-if="column.property == 'total_profit_ratio'" class="flex items-center text-right justify-end">
             <span>{{ column.label }}</span>
@@ -24,9 +25,13 @@
             <template v-if="col?.prop === 'token'">
               <div class="flex items-center gap-8px clickable flex-nowrap">
                 <TokenImg :row="row" class="w-24px h-24px" />
-                <el-tooltip :effect="mode" placement="top-end" :content="row?.symbol">
-                  <div class="whitespace-nowrap text-ellipsis overflow-hidden max-w-100px">{{ row?.symbol }}</div>
-                </el-tooltip>
+                <!-- <el-tooltip :effect="mode" placement="top-end" :content="row?.symbol">
+                </el-tooltip> -->
+                <div class="whitespace-nowrap text-ellipsis overflow-hidden max-w-90px">{{ row?.symbol }}</div>
+                <Icon
+                    v-if="row.risk_score > 55 || row.risk_level < 0"
+                    name="custom:danger"
+                    class="font-14 ml-2px color-#F72121 w-14px h-14px mt-2px"/>
               </div>
             </template>
             <span v-else-if="row[col.prop] === '--'" :class="col?.getClassName ? col.getClassName(row) : ''">--</span>
@@ -44,7 +49,7 @@
           v-infinite-scroll="fetchTable"
           class="text-0 lh-0 h-0"
           :infinite-scroll-disabled="paginationParams.loaded || paginationParams.finished"
-          :infinite-scroll-distance="0"
+          :infinite-scroll-distance="20"
           :infinite-scroll-delay="200"
           :infinite-scroll-immediate="true"
         />
@@ -73,6 +78,8 @@ const columns = computed(() => {
       prop: 'token',
       align: 'left',
       sortable: false,
+      minWidth: 125,
+      showOverflowTooltip: true
     },
     {
       label: t('balance1'),
@@ -213,7 +220,8 @@ onMounted(() => {
   --el-table-header-bg-color:transparent;
   --el-table-header-text-color:var(--d-999-l-666);
   --el-table-text-color:var(--d-F5F5F5-l-222);
-  --el-table-border: 0.5px solid var(--d-33353D-l-F5F5F5);
+  --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
+  /* --el-table-border: 0.5px solid var(--d-33353D-l-F5F5F5); */
   :deep() thead{
     font-size: 10px;
     tr{

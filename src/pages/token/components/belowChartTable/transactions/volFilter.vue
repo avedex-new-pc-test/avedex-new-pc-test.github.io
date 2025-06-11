@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const {isDark} = useThemeStore()
+const {isDark} = storeToRefs(useThemeStore())
 const props = defineProps({
   visible: Boolean,
   modelValue: {
@@ -42,7 +42,7 @@ function onBlur(index: number) {
     <template #reference>
       <Icon
         name="custom:filter"
-        :class="`${isActive?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+        :class="`${isActive?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
       />
     </template>
     <template #default>
@@ -87,8 +87,8 @@ function onBlur(index: number) {
           {{ $t('reset') }}
         </el-button>
         <el-button
+          type="primary"
           class="h-30px flex-1 m-l-auto"
-          :color="isDark ? '#F5F5F5':'#222'"
           @click="emit('confirm',filterArray.slice())"
         >
           {{ $t('confirm') }}

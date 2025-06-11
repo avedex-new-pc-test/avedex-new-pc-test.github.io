@@ -18,10 +18,11 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  loading: Boolean
+  loading: Boolean,
+  showLeft: Boolean
 })
 
-const {mode} = storeToRefs(useGlobalStore())
+const {mode,lang} = storeToRefs(useGlobalStore())
 // 使用 Vuex
 
 // Data
@@ -98,7 +99,7 @@ const init = () => {
 
   let chart = echarts.getInstanceByDom(document.getElementById(chartId.value))
   if (!chart) {
-    chart = echarts.init(document.getElementById(chartId.value))
+    chart = echarts.init(document.getElementById(chartId.value),null, { renderer: 'svg' })
   }
 
   chart.hideLoading()
@@ -130,7 +131,6 @@ const init = () => {
       borderWidth: 0,
       // valueFormatter: value => '$'+formatNumber2(value || 0, 2), // 替换为实际的格式化函数
       formatter: function (params) {
-        console.log('params',params)
         let result = params[0].name + '<br>' // 标题
         params.forEach(item => {
           result += `${item.marker} ${item.seriesName}: <span style="color:${mode.value  === 'light' ? '#17191C' : '#F5F5F5'}">${formatNumber2(item.value || 0, 2)}</span><br>`// 每行内容
@@ -217,7 +217,13 @@ const handlerLegendSelect = (val, index) => {
     name: option.value[index].label
   })
 }
-
+const handlerResize = () => {
+  setTimeout(() => {
+    const chart = echarts.getInstanceByDom(document.getElementById(chartId.value))
+    if (!chart) return
+    chart.resize()
+  },100)
+}
 // Watchers
 watch(() => props.loading, val => {
   const chart = echarts.getInstanceByDom(document.getElementById(chartId.value))
@@ -254,11 +260,13 @@ watch(() => props.showSeries[3], val => {
   handlerLegendSelect(val, 3)
 })
 
-watch( mode, () => {
-  console.log('mode changed')
+watch([mode,lang], () => {
   init()
 })
-
+watch(()=>props.showLeft, (val) => {
+  console.log('showLeft changed', val)
+  handlerResize()
+})
 // Lifecycle
 onMounted(() => {
   init()

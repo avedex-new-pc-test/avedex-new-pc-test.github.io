@@ -84,7 +84,7 @@ async function confirmSwitchGroup(row: GetFavListResponse, id: number) {
       tokenId, id, evmAddress
     )
     ElMessage.success(t('success'))
-    _getFavoriteList()
+    resetAndGet()
     favDialogEvent.emit({
         type: 'confirmSwitchGroup',
         tokenId
