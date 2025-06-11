@@ -236,5 +236,7 @@
   "netAmt": "NET AMT",
   "percent": "Por cento",
   "txns": "Txns",
-  "liquidity": "Liquidez "
+  "liquidity": "Liquidez ",
+  "wallet": "Carteira",
+  "volume": "Volume"
 }

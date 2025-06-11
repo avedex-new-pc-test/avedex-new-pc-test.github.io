@@ -3,7 +3,7 @@
     <div class="top">
       <span>#</span>
       <span>{{ $t('tokenName') }}</span>
-      <div class="flex-end cursor-pointer select-none">
+      <div class="flex-end cursor-pointer select-none" @click.stop="switchSort('opening_at')">
         {{ $t('launchTime') }}
         <div class="flex flex-col items-center justify-center ml-5px">
           <i
@@ -156,7 +156,7 @@
             class="flex no-underline"
             @click.stop.prevent="tableRowClick(row.token + '-' + row.chain)"
           >
-            <div class="color-#999 text-12px">
+            <div class=" text-12px">
               {{ $index < 9 ? '0' + Number($index + 1) : $index + 1 }}
             </div>
             <div class="token-info">
@@ -435,6 +435,11 @@ const tokens1 = computed(() => {
   const list = props.tokens?.slice(0)
   if (activeSort.value === 0 || sortBy.value === '') {
     return props.tokens
+  } else if (sortBy.value=='mcap') {
+    return list?.sort(
+      (a, b) =>
+       (Number(getMCap(b))  - Number(getMCap(a))) * activeSort.value
+    )
   } else {
     return list?.sort(
       (a, b) =>
@@ -462,9 +467,9 @@ function getActiveClass(
 ) {
   const isEqual = activeSort.value === activeSort1 && sortBy.value === sortBy1
   if (direction === 't') {
-    return isEqual ? 'border-t-[--d-F5F5F5-l-333]' : 'border-t-[--d-999-l-666]'
+    return isEqual ? 'border-t-[--d-F5F5F5-l-333]' : 'border-t-[--d-666-l-999]'
   }
-  return isEqual ? 'border-b-[--d-F5F5F5-l-333]' : 'border-b-[--d-999-l-666]'
+  return isEqual ? 'border-b-[--d-F5F5F5-l-333]' : 'border-b-[--d-666-l-999]'
 }
 function switchSort(sortBy1: string, activeSort1?: SortValue) {
   if (sortBy.value !== sortBy1) {
@@ -486,9 +491,9 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
 .histrory {
   font-size: 12px;
   padding-bottom: 10px;
-  color: #999;
+  color: var(--d-666-l-999);
   .empty {
-    color: #999;
+    color: var(--d-666-l-999);
     height: 500px;
     display: flex;
     align-items: center;

@@ -231,5 +231,7 @@
   "netAmt": "Net Amt",
   "percent": "Yüzde",
   "txns": "Txns",
-  "liquidity": "Likidite"
+  "liquidity": "Likidite",
+  "wallet": "Cüzdan",
+  "volume": "Hacim"
 }

@@ -44,8 +44,78 @@
             class="text-16px leading-[1.25] color-[--d-F5F5F5-l-333] font-500"
             >{{ token?.symbol }}</span
           >
-          <span class="ml-8px text-12px font-500">{{ token?.name }}</span>
-
+          <span class="ml-8px text-12px font-500 mr-8px">{{ token?.name }}</span>
+          <div class="flex items-center justify-start">
+            <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
+              <div
+                v-for="(i, index) in getTags(pair)?.normal_tag"
+                :key="index"
+                class="bg-btn flex h-16px tag-btn"
+              >
+                <el-image
+                  v-tooltip="$t(`${i.tag}`)"
+                  class="token-icon-tag cursor-pointer h-100%"
+                  :src="formatIconTag(i.tag)"
+                  lazy
+                >
+                  <template #error>
+                    <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  </template>
+                  <template #placeholder>
+                    <img class="token-icon-tag h-16px" src="/icon-default.png" />
+                  </template>
+                </el-image>
+                <span
+                  v-if="i?.showText"
+                  :style="{
+                    color: i?.color == 'green' ? upColor[0] : downColor[0],
+                  }"
+                  class="text-10px mr-4px"
+                >
+                  {{ $t(i?.tag) }}
+                </span>
+              </div>
+            </template>
+            <div v-if="medias?.length > 0" class="flex">
+              <div v-for="(item, index) in medias" :key="index" class="tag-btn">
+                <template v-if="item.url">
+                  <span
+                    v-if="item.name === 'QQ'"
+                    v-tooltip="item.url"
+                    class="bg-btn"
+                  >
+                    <Icon
+                      :name="`custom:${item.icon}`"
+                      class="text-[--d-666-l-999] h-16px w-16px"
+                    />
+                  </span>
+                  <a
+                    v-else
+                    v-tooltip="item.url"
+                    :href="item.url"
+                    target="_blank"
+                    class="bg-btn"
+                    @click.stop
+                  >
+                    <Icon
+                      :name="`custom:${item.icon}`"
+                      class="text-[--d-666-l-999] h-16px w-16px"
+                    />
+                  </a>
+                </template>
+              </div>
+            </div>
+            <a
+              class="media-item bg-btn"
+              :href="`https://x.com/search?q=($${token?.symbol} OR ${token?.token})&src=typed_query&f=live`"
+              target="_blank"
+            >
+              <Icon
+                class="text-[--d-666-l-999] h-16px w-16px"
+                name="material-symbols:search-rounded"
+              />
+            </a>
+          </div>
           <el-popover
             v-if="collected"
             v-model:visible="editableGroup"
@@ -201,87 +271,9 @@
           <span
             v-if="pair"
             v-tooltip="formatDate(pair?.created_at)"
-            class="ml-5px hover:color-[--d-F5F5F5-l-333] leading-12px font-400"
-            >{{ dayjs(pair?.created_at * 1000).fromNow() }}</span
-          >
-        </div>
-      </div>
-    </div>
-
-    <div class="item ml-32px" style="align-items: flex-start;">
-      <div class="flex items-center justify-start">
-        <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
-          <div
-            v-for="(i, index) in getTags(pair)?.normal_tag"
-            :key="index"
-            class="bg-btn flex h-16px tag-btn"
-          >
-            <el-image
-              v-tooltip="$t(`${i.tag}`)"
-              class="token-icon-tag cursor-pointer h-100%"
-              :src="formatIconTag(i.tag)"
-              lazy
-            >
-              <template #error>
-                <img class="token-icon-tag h-16px" src="/icon-default.png" />
-              </template>
-              <template #placeholder>
-                <img class="token-icon-tag h-16px" src="/icon-default.png" />
-              </template>
-            </el-image>
-            <span
-              v-if="i?.showText"
-              :style="{
-                color: i?.color == 'green' ? upColor[0] : downColor[0],
-              }"
-              class="text-10px mr-4px"
-            >
-              {{ $t(i?.tag) }}
-            </span>
-          </div>
-        </template>
-        <div v-if="medias?.length > 0" class="flex">
-          <div v-for="(item, index) in medias" :key="index" class="tag-btn">
-            <template v-if="item.url">
-              <span
-                v-if="item.name === 'QQ'"
-                v-tooltip="item.url"
-                class="bg-btn"
-              >
-                <Icon
-                  :name="`custom:${item.icon}`"
-                  class="text-[--d-666-l-999] h-16px w-16px"
-                />
-              </span>
-              <a
-                v-else
-                v-tooltip="item.url"
-                :href="item.url"
-                target="_blank"
-                class="bg-btn"
-                @click.stop
-              >
-                <Icon
-                  :name="`custom:${item.icon}`"
-                  class="text-[--d-666-l-999] h-16px w-16px"
-                />
-              </a>
-            </template>
-          </div>
-        </div>
-        <a
-          class="media-item bg-btn"
-          :href="`https://x.com/search?q=($${token?.symbol} OR ${token?.token})&src=typed_query&f=live`"
-          target="_blank"
-        >
-          <Icon
-            class="text-[--d-666-l-999] h-16px w-16px"
-            name="material-symbols:search-rounded"
-          />
-        </a>
-      </div>
-      <div class="flex items-center justify-start mt-7px font-400">
-        <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
+            class="ml-5px hover:color-[--d-F5F5F5-l-333] leading-12px font-400 mr-8px"
+            >{{ dayjs(pair?.created_at * 1000).fromNow() }}</span>
+            <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
           <div
             v-for="(i, index) in getTags(pair)?.signal_arr?.slice(0, 3)"
             :key="index"
@@ -411,8 +403,11 @@
           </span>
         </div>
         <top50 />
+        </div>
       </div>
     </div>
+
+
 
     <div class="flex-1" />
     <div
@@ -472,13 +467,13 @@
 
     <div class="item ml-24px">
       <span>{{ $t('mcap') }}</span>
-      <span class="block mt-8px color-[--d-F5F5F5-l-333]">{{
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]">${{
         formatNumber(marketCap, 2)
       }}</span>
     </div>
     <div class="item ml-24px">
       <span>{{ $t('24Volume') }}</span>
-      <span class="block mt-8px color-[--d-F5F5F5-l-333]">{{
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]">${{
         formatNumber(volume24, 2)
       }}</span>
     </div>

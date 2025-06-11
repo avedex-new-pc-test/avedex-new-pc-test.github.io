@@ -1,7 +1,7 @@
 <template>
   <div class="history">
     <div class="top">
-      <span style="width: 20px; flex: none">#</span>
+      <span style="width: 40px; flex: none">#</span>
       <span>{{ $t('wallet') }}</span>
       <span style="text-align: right">PnL</span>
       <span>{{ $t('volume') }}</span>
@@ -22,9 +22,9 @@
             class="flex no-underline"
             @click.stop.prevent="tableRowClick(row)"
           >
-            <div style="width: 20px; flex: none">
-              {{ $index + 1 }}
-            </div>
+            <span class="color-[--d-666-l-999] text-12px" style="width: 40px; flex: none">
+              {{ $index < 9 ? '0' + Number($index + 1) : $index + 1 }}
+            </span>
             <div class="token-info">
               <UserAvatar
                 class="mr-8px"
@@ -59,7 +59,7 @@
                   style="display: inline-flex; align-items: center"
                   class="mt-2px"
                 >
-                  <UserRemark class="" :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" />
+                  <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" iconEditSize="10px"/>
                   <!-- <a
                     href=""
                     class="ml-8 fav_address a-gray"
@@ -79,7 +79,7 @@
                   <Icon
                     v-copy="row.wallet_address"
                     name="bxs:copy"
-                    class="text-12px cursor-pointer color-[--d-666-l-999] ml-8px"
+                    class="text-10px cursor-pointer color-[--d-666-l-999] ml-8px"
                     @click.stop.prevent
                   />
                   <!--  <el-tooltip
@@ -163,7 +163,7 @@
                     ? '#12B886'
                     : '#F6465D',
                 }"
-                class="mt-2"
+                class="mt-2px"
               >
                 {{ formatNumber((row?.total_profit_rate * 100 || 0)) }}%
               </div>
@@ -178,7 +178,7 @@
                   )
                 }}
               </div>
-              <div class="mt-2">
+              <div class="mt-2px">
                 <span style="color: #12b886"
                   >${{ formatNumber(row?.total_purchase_usd || 0, 2) }}</span
                 ><span style="color: #999">/</span
@@ -197,7 +197,7 @@
                   )
                 }}
               </div>
-              <div class="flex-end mt-2">
+              <div class="flex-end mt-2px">
                 <span style="color: #12b886">{{
                   formatNumber(row?.total_purchase || 0, 2)
                 }}</span
@@ -296,7 +296,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
 .history {
   font-size: 12px;
   padding-bottom: 10px;
-  color: var(--a-text-1-color);
+
   .empty {
     color: #999;
     height: 500px;
@@ -312,11 +312,11 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     }
   }
   .top {
-    color: #999999;
+    color: var(--d-666-l-999);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 5px;
+    padding: 10px 0px;
     > :nth-child(1) {
       // width: 150px;
       font-size: 12px;
@@ -406,7 +406,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
       margin-top: 0;
     }
     .flex {
-      padding: 8px 5px;
+      padding: 8px 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -415,7 +415,6 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
       > :nth-child(1) {
         // width: 150px;
         flex: 1;
-        color: var(--custom-text-2-color);
         font-size: 12px;
       }
       > :nth-child(2) {

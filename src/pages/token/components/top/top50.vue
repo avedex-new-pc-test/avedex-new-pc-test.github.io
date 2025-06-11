@@ -232,7 +232,6 @@ function getEarlyholders() {
   display: flex;
   background: var(--custom-bg-7-color);
   border-radius: 2px;
-  margin-left: 5px;
   padding: 2px;
   line-height: 1;
   min-width: 18px;

@@ -409,5 +409,7 @@
   "percent": "Phần trăm",
   "txns": "Giao dịch",
   "liquidity": "Thanh khoản",
-  "holderBubble": "Bản đồ bong bóng người nắm giữ"
+  "holderBubble": "Bản đồ bong bóng người nắm giữ",
+  "wallet": "Ví",
+  "volume": "Khối lượng"
 }
