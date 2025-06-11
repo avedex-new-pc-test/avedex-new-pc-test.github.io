@@ -225,7 +225,7 @@
       <el-table-column
         :label="$t('ratio') + isShowBalance ? $t('bal') : $t('amount')"
         align="right"
-        :width="getTextWidth(isShowBalance? $t('bal') : $t('amount') +'/'+ $t('ratio'))+ 100"
+        :width="getTextWidth((isShowBalance? $t('bal') : $t('amount')) +'/'+ $t('ratio'))+ 100"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="balance"
