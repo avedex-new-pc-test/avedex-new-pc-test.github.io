@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 
 import { useBotStore } from '@/stores/bot'
 import { getChainInfo } from '@/utils'
@@ -13,7 +13,7 @@ const props = defineProps({
   }
 })
 
-
+const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const { t } = useI18n()
 const route = useRoute()
@@ -41,6 +41,9 @@ const userAddress = computed(() => {
 
 function setActiveTab(val: string) {
   activeTab.value = val
+  nextTick(() => {
+    unifiedRef.value.getUserPendingTx(activeTab.value)
+  })
 }
 function toggleCurrentToken() {
   botOrderOnlyCurrentToken.value = !botOrderOnlyCurrentToken.value
@@ -63,10 +66,25 @@ function toggleCancelAll() {
 
 watch(() => props.currentActiveTab, () => {
   if (props.currentActiveTab === 'Orders') {
-    unifiedRef.value.getUserPendingTx()
+    const chain = String(route.params.id).split('-')[1]
+    if (tabs.value.find(i => i?.chain === chain)) {
+      activeTab.value = chain
+    }
+    nextTick(() => {
+      unifiedRef.value.getUserPendingTx(activeTab.value)
+    })
   }
 })
 
+watch([() => route.params.id, () => tokenStore.placeOrderUpdate, () => tokenStore.placeOrderSuccess], () => {
+  const chain = String(route.params.id).split('-')[1]
+  if (tabs.value.find(i => i?.chain === chain)) {
+    activeTab.value = chain
+  }
+  nextTick(() => {
+    unifiedRef.value.getUserPendingTx(activeTab.value)
+  })
+})
 
 onMounted(() => {
   const chain = String(route.params.id).split('-')[1]
@@ -92,8 +110,10 @@ onMounted(() => {
           :class="[botOrderOnlyCurrentToken && '!bg-[#3F80F7] !text-white']" @click="toggleCurrentToken">
           {{ t('currentToken') }}
         </button>
-        <button class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer bg-[#222325] text-[#696E7C] whitespace-nowrap"
-          :class="[unifiedRef?.txOrder?.length > 0 && '!bg-[#221115] !text-[#F6465D]']" @click="toggleCancelAll">
+        <button
+          :style="{ background: unifiedRef?.txOrder?.length > 0 ? 'rgba(246, 70, 93, 0.10)' : 'var(--d-222-l-F2F2F2)' }"
+          class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer text-[#696E7C] whitespace-nowrap"
+          :class="[unifiedRef?.txOrder?.length > 0 && '!text-[#F6465D]']" @click="toggleCancelAll">
           {{ t('cancelAll') }}
         </button>
       </div>

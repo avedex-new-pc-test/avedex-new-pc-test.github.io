@@ -18,7 +18,7 @@ touch .nojekyll
 git init;
 git add -A;
 git commit -m 'deploy';
-git remote add origin git@github.com:avedex-test/avedex-test.github.io.git
+git remote add origin git@github.com:avedex-new-pc-test/avedex-new-pc-test.github.io.git
 git push -f origin main;
 
 cd -
