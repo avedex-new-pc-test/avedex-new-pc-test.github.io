@@ -51,6 +51,7 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
     }
     return el
   })
+  triggerRef(listData)
 })
 watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
   // 处理 token 交易
@@ -96,13 +97,16 @@ watch(() => wsStore.wsResult[WSEventType.ASSET], (val: IAssetResponse) => {
     if (token && chain) {
       const index = listData.value.findIndex(i => i.token === token && i.chain === chain)
       const isBuy = type === '0'
-      const indexObj = listData.value[index]
-      const balance = Number(indexObj.balance)
-      const price = indexObj.current_price_usd
-      const newBalance = new BigNumber(balance).plus(isBuy ? val.transfer.amount : -val.transfer?.amount)
-      const newBalanceUsd = newBalance.multipliedBy(price)
-      indexObj.balance = newBalance.toString()
-      indexObj.balance_usd = newBalanceUsd.toNumber()
+      if (index > -1) {
+        const indexObj = listData.value[index]
+        const balance = Number(indexObj.balance)
+        const price = indexObj.current_price_usd
+        const newBalance = new BigNumber(balance).plus(isBuy ? val.transfer.amount : -val.transfer?.amount)
+        const newBalanceUsd = newBalance.multipliedBy(price)
+        indexObj.balance = newBalance.toString()
+        indexObj.balance_usd = newBalanceUsd.toNumber()
+        triggerRef(listData)
+      }
     }
   }
 })

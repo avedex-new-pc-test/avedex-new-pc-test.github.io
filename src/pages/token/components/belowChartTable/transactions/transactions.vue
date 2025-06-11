@@ -15,9 +15,8 @@ import {
   type Profile
 } from '~/api/token'
 import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
-import dayjs from 'dayjs'
 
-import { useThrottleFn } from '@vueuse/core'
+import {useThrottleFn} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import type {AveTable} from '#components'
@@ -79,7 +78,7 @@ const activeTab = shallowRef('all')
 const ignoreWs = computed(() => {
   return !['all', 'buy', 'sell'].includes(activeTab.value)
 })
-const isPausedTxs = shallowRef(false)
+const isHoverTable = shallowRef(false)
 
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
@@ -188,7 +187,13 @@ const tableFilterVisible = ref({
   markers: false
 })
 const makerTooltip = ref()
+const markerTooltipVisible = shallowRef(false)
 const currentRow = shallowRef<IGetTokenTxsResponse & { senderProfile: Profile }>({} as any)
+const isPausedTxs = computed(() => {
+  return isHoverTable.value
+    || tokenDetailSStore.drawerVisible
+    || markerTooltipVisible.value
+})
 
 const addressAndChain = computed(() => {
   const id = route.params.id as string
@@ -225,6 +230,33 @@ useVisibilityChange(() => {
   _getPairLiq()
 })
 
+// onMounted(() => {
+//   document.addEventListener('mousemove', mouseInsideTxs)
+// })
+// onUnmounted(() => {
+//   document.removeEventListener('mousemove', mouseInsideTxs)
+// })
+//
+// const txsBounding = useElementBounding(aveTableRef)
+// const mouseInsideTxs = useThrottleFn((event: MouseEvent) => {
+//   // 获取鼠标位置
+//   const mouseX = event.clientX
+//   const mouseY = event.clientY
+//
+//   // 判断鼠标是否在元素边界内并且鼠标不在视口外
+//   isPausedTxs.value = (
+//     mouseX >= txsBounding.left.value &&
+//     mouseX <= txsBounding.right.value &&
+//     mouseY >= txsBounding.top.value &&
+//     mouseY <= txsBounding.bottom.value
+//   ) && (
+//     mouseX >= 0 &&
+//     mouseX <= window.innerWidth &&
+//     mouseY >= 0 &&
+//     mouseY <= window.innerHeight
+//   )
+// }, 100, true, false)
+
 function resetCache() {
   txCount.value = {}
   wsPairCache.value.length = 0
@@ -235,7 +267,11 @@ watch(() => wsStore.wsResult[WSEventType.TX], data => {
   if (!data || listStatus.value.loadingTxs || ignoreWs.value) {
     return
   }
-  const { wallet_address } = data.tx
+  const {wallet_address, from_address, to_address} = data.tx
+  // 不是当前币种的数据
+  if (from_address !== realAddress.value && to_address !== realAddress.value) {
+    return
+  }
   txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
   const { topN, wallet_tag } = getWalletTag(data.tx)
   const item = {
@@ -450,6 +486,7 @@ function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = 
     }
     return price
   }
+  debugger
   return 0
 }
 
@@ -522,10 +559,6 @@ function getGradient(row: IGetTokenTxsResponse) {
     'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
   } as { [key: string]: string }
   return map[str]
-}
-
-function updateRemark() {
-
 }
 
 function openMarkerTooltip(row: IGetTokenTxsResponse & { senderProfile: Profile }, e: MouseEvent) {
@@ -660,12 +693,8 @@ function resetMakerAddress() {
         class="h-560px"
         row-class='cursor-pointer'
         :rowEventHandlers="{
-        onMouseenter: () => {
-          isPausedTxs = true
-        },
-        onMouseleave: () => {
-          isPausedTxs = false
-        },
+        onMouseenter:()=>isHoverTable=true,
+        onMouseleave:()=>isHoverTable=false,
         onClick: onRowClick
       }">
         <template #header-time>
@@ -832,7 +861,7 @@ function resetMakerAddress() {
               :chain="row.chain"
               :wallet_logo="row.wallet_logo" class="color-[--d-999-l-666]"
               :mouseoverAddress="e => openMarkerTooltip(row, e)"
-              @update-remark="updateRemark">
+            >
               <div v-if="row.count && row.count > 1">
                 ({{ row.count }})
               </div>
@@ -864,7 +893,10 @@ function resetMakerAddress() {
           </div>
         </template>
       </AveTable>
-      <MarkerTooltip :virtual-ref="makerTooltip" :currentRow="currentRow" :addressAndChain="addressAndChain">
+      <MarkerTooltip
+        :virtual-ref="makerTooltip" :currentRow="currentRow" :addressAndChain="addressAndChain"
+        v-model="markerTooltipVisible"
+      >
         <template v-if="['solana', 'bsc'].includes(currentRow.chain) && currentRow.senderProfile">
           <Icon
             v-if="hasNewAccount(currentRow)"
