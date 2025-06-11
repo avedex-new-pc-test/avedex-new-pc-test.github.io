@@ -67,12 +67,12 @@
           </div>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 6"
-            class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px"
+            style="background: rgba(246, 70, 93, 0.10)">
             {{ t('limit') }}/{{ t('sell') }}
           </div>
-          <div v-if="row.swapType === 5"
-            class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px bg-[#0b1d19]">
+          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px"
+            style="background: rgba(18, 184, 134, 0.10)">
             {{ t('limit') }}/{{ t('buy') }}
           </div>
         </template>
@@ -267,16 +267,15 @@ const getUserPendingTx = async (chainValue?: string) => {
   loading.value = true
   const chain = chainValue || props.chain
   try {
-    if (!botStore.accessToken) {
-      return
-    }
-    const chain = props.chain || getAddressAndChainFromId(route.params.id as string).chain
+    // if (!botStore.accessToken) {
+    //   return
+    // }
     const data = {
       chain: chain,
-      token: props.currentToken ? getAddressAndChainFromId(route.params.id as string).address : '',
+      token: props.currentToken ? getAddressAndChainFromId(route.params.id as string)?.address : '',
       walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === chain)?.address || '',
     }
-    if (!data.token || !data.walletAddress || !data.chain) return
+    // if (!data.token || !data.walletAddress || !data.chain) return
     const res = await bot_getUserPendingTx({
       ...data as any
     })
@@ -325,16 +324,16 @@ defineExpose({
 }
 
 :deep(.el-table) {
-  --el-table-tr-bg-color: #0A0B0D;
-  --el-table-bg-color: #0A0B0D;
+  --el-table-tr-bg-color: var(--d-0a0b0d-l-fff);
+  --el-table-bg-color: var(--d-0a0b0d-l-fff);
   --el-table-text-color: var(--d-222-l-F2F2F2);
   --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
-  --el-fill-color-lighter: #0A0B0D;
+  --el-fill-color-lighter: var(--d-0a0b0d-l-fff);
   --el-table-header-text-color: var(--d-999-l-666);
   --el-table-border-color: var(--d-33353D-l-f5f5f5);
   --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
-  background: #0A0B0D;
-  --el-bg-color: #0A0B0D;
+  background: var(--d-0a0b0d-l-fff);
+  --el-bg-color: var(--d-0a0b0d-l-fff);
   --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
   font-size: 13px;
 
