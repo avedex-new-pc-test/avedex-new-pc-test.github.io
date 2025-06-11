@@ -6,7 +6,7 @@
     class="w-full cursor-row-resize bg-[--d-222-l-F2F2F2] gap-1px hover:bg-[--d-666-l-CCC] flex items-center justify-center h-4px"
     @mousedown.stop.prevent="drag"
   >
-    <span v-for="i in 4" :key="i" class="bg-#444 w-2px h-2px rounded-full"></span>
+    <span v-for="i in 4" :key="i" class="bg-#444 w-2px h-2px rounded-full"/>
   </div>
 </template>
 
@@ -627,7 +627,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
 
 // 拖动缩放
 let isMask = false
-const kHeight = shallowRef(400)
+const kHeight = shallowRef(500)
 const wHeight = useWindowSize().height
 const dom = useTemplateRef('kline')
 function drag(e: MouseEvent) {

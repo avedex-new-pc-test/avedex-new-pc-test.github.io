@@ -85,7 +85,7 @@ export function _getHoldersList(params: {
   order?: string | undefined
   recent?: number | undefined
   self_address?: string
-}): Promise<Array<HolderInfo>> {
+}): Promise<HolderInfo> {
   const { $api } = useNuxtApp()
   return $api('/v1api/v3/stats/holders', {
     method: 'get',
@@ -175,7 +175,7 @@ export function _getTop100balance(params: {
 }
 export interface AllTagsStats {
   token: string
-  date: Date
+  date: Date | undefined
   balance: number
   balance_ratio_cur: number
   balance_ratio_max: number

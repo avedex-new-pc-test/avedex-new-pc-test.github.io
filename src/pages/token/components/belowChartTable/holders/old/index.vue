@@ -72,11 +72,11 @@
                 <img
                   v-if="mode === 'light'"
                   src="@/assets/images/empty-white.svg"
-                />
+                >
                 <img
                   v-if="mode === 'dark'"
                   src="@/assets/images/empty-black.svg"
-                />
+                >
                 <span>{{ t('emptyNoData') }}</span>
               </div>
               <span v-else />
@@ -184,7 +184,19 @@ const tabActive = shallowRef<string>('100')
 const top100balance = ref<Top100Balance[]>([])
 const loadingTop100Balance = shallowRef<boolean>(false)
 
-const insidersObj = ref<AllTagsStats>({})
+const insidersObj = ref<AllTagsStats>({
+  token: '',
+  date: undefined,
+  balance: 0,
+  balance_ratio_cur: 0,
+  balance_ratio_max: 0,
+  vol_buy: 0,
+  vol_sell: 0,
+  unsettled_addresses: 0,
+  all_addresses: 0,
+  vol_profit: 0,
+  vol_profit_ratio: 0
+})
 const loadingStats = shallowRef<boolean>(false)
   const profitLossRef1 = ref()
 
@@ -192,7 +204,7 @@ const supportTags = computed(() => {
   const chain = addressAndChain.value.chain
   const chainsSupport =
     globalConfig.value?.chains_support_data_analysis_insider_sniper_V3
-  const arr = chainsSupport?.[chain] || []
+  const arr = chainsSupport?.[chain as keyof typeof chainsSupport] || []
   return (
     arr?.map((i) => ({ ...i, color: filterChartColor(i.type)?.color })) || []
   )
@@ -223,7 +235,7 @@ const tabs = computed(() => {
       es: t('topN', { n: 100 }),
       type: '100',
     },
-    ...totalHolders.value?.filter(i=> i?.total_address >0),
+    ...(totalHolders.value?.filter(i=> (i?.total_address || 0) > 0) || {}),
   ]
 })
 const top100balanceC = computed(() => {
