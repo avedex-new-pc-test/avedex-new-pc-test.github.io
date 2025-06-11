@@ -30,12 +30,16 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
         const total_profit = balance_usd.minus(total_purchase_usd)
         const total_profit_ratio = new BigNumber(current.uprice || 0)
           .minus(el.average_purchase_price_usd || 0).div(el.average_purchase_price_usd)
-        return {
-          ...el,
-          current_price_usd: current.uprice,
-          balance_usd: balance_usd.toNumber(),
-          total_profit: total_profit.toFixed(),
-          total_profit_ratio: total_profit_ratio.toFixed()
+        if (total_profit_ratio.toNumber() < -1 || Number(el.average_purchase_price_usd) < 0) {
+          return el
+        } else {
+          return {
+            ...el,
+            current_price_usd: current.uprice,
+            balance_usd: balance_usd.toNumber(),
+            total_profit: total_profit.toFixed(),
+            total_profit_ratio: total_profit_ratio.toFixed()
+          }
         }
       } else {
         return {
