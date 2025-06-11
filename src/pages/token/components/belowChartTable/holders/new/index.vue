@@ -2,7 +2,7 @@
   <div class="holderInfo">
     <div class="px-12px mb-10px flex justify-between">
       <div
-        class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide"
+        class="flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide tab-width w-100%"
       >
         <a
           v-for="item in tabs"
@@ -121,11 +121,11 @@
       </li>
     </ul>
 
-    <el-row :gutter="30">
+    <!-- <el-row :gutter="30">
       <el-col
         :span="show_bubble && ['solana', 'bsc']?.includes(chain) ? 12 : 24"
-      >
-        <div class="relative">
+      > -->
+        <!-- <div class="relative"> -->
           <List
             ref="holdersRef"
             :tableList="holderList"
@@ -136,7 +136,7 @@
             @handleSortChange="handleSortChange"
             @filterOriginAddress="filterOriginAddress"
           />
-          <el-tooltip
+          <!-- <el-tooltip
             v-if="['solana', 'bsc']?.includes(chain) && !show_bubble"
             placement="top"
 
@@ -150,12 +150,11 @@
               href=""
               @click.stop.prevent="show_bubble = true"
             >
-              <!-- <i class="iconfont icon-bubble color-999" /> -->
-              <Icon name="custom:bubble" class="color-#999 icon-bubble" />
+              <Icon name="custom:bubble" class="color-[--d-696E7C-l-fff] icon-bubble" />
             </a>
-          </el-tooltip>
-        </div>
-      </el-col>
+          </el-tooltip> -->
+        <!-- </div> -->
+      <!-- </el-col>
       <el-col
         :span="show_bubble && ['solana', 'bsc']?.includes(chain) ? 12 : 0"
       >
@@ -171,7 +170,7 @@
               href=""
               @click.stop.prevent="show_bubble = false"
             >
-              <Icon name="material-symbols:keyboard-double-arrow-right-rounded" class="color-#999" />
+              <Icon name="material-symbols:keyboard-double-arrow-right-rounded" class="color-[--d-696E7C-l-fff]" />
             </a>
           </el-tooltip>
           <iframe
@@ -190,7 +189,7 @@
           />
         </div>
       </el-col>
-    </el-row>
+    </el-row>-->
   </div>
 </template>
 

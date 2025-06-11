@@ -168,6 +168,12 @@ function tokenSearch() {
             id: i.token + '-' + i.chain,
           }
         }),
+        wallet_list:  res?.wallet_list?.map?.((i) => {
+          return {
+            ...i,
+            total_profit_rate: i.total_profit_ratio || 0
+          }
+        }),
       }
       const isWallet = res?.wallet_list?.length > 0
       if (res?.token_list?.length > 0 && !isWallet) {
