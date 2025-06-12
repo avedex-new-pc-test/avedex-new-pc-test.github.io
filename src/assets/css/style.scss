@@ -20,6 +20,7 @@
 }
 .search-dialog.el-dialog {
   background: var(--d-222-l-FFF);
+  padding: 20px 0;
   .search-input {
     .el-input__wrapper {
       background-color: var(--d-333-l-F2F2F2);
@@ -138,4 +139,8 @@
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100px;
+}
+/* 隐藏原生清除图标 */
+.search-input .el-input__clear {
+  display: none !important;
 }

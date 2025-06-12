@@ -522,16 +522,16 @@
         class="block mt-8px color-[--d-F5F5F5-l-333]"
         :style="{
           color:
-            Number(token?.dev_count || 0) * 100 < 0.1
+            Number(token?.dev_balance_ratio_cur || 0) < 0.1
               ? 'var(--d-666-l-999)'
-              : (token?.dev_count ?? 0) * 100 > 10
+              : (token?.dev_balance_ratio_cur ?? 0) > 10
               ? '#FFA622'
               : '',
         }"
         >{{
-          (token?.dev_count ?? 0) > 0 && (token?.dev_count ?? 0) * 100 < 0.1
+          (token?.dev_balance_ratio_cur ?? 0) > 0 && (token?.dev_balance_ratio_cur ?? 0) < 0.1
             ? '<0.1'
-            : (token?.dev_count ?? 0) * 100
+            : formatNumber(token?.dev_balance_ratio_cur ?? 0, 2)
         }}%</span
       >
     </div>
