@@ -415,5 +415,7 @@
   "alertNotice": "Token chưa xác minh",
   "markets": "Thị trường",
   "smarter2": "Tiền thông minh",
-  "balances": "Tài sản"
+  "balances": "Tài sản",
+  "provider1": "Nhà cung cấp chất lỏng",
+  "amt": "{n} Amt"
 }

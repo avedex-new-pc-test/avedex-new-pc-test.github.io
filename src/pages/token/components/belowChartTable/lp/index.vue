@@ -122,7 +122,7 @@ const columns = computed(() => {
       width: 40,
     },
     {
-      label: t('provider'),
+      label: t('provider1'),
       prop: 'mark',
       align: 'left',
       sortable: false,
@@ -144,7 +144,7 @@ const columns = computed(() => {
     //   }
     // },
     {
-      label: t('devote') + '%',
+      label: t('ratio') + '%',
       prop: 'percent',
       minWidth: 100,
       align: 'right',
@@ -155,30 +155,30 @@ const columns = computed(() => {
       // }
     },
     {
-      label: lpRest.value?.main_token_symbol?(lpRest.value?.main_token_symbol+(lang.value?.indexOf('zh')>-1?'':' ')+t('amount')):'',
+      label: lpRest.value?.main_token_symbol?t('amt',{n:lpRest.value?.main_token_symbol}):'',
       prop: 'addAmt',
       align: 'right',
       minWidth: 140
     },
     {
-      label: lpRest.value?.target_token_symbol?(lpRest.value?.target_token_symbol+(lang.value?.indexOf('zh')>-1?'':' ')+t('amount')):'',
+      label: lpRest.value?.target_token_symbol?t('amt',{n:lpRest.value?.target_token_symbol}):'',
       prop: 'netAmt',
       align: 'right',
       minWidth: 140
     },
-    {
-      label: t('amount'),
-      prop: 'amount',
-      align: 'right',
-      sortable: false,
-      customClassName: () => { },
-      customFormatter: (row: IHolder) => {
-        return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
-      }
-    },
+    // {
+    //   label: t('amount'),
+    //   prop: 'amount',
+    //   align: 'right',
+    //   sortable: false,
+    //   customClassName: () => { },
+    //   customFormatter: (row: IHolder) => {
+    //     return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
+    //   }
+    // },
   
     {
-      label: t('balance1'),
+      label: t('value'),
       prop: 'quantity',
       align: 'right',
       minWidth: 100,

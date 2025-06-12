@@ -242,5 +242,7 @@
   "alertNotice": "Token no verificado. Por favor, investiga por tu cuenta (DYOR)",
   "markets": "Mercado",
   "smarter2": "Más Inteligente",
-  "balances": "Activos"
+  "balances": "Activos",
+  "provider1": "Proveedor de líquido",
+  "amt": "{n} Amt"
 }

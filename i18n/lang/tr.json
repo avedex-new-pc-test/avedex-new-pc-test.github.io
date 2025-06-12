@@ -237,5 +237,7 @@
   "alertNotice": "Doğrulanmamış token. Kendi araştırmanızı yapın",
   "markets": "Piyasalar",
   "smarter2": "akıllı para",
-  "balances": "Bakiye"
+  "balances": "Bakiye",
+  "provider1": "Istakoz sağlayıcısı",
+  "amt": "{n} amt"
 }

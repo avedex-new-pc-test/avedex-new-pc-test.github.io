@@ -640,5 +640,7 @@
   "markets": "行情",
   "pump1": "掃鏈",
   "smarter2": "聰明錢",
-  "balances": "資產"
+  "balances": "資產",
+  "provider1": "提供者",
+  "amt": "{n}數量"
 }
