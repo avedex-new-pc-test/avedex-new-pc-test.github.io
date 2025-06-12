@@ -465,7 +465,7 @@ export interface GetLPHoldersResponse {
   main_token_symbol: string;
   target_token: string;
   target_token_symbol: string;
-  Holders: IHolder[] | null;
+  holders: IHolder[] | null;
 }
 export function getLPHolders(tokenId: string) : Promise<GetLPHoldersResponse>{
   const { $api } = useNuxtApp()
