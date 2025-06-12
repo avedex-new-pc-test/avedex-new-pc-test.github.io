@@ -25,6 +25,7 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
     if (current && current.uprice > 0) {
       const noProfit = el.total_profit === '--' || Number(el.total_profit) === 0
       const balance_usd = new BigNumber(el.balance || 0).times(current.uprice || 0)
+      debugger
       if (!noProfit) {
         const total_purchase_usd = new BigNumber(el.balance_usd || 0).minus(el.total_profit || 0)
         const total_profit = balance_usd.minus(total_purchase_usd)
@@ -515,7 +516,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                 :loading="loadingSwap[row.index]"
                 class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2]"
                 style="padding:4px"
-                @click.stop="handleSellAmount(row)"
+                @click.stop.prevent="handleSellAmount(row)"
               >
                 {{ $t('sellAll') }}
               </el-button>
