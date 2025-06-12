@@ -105,10 +105,10 @@ const props=defineProps({
 })
 
 
-const {isDark,mode,showLeft,lang} = storeToRefs(useGlobalStore())
+const {isDark,mode,showLeft} = storeToRefs(useGlobalStore())
 // const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
-const dataSource = ref<(IHolder & { index: string , main_token_amount_usd1?: BigNumber, target_token_amount_usd1?: BigNumber,main_token_amount1?:BigNumber,target_token_amount1?:BigNumber})[]>([])
+const dataSource = ref<(IHolder & { index: string , main_token_amount_usd1?: BigNumber, target_token_amount_usd1?: BigNumber,main_token_amount1?:BigNumber,target_token_amount1?:BigNumber,value1?:BigNumber})[]>([])
 const dataList = ref<(GetPairLiqNewResponse & { time: string })[]>([])
 const { t } = useI18n()
 const lpRest = ref<any>({})
@@ -186,13 +186,13 @@ const columns = computed(() => {
   
     {
       label: t('value'),
-      prop: 'quantity',
+      prop: 'value1',
       align: 'right',
       minWidth: 100,
       sortable: false,
       customClassName: () => { },
-      customFormatter: (row: IHolder) => {
-        return `$${formatNumber(row.quantity, 4)}`
+      customFormatter: (row: {value1: number}) => {
+        return `$${formatNumber(row.value1, 4)}`
       }
     },
     // {
@@ -339,6 +339,7 @@ function init2() {
             main_token_amount_usd1:target_token_amount1.multipliedBy(props.token?.current_price_usd || 0), 
             target_token_amount1,
             target_token_amount_usd1:target_token_amount1.multipliedBy(props.token?.current_price_usd || 0), 
+            value1:target_token_amount1.multipliedBy(props.token?.current_price_usd || 0).multipliedBy(2),
           }
         })
         expandedRowKeys1.push(...dataSource.value.filter(item => item?.lock?.length).map(item => item.index))
@@ -395,7 +396,7 @@ function init2() {
   }
   :deep() .el-table__expanded-cell td {
     /* --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2); */
-    --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
+    --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2);
      background-color: var(--d-222-l-F2F2F2);
   }
   :deep() th {
@@ -434,7 +435,7 @@ function init2() {
   display: flex;
   background: var(--d-222-l-f5f5f5);
   border-radius: 1.5px;
-  margin-top: 9px;
+  margin-top: 11px;
   margin-bottom: 3px;
 
   >span {

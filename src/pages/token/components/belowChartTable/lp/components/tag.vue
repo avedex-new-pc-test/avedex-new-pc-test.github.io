@@ -46,9 +46,10 @@ watch(props , (val) => {
   background-color: #3F80F71A;
   font-family: SF Pro;
   font-weight: 400;
-  padding: 3px 8px;
+  padding-left: 8px;
+  padding-right: 8px;
   font-size: 12px;
-  line-height: 120%;
+  line-height: 100%;
   letter-spacing: 0%;
   border-radius: 4px;
   border: 0 none;
@@ -65,18 +66,21 @@ watch(props , (val) => {
     background-color: #F6465D1A;
   }
   &.large{
-    padding: 4px 12px;
+    padding-left: 12px;
+    padding-right: 12px;
     font-size: 13px;
     border-radius: 6px;
     height: 24px;
   }
   &.default{
-    padding: 3px 8px;
+    padding-left: 8px;
+    padding-right: 8px;
     font-size: 12px;
     height: 20px;
   }
   &.small{
-    padding: 2px 4px;
+    padding-left: 4px;
+    padding-right: 4px;
     font-size: 10px;
     height: 16px;
   }
