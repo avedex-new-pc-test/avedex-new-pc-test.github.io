@@ -515,7 +515,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                 :loading="loadingSwap[row.index]"
                 class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2]"
                 style="padding:4px"
-                @click="handleSellAmount(row)"
+                @click.stop="handleSellAmount(row)"
               >
                 {{ $t('sellAll') }}
               </el-button>
