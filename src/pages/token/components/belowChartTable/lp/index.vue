@@ -33,7 +33,7 @@
                 </div> -->
                 <span v-if="row.main_token_amount_usd=='0'">0</span>
                 <span v-else-if="row.main_token_amount_usd == '--'">--</span>
-                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '$' : '$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span>
+                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'netAmt'" class="flex flex-col">
                 <span >{{ formatNumber(row.target_token_amount, 1) }}</span>
