@@ -932,8 +932,7 @@
 
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
-import { getChainInfo, formatDate, formatTimeFromNow, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
-// import type { RowEventHandlerParams, } from 'element-plus'
+import { getChainInfo, formatDate, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
 import dayjs from 'dayjs'
 const props = defineProps({
   modelValue: Boolean,

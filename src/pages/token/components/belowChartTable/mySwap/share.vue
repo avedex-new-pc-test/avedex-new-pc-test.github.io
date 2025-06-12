@@ -3,6 +3,7 @@ import QRCode from 'qrcode'
 import Cookies from 'js-cookie'
 import html2canvas from 'html2canvas'
 import { getCampaignToken } from '~/api/token'
+import { formatNumber } from '~/utils/formatNumber'
 
 import up1 from '@/assets/images/share/up_1.webp'
 import down1 from '@/assets/images/share/down_1.webp'
@@ -118,15 +119,15 @@ function getRandom(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function getColorClass(val: string) {
-  if (Number(val) > 0) {
-    return 'color-#12b886'
-  } else if (Number(val) < 0) {
-    return 'color-#ff646d'
-  } else {
-    return 'color-#848E9C'
-  }
-}
+// function getColorClass(val: string) {
+//   if (Number(val) > 0) {
+//     return 'color-#12b886'
+//   } else if (Number(val) < 0) {
+//     return 'color-#ff646d'
+//   } else {
+//     return 'color-#848E9C'
+//   }
+// }
 </script>
 
 <template>

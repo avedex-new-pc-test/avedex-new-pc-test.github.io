@@ -5,16 +5,21 @@ import {formatNumber} from '~/utils/formatNumber'
 import TokenImg from '~/components/tokenImg.vue'
 import dayjs from 'dayjs'
 import type {IPumpResponse} from '~/api/types/ws'
-import {useThrottleFn, useWindowSize} from '@vueuse/core'
-import {formatTimeFromNow} from "~/utils";
+import {useThrottleFn} from '@vueuse/core'
+import {formatTimeFromNow} from '~/utils'
 
 const {t} = useI18n()
 const botStore = useBotStore()
 const wsStore = useWSStore()
-const localeStore = useLocaleStore()
-const {height} = useWindowSize()
+// const localeStore = useLocaleStore()
 const documentVisible = inject<Ref<boolean>>('documentVisible')
 // const tokenStore = useTokenStore()
+defineProps({
+  finalHeight: {
+    type: Number,
+    required: true
+  }
+})
 const sort = ref({
   sortBy: undefined,
   activeSort: 0
@@ -275,7 +280,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
   <div v-loading="listStatus.loading && query.pageNO===1">
     <div
       ref="tabsContainer"
-      class="mt-12px  mx-12px mb-16px flex items-center justify-between whitespace-nowrap scrollbar-hide overflow-x-auto overflow-y-hidden">
+      class="mt-8px mx-12px flex items-center justify-between whitespace-nowrap scrollbar-hide overflow-x-auto overflow-y-hidden">
       <div class="flex items-center gap-10px">
           <span
             v-for="(item,index) in tabList"
@@ -301,14 +306,14 @@ function getTargetToken(row: GetHomePumpListResponse) {
       {{ t('amountB') }}
       <Icon
         name="custom:price"
-        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-#3F80F7':'color-#666'}`"
+        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'}`"
         @click.stop.self="isVolUSDT=!isVolUSDT"
       />
       /{{ t('Txs') }}
     </template>
     </THead>
     <el-scrollbar
-      :height="Math.max(500,height-500)"
+      :height="Math.max(500,finalHeight-130)"
       class="[&&]:h-auto"
     >
       <NuxtLink
@@ -363,13 +368,13 @@ function getTargetToken(row: GetHomePumpListResponse) {
           </div>
         </div>
         <div class="w-92px flex-col flex items-end">
-          <span>{{ isVolUSDT ? '$' : '' }}{{
+          <span class="color-[--d-999-l-666]">{{ isVolUSDT ? '$' : '' }}{{
               isVolUSDT ? formatNumber(row.volume_u_24h, 2) : formatNumber(row.volume_u_24h / row.current_price_usd, 2)
             }}</span>
           <span class="color-[--d-666-l-999]">{{ formatNumber(row.tx_24h_count) }}</span>
         </div>
         <div class="w-70px flex-col flex items-end">
-          <span>${{ formatNumber(row.market_cap, 2) }}</span>
+          <span class="color-[--d-999-l-666]">${{ formatNumber(row.market_cap, 2) }}</span>
           <span :class="getColorClass(row.price_change_24h)">{{ addSign(Number(row.price_change_24h)) }}{{
               formatNumber(Math.abs(Number(row.price_change_24h)), 1)
             }}%</span>

@@ -32,7 +32,7 @@ const filterTime = ref([])
     <template #reference>
       <Icon
         name="custom:filter"
-        :class="`${modelValue.length?'color-#3F80F7':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+        :class="`${modelValue.length?'color-[--d-999-l-666]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
       />
     </template>
     <template #default>
