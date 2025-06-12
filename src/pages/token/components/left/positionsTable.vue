@@ -25,7 +25,6 @@ watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
     if (current && current.uprice > 0) {
       const noProfit = el.total_profit === '--' || Number(el.total_profit) === 0
       const balance_usd = new BigNumber(el.balance || 0).times(current.uprice || 0)
-      debugger
       if (!noProfit) {
         const total_purchase_usd = new BigNumber(el.balance_usd || 0).minus(el.total_profit || 0)
         const total_profit = balance_usd.minus(total_purchase_usd)
