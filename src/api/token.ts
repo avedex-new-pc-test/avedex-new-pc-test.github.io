@@ -3,7 +3,7 @@ import { getAddressAndChainFromId, getChainInfo } from '@/utils'
 import { NATIVE_TOKEN } from '@/utils/constants'
 import { createCacheRequest } from '#imports'
 
-const testDomain = 'https://0ftrfsdb.xyz'
+// const testDomain = 'https://0ftrfsdb.xyz'
 
 // export function getTokenInfo(id: string): Promise<null | TokenInfo> {
 //   const {address, chain} = getAddressAndChainFromId(id)
@@ -30,7 +30,7 @@ export function getTokenInfo(id: string): Promise<null | TokenInfo> {
     id1 = address1 + '-' + chain
   }
   const { $api } = useNuxtApp()
-  return $api(testDomain + '/v2api/token_info/v1/token/detail', {
+  return $api('/v2api/token_info/v1/token/detail', {
     method: 'get',
     query: {
       token_id: id1,
@@ -124,7 +124,7 @@ export function getKlineHistoryData(data: {
     })
   }
   const { $api } = useNuxtApp()
-  return $api(testDomain + '/v2api/token_info/v1/kline', {
+  return $api('/v2api/token_info/v1/kline', {
     method: 'get',
     query: {
       token_id: data.token_id,
@@ -347,7 +347,7 @@ export function getTokenTxs(query: {
   time_max?: string
 }): Promise<IGetTokenTxsResponse[]> {
   const {$api} = useNuxtApp()
-  return $api('https://0ftrfsdb.xyz/v2api/token_info/v1/token/txs', {
+  return $api('/v2api/token_info/v1/token/txs', {
     method: 'get',
     query
   })
@@ -890,7 +890,7 @@ export interface IGetAllTagsResponse {
 
 export function getAllTags(): Promise<IGetAllTagsResponse[]> {
   const {$api} = useNuxtApp()
-  return $api('https://0ftrfsdb.xyz/v2api/token_info/v1/tags', {
+  return $api('/v2api/token_info/v1/tags', {
     method: 'get',
   })
 }
