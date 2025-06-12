@@ -105,11 +105,12 @@ onMounted(() => {
         </a>
       </div>
       <div class="flex items-center gap-3">
-        <button
+         <el-checkbox v-model="botOrderOnlyCurrentToken" :label="t('currentToken')" size="small" style="font-size: 12px;color:var(--d-666-l-333)" />
+        <!-- <button
           class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer bg-[rgba(63,128,247,0.10)] text-#3F80F7 whitespace-nowrap"
           :class="[botOrderOnlyCurrentToken && '!bg-[#3F80F7] !text-white']" @click="toggleCurrentToken">
           {{ t('currentToken') }}
-        </button>
+        </button> -->
         <button
           :style="{ background: unifiedRef?.txOrder?.length > 0 ? 'rgba(246, 70, 93, 0.10)' : 'var(--d-222-l-F2F2F2)' }"
           class="h-6 text-xs rounded border-0 px-2.5 cursor-pointer text-[#696E7C] whitespace-nowrap"
