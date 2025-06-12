@@ -1,32 +1,31 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
   <el-alert
-    v-if="(tokenStore?.token?.risk_level??0) < 0"
+    v-if="(tokenStore?.token?.risk_level ?? 0) < 0"
     class="myTxs-notice"
     type="warning"
     :title="t('myTxsNotice')"
     show-icon
     :style="{
-      backgroundColor:
-        mode === 'light' ? '#ffa94d0d' : '#36131C',
+      backgroundColor: mode === 'light' ? '#ffa94d0d' : '#36131C',
       color: '#f00',
       border: 'none',
     }"
     :closable="false"
   />
   <el-alert
-    v-else-if="warningStatus"
+    v-else-if="tokenStore.warningStatus"
     class="myTxs-notice"
     type="warning"
     :title="t('alertNotice')"
     show-icon
     closable
     :style="{
-      backgroundColor:
-        mode === 'light' ? '#ffa94d0d' : '#3b1e0c',
+      backgroundColor: mode === 'light' ? '#ffa94d0d' : '#3b1e0c',
       color: '#ED6A0C',
       border: 'none',
     }"
+    @close="handleNoticeClose"
   />
   <div
     class="info flex items-center bg-[--d-111-l-FFF] mb-1px h-64px p-x-16px text-12px color-[--d-666-l-999]"
@@ -357,8 +356,10 @@
                         : '',
                   }"
                 >
-                  {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
-                </span>/<span
+                  {{
+                    formatNumber(pair?.smart_money_buy_count_24h || 0, 0)
+                  }} </span
+                >/<span
                   :style="{
                     color:
                       (pair?.smart_money_sell_count_24h ?? 0) > 0
@@ -522,14 +523,15 @@
         class="block mt-8px color-[--d-F5F5F5-l-333]"
         :style="{
           color:
-            Number(token?.dev_balance_ratio_cur || 0) *100 < 0.1
+            Number(token?.dev_balance_ratio_cur || 0) * 100 < 0.1
               ? 'var(--d-666-l-999)'
-              : (token?.dev_balance_ratio_cur ?? 0) *100 > 10
+              : (token?.dev_balance_ratio_cur ?? 0) * 100 > 10
               ? '#FFA622'
               : '',
         }"
         >{{
-          (token?.dev_balance_ratio_cur ?? 0) > 0 && (token?.dev_balance_ratio_cur ?? 0) *100 < 0.1
+          (token?.dev_balance_ratio_cur ?? 0) > 0 &&
+          (token?.dev_balance_ratio_cur ?? 0) * 100 < 0.1
             ? '<0.1'
             : formatNumber((token?.dev_balance_ratio_cur ?? 0) * 100, 2)
         }}%</span
@@ -597,7 +599,11 @@
       </div>
       <Check v-model="showCheck" />
     </div>
-    <div v-if="chain === 'solana'" class="item ml-24px cursor-pointer" @click="showRun = !showRun">
+    <div
+      v-if="chain === 'solana'"
+      class="item ml-24px cursor-pointer"
+      @click="showRun = !showRun"
+    >
       <span class="flex-start"
         >{{ t('flag_rug_pull') }}
         <Icon
@@ -613,7 +619,9 @@
         class="mt-8px font-500 flex-start text-12px"
         :style="{
           color:
-            (rugPull?.rates?.rugged_rate ?? 0) > 60 ? '#F6465D' : 'var(--d-999-l-666)',
+            (rugPull?.rates?.rugged_rate ?? 0) > 60
+              ? '#F6465D'
+              : 'var(--d-999-l-666)',
         }"
       >
         <Icon name="custom:rug" class="text-12px mr-2px" />
@@ -761,9 +769,6 @@ const currentGroup = computed(() => {
 const chain = computed(() => {
   const { chain } = getAddressAndChainFromId(id.value, 0)
   return chain
-})
-const warningStatus = computed(() => {
-  return (tokenStore?.token?.risk_level??0) >= 0 && !tokenStore?.token?.logo_url && !tokenStore?.token?.is_audited
 })
 // const tokenInfo = computed(() => {
 //   return tokenStore.tokenInfo || 0
@@ -1130,6 +1135,14 @@ function getRugPull() {
     .finally(() => {
       loadingRun.value = false
     })
+}
+function handleNoticeClose() {
+  const id = route.params.id as string
+  const tokenWarningNotice: Record<string, boolean> = localStorage?.tokenWarningNotice
+    ? JSON.parse(localStorage?.tokenWarningNotice)
+    : {}
+  tokenWarningNotice[id] = true
+  localStorage.tokenWarningNotice = JSON.stringify(tokenWarningNotice)
 }
 </script>
 
