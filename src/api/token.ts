@@ -464,7 +464,7 @@ export interface GetLPHoldersResponse {
 }
 export function getLPHolders(tokenId: string) : Promise<GetLPHoldersResponse>{
   const { $api } = useNuxtApp()
-  return $api(testDomain+'/v2api/token/v1/lp_holders',{
+  return $api('/v2api/token/v1/lp_holders',{
     method: 'get',
     params: {
       token_id: tokenId,

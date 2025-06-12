@@ -17,12 +17,12 @@
           :align="col.align">
           <template #default="{ row }">
             <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns', 'percent']">
-              <div v-if="col.prop == 'mark'" class="flex-end gap-2px hover:color-[--d-FFF-l-000] cursor-pointer" @click.stop="tableRowClick(row)">
+              <div v-if="col.prop == 'mark'" class="flex-start gap-2px hover:color-[--d-FFF-l-000] cursor-pointer" @click.stop="tableRowClick(row)">
                 <Icon v-if="formatLock(row)" color="#B3920E" name="material-symbols:lock" />
                 <Icon v-if="row.is_contract == 1" name="iconamoon:file-document-thin"  />
                 <tag v-if="Number(row?.analysis_show_creator) === 1">{{ $t('contractCreator') }}</tag>
                 <el-tooltip :effect="mode" placement="top-end" :content="row?.mark||row?.address">
-                  <div style="max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
+                  <div style="max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
                 </el-tooltip>
               </div>
               <div v-else-if="col.prop == 'addAmt'" class="flex flex-col">
@@ -123,7 +123,7 @@ const columns = computed(() => {
     {
       label: t('provider'),
       prop: 'mark',
-      align: 'right',
+      align: 'left',
       sortable: false,
       minWidth: 160,
       customClassName: () => { },
@@ -209,7 +209,7 @@ const columns = computed(() => {
     // },
   ]
 })
-const activeTime = shallowRef<7|30>(7)
+const activeTime = shallowRef<7|30>(30)
 const expandedRowKeys = shallowRef<string[]>([])
 const columns2 = computed(() => {
   return [
