@@ -27,21 +27,21 @@
               </div>
               <div v-else-if="col.prop == 'addAmt'" class="flex flex-col">
                 <div>
-                  <span class="color-#12B886">{{ formatNumber(row.main_token_amount, 1) }}&nbsp;</span>
+                  <span class="color-#12B886">{{ formatNumber(row.main_token_amount1, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.main_token_symbol }}</span>
                 </div>
-                <span v-if="!row.main_token_amount_usd">0</span>
-                <span v-else-if="row.main_token_amount_usd == '--'">--</span>
-                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span>
+                <span v-if="!row.main_token_amount_usd1">0</span>
+                <span v-else-if="row.main_token_amount_usd1 == '--'">--</span>
+                <span v-else>{{`${Number(row.main_token_amount_usd1) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd1)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'netAmt'" class="flex flex-col">
                 <div>
-                  <span class="color-#12B886">{{ formatNumber(row.target_token_amount, 1) }}&nbsp;</span>
+                  <span class="color-#12B886">{{ formatNumber(row.target_token_amount1, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.target_token_symbol }}</span>
                 </div>
-                <span v-if="!row.target_token_amount_usd">0</span>
-                <span v-else-if="row.target_token_amount_usd == '--'">--</span>
-                <span v-else>{{`${Number(row.target_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd)), 1)}`}}</span>
+                <span v-if="!row.target_token_amount_usd1">0</span>
+                <span v-else-if="row.target_token_amount_usd1 == '--'">--</span>
+                <span v-else>{{`${Number(row.target_token_amount_usd1) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd1)), 1)}`}}</span>
               </div>
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
@@ -83,8 +83,9 @@
 </template>
 
 <script setup lang="ts">
-import { getLPHolders, getPairLiqNew } from '~/api/token'
-import type {   GetLPHoldersResponse,  IHolder,  LockType,  GetPairLiqNewResponse} from '~/api/token'
+import { getLPHolders, getPairLiqNew,getTokensPrice } from '~/api/token'
+import type {  GetLPHoldersResponse,  IHolder,  LockType,  GetPairLiqNewResponse} from '~/api/token'
+import BigNumber from 'bignumber.js'
 import tag from './components/tag.vue'
 // import type {IColumn}  from './components/columns.vue'
 import { upColor, downColor } from '@/utils/constants'
@@ -107,12 +108,18 @@ const props=defineProps({
 const {isDark,mode,showLeft,lang} = storeToRefs(useGlobalStore())
 // const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
-const dataSource = ref<(IHolder & { index: string })[]>([])
+const dataSource = ref<(IHolder & { index: string , main_token_amount_usd1?: BigNumber, target_token_amount_usd1?: BigNumber,main_token_amount1?:BigNumber,target_token_amount1?:BigNumber})[]>([])
 const dataList = ref<(GetPairLiqNewResponse & { time: string })[]>([])
 const { t } = useI18n()
 const lpRest = ref<any>({})
 const showSeries = shallowRef([true, true])
 const loading = ref(false)
+
+const effectiveTotal = computed(() => {
+  return new BigNumber(props.token?.total || 0)
+    .minus(props.token?.burn_amount_dec || 0).toFixed()
+})
+
 const columns = computed(() => {
   return [
     {
@@ -256,6 +263,10 @@ const columns2 = computed(() => {
     },
   ]
 })
+
+
+
+
 onMounted(() => {
   // console.log('mounted')
   init1()
@@ -319,13 +330,35 @@ function init2() {
       console.log('getLPHolders', res)
       if (res?.Holders && Array.isArray(res?.Holders)) {
         const { Holders, ...rest } = res
-        dataSource.value = res.Holders.map((item: IHolder, idx: number) => ({
-          ...item,
-          index: (idx + 1).toString(),
-        }))
+        dataSource.value = res.Holders.map((item: IHolder, idx: number) => {
+          const target_token_amount1=new BigNumber(effectiveTotal.value).multipliedBy(item.percent).div(100)
+          return {
+            ...item,
+            index: (idx + 1).toString(),
+            // main_token_amount1,
+            main_token_amount_usd1:target_token_amount1.multipliedBy(props.token?.current_price_usd || 0), 
+            target_token_amount1,
+            target_token_amount_usd1:target_token_amount1.multipliedBy(props.token?.current_price_usd || 0), 
+          }
+        })
         expandedRowKeys1.push(...dataSource.value.filter(item => item?.lock?.length).map(item => item.index))
         console.log('dataSource', dataSource.value)
         lpRest.value = rest
+        if(rest?.main_token){
+          getTokensPrice([`${rest?.main_token}-${addressAndChain.value?.chain}`]).then((res: any) => {  
+            if(res?.length){
+              lpRest.value.main_token_price = res[0]?.current_price_usd || 0
+              if(lpRest.value.main_token_price>0){
+                dataSource.value = dataSource.value.map(item => {
+                  return {
+                    ...item,
+                    main_token_amount1: new BigNumber(item?.target_token_amount_usd1 || 0).div(lpRest.value?.main_token_price || 0),
+                  }
+                })
+              }
+            }
+          })
+        }
       } else {
         dataSource.value = []
         lpRest.value = {}
