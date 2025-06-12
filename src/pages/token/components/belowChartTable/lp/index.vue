@@ -396,7 +396,7 @@ function init2() {
   }
   :deep() .el-table__expanded-cell td {
     /* --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2); */
-    --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
+    --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2);
      background-color: var(--d-222-l-F2F2F2);
   }
   :deep() th {
@@ -435,7 +435,7 @@ function init2() {
   display: flex;
   background: var(--d-222-l-f5f5f5);
   border-radius: 1.5px;
-  margin-top: 9px;
+  margin-top: 11px;
   margin-bottom: 3px;
 
   >span {
