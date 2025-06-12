@@ -239,5 +239,8 @@
   "liquidity": "Liquidez ",
   "wallet": "Carteira",
   "volume": "Volume",
-  "alertNotice": "Token não verificado. Por favor, DYOR (faça sua própria pesquisa)"
+  "alertNotice": "Token não verificado. Por favor, DYOR (faça sua própria pesquisa)",
+  "markets": "Mercado ",
+  "smarter2": "Mais Inteligente",
+  "balances": "Ativo"
 }
