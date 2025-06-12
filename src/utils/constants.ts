@@ -100,5 +100,5 @@ export const defaultPaginationParams = {
 // 设置默认高度，有多个地方需要用到
 export const DefaultHeight = {
   TOPLEFT: 370,
-  KLINE: 500
+  KLINE: 475
 }
