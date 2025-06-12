@@ -5,6 +5,7 @@ export const usePriceV2Store = defineStore('pricev2', () => {
       trending: [],
         favorite: [],
         gainer: [],
+      positions: []
     })
 
     function setMultiPriceParams(key: string, val: string[]) {
@@ -15,7 +16,7 @@ export const usePriceV2Store = defineStore('pricev2', () => {
         const wsStore = useWSStore()
         const {value} = multiPriceParams
         const ids = Array.from(
-          new Set(value.trending.concat(value.favorite).concat(value.gainer).concat(useBotSwapStore().mainTokensPriceIds).concat(useGlobalStore().footerTokensPriceIds))
+          new Set(value.trending.concat(value.favorite).concat(value.positions).concat(value.gainer).concat(useBotSwapStore().mainTokensPriceIds).concat(useGlobalStore().footerTokensPriceIds))
         )
         wsStore.send({
             jsonrpc: '2.0',
