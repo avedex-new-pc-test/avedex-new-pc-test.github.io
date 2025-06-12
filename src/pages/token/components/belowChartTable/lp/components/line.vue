@@ -75,7 +75,9 @@ const dataX = computed(() => props.dataList.map(i => i.time))
 const series = computed(() =>
   option.value.map(i => ({
     name: i.label,
-    type: 'line',
+    symbol: 'none',
+    type: 'bar',
+    barWidth:'10',
     z: 1,
     symbol: 'none',
     itemStyle: {
@@ -154,7 +156,8 @@ const init = () => {
     xAxis: {
       type: 'category',
       data: dataX.value,
-      boundaryGap: false,
+      boundaryGap: ['0', '20'],
+      // boundaryGap: false,
       splitLine: {
         show: false
       },
