@@ -411,7 +411,7 @@ function init2() {
   width: 100%;
   height: 3px;
   display: flex;
-  background: var(--d-222-l-f5f5f5);
+  background: var(--d-666-l-999);
   border-radius: 1.5px;
   margin-top: 11px;
   margin-bottom: 3px;
