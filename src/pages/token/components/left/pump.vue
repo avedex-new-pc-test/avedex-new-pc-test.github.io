@@ -280,7 +280,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
   <div v-loading="listStatus.loading && query.pageNO===1">
     <div
       ref="tabsContainer"
-      class="mt-12px  mx-12px mb-16px flex items-center justify-between whitespace-nowrap scrollbar-hide overflow-x-auto overflow-y-hidden">
+      class="mt-8px mx-12px flex items-center justify-between whitespace-nowrap scrollbar-hide overflow-x-auto overflow-y-hidden">
       <div class="flex items-center gap-10px">
           <span
             v-for="(item,index) in tabList"

@@ -47,7 +47,7 @@ function switchSort(sortBy: string, activeSort?: number) {
 
 <template>
   <div
-    class="flex justify-between items-center p-10px text-12px color-[--d-666-l-999]"
+    class="flex justify-between items-center px-12px py-8px text-12px h-32px color-[--d-666-l-999]"
   >
     <div
       v-for="(column, i) in columns"
