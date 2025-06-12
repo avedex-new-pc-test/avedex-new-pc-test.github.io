@@ -659,5 +659,6 @@
   "tm_kill_block_after_open": "Kill N Block after Open",
   "tm_start_trade_at_block": "Start Trade at Block",
   "mechanism_intro": "Additional",
-  "antiWhaleModifiable": "Anti whale modifiable"
+  "antiWhaleModifiable": "Anti whale modifiable",
+  "check2": "Check"
 }

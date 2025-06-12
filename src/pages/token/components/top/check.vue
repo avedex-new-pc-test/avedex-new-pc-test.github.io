@@ -8,7 +8,7 @@
   >
     <div class="check-container bg-[--d-222-l-FFF] h-100vh color-[--d-F5F5F5-l-333]">
       <div class="flex items-center justify-between text-20px p-20px sticky top-0 bg-[--d-222-l-FFF] z-1">
-        <span>{{ $t('check1') }}</span>
+        <span>{{ $t('check2') }}</span>
         <Icon name="ri:close-large-fill" class="clickable" @click.stop="visible = false" />
       </div>
       <div class="check-content">
@@ -824,11 +824,10 @@
                 }}</span>
               </div>
               <div class="flex-s flex items-center">
-                <span class="label">{{ $t('LPLocked') }}</span>
-                <span style="flex: 1" />
+                <span class="label mr-auto">{{ $t('LPLocked') }}</span>
                 <span class="range-text">{{
                   formatNumber(rangePair * 100, 1)
-                }}</span>
+                }}%</span>
                 <div class="range">
                   <span
                     class="range-bar"

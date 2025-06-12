@@ -657,5 +657,6 @@
   "tm_kill_block_after_open": "開盤殺N個區塊",
   "tm_start_trade_at_block": "第幾個區塊開啟交易",
   "mechanism_intro": "說明",
-  "antiWhaleModifiable": "可修改大額交易限制"
+  "antiWhaleModifiable": "可修改大額交易限制",
+  "check2": "安全檢測"
 }
