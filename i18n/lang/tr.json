@@ -239,5 +239,20 @@
   "smarter2": "akıllı para",
   "balances": "Bakiye",
   "provider1": "Istakoz sağlayıcısı",
-  "amt": "{n} amt"
+  "amt": "{n} amt",
+  "SAFU": "Güvence sözleşmesi",
+  "buy_gas": "Gas satın al",
+  "buyMaxAmount": "Satın alma limiti",
+  "sell_gas": "Gas sat",
+  "sellMaxAmount": "Satış limiti",
+  "approve_gas": "Gas onayı",
+  "tm_max_hold_amount_per_wallet": "Cüzdan tutma limiti",
+  "tm_bonus_token_name": "Sahiplere ödül tokeni",
+  "tm_bonus_token_name_for_lp": "LP ödül tokeni",
+  "fundWallet": "Pazarlama cüzdanı",
+  "teamWallet": "Takım cüzdanı",
+  "tm_kill_block_after_open": "Açılıştan sonra N blok öldür",
+  "tm_start_trade_at_block": "Hangi blokta ticaret başlayacak",
+  "mechanism_intro": "Ek",
+  "antiWhaleModifiable": "Değiştirilebilir büyük işlem kısıtlaması"
 }

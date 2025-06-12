@@ -134,6 +134,18 @@ interface ContractData {
     is_lp?: string | number
     is_contract?: string | number | null
   }>
+  buy_max_amount_per_tx?: string | number
+  sell_max_amount_per_tx?: string | number
+  tm_max_hold_amount_per_wallet?: string | number
+  tm_bonus_token_name?: string
+  tm_bonus_token_for_lp_holders?: string
+  market_wallet?: string
+  team_wallet?: string
+  tm_kill_block_after_open?: string | number
+  tm_start_trade_at_block?: string | number
+  mechanism_intro?: string
+  tm_bonus_token_for_holders?: string
+  tm_bonus_token_name_for_lp?: string
 }
 interface TokenContract {
   chain?: string

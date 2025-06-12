@@ -644,5 +644,21 @@
   "smarter2": "Smarter",
   "balances": "Assets",
   "provider1": "Liquidty Provider",
-  "amt": "{n} Amt"
+  "amt": "{n} Amt",
+  "SAFU": "SAFU",
+  "buy_gas": "Buy Gas",
+  "buyMaxAmount": "Buy Limit",
+  "sell_gas": "Sell Gas",
+  "sellMaxAmount": "Sale Limit",
+  "approve_gas": "Approve Gas",
+  "tm_max_hold_amount_per_wallet": "Hold Limit",
+  "tm_bonus_token_name": "Holders Reward Token",
+  "tm_bonus_token_name_for_lp": "LP reward token",
+  "fundWallet": "Fund Wallet",
+  "teamWallet": "Team Wallet",
+  "tm_kill_block_after_open": "Kill N Block after Open",
+  "tm_start_trade_at_block": "Start Trade at Block",
+  "mechanism_intro": "Additional",
+  "antiWhaleModifiable": "Anti whale modifiable",
+  "check2": "Check"
 }

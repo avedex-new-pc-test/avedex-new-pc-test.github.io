@@ -642,5 +642,21 @@
   "smarter2": "聰明錢",
   "balances": "資產",
   "provider1": "提供者",
-  "amt": "{n}數量"
+  "amt": "{n}數量",
+  "SAFU": "擔保合約",
+  "buy_gas": "買GAS",
+  "buyMaxAmount": "限買數量",
+  "sell_gas": "賣GAS",
+  "sellMaxAmount": "限賣數量",
+  "approve_gas": "授權GAS",
+  "tm_max_hold_amount_per_wallet": "錢包持幣限制",
+  "tm_bonus_token_name": "持幣分紅代幣",
+  "tm_bonus_token_name_for_lp": "LP分紅代幣",
+  "fundWallet": "行銷錢包",
+  "teamWallet": "團隊錢包",
+  "tm_kill_block_after_open": "開盤殺N個區塊",
+  "tm_start_trade_at_block": "第幾個區塊開啟交易",
+  "mechanism_intro": "說明",
+  "antiWhaleModifiable": "可修改大額交易限制",
+  "check2": "安全檢測"
 }

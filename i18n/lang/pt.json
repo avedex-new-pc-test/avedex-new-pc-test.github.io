@@ -244,5 +244,20 @@
   "smarter2": "Mais Inteligente",
   "balances": "Ativo",
   "provider1": "Provedor Liquidty",
-  "amt": "{n} Amt"
+  "amt": "{n} Amt",
+  "SAFU": "SAFU",
+  "buy_gas": "Comprar Gas",
+  "buyMaxAmount": "Limite de Compra",
+  "sell_gas": "Vender Gas",
+  "sellMaxAmount": "Limite de Venda",
+  "approve_gas": "Aprovar Gas",
+  "tm_max_hold_amount_per_wallet": "Limite de Retenção",
+  "tm_bonus_token_name": "Token de Recompensa para Detentores",
+  "tm_bonus_token_name_for_lp": "Token de recompensa de LP",
+  "fundWallet": "Carteira de Fundos",
+  "teamWallet": "Carteira da Equipe",
+  "tm_kill_block_after_open": "Destruir e Bloquear após Abertura",
+  "tm_start_trade_at_block": "Iniciar Negociação no Bloco",
+  "mechanism_intro": "Adicional",
+  "antiWhaleModifiable": "Anti-baleia modificável"
 }

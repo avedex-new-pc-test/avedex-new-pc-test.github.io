@@ -417,5 +417,20 @@
   "smarter2": "Tiền thông minh",
   "balances": "Tài sản",
   "provider1": "Nhà cung cấp chất lỏng",
-  "amt": "{n} Amt"
+  "amt": "{n} Amt",
+  "SAFU": "SAFU",
+  "buy_gas": "Gas mua",
+  "buyMaxAmount": "Giới hạn mua",
+  "sell_gas": "Gas bán",
+  "sellMaxAmount": "Giới hạn bán",
+  "approve_gas": "Gas phê duyệt",
+  "tm_max_hold_amount_per_wallet": "Giới hạn nắm giữ",
+  "tm_bonus_token_name": "Token thưởng người nắm giữ",
+  "tm_bonus_token_name_for_lp": "Token thưởng LP",
+  "fundWallet": "Ví quỹ",
+  "teamWallet": "Ví đội ngũ",
+  "tm_kill_block_after_open": "Giết N block sau mở",
+  "tm_start_trade_at_block": "Bắt đầu giao dịch tại block",
+  "mechanism_intro": "Bổ sung",
+  "antiWhaleModifiable": "Có thể sửa đổi chống cá voi"
 }

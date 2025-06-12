@@ -645,5 +645,21 @@
   "smarter2": "聪明钱",
   "balances": "资产",
   "provider1": "提供者",
-  "amt": "{n}数量"
+  "amt": "{n}数量",
+  "SAFU": "担保合约",
+  "buy_gas": "买GAS",
+  "buyMaxAmount": "限买数量",
+  "sell_gas": "卖GAS",
+  "sellMaxAmount": "限卖数量",
+  "approve_gas": "授权GAS",
+  "tm_max_hold_amount_per_wallet": "钱包持币限制",
+  "tm_bonus_token_name": "持币分红代币",
+  "tm_bonus_token_name_for_lp": "LP分红代币",
+  "fundWallet": "营销钱包",
+  "teamWallet": "团队钱包",
+  "tm_kill_block_after_open": "开盘杀N个区块",
+  "tm_start_trade_at_block": "第几个区块开启交易",
+  "mechanism_intro": "说明",
+  "antiWhaleModifiable": "可修改大额交易限制",
+  "check2": "安全检测"
 }
