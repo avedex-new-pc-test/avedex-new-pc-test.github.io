@@ -298,6 +298,7 @@ watch(() => props.swapType, (val) => {
   if (val !== 'limit') {
     useEventBus<number>('priceLimit').emit(0)
   } else {
+    initPriceLimit()
     updateStorePriceLimit()
   }
 })
@@ -319,7 +320,6 @@ useEventBus('klineDataReady').on(() => {
 })
 
 function updateStorePriceLimit() {
-  initPriceLimit()
   if (isLineChange) return
   if(!isPriceLimit.value) {
     useEventBus<number>('priceLimit').emit(Number(formatDec(new BigNumber(priceLimit.value).div(tokenStore.circulation || 1).toFixed(), 4)))
