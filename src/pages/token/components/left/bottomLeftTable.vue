@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import Trending from './trending.vue'
+import {useEventBus, useWindowSize} from '@vueuse/core'
+import {DefaultHeight} from '~/utils/constants'
 
 const {t} = useI18n()
+const {height} = useWindowSize()
+const topLeftHeight = shallowRef(DefaultHeight.TOPLEFT)
+const finalHeight = computed(() => height.value - topLeftHeight.value)
+const leftDragEvent = useEventBus<number>(BusEventType.LEFT_DRAG)
+leftDragEvent.on(setTopLeftHeight)
+onUnmounted(() => {
+  leftDragEvent.off(setTopLeftHeight)
+})
 
+function setTopLeftHeight(_height: number) {
+  topLeftHeight.value = _height
+}
 const activeTab = shallowRef<keyof typeof components>('Trending')
 const tabs = computed(()=>{
     return [
@@ -25,8 +38,8 @@ const Component = computed(() => {
       <a
         v-for="(item) in tabs"
         :key="item.component" href="javascript:;"
-        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-999-l-666] b-b-solid b-b-2px font-500
-        ${activeTab===item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
+        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-666-l-999] b-b-solid b-b-2px font-500
+        ${activeTab===item.component ? 'color-[--d-F5F5F5-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
         @click="activeTab=item.component"
       >
         {{ item.name }}
@@ -36,6 +49,7 @@ const Component = computed(() => {
       <component
         :is="Component"
         class="flex-1 relative"
+        :finalHeight="finalHeight"
       />
     </KeepAlive>
   </div>

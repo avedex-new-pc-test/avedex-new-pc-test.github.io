@@ -16,10 +16,11 @@ import {
 } from '~/api/token'
 import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 
-import {useThrottleFn} from '@vueuse/core'
+import {useEventBus, useThrottleFn, useWindowSize} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import type {AveTable} from '#components'
+import {DefaultHeight} from "~/utils/constants";
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
@@ -230,12 +231,22 @@ useVisibilityChange(() => {
   _getPairLiq()
 })
 
+const centerDragEvent = useEventBus<number>(BusEventType.CENTER_DRAG)
+const centerTopHeight = shallowRef(DefaultHeight.KLINE)
+const {height} = useWindowSize()
+const finalHeight = computed(() => Math.max(560, height.value - centerTopHeight.value - 250))
+centerDragEvent.on(setCenterTopHeight)
 // onMounted(() => {
 //   document.addEventListener('mousemove', mouseInsideTxs)
 // })
-// onUnmounted(() => {
-//   document.removeEventListener('mousemove', mouseInsideTxs)
-// })
+onUnmounted(() => {
+  // document.removeEventListener('mousemove', mouseInsideTxs)
+  centerDragEvent.off(setCenterTopHeight)
+})
+
+function setCenterTopHeight(_height: number) {
+  centerTopHeight.value = _height
+}
 //
 // const txsBounding = useElementBounding(aveTableRef)
 // const mouseInsideTxs = useThrottleFn((event: MouseEvent) => {
@@ -645,7 +656,7 @@ function resetMakerAddress() {
         class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide"
       >
         <a
-          v-for="(item,index) in tabs" :key="item.value" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+          v-for="(item,index) in tabs" :key="item.value" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-666-l-999] px-12px py-4px rounded-4px
          ${activeTab === item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
           @click="setActiveTab(item.value,index)">
           {{ item.label }}
@@ -689,7 +700,9 @@ function resetMakerAddress() {
         rowKey="uuid"
         fixed :data="filterTableList"
         :columns="columns"
-        class="min-h-560px h-[calc(100vh-750px)]"
+        :style="{
+          height:`${finalHeight}px`
+        }"
         row-class='cursor-pointer'
         :rowEventHandlers="{
         onMouseenter:()=>isHoverTable=true,
@@ -796,7 +809,7 @@ function resetMakerAddress() {
             <span>{{ $t('amountU') }}</span>
             <Icon
               name="custom:price"
-              :class="`${tableView.isVolUSDT ? 'color-#3F80F7' : 'color-#666'} cursor-pointer`"
+              :class="`${tableView.isVolUSDT ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'} cursor-pointer`"
               @click.self="tableView.isVolUSDT = !tableView.isVolUSDT" />
             <VolFilter
               v-model:visible="tableFilterVisible.amountU" :modelValue="tableFilter.amountU"
@@ -867,7 +880,7 @@ function resetMakerAddress() {
             </UserRemark>
             <Icon
               name="custom:filter"
-              :class="`${tableFilter.markerAddress ? 'color-#3F80F7' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
+              :class="`${tableFilter.markerAddress ? 'color-[--d-999-l-666]' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
               @click.self.stop="setMakerAddress(row.wallet_address)" />
           </div>
         </template>

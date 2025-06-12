@@ -12,7 +12,7 @@
     <el-input
       ref="inputSearch"
       v-model.trim="query"
-      class="search-input"
+      class="search-input px-20px "
       :placeholder="$t('enterAddress/token')"
       clearable
       autofocus
@@ -24,18 +24,21 @@
           name="ep:search"
         />
       </template>
+      <template #suffix>
+        <Icon v-if="query" name="pajamas:clear" class="color-[--d-666-l-999] text-12px hover:opacity-70% cursor-pointer" @click="query=''"/>
+      </template>
     </el-input>
 
     <div
       v-if="query === '' && historyList?.length > 0"
-      class="search-history-container mt-24px"
+      class="search-history-container mt-24px px-20px"
     >
       <div class="header-title flex items-center justify-between">
         <span class="color-[--d-666-l-999] text-12px">{{
           $t('searchHistory')
         }}</span>
         <Icon
-          class="text-12px text-[--d-666-l-999] cursor-pointer"
+          class="text-14px text-[--d-666-l-999] cursor-pointer"
           name="tabler:trash"
           @click.stop="confirm"
         />
@@ -51,7 +54,7 @@
         </button>
       </div>
     </div>
-    <div class="tabs mt-20px">
+    <div class="tabs mt-20px px-20px">
       <button
         v-for="item in tabs"
         :key="item.id"

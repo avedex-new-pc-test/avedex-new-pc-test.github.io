@@ -87,11 +87,25 @@ export function updatePriceFromTx(tx: WSTx) {
   if (tx.profile) {
     const profile: Profile = JSON.parse(tx.profile)
     const token = tokenStore.token.token.toLowerCase()
-    if ((profile.token0Address.toLowerCase() === token && profile.token0HasNewAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasNewAccount)) {
-      tokenStore.token.holders = tokenStore.token.holders + 1
-    }
-    if ((profile.token0Address.toLowerCase() === token && profile.token0HasClearedAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasClearedAccount)) {
-      tokenStore.token.holders = Math.max(tokenStore.token.holders - 1, 0)
+    // if ((profile.token0Address.toLowerCase() === token && profile.token0HasNewAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasNewAccount)) {
+    //   tokenStore.token.holders = tokenStore.token.holders + 1
+    // }
+    // if ((profile.token0Address.toLowerCase() === token && profile.token0HasClosedAccount) || (profile.token1Address.toLowerCase() === token && profile.token1HasClosedAccount)) {
+    //   tokenStore.token.holders = Math.max(tokenStore.token.holders - 1, 0)
+    // }
+    if (isBuy) {
+      const tokenHold = profile.token0Address.toLowerCase() === token ? profile.token0TotalHolding : profile.token1TotalHolding
+      const buyAmount = tx.to_amount
+      if (new BigNumber(tokenHold).eq(buyAmount)) {
+        tokenStore.token.holders = tokenStore.token.holders + 1
+      }
+    } else {
+      const tokenHold = profile.token0Address.toLowerCase() === token ? profile.token0TotalHolding : profile.token1TotalHolding
+      if (new BigNumber(tokenHold).eq(0)) {
+        let holders = tokenStore.token.holders - 1
+        if (holders < 0) holders = 0
+        tokenStore.token.holders = holders
+      }
     }
   }
 }

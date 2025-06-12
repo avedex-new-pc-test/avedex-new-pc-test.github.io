@@ -225,7 +225,7 @@
       <el-table-column
         :label="$t('ratio') + isShowBalance ? $t('bal') : $t('amount')"
         align="right"
-        :width="getTextWidth(isShowBalance? $t('bal') : $t('amount') +'/'+ $t('ratio'))+ 100"
+        :width="getTextWidth((isShowBalance? $t('bal') : $t('amount')) +'/'+ $t('ratio'))+ 100"
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="balance"
@@ -932,8 +932,7 @@
 
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
-import { getChainInfo, formatDate, formatTimeFromNow, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
-// import type { RowEventHandlerParams, } from 'element-plus'
+import { getChainInfo, formatDate, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
 import dayjs from 'dayjs'
 const props = defineProps({
   modelValue: Boolean,

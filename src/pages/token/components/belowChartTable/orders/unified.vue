@@ -67,12 +67,12 @@
           </div>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 6"
-            class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px bg-[#221115]">
+          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px"
+            style="background: rgba(246, 70, 93, 0.10)">
             {{ t('limit') }}/{{ t('sell') }}
           </div>
-          <div v-if="row.swapType === 5"
-            class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px bg-[#0b1d19]">
+          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px"
+            style="background: rgba(18, 184, 134, 0.10)">
             {{ t('limit') }}/{{ t('buy') }}
           </div>
         </template>
@@ -87,7 +87,7 @@
       </el-table-column>
       <el-table-column :label="t('volume4')" align="right">
         <template #default="{ row }">
-          <span class="text-[var(--d-999-l-959A9F)]">{{ formatNumber(Number(row?.inValue) || 0, 2) }}</span>
+          <span class="text-[var(--d-999-l-959A9F)]">${{ formatNumber(Number(row?.inValue) || 0, 2) }}</span>
         </template>
       </el-table-column>
 
@@ -99,15 +99,17 @@
           <span class="text-[var(--d-999-l-959A9F)]">
             <span class="text-[var(--d-999-l-959A9F)] text-right">
               <template v-if="row.swapType === 2 || row.swapType === 6">
-                {{ formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0), row.inTokenDecimals || 0).toString(), 4)
+                {{ !!Number(row?.inAmount) ? formatNumber(formatUnits(new BigNumber(row?.inAmount || 0).toFixed(0),
+                  row.inTokenDecimals || 0) as string, 4) : '--'
                 }}
-                {{ row?.inTokenSymbol }}
+                {{ !!Number(row?.inAmount) ? row?.inTokenSymbol : '' }}
               </template>
               <template v-else>
-                {{ formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0), row.outTokenDecimals || 0).toString(),
-                  4)
+                {{ !!Number(row?.outputAmount) ? formatNumber(formatUnits(new BigNumber(row?.outAmount || 0).toFixed(0),
+                  row.outTokenDecimals || 0) as string,
+                  4) : '--'
                 }}
-                {{ row?.outTokenSymbol }}
+                {{ !!Number(row?.outputAmount) ? row?.outTokenSymbol : '' }}
               </template>
             </span>
           </span>
@@ -204,7 +206,7 @@ const txOrder = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
 
-watch([() => props.chain, () => props.currentToken, () => tokenStore.placeOrderUpdate, () => tokenStore.placeOrderSuccess, () => route.params.id], () => {
+watch([() => props.currentToken, () => botStore.userInfo?.evmAddress || ''], () => {
   getUserPendingTx()
 })
 
@@ -257,21 +259,21 @@ function tableRowClick(row: any) {
   window.open(formatExplorerUrl(row.chain, row.txHash, 'tx'))
 }
 
-const getUserPendingTx = async () => {
+const getUserPendingTx = async (chainValue?: string) => {
   loading.value = true
+  const chain = chainValue || props.chain
   try {
     if (!botStore.accessToken) {
       return
     }
-    const chain = props.chain || getAddressAndChainFromId(route.params.id as string).chain
     const data = {
       chain: chain,
-      token: props.currentToken ? getAddressAndChainFromId(route.params.id as string).address : '',
+      token: props.currentToken ? getAddressAndChainFromId(route.params.id as string)?.address : '',
       walletAddress: props.userAddress || botStore.userInfo?.addresses.find((item) => item.chain === chain)?.address || '',
     }
-    if (!data.token || !data.walletAddress || !data.chain) return
+    if (!data.walletAddress || !data.chain) return
     const res = await bot_getUserPendingTx({
-      ...data
+      ...data as any
     })
     txOrder.value = res || []
     if (filterConditions.value.swapType.length === 1) {
@@ -292,9 +294,7 @@ const getUserPendingTx = async () => {
 }
 
 onMounted(() => {
-  setTimeout(() => {
-    getUserPendingTx()
-  }, 300)
+  getUserPendingTx()
 })
 defineExpose({
   txOrder,
@@ -320,16 +320,16 @@ defineExpose({
 }
 
 :deep(.el-table) {
-  --el-table-tr-bg-color: #0A0B0D;
-  --el-table-bg-color: #0A0B0D;
+  --el-table-tr-bg-color: var(--d-0a0b0d-l-fff);
+  --el-table-bg-color: var(--d-0a0b0d-l-fff);
   --el-table-text-color: var(--d-222-l-F2F2F2);
   --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
-  --el-fill-color-lighter: #0A0B0D;
+  --el-fill-color-lighter: var(--d-0a0b0d-l-fff);
   --el-table-header-text-color: var(--d-999-l-666);
   --el-table-border-color: var(--d-33353D-l-f5f5f5);
   --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
-  background: #0A0B0D;
-  --el-bg-color: #0A0B0D;
+  background: var(--d-0a0b0d-l-fff);
+  --el-bg-color: var(--d-0a0b0d-l-fff);
   --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
   font-size: 13px;
 

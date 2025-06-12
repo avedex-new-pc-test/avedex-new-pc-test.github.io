@@ -1,7 +1,7 @@
 <template>
   <div class="history">
-    <div class="top">
-      <span style="width: 20px; flex: none">#</span>
+    <div class="top h-39px">
+      <span style="width: 40px; flex: none">#</span>
       <span>{{ $t('wallet') }}</span>
       <span style="text-align: right">PnL</span>
       <span>{{ $t('volume') }}</span>
@@ -19,23 +19,23 @@
         <li v-for="(row, $index) in tokens" :key="$index">
           <a
             href=""
-            class="flex no-underline"
+            class="flex no-underline h-50px"
             @click.stop.prevent="tableRowClick(row)"
           >
-            <div style="width: 20px; flex: none">
-              {{ $index + 1 }}
-            </div>
+            <span class="color-[--d-999-l-666] text-12px" style="width: 40px; flex: none">
+              {{ $index < 9 ? '0' + Number($index + 1) : $index + 1 }}
+            </span>
             <div class="token-info">
               <UserAvatar
                 class="mr-8px"
                 :wallet_logo="row.wallet_logo"
                 :address="row.wallet_address"
                 :chain="row.chain"
-                iconSize="24px"
+                iconSize="32px"
               />
               <div style="display: flex; flex-direction: column">
                 <span
-                  class="token-symbol ellipsis"
+                  class="token-symbol ellipsis text-14px"
                   style="max-width: 80px; display: inline-block"
                   :title="
                     getRemarkByAddress({
@@ -57,9 +57,9 @@
                 </span>
                 <div
                   style="display: inline-flex; align-items: center"
-                  class="mt-2px"
+                  class="mt-6px"
                 >
-                  <UserRemark class="" :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" />
+                  <UserRemark :remark="row.remark" :address="row.wallet_address" :chain="row.chain" :showAddress="false" :wallet_logo="row.wallet_logo" iconEditSize="10px"/>
                   <!-- <a
                     href=""
                     class="ml-8 fav_address a-gray"
@@ -79,7 +79,7 @@
                   <Icon
                     v-copy="row.wallet_address"
                     name="bxs:copy"
-                    class="text-12px cursor-pointer color-[--d-666-l-999] ml-8px"
+                    class="text-10px cursor-pointer color-[--d-666-l-999] ml-8px"
                     @click.stop.prevent
                   />
                   <!--  <el-tooltip
@@ -163,9 +163,9 @@
                     ? '#12B886'
                     : '#F6465D',
                 }"
-                class="mt-2"
+                class="mt-3px"
               >
-                {{ formatNumber((row?.total_profit_rate * 100 || 0)) }}%
+                {{ formatNumber((row?.total_profit_rate * 100 || 0),2) }}%
               </div>
             </div>
             <div>
@@ -178,14 +178,14 @@
                   )
                 }}
               </div>
-              <div class="mt-2">
+              <!-- <div class="mt-3px">
                 <span style="color: #12b886"
                   >${{ formatNumber(row?.total_purchase_usd || 0, 2) }}</span
                 ><span style="color: #999">/</span
                 ><span style="color: #f6465d"
                   >${{ formatNumber(row?.total_sold_usd || 0, 2) }}</span
                 >
-              </div>
+              </div> -->
             </div>
             <div>
               <div>
@@ -197,7 +197,7 @@
                   )
                 }}
               </div>
-              <div class="flex-end mt-2">
+              <!-- <div class="flex-end mt-3px">
                 <span style="color: #12b886">{{
                   formatNumber(row?.total_purchase || 0, 2)
                 }}</span
@@ -205,7 +205,7 @@
                 ><span style="color: #f6465d">{{
                   formatNumber(row?.total_sold || 0, 2)
                 }}</span>
-              </div>
+              </div> -->
             </div>
             <div
               :style="{
@@ -296,7 +296,9 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
 .history {
   font-size: 12px;
   padding-bottom: 10px;
-  color: var(--a-text-1-color);
+  :deep() .icon-remark {
+    margin-left: 0
+  }
   .empty {
     color: #999;
     height: 500px;
@@ -312,11 +314,11 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     }
   }
   .top {
-    color: #999999;
+    color: var(--d-666-l-999);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 5px;
+    padding: 10px 20px;
     > :nth-child(1) {
       // width: 150px;
       font-size: 12px;
@@ -344,6 +346,12 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
   }
   .content {
     padding: 0 0 20px;
+    li {
+      padding: 0 20px;
+      &:hover {
+        background-color: var(--d-333-l-F2F2F2);
+      }
+    }
     .token-info {
       display: flex;
       align-items: center;
@@ -398,7 +406,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     }
     li > a:hover {
       text-decoration: none;
-      background-color: var(--a-table-hover-bg-color);
+      background-color: var(--d-333-l-F2F2F2);
       color: var(--a-text-1-color);
       opacity: 1;
     }
@@ -406,7 +414,8 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
       margin-top: 0;
     }
     .flex {
-      padding: 8px 5px;
+      // padding: 8px 0;
+      height: 50px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -415,7 +424,6 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
       > :nth-child(1) {
         // width: 150px;
         flex: 1;
-        color: var(--custom-text-2-color);
         font-size: 12px;
       }
       > :nth-child(2) {
@@ -441,7 +449,6 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     }
     > span {
       color: var(--custom-font-1-color);
-      padding: 10px 3px;
       &.green {
         color: #12b886;
       }

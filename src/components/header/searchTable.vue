@@ -1,9 +1,9 @@
 <template>
   <div class="histrory">
-    <div class="top">
+    <div class="top h-39px">
       <span>#</span>
       <span>{{ $t('tokenName') }}</span>
-      <div class="flex-end cursor-pointer select-none">
+      <div class="flex-end cursor-pointer select-none" @click.stop="switchSort('opening_at')">
         {{ $t('launchTime') }}
         <div class="flex flex-col items-center justify-center ml-5px">
           <i
@@ -20,6 +20,26 @@
           />
         </div>
         <!-- <Icon  :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isShowDate= !isShowDate"/> -->
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('tx_volume_u_24h')"
+      >
+        {{ $t('24Volume') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'tx_volume_u_24h', 'b')}
+            `"
+            @click.stop="switchSort('tx_volume_u_24h', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'tx_volume_u_24h', 't')}
+            `"
+            @click.stop="switchSort('tx_volume_u_24h', 1)"
+          />
+        </div>
       </div>
       <div
         class="flex-end cursor-pointer select-none"
@@ -58,26 +78,6 @@
             ${getActiveClass(1, 'mcap', 't')}
             `"
             @click.stop="switchSort('mcap', 1)"
-          />
-        </div>
-      </div>
-      <div
-        class="flex-end cursor-pointer select-none"
-        @click.stop="switchSort('tx_volume_u_24h')"
-      >
-        {{ $t('24Volume') }}
-        <div class="flex flex-col items-center justify-center ml-5px">
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
-            ${getActiveClass(-1, 'tx_volume_u_24h', 'b')}
-            `"
-            @click.stop="switchSort('tx_volume_u_24h', -1)"
-          />
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
-            ${getActiveClass(1, 'tx_volume_u_24h', 't')}
-            `"
-            @click.stop="switchSort('tx_volume_u_24h', 1)"
           />
         </div>
       </div>
@@ -153,10 +153,10 @@
         <li v-for="(row, $index) in tokens1" :key="$index">
           <a
             href=""
-            class="flex no-underline"
+            class="flex no-underline h-50p"
             @click.stop.prevent="tableRowClick(row.token + '-' + row.chain)"
           >
-            <div class="color-#999 text-12px">
+            <div class=" text-12px">
               {{ $index < 9 ? '0' + Number($index + 1) : $index + 1 }}
             </div>
             <div class="token-info">
@@ -190,7 +190,7 @@
                   srcset=""
                 />
               </div>
-              <div style="margin-left: 5px">
+              <div class="ml-8px">
                 <div>
                   <span class="token-symbol">
                     {{ row.symbol }}
@@ -220,12 +220,12 @@
                     </svg>
                   </template>
                 </div>
-                <div class="text-12px color-text-2 flex-start">
+                <div class="text-12px color-text-2 flex-start mt-3px">
                   {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
                   <Icon
                     v-copy="row.token"
                     name="bxs:copy"
-                    class="text-12px ml-2px cursor-pointer"
+                    class="text-10px ml-2px cursor-pointer color-[--d-666-l-999] ml-4px"
                     @click.stop.prevent
                   />
                 </div>
@@ -264,6 +264,13 @@
                 </span>
               </div>
               <span v-else>--</span>
+              <div
+                :class="
+                  row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
+                "
+              >
+                ${{ formatNumber(row?.tx_volume_u_24h || 0, 2) }}
+              </div>
               <div>
                 <span
                   :class="
@@ -273,7 +280,7 @@
                   "
                   >${{ formatNumber(row.current_price_usd || 0) }}</span
                 >
-                <div class="text-12px">
+                <div class="text-12px mt-3px">
                   <span
                     v-if="Number(row.price_change) > 0"
                     style="color: #12b886; padding: 10px 0"
@@ -298,19 +305,12 @@
                 :class="
                   row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
                 "
-                >{{ formatNumber(getMCap(row) || 0) }}</span
+                >{{ formatNumber(getMCap(row) || 0,2) }}</span
               >
-              <div
-                :class="
-                  row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
-                "
-              >
-                ${{ formatNumber(row?.tx_volume_u_24h || 0, 2) }}
-              </div>
               <div :class="row.pool_size > 0 ? 'color-[--d-F5F5F5-l-333]' : ''">
                 ${{ formatNumber(row?.pool_size || 0, 2) }}
               </div>
-              <div>{{ formatNumber(row?.holders || 0) }}</div>
+              <div>{{ formatNumber(row?.holders || 0, {limit: 10}) }}</div>
               <!-- <div class="text-12px color-text-2">
                 {{ formatNumber(row?.tx_count_24h || 0) }}
               </div> -->
@@ -435,6 +435,11 @@ const tokens1 = computed(() => {
   const list = props.tokens?.slice(0)
   if (activeSort.value === 0 || sortBy.value === '') {
     return props.tokens
+  } else if (sortBy.value=='mcap') {
+    return list?.sort(
+      (a, b) =>
+       (Number(getMCap(b))  - Number(getMCap(a))) * activeSort.value
+    )
   } else {
     return list?.sort(
       (a, b) =>
@@ -462,9 +467,9 @@ function getActiveClass(
 ) {
   const isEqual = activeSort.value === activeSort1 && sortBy.value === sortBy1
   if (direction === 't') {
-    return isEqual ? 'border-t-[--d-F5F5F5-l-333]' : 'border-t-[--d-999-l-666]'
+    return isEqual ? 'border-t-[--d-F5F5F5-l-333]' : 'border-t-[--d-666-l-999]'
   }
-  return isEqual ? 'border-b-[--d-F5F5F5-l-333]' : 'border-b-[--d-999-l-666]'
+  return isEqual ? 'border-b-[--d-F5F5F5-l-333]' : 'border-b-[--d-666-l-999]'
 }
 function switchSort(sortBy1: string, activeSort1?: SortValue) {
   if (sortBy.value !== sortBy1) {
@@ -486,9 +491,9 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
 .histrory {
   font-size: 12px;
   padding-bottom: 10px;
-  color: #999;
+  color: var(--d-999-l-666);
   .empty {
-    color: #999;
+    color: var(--d-999-l-666);
     height: 500px;
     display: flex;
     align-items: center;
@@ -506,7 +511,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0px;
+    padding: 10px 20px;
     > :nth-child(1) {
       width: 40px;
       font-size: 12px;
@@ -545,6 +550,12 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
   }
   .content {
     padding: 0 0 20px;
+    li {
+      padding: 0 20px;
+      &:hover {
+        background-color: var(--d-333-l-F2F2F2);
+      }
+    }
     .token-info {
       display: flex;
       align-items: center;
@@ -557,7 +568,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
         word-break: break-all;
         padding: 0;
         color: var(--d-F5F5F5-l-333);
-        font-size: 12px;
+        font-size: 14px;
       }
       .icon-collect {
         font-size: 16px;
@@ -577,14 +588,14 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
         margin-left: 9px;
       }
       .token-icon {
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
       }
       .icon-svg {
-        width: 12px;
+        width: 14px;
         position: absolute;
-        bottom: 0px;
+        bottom: 3px;
         right: 0px;
       }
       .ad-tag {
@@ -609,7 +620,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     a:hover {
       text-decoration: none;
-      background-color: var(--custom-bg-3-color);
+      background-color: var(--d-333-l-F2F2F2);
       opacity: 1;
     }
     li:nth-child(1) .flex {
@@ -617,7 +628,8 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     .flex {
       font-size: 12px;
-      padding: 8px 0px;
+      // padding: 8px 0px;
+      height: 50px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -658,7 +670,6 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
       }
     }
     span {
-      padding: 10px 3px;
       &.green {
         color: #12b886;
       }

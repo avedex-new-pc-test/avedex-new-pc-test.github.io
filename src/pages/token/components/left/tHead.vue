@@ -16,11 +16,11 @@ function getActiveClass(activeSort: number, sortBy: string, direction: string) {
   if (direction === 't') {
     return isEqual
       ? 'border-t-[--d-F5F5F5-l-333]'
-      : 'border-t-[--d-999-l-666]'
+      : 'border-t-[--d-666-l-999]'
   }
   return isEqual
     ? 'border-b-[--d-F5F5F5-l-333]'
-    : 'border-b-[--d-999-l-666]'
+    : 'border-b-[--d-666-l-999]'
 }
 
 const statusTo = {
@@ -47,7 +47,7 @@ function switchSort(sortBy: string, activeSort?: number) {
 
 <template>
   <div
-    class="flex justify-between items-center p-10px text-12px color-[--d-666-l-999]"
+    class="flex justify-between items-center px-12px py-8px text-12px h-32px color-[--d-666-l-999]"
   >
     <div
       v-for="(column, i) in columns"

@@ -7,6 +7,12 @@ import type {IPriceV2Response} from '~/api/types/ws'
 import {ProvideType} from '~/utils/constants'
 import {getMCap} from '~/utils'
 
+defineProps({
+  finalHeight: {
+    type: Number,
+    required: true
+  }
+})
 const {t} = useI18n()
 onMounted(() => {
   _getHotTokens()
@@ -42,7 +48,7 @@ const sortedHotList = computed(() => {
 })
 const columns = computed(() => {
   return [{
-    label: t('token') + '/' + t('mcap'),
+    label: t('token') + '/' + t('mCap'),
     value: 'mcap',
     flex: 'flex-[3]',
     sort: true
@@ -103,7 +109,7 @@ async function _getHotTokens() {
       :columns="columns"
     />
     <el-scrollbar
-      :height="500"
+      :height="Math.max(500,finalHeight-130)"
       class="[&&]:h-auto"
     >
       <NuxtLink

@@ -66,7 +66,7 @@
   "whetherToClearHistory": "是否清空歷史記錄？",
   "enterAddress/token": "搜索代幣名稱/合約/錢包地址",
   "tokenName": "幣種",
-  "popularSearches": "熱門搜索",
+  "popularSearches": "熱門",
   "wallet": "錢包",
   "24Volume": "24h交易額",
   "holders": "持幣人",
@@ -635,5 +635,10 @@
   "txns": "交易數",
   "liquidity": "池子大小",
   "holderBubble": "籌碼氣泡圖",
-  "Chg": "涨幅"
+  "Chg": "涨幅",
+  "alertNotice": "該幣暫未收錄，請自行注意風險",
+  "markets": "行情",
+  "pump1": "掃鏈",
+  "smarter2": "聰明錢",
+  "balances": "資產"
 }

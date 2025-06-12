@@ -3,13 +3,13 @@
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
     <a href="https://ave.ai" target="_blank"><img src="~/assets/images/logo.svg" ></a>
-    <!-- <ul class="menu ml-20px">
+    <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
-        <NuxtLink :to="item.src" :class="{ active: item.id == route?.name }">
+        <a :href="item.src" target="_blank" :class="{ active: item.id == route?.name }">
           {{ item.name }}
-        </NuxtLink>
+        </a>
       </li>
-    </ul> -->
+    </ul>
     <div class="flex-1" />
     <a
       class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px w-320px flex items-center no-underline"
@@ -108,13 +108,15 @@ const themeStore = useThemeStore()
 const botStore = useBotStore()
 const route = useRoute()
 const langStore = useLocaleStore()
-const list = shallowRef([
-  { id: 'index', name: 'Market', src: '/' },
-  { id: 'pump', name: 'PUMP', src: '/' },
-  { id: 'follow', name: 'Follow', src: '/' },
-  { id: 'smart', name: 'Smart', src: '/' },
-  { id: 'assets', name: 'Assets', src: '/' },
-])
+const {t } = useI18n()
+const list = computed(() => {
+  return [
+  { id: 'index', name: t('markets'), src: 'https://ave.ai/' },
+  { id: 'pump', name: t('pump1'), src: 'https://ave.ai/pump' },
+  { id: 'smart', name: t('smarter2'), src: 'https://ave.ai/smart' },
+  { id: 'assets', name: t('balances'), src: 'https://ave.ai/address' },
+  ]
+})
 const dialogVisible_search = shallowRef(false)
 
 const lazyComponent = shallowRef<Component | null>(null)

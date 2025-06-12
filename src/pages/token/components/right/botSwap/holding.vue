@@ -1,5 +1,5 @@
 <template>
-  <div v-if="Number(walletTokenInfo?.balance_usd || 0) > 0" class="max-h-54px flex items-start justify-between color-[--d-F5F5F5-l-333] text-center bg-[--d-222-l-F2F2F2] mb-12px py-10px rd-4px">
+  <div v-if="Number(walletTokenInfo?.balance_usd || 0) > 0 && Number(tokenStore.swap?.token?.balance || 0) > 0" class="max-h-54px flex items-start justify-between color-[--d-F5F5F5-l-333] text-center bg-[--d-222-l-F2F2F2] mb-12px py-10px rd-4px">
     <div class="flex-1">
       <div class="text-11px color-[--d-666-l-999]">{{ $t('bought') }}</div>
       <div class="text-12px mt-5px color-#12B886">${{ formatNumber(walletTokenInfo?.total_purchase_usd || 0, 2) }}</div>
@@ -15,11 +15,11 @@
     <div class="flex-1">
       <div class="text-11px color-[--d-666-l-999] flex items-center justify-center">
         <span>{{ $t('profit2') }}</span>
-        <Icon name="custom:price" class="text-11px clickable ml-5px" :class="[isShowB ? 'color-[--d-666-l-999]' : 'color-[--d-F5F5F5-l-333]']" @click.stop="isShowB=!isShowB" />
+        <Icon name="custom:price" class="text-11px clickable ml-5px" :class="[isShowB ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]']" @click.stop="isShowB=!isShowB" />
       </div>
       <div class="text-12px mt-5px" :class="[Number(walletTokenInfo?.total_profit || 0) > 0 ? 'color-#12B886' : 'color-#F6465D']">
         <template v-if="!isShowB">
-           ${{ formatNumber(walletTokenInfo?.total_profit || 0, 2) }}
+           {{ Number(walletTokenInfo?.total_profit || 0) > 0 ? '' : '-' }}${{ formatNumber(Math.abs(Number(walletTokenInfo?.total_profit) || 0), 2) }}
         </template>
          <template v-else>
            {{ formatNumber(Number(walletTokenInfo?.total_profit || 0) / Number(walletTokenInfo?.main_token_price || 1), 2) }} {{ walletTokenInfo?.main_token_symbol || '' }}
@@ -102,6 +102,11 @@ async function _bot_getAddressAllBalances() {
     chains: chain,
     pinToken: route.params?.id as string
   }
+  if (!Number(tokenStore.swap.token?.balance || 0)) {
+    avgPrice.value = 0
+    useEventBus('updateAvgPrice').emit(0)
+    return
+  }
   return bot_getAddressAllBalances(params).then(async res => {
     if (!res?.[0]?.value || res?.[0]?.value > 0 && res?.[0]?.token !== token) {
       avgPrice.value = 0
@@ -137,7 +142,7 @@ watch(() => tokenStore.placeOrderSuccess, () => {
 
 let time = 0
 function getWalletTxDataPoll() {
-  if (time > 6) {
+  if (time > 10) {
     time = 0
     return
   }

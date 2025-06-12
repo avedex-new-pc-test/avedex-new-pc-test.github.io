@@ -298,6 +298,7 @@ watch(() => props.swapType, (val) => {
   if (val !== 'limit') {
     useEventBus<number>('priceLimit').emit(0)
   } else {
+    initPriceLimit()
     updateStorePriceLimit()
   }
 })
@@ -1034,18 +1035,27 @@ function botTopUp(chain?: string) {
 }
 
 const now = Date.now()
+let Timer: null | ReturnType<typeof setTimeout> = null
 function initPriceLimit() {
   if (props.swapType === 'market') {
     if (Date.now() - now > 5000) {
       return
     }
     if (!tokenStore.price) {
-      setTimeout(initPriceLimit, 1000)
+      if (Timer) {
+        clearTimeout(Timer)
+        Timer = null
+      }
+      Timer = setTimeout(initPriceLimit, 1000)
       return
     }
   } else {
     if (!tokenStore.price) {
-      setTimeout(initPriceLimit, 1000)
+      if (Timer) {
+        clearTimeout(Timer)
+        Timer = null
+      }
+      Timer = setTimeout(initPriceLimit, 1000)
       return
     }
   }
