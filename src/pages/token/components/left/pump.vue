@@ -15,7 +15,7 @@ const wsStore = useWSStore()
 const documentVisible = inject<Ref<boolean>>('documentVisible')
 // const tokenStore = useTokenStore()
 defineProps({
-  winHeight: {
+  finalHeight: {
     type: Number,
     required: true
   }
@@ -306,14 +306,14 @@ function getTargetToken(row: GetHomePumpListResponse) {
       {{ t('amountB') }}
       <Icon
         name="custom:price"
-        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-#3F80F7':'color-#666'}`"
+        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-[--d-999-l-666]':'color-[--d-666-l-999]'}`"
         @click.stop.self="isVolUSDT=!isVolUSDT"
       />
       /{{ t('Txs') }}
     </template>
     </THead>
     <el-scrollbar
-      :height="Math.max(500,winHeight-500)"
+      :height="Math.max(500,finalHeight-130)"
       class="[&&]:h-auto"
     >
       <NuxtLink

@@ -16,10 +16,11 @@ import {
 } from '~/api/token'
 import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 
-import {useThrottleFn} from '@vueuse/core'
+import {useEventBus, useThrottleFn, useWindowSize} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import type {AveTable} from '#components'
+import {DefaultHeight} from "~/utils/constants";
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
@@ -230,12 +231,22 @@ useVisibilityChange(() => {
   _getPairLiq()
 })
 
+const centerDragEvent = useEventBus<number>(BusEventType.CENTER_DRAG)
+const centerTopHeight = shallowRef(DefaultHeight.KLINE)
+const {height} = useWindowSize()
+const finalHeight = computed(() => Math.max(560, height.value - centerTopHeight.value - 250))
+centerDragEvent.on(setCenterTopHeight)
 // onMounted(() => {
 //   document.addEventListener('mousemove', mouseInsideTxs)
 // })
-// onUnmounted(() => {
-//   document.removeEventListener('mousemove', mouseInsideTxs)
-// })
+onUnmounted(() => {
+  // document.removeEventListener('mousemove', mouseInsideTxs)
+  centerDragEvent.off(setCenterTopHeight)
+})
+
+function setCenterTopHeight(_height: number) {
+  centerTopHeight.value = _height
+}
 //
 // const txsBounding = useElementBounding(aveTableRef)
 // const mouseInsideTxs = useThrottleFn((event: MouseEvent) => {
@@ -689,7 +700,9 @@ function resetMakerAddress() {
         rowKey="uuid"
         fixed :data="filterTableList"
         :columns="columns"
-        class="min-h-560px h-[calc(100vh-750px)]"
+        :style="{
+          height:`${finalHeight}px`
+        }"
         row-class='cursor-pointer'
         :rowEventHandlers="{
         onMouseenter:()=>isHoverTable=true,

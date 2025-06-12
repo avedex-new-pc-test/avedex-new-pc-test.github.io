@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import Trending from './trending.vue'
-import {useWindowSize} from '@vueuse/core'
+import {useEventBus, useWindowSize} from '@vueuse/core'
+import {DefaultHeight} from '~/utils/constants'
 
 const {t} = useI18n()
-
 const {height} = useWindowSize()
+const topLeftHeight = shallowRef(DefaultHeight.TOPLEFT)
+const finalHeight = computed(() => height.value - topLeftHeight.value)
+const leftDragEvent = useEventBus<number>(BusEventType.LEFT_DRAG)
+leftDragEvent.on(setTopLeftHeight)
+onUnmounted(() => {
+  leftDragEvent.off(setTopLeftHeight)
+})
+
+function setTopLeftHeight(_height: number) {
+  topLeftHeight.value = _height
+}
 const activeTab = shallowRef<keyof typeof components>('Trending')
 const tabs = computed(()=>{
     return [
@@ -38,7 +49,7 @@ const Component = computed(() => {
       <component
         :is="Component"
         class="flex-1 relative"
-        :winHeight="height"
+        :finalHeight="finalHeight"
       />
     </KeepAlive>
   </div>
