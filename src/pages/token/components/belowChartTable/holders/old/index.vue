@@ -356,7 +356,7 @@ function handlerDialogProfitLoss(row: { address: string }) {
 <style lang="scss" scoped>
 .tabs {
   .tab-item {
-    background: var(--d-1f242a-l-F5f5f5);
+    background: var(--d-1F242A-l-F5F5F5);
     border-radius: 4px;
     font-size: 12px;
     color: #787b86;
