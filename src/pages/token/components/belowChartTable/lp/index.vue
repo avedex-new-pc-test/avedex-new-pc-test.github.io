@@ -57,6 +57,7 @@
                 </div>
               </div>
               <div v-else-if="col.prop == 'percent'" class="flex flex-col">
+                <div>{{ formatNumber(row.percent, 1) }}%</div>
                 <div class="line-bar">
                   <span :style="{ width: row.percent + '%' }" />
                 </div>
@@ -131,19 +132,19 @@ const columns = computed(() => {
         return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
       }
     },
+    // {
+    //   label: t('devote') + '%',
+    //   prop: 'devote',
+    //   align: 'right',
+    //   width: 80,
+    //   sortable: false,
+    //   customClassName: () => { },
+    //   customFormatter: (row: IHolder) => {
+    //     return formatNumber(row.percent, 1) + '%'
+    //   }
+    // },
     {
       label: t('devote') + '%',
-      prop: 'devote',
-      align: 'right',
-      width: 80,
-      sortable: false,
-      customClassName: () => { },
-      customFormatter: (row: IHolder) => {
-        return formatNumber(row.percent, 1) + '%'
-      }
-    },
-    {
-      label: t('percent'),
       prop: 'percent',
       minWidth: 100,
       align: 'right',
@@ -400,7 +401,8 @@ function init2() {
   display: flex;
   background: var(--d-222-l-f5f5f5);
   border-radius: 1.5px;
-  margin-top: 4px;
+  margin-top: 9px;
+  margin-bottom: 3px;
 
   >span {
     height: 3px;
