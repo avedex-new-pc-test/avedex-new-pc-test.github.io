@@ -135,7 +135,7 @@ export function getKlineHistoryData(data: {
       category: 'u',
       limit_count: 300
     }
-  }).then((res) => {
+  }).then(async(res) => {
     return {
       kline_data: (res?.kline_data || []).map((i: { t: number; o: number; h: number; l: number; c: number; vol: number; tag: string }) => ({
         time: i.t,
@@ -147,6 +147,11 @@ export function getKlineHistoryData(data: {
         tag: i.tag
       })),
       pair: res?.pair || pair || ''
+    }
+  }).catch(async () => {
+    return {
+      kline_data: [],
+      pair: pair || ''
     }
   })
 }
