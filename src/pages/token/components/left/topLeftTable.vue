@@ -42,8 +42,8 @@ const activeHeight = computed(() => {
       <a
         v-for="(item) in tabs"
         :key="item.component" href="javascript:;"
-        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-999-l-666] b-b-solid b-b-2px font-500
-         ${activeTab===item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
+        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-666-l-999] b-b-solid b-b-2px font-500
+         ${activeTab===item.component ? 'color-[--d-F5F5F5-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
         @click="activeTab=item.component"
       >
         {{ item.name }}

@@ -632,7 +632,7 @@ export const evm_utils = {
 export function filterGas(num: number, chain?: string) {
   if (chain === 'bsc') {
     if (num < 1) {
-      return '#848E9C'
+      return '#999'
     } else if (num < 2) {
       return '#EAECEF'
     } else {
@@ -640,7 +640,7 @@ export function filterGas(num: number, chain?: string) {
     }
   } else if (chain === 'eth') {
     if (num < 3) {
-      return '#848E9C'
+      return '#999'
     } else if (num < 6) {
       return '#EAECEF'
     } else {
@@ -648,7 +648,7 @@ export function filterGas(num: number, chain?: string) {
     }
   } else {
     if (num < 0.5) {
-      return '#878fbc'
+      return '#999'
     } else {
       return '#f81111'
     }

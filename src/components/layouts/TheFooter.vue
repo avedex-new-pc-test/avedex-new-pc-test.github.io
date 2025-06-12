@@ -72,6 +72,7 @@ const { lang } = storeToRefs(globalStore)
 const ids = [
   '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c-bsc',
   '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2-eth',
+  '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c-bsc',
   'So11111111111111111111111111111111111111112-solana',
 ]
 const data = ref<Array<{
@@ -88,17 +89,19 @@ const initPage = () => {
   // Initialize the page or perform any setup tasks
   getTokensPrice(ids).then((res) => {
     //WETH BTCB SOL
+    console.log('getTokensPrice',res)
     const newVal = res.map(i=>{
       return {
         ...i,
-        symbol: {WETH:'ETH',BTCB:'BTC',SOL:'SOL'}[i.symbol as string] || i.symbol,
+        symbol: {WETH:'ETH',BTCB:'BTC',WBNB:'BNB',SOL:'SOL'}[i.symbol as string] || i.symbol,
         logo_url: i.logo_url,
         color:i.price_change>=0?upColor[0]:downColor[0]
       }
     })
     data.value[0] = newVal.filter(i => i.symbol === 'BTC')[0]
     data.value[1] = newVal.filter(i => i.symbol === 'ETH')[0]
-    data.value[2] = newVal.filter(i => i.symbol === 'SOL')[0]
+    data.value[2] = newVal.filter(i => i.symbol === 'BNB')[0]
+    data.value[3] = newVal.filter(i => i.symbol === 'SOL')[0]
   })
 }
 watch(()=>globalStore.footerTokensPrice, (newVal) => {

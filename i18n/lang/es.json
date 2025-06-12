@@ -243,5 +243,22 @@
   "markets": "Mercado",
   "smarter2": "Más Inteligente",
   "balances": "Activos",
-  "currencyOverview": "Información"
+  "currencyOverview": "Información",
+  "provider1": "Proveedor de líquido",
+  "amt": "{n} Amt",
+  "SAFU": "Seguro (SAFU",
+  "buy_gas": "Gas para compra",
+  "buyMaxAmount": "Límite de compra",
+  "sell_gas": "Gas para venta",
+  "sellMaxAmount": "Límite de venta",
+  "approve_gas": "Aprobar gas",
+  "tm_max_hold_amount_per_wallet": "Límite de retención",
+  "tm_bonus_token_name": "Token de recompensa para poseedores",
+  "tm_bonus_token_name_for_lp": "Token de recompensa LP",
+  "fundWallet": "Billetera de fondos",
+  "teamWallet": "Billetera del equipo",
+  "tm_kill_block_after_open": "Bloquear N tras abrir",
+  "tm_start_trade_at_block": "Iniciar comercio en el bloque",
+  "mechanism_intro": "Adicional",
+  "antiWhaleModifiable": "Antiballena modificable"
 }

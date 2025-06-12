@@ -416,5 +416,22 @@
   "markets": "Рынок",
   "smarter2": "Умные деньги",
   "balances": "Активы",
-  "currencyOverview": "Инфо"
+  "currencyOverview": "Инфо",
+  "provider1": "Жидкий провайдер",
+  "amt": "{n} Amt",
+  "SAFU": "SAFU",
+  "buy_gas": "Газ покупки",
+  "buyMaxAmount": "Лимит покупки",
+  "sell_gas": "Газ продажи",
+  "sellMaxAmount": "Лимит продажи",
+  "approve_gas": "Одобрить газ",
+  "tm_max_hold_amount_per_wallet": "Лимит хранения",
+  "tm_bonus_token_name": "Токен награды держателей",
+  "tm_bonus_token_name_for_lp": "Токен награды LP",
+  "fundWallet": "Кошелек фонда",
+  "teamWallet": "Кошелек команды",
+  "tm_kill_block_after_open": "Убить N блоков",
+  "tm_start_trade_at_block": "Начать торговлю с блока",
+  "mechanism_intro": "Дополнительно",
+  "antiWhaleModifiable": "Изменяемый анти-кит"
 }
