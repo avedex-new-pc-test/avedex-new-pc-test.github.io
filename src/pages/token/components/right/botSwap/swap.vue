@@ -319,6 +319,7 @@ useEventBus('klineDataReady').on(() => {
 })
 
 function updateStorePriceLimit() {
+  initPriceLimit()
   if (isLineChange) return
   if(!isPriceLimit.value) {
     useEventBus<number>('priceLimit').emit(Number(formatDec(new BigNumber(priceLimit.value).div(tokenStore.circulation || 1).toFixed(), 4)))
@@ -1034,18 +1035,27 @@ function botTopUp(chain?: string) {
 }
 
 const now = Date.now()
+let Timer: null | ReturnType<typeof setTimeout> = null
 function initPriceLimit() {
   if (props.swapType === 'market') {
     if (Date.now() - now > 5000) {
       return
     }
     if (!tokenStore.price) {
-      setTimeout(initPriceLimit, 1000)
+      if (Timer) {
+        clearTimeout(Timer)
+        Timer = null
+      }
+      Timer = setTimeout(initPriceLimit, 1000)
       return
     }
   } else {
     if (!tokenStore.price) {
-      setTimeout(initPriceLimit, 1000)
+      if (Timer) {
+        clearTimeout(Timer)
+        Timer = null
+      }
+      Timer = setTimeout(initPriceLimit, 1000)
       return
     }
   }
