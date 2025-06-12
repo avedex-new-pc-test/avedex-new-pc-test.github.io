@@ -21,6 +21,13 @@ export const useGlobalStore = defineStore('global', () => {
       price_change: 0
     },
     {
+      token: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+      chain: 'bsc',
+      id: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c-bsc',
+      current_price_usd: 0,
+      price_change: 0
+    },
+    {
       token: 'So11111111111111111111111111111111111111112',
       chain: 'solana',
       id: 'So11111111111111111111111111111111111111112-solana',
