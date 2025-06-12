@@ -242,5 +242,7 @@
   "alertNotice": "Token não verificado. Por favor, DYOR (faça sua própria pesquisa)",
   "markets": "Mercado ",
   "smarter2": "Mais Inteligente",
-  "balances": "Ativo"
+  "balances": "Ativo",
+  "provider1": "Provedor Liquidty",
+  "amt": "{n} Amt"
 }

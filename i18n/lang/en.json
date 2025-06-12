@@ -642,5 +642,7 @@
   "markets": "Market",
   "pump1": "PUMP",
   "smarter2": "Smarter",
-  "balances": "Assets"
+  "balances": "Assets",
+  "provider1": "Liquidty Provider",
+  "amt": "{n} Amt"
 }

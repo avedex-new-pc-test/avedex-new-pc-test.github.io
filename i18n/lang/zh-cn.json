@@ -643,5 +643,7 @@
   "markets": "行情",
   "pump1": "扫链",
   "smarter2": "聪明钱",
-  "balances": "资产"
+  "balances": "资产",
+  "provider1": "提供者",
+  "amt": "{n}数量"
 }
