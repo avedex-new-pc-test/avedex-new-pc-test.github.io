@@ -23,7 +23,8 @@
   padding: 20px 0;
   .search-input {
     .el-input__wrapper {
-      background-color: var(--d-333-l-F2F2F2);
+      background-color: transparent;
+      border-bottom: 1px solid var(--d-333-l-ECECEC);
       box-shadow: none;
       & :hover {
         box-shadow: none;

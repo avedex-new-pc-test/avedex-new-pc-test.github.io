@@ -3,7 +3,7 @@
     v-model="visible"
     append-to-body
     :with-header="false"
-    :size="480"
+    :size="430"
     class="draw-right"
   >
     <div class="check-container bg-[--d-222-l-FFF] h-100vh color-[--d-F5F5F5-l-333]">
@@ -205,7 +205,7 @@
                     </span>
                   </li>
                   <Transition>
-                    <li 
+                    <li
                       v-if="buy_tax_list_show && Number(checkResult?.tm_buy_tax_for_lp) > 0 ||
                           Number(checkResult?.tm_buy_tax_for_burn) > 0 ||
                           Number(checkResult?.tm_buy_tax_for_fund) > 0 ||

@@ -39,7 +39,7 @@
         }}</span>
         <Icon
           class="text-14px text-[--d-666-l-999] cursor-pointer"
-          name="tabler:trash"
+          name="ic:baseline-delete"
           @click.stop="confirm"
         />
       </div>
