@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Trending from './trending.vue'
+import {useWindowSize} from '@vueuse/core'
 
 const {t} = useI18n()
 
+const {height} = useWindowSize()
 const activeTab = shallowRef<keyof typeof components>('Trending')
 const tabs = computed(()=>{
     return [
@@ -36,6 +38,7 @@ const Component = computed(() => {
       <component
         :is="Component"
         class="flex-1 relative"
+        :winHeight="height"
       />
     </KeepAlive>
   </div>

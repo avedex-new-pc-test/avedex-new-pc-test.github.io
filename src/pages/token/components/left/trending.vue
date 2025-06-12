@@ -7,6 +7,12 @@ import type {IPriceV2Response} from '~/api/types/ws'
 import {ProvideType} from '~/utils/constants'
 import {getMCap} from '~/utils'
 
+defineProps({
+  winHeight: {
+    type: Number,
+    required: true
+  }
+})
 const {t} = useI18n()
 onMounted(() => {
   _getHotTokens()
@@ -103,7 +109,7 @@ async function _getHotTokens() {
       :columns="columns"
     />
     <el-scrollbar
-      :height="500"
+      :height="Math.max(500,winHeight-500)"
       class="[&&]:h-auto"
     >
       <NuxtLink
