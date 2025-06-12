@@ -22,7 +22,7 @@
                 <Icon v-if="row.is_contract == 1" name="iconamoon:file-document-thin"  />
                 <tag v-if="Number(row?.analysis_show_creator) === 1">{{ $t('contractCreator') }}</tag>
                 <el-tooltip :effect="mode" placement="top-end" :content="row?.mark||row?.address">
-                  <div style="max-width: 75px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
+                  <div style="max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
                 </el-tooltip>
               </div>
               <div v-else-if="col.prop == 'addAmt'" class="flex flex-col">
@@ -103,7 +103,7 @@ const props=defineProps({
 })
 
 
-const {isDark,mode,showLeft} = storeToRefs(useGlobalStore())
+const {isDark,mode,showLeft,lang} = storeToRefs(useGlobalStore())
 // const { token, pairAddress } = storeToRefs(useTokenStore())
 const route = useRoute()
 const dataSource = ref<(IHolder & { index: string })[]>([])
@@ -118,14 +118,14 @@ const columns = computed(() => {
       label: '#',
       prop: 'index',
       align: 'left',
-      minWidth: 40,
+      width: 40,
     },
     {
       label: t('provider'),
       prop: 'mark',
       align: 'right',
       sortable: false,
-      minWidth: 140,
+      minWidth: 160,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
         return row.mark ? row.mark : (row.address || '').slice(0, 2) + '...' + (row.address || '').slice(-4)
@@ -135,32 +135,11 @@ const columns = computed(() => {
       label: t('devote') + '%',
       prop: 'devote',
       align: 'right',
+      width: 80,
       sortable: false,
       customClassName: () => { },
       customFormatter: (row: IHolder) => {
         return formatNumber(row.percent, 1) + '%'
-      }
-    },
-    {
-      label: t('addAmt'),
-      prop: 'addAmt',
-      align: 'right',
-      minWidth: 140
-    },
-    {
-      label: t('netAmt'),
-      prop: 'netAmt',
-      align: 'right',
-      minWidth: 140
-    },
-    {
-      label: t('amount'),
-      prop: 'amount',
-      align: 'right',
-      sortable: false,
-      customClassName: () => { },
-      customFormatter: (row: IHolder) => {
-        return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
       }
     },
     {
@@ -175,6 +154,29 @@ const columns = computed(() => {
       // }
     },
     {
+      label: lpRest.value?.main_token_symbol?(lpRest.value?.main_token_symbol+(lang.value?.indexOf('zh')>-1?'':' ')+t('amount')):'',
+      prop: 'addAmt',
+      align: 'right',
+      minWidth: 140
+    },
+    {
+      label: lpRest.value?.target_token_symbol?(lpRest.value?.target_token_symbol+(lang.value?.indexOf('zh')>-1?'':' ')+t('amount')):'',
+      prop: 'netAmt',
+      align: 'right',
+      minWidth: 140
+    },
+    {
+      label: t('amount'),
+      prop: 'amount',
+      align: 'right',
+      sortable: false,
+      customClassName: () => { },
+      customFormatter: (row: IHolder) => {
+        return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
+      }
+    },
+  
+    {
       label: t('balance1'),
       prop: 'quantity',
       align: 'right',
@@ -185,26 +187,26 @@ const columns = computed(() => {
         return `$${formatNumber(row.quantity, 4)}`
       }
     },
-    {
-      label: t('txns'),
-      prop: 'txns',
-      align: 'left',
-      width: 80,
-      // customFormatter: (row: IHolder) => {
-      //   return `$${formatNumber(row.current_price_usd, 4)}`
-      // }
-    },
-    {
-      label: t('lastTx'),
-      prop: 'last_tx_time',
-      align: 'right',
-      width: 80,
-      sortable: false,
-      customClassName: undefined,
-      customFormatter: (row: IHolder) => {
-        return row?.last_tx_time?formatTimeFromNow(row?.last_tx_time) : ''
-      }
-    },
+    // {
+    //   label: t('txns'),
+    //   prop: 'txns',
+    //   align: 'left',
+    //   width: 80,
+    //   // customFormatter: (row: IHolder) => {
+    //   //   return `$${formatNumber(row.current_price_usd, 4)}`
+    //   // }
+    // },
+    // {
+    //   label: t('lastTx'),
+    //   prop: 'last_tx_time',
+    //   align: 'right',
+    //   width: 80,
+    //   sortable: false,
+    //   customClassName: undefined,
+    //   customFormatter: (row: IHolder) => {
+    //     return row?.last_tx_time?formatTimeFromNow(row?.last_tx_time) : ''
+    //   }
+    // },
   ]
 })
 const activeTime = shallowRef<7|30>(7)
