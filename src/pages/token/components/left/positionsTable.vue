@@ -259,7 +259,7 @@ async function _getUserBalance() {
         listData.value = []
       }
     }
-    priceV2Store.setMultiPriceParams('favorite', listData.value.map(el => el.token + '-' + el.chain))
+    priceV2Store.setMultiPriceParams('positions', listData.value.map(el => el.token + '-' + el.chain))
     priceV2Store.sendPriceWs()
   } catch (e) {
     console.log('=>(favoriteTable.vue:106) (e)', (e))
