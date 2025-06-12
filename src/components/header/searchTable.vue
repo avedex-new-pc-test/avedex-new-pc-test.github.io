@@ -3,24 +3,6 @@
     <div class="top h-39px">
       <span>#</span>
       <span>{{ $t('tokenName') }}</span>
-      <div class="flex-end cursor-pointer select-none" @click.stop="switchSort('opening_at')">
-        {{ $t('launchTime') }}
-        <div class="flex flex-col items-center justify-center ml-5px">
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
-            ${getActiveClass(-1, 'opening_at', 'b')}
-            `"
-            @click.stop="switchSort('opening_at', -1)"
-          />
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
-            ${getActiveClass(1, 'opening_at', 't')}
-            `"
-            @click.stop="switchSort('opening_at', 1)"
-          />
-        </div>
-        <!-- <Icon  :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`" class="color-[--d-666-l-999] cursor-pointer ml-5px" @click.stop="isShowDate= !isShowDate"/> -->
-      </div>
       <div
         class="flex-end cursor-pointer select-none"
         @click.stop="switchSort('tx_volume_u_24h')"
@@ -191,7 +173,7 @@
                 />
               </div>
               <div class="ml-8px">
-                <div>
+                <div class="flex-start">
                   <span class="token-symbol">
                     {{ row.symbol }}
                     <!-- <span style="color: rgb(132, 142, 156)">({{ row.token?.slice(0,4) + '*' + row.token?.slice(-4) }})</span> -->
@@ -219,6 +201,29 @@
                       <use xlink:href="#icon-huoyan" />
                     </svg>
                   </template>
+                  <div v-if="row.opening_at" class="ml-5px">
+                    <TimerCount
+                      v-if="!isShowDate && row.opening_at && Number(formatTimeFromNow(row.opening_at, true)) < 60"
+                      :key="`${row.opening_at}${$Index}`" :timestamp="row.opening_at" :end-time="60">
+                      <template #default="{ seconds }">
+                        <span class="color-[--d-999-l-666]">
+                          <template v-if="seconds < 60">
+                            {{ seconds }}s
+                          </template>
+                          <template v-else>
+                            {{ formatTimeFromNow(row.opening_at) }}
+                          </template>
+                        </span>
+                      </template>
+                    </TimerCount>
+                    <span v-else class="color-[--d-999-l-666]">
+                        {{
+                          isShowDate
+                            ? formatDate(row.opening_at, 'HH:mm:ss')
+                            : formatTimeFromNow(row.opening_at)
+                        }}
+                    </span>
+                  </div>
                 </div>
                 <div class="text-12px color-text-2 flex-start mt-3px">
                   {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
@@ -232,38 +237,6 @@
               </div>
             </div>
             <template v-if="Number(row.current_price_usd) > 0">
-              <div v-if="row.opening_at">
-                <TimerCount
-                  v-if="
-                    !isShowDate &&
-                    row.opening_at &&
-                    Number(formatTimeFromNow(row.opening_at, true)) < 60 &&
-                    Number(formatTimeFromNow(row.opening_at, true)) > 0
-                  "
-                  :key="row.opening_at"
-                  :timestamp="row.opening_at"
-                  :end-time="60"
-                >
-                  <template #default="{ seconds }">
-                    <span>
-                      <template v-if="seconds < 60">
-                        {{ seconds }}{{ $t('ss') }}
-                      </template>
-                      <template v-else>
-                        {{ dayjs(row.opening_at * 1000).fromNow() }}
-                      </template>
-                    </span>
-                  </template>
-                </TimerCount>
-                <span v-else>
-                  {{
-                    isShowDate
-                      ? formatDate(row.opening_at)
-                      : dayjs(row.opening_at * 1000).fromNow()
-                  }}
-                </span>
-              </div>
-              <span v-else>--</span>
               <div
                 :class="
                   row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
@@ -369,10 +342,15 @@
                 </template>
               </count-down> -->
 
-              <div v-if="row.opening_at > 0">
-                <!-- <count-down /> -->
-              </div>
-
+              <TimerCount
+                v-if="row.opening_at >0"
+                :key="`${row.opening_at}${$Index}`" :timestamp="row.opening_at" :end-time="60">
+                <template #default="{ formattedData }">
+                  <span class="color-[--d-999-l-666]">
+                      {{ formattedData.days }}D {{formattedData.hours}}H {{ formattedData.minutes }}M {{  formattedData.seconds }}S
+                  </span>
+                </template>
+              </TimerCount>
               <template v-else>
                 <img
                   class="mr-5px"
@@ -517,7 +495,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
       font-size: 12px;
     }
     > :nth-child(2) {
-      flex: 1.3;
+      flex: 2;
     }
     > :nth-child(3) {
       flex: 0.7;
@@ -638,7 +616,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
         font-size: 12px;
       }
       > :nth-child(2) {
-        flex: 1.3;
+        flex: 2;
       }
       > :nth-child(3) {
         flex: 0.7;

@@ -69,6 +69,25 @@ export const useTokenStore = defineStore('token', () => {
     return new BigNumber(price.value || 0).times(circulation.value || 0).toFixed() || '0'
   })
 
+  const warningStatus = computed(() => {
+    let status = false
+    const id = route.params.id as string
+    const tokenWarningNotice: Record<string, boolean> =
+      localStorage?.tokenWarningNotice
+        ? JSON.parse(localStorage?.tokenWarningNotice)
+        : {}
+    if (route.name =='token-id' && (token?.value?.risk_level ?? 0) >= 0 && !tokenWarningNotice[id]) {
+      status =
+        (token?.value?.risk_level ?? 0) >= 0 &&
+        !token?.value?.logo_url &&
+        !token?.value?.is_audited
+    }
+    return status
+  })
+  const isShowWaring = computed(() => {
+    return (token?.value?.risk_level ?? 0) < 0 || warningStatus
+  })
+
   function switchPair(pair1: TokenInfo['pairs'][0]['pair']) {
     const pairs = tokenInfo.value?.pairs || []
     if (!pairs) return
@@ -238,7 +257,9 @@ export const useTokenStore = defineStore('token', () => {
     placeOrderUpdate,
     registrationNum,
     placeOrderSuccess,
-    onSwitchMainPairV2
+    onSwitchMainPairV2,
+    isShowWaring,
+    warningStatus
   }
 })
 
