@@ -1,5 +1,5 @@
 <!-- eslint-disable vue/no-parsing-error -->
-<template>--{{tokenStore.isShowWaring}}--
+<template>
   <el-alert
     v-if="(tokenStore?.token?.risk_level ?? 0) < 0"
     class="myTxs-notice"
@@ -1138,11 +1138,7 @@ function getRugPull() {
 }
 function handleNoticeClose() {
   const id = route.params.id as string
-  const tokenWarningNotice: Record<string, boolean> = localStorage?.tokenWarningNotice
-    ? JSON.parse(localStorage?.tokenWarningNotice)
-    : {}
-  tokenWarningNotice[id] = true
-  localStorage.tokenWarningNotice = JSON.stringify(tokenWarningNotice)
+  tokenStore.tokenWarningObj[id] = true
 }
 </script>
 

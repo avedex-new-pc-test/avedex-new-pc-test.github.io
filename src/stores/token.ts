@@ -1,5 +1,5 @@
 // stores/theme.ts
-import { useSessionStorage } from '@vueuse/core'
+import { useSessionStorage, useLocalStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import type { TokenInfo, TokenInfoExtra } from '~/api/types/token'
 import { BigNumber } from 'bignumber.js'
@@ -22,7 +22,10 @@ export const useTokenStore = defineStore('token', () => {
   const tokenInfo = ref<null | TokenInfo>(null)
   const tokenInfoExtra = shallowRef<null | TokenInfoExtra>(null)
   const { $i18n } = useNuxtApp()
-
+  const tokenWarningObj = useLocalStorage<Record<string, boolean>>(
+    'tokenWarningNotice',
+    {}
+  )
   const token = computed(() => tokenInfo.value?.token)
   const pairs = computed(() => tokenInfo.value?.pairs)
   const pairAddress = useSessionStorage('token_pairAddress', '')
@@ -70,19 +73,16 @@ export const useTokenStore = defineStore('token', () => {
   })
 
   const warningStatus = computed(() => {
-    
     let status = false
     const id = route.params.id as string
-    const tokenWarningNotice: Record<string, boolean> =
-      localStorage?.tokenWarningNotice
-        ? JSON.parse(localStorage?.tokenWarningNotice)
-        : {}
-    if (route.name =='token-id' && (token?.value?.risk_level ?? 0) >= 0 && !tokenWarningNotice[id]) {
+    if (route.name == 'token-id' && (token?.value?.risk_level ?? 0) >= 0 && !tokenWarningObj.value[id]) {
+      console.log('555555555555555555')
       status =
         (token?.value?.risk_level ?? 0) >= 0 &&
         !token?.value?.logo_url &&
         !token?.value?.is_audited
     }
+    console.log('------status---------', token?.value?.risk_level,token?.value?.logo_url)
     return status
   })
   const isShowWaring = computed(() => {
@@ -260,7 +260,8 @@ export const useTokenStore = defineStore('token', () => {
     placeOrderSuccess,
     onSwitchMainPairV2,
     isShowWaring,
-    warningStatus
+    warningStatus,
+    tokenWarningObj
   }
 })
 
