@@ -253,7 +253,7 @@ function getAllTagsActivityList() {
         align-items: center;
         justify-content: space-between;
         font-size: 12px;
-        color: var(--d-999-l-959A9F);
+        color: var(--d-999-l-666);
         .color-878FBC {
           color: var(--custom-text-2-color);
         }

@@ -7,7 +7,7 @@
         v-loading="isLoading"
         :data="tableDataFilter"
         fit
-        style="width: 100%"
+        style="width: 100%;font-size: 12px"
         class="table-container"
         cell-class-name="color-[--d-999-l-959A9F] text-12px"
         :default-sort="defaultSort"

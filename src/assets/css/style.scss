@@ -67,11 +67,11 @@
 }
 .checkbox-old{
   .el-checkbox__label{
-    color: #959a9f;
+    color: var(--d-999-l-666);
   }
   .el-checkbox__input.is-checked {
     &+.el-checkbox__label{
-      color: #959a9f;
+      color: var(--d-999-l-666);
     }
   }
   .checkbox-FFCC00{
