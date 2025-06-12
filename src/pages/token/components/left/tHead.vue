@@ -16,11 +16,11 @@ function getActiveClass(activeSort: number, sortBy: string, direction: string) {
   if (direction === 't') {
     return isEqual
       ? 'border-t-[--d-F5F5F5-l-333]'
-      : 'border-t-[--d-999-l-666]'
+      : 'border-t-[--d-666-l-999]'
   }
   return isEqual
     ? 'border-b-[--d-F5F5F5-l-333]'
-    : 'border-b-[--d-999-l-666]'
+    : 'border-b-[--d-666-l-999]'
 }
 
 const statusTo = {
