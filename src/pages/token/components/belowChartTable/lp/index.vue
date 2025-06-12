@@ -325,9 +325,9 @@ function init2() {
   if (props.token?.token && addressAndChain.value?.chain) {
     getLPHolders((props.token?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
       console.log('getLPHolders', res)
-      if (res?.Holders && Array.isArray(res?.Holders)) {
-        const { Holders, ...rest } = res
-        dataSource.value = res.Holders.map((item: IHolder, idx: number) => {
+      if (res?.holders && Array.isArray(res?.holders)) {
+        const { holders, ...rest } = res
+        dataSource.value = res.holders.map((item: IHolder, idx: number) => {
           return {
             ...item,
             index: (idx + 1).toString(),
