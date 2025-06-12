@@ -203,7 +203,7 @@ import {
   type HolderStat,
 } from '@/api/holders'
 import { useLocalStorage } from '@vueuse/core'
-import List from './list'
+import List from './list.vue'
 const holderListSortObj = useLocalStorage('holderListSortObj', {
   all: {
     sort_by: '',
@@ -217,13 +217,21 @@ const holderListSortObj = useLocalStorage('holderListSortObj', {
     sort_by: 'sold_usd',
     order: 'desc',
   },
+  buy24h: {
+    sort_by: '',
+    order: '',
+  },
+  sell24h: {
+    sort_by: '',
+    order: '',
+  },
 })
-const { price ,token} = storeToRefs(useTokenStore())
+const { price, token} = storeToRefs(useTokenStore())
 const route = useRoute()
 const botStore = useBotStore()
 const { t } = useI18n()
 const { totalHolders } = storeToRefs(useTokenStore())
-const activeTab = shallowRef<string>('all')
+const activeTab = shallowRef<'all' | 'buy' |'sell' | 'buy24h' | 'sell24h'>('all')
 
 const searchKeyword = shallowRef('')
 const loadingHolders = shallowRef(false)
@@ -231,7 +239,7 @@ const loadingHolders = shallowRef(false)
 const holderListObj = ref<Record<string, HolderStat[]>>({})
 const aggregateStatsObj = ref<Record<string, AggregateStats>>({})
 
-  const show_bubble = shallowRef(false)
+  // const show_bubble = shallowRef(false)
 
 const searchOriginKeyword = shallowRef('')
 const searchOriginType = shallowRef('')
@@ -240,7 +248,7 @@ const tabs = computed(() => {
   const arr: Array<{ label: string; value: string }> = []
   if (Array.isArray(totalHolders.value)) {
     totalHolders.value.forEach((i) => {
-      const num = i.total_address
+      const num = i.total_address || 0
       if (num > 0) {
         arr.push({
           ...i,
@@ -313,22 +321,22 @@ const totalProfit = computed(() => {
     }, new BigNumber('0'))
     ?.toFixed(0)
 })
-const addressAndChain = computed(() => {
-  const id = route.params.id as string
-  if (id) {
-    return getAddressAndChainFromId(id)
-  }
-  return {
-    address: token.value?.token || '',
-    chain: token.value?.chain || '',
-  }
-})
-const tokenAddress= computed(()=>{
-  return addressAndChain.value?.address
-})
-const chain= computed(()=>{
-  return addressAndChain.value?.chain
-})
+// const addressAndChain = computed(() => {
+//   const id = route.params.id as string
+//   if (id) {
+//     return getAddressAndChainFromId(id)
+//   }
+//   return {
+//     address: token.value?.token || '',
+//     chain: token.value?.chain || '',
+//   }
+// })
+// const tokenAddress= computed(()=>{
+//   return addressAndChain.value?.address
+// })
+// const chain= computed(()=>{
+//   return addressAndChain.value?.chain
+// })
 watch(
   () => id.value,
   (newId) => {
@@ -367,7 +375,7 @@ onMounted(() => {
 onActivated(() => {
   getHoldersList()
 })
-function setActiveTab(val: string) {
+function setActiveTab(val: typeof activeTab.value) {
   activeTab.value = val
 }
 function getHoldersList(sortObj?: { sort_by: string; order: string }) {
@@ -408,7 +416,10 @@ function getHoldersList(sortObj?: { sort_by: string; order: string }) {
         ? 1
         : undefined,
   }
-  holderListSortObj.value[activeTab.value] = sort
+  holderListSortObj.value[activeTab.value] = sort as {
+    sort_by: string
+    order: string
+  }
   if (searchKeyword.value) {
     return
   }
@@ -420,7 +431,7 @@ function getHoldersList(sortObj?: { sort_by: string; order: string }) {
       aggregateStatsObj.value[activeTab.value] = res?.aggregateStats || {}
     })
     .catch(() => {
-      holderListSortObj.value[activeTab.value] = []
+      holderListObj.value[activeTab.value] = []
     })
     .finally(() => {
       loadingHolders.value = false
@@ -430,14 +441,14 @@ function handleSortChange(obj: { prop: string; order: string }) {
   getHoldersList({ sort_by: obj.prop, order: obj.order?.replace('ending', '') })
 }
 function filterOriginAddress(row:{ address: string, type: string }) {
-      if (searchOriginKeyword.value) {
-        searchOriginKeyword.value = ''
-        searchOriginType.value = ''
-      } else {
-        searchOriginKeyword.value = row.address || ''
-        searchOriginType.value = row.type || ''
-      }
-    }
+  if (searchOriginKeyword.value) {
+    searchOriginKeyword.value = ''
+    searchOriginType.value = ''
+  } else {
+    searchOriginKeyword.value = row.address || ''
+    searchOriginType.value = row.type || ''
+  }
+}
 </script>
 <style lang="scss" scoped>
 .section-4 {

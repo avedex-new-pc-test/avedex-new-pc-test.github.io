@@ -84,7 +84,7 @@
   "hiddenHighToken": "Collapse high-risk tokens",
   "showHighToken": "Show high-risk tokens",
   "highRisk": "High Risk",
-  "volume": "Vol",
+  "volume": "Volume",
   "winRate": "Win Rate",
   "copySuccess": "Copy successfully !",
   "all": "All",
@@ -636,5 +636,7 @@
   "txns": "Txns",
   "liquidity": "Liquidity",
   "holderBubble": "Holders Bubble Map",
-  "Chg": "Chg"
+  "Chg": "Chg",
+  "wallet": "Wallet",
+  "alertNotice": "Unverified token. Please DYOR"
 }

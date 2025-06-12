@@ -15,11 +15,11 @@
     <div class="flex-1">
       <div class="text-11px color-[--d-666-l-999] flex items-center justify-center">
         <span>{{ $t('profit2') }}</span>
-        <Icon name="custom:price" class="text-11px clickable ml-5px" :class="[isShowB ? 'color-[--d-666-l-999]' : 'color-[--d-F5F5F5-l-333]']" @click.stop="isShowB=!isShowB" />
+        <Icon name="custom:price" class="text-11px clickable ml-5px" :class="[isShowB ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]']" @click.stop="isShowB=!isShowB" />
       </div>
       <div class="text-12px mt-5px" :class="[Number(walletTokenInfo?.total_profit || 0) > 0 ? 'color-#12B886' : 'color-#F6465D']">
         <template v-if="!isShowB">
-           ${{ formatNumber(walletTokenInfo?.total_profit || 0, 2) }}
+           {{ Number(walletTokenInfo?.total_profit || 0) > 0 ? '' : '-' }}${{ formatNumber(Math.abs(Number(walletTokenInfo?.total_profit) || 0), 2) }}
         </template>
          <template v-else>
            {{ formatNumber(Number(walletTokenInfo?.total_profit || 0) / Number(walletTokenInfo?.main_token_price || 1), 2) }} {{ walletTokenInfo?.main_token_symbol || '' }}

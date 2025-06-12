@@ -128,6 +128,7 @@ export interface Token {
   cto_flag: number
   dev_count: number
   owner?: string
+is_audited: boolean
 }
 
 export interface Volume {
