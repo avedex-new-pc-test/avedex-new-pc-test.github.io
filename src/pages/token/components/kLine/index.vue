@@ -627,7 +627,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
 
 // 拖动缩放
 let isMask = false
-const kHeight = shallowRef(500)
+const kHeight = shallowRef(475)
 const wHeight = useWindowSize().height
 const dom = useTemplateRef('kline')
 function drag(e: MouseEvent) {
