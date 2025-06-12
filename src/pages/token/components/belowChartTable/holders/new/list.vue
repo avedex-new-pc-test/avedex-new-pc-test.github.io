@@ -931,6 +931,7 @@
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
 import { getChainInfo, formatDate, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
+import { templateRef } from '@vueuse/core'
 import dayjs from 'dayjs'
 const props = defineProps({
   modelValue: Boolean,
@@ -956,6 +957,7 @@ const props = defineProps({
   },
 })
 const $emit = defineEmits(['filterAddress', 'handleSortChange', 'filterOriginAddress'])
+defineExpose({ sort,clearSort })
 const { tableList, loading } = toRefs(props)
 const { mode } = storeToRefs(useGlobalStore())
 const { token, price,pair } = storeToRefs(useTokenStore())
@@ -967,6 +969,7 @@ const isShowBalance = shallowRef(false)
 const visible = shallowRef(false)
 const searchKeyword = shallowRef('')
 const keyword = shallowRef('')
+const holderListRef = templateRef('holderListRef')
 
 const addressAndChain = computed(() => {
   const id = route.params.id as string
@@ -1030,6 +1033,12 @@ function handleSortChange(obj:{prop: string, order:string }) {
 }
 function filterOriginAddress(address: string, type: string) {
   $emit('filterOriginAddress', { address, type })
+}
+function sort(prop: string, order: string) {
+  holderListRef?.value?.sort(prop, order)
+}
+function clearSort() {
+  holderListRef?.value?.clearSort()
 }
 </script>
 <style lang="scss" scoped>

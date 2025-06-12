@@ -115,7 +115,7 @@ async function _getHotTokens() {
       <NuxtLink
         v-for="(row,$index) in sortedHotList"
         :key="$index"
-        class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-333-l-F5F5F5] text-12px"
+        class="px-10px flex items-center h-50px cursor-pointer hover:bg-[--d-222-l-F2F2F2] text-12px"
         :to="`/token/${row.token}-${row.chain}`"
       >
         <div class="flex-1 flex items-center">

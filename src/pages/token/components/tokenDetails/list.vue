@@ -192,7 +192,7 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
     </div>
     <div
       v-for="(row, $index) in tableList" :key="$index"
-      class="text-13px flex h-40px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-333-l-F5F5F5)] cursor-pointer"
+      class="text-13px flex h-40px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-222-l-F2F2F2)] cursor-pointer"
       @click="tableRowClick(row)"
     >
       <div class="flex items-center flex-[2]">
@@ -260,7 +260,7 @@ function tableRowClick(row: GetTokenDetailsListResponse) {
       </div>
       <!--<div class="flex items-center w-50px text-right"/>-->
     </div>
-    <AveEmpty 
+    <AveEmpty
       class="pt-50px"
       v-if="!loading && tableList.length === 0"
     />
