@@ -6,13 +6,13 @@
     type="warning"
     :title="t('myTxsNotice')"
     show-icon
-    closable
     :style="{
       backgroundColor:
         mode === 'light' ? '#ffa94d0d' : '#36131C',
       color: '#f00',
       border: 'none',
     }"
+    :closable="false"
   />
   <el-alert
     v-else-if="warningStatus"
@@ -522,21 +522,21 @@
         class="block mt-8px color-[--d-F5F5F5-l-333]"
         :style="{
           color:
-            Number(token?.dev_count || 0) * 100 < 0.1
+            Number(token?.dev_balance_ratio_cur || 0) *100 < 0.1
               ? 'var(--d-666-l-999)'
-              : (token?.dev_count ?? 0) * 100 > 10
+              : (token?.dev_balance_ratio_cur ?? 0) *100 > 10
               ? '#FFA622'
               : '',
         }"
         >{{
-          (token?.dev_count ?? 0) > 0 && (token?.dev_count ?? 0) * 100 < 0.1
+          (token?.dev_balance_ratio_cur ?? 0) > 0 && (token?.dev_balance_ratio_cur ?? 0) *100 < 0.1
             ? '<0.1'
-            : (token?.dev_count ?? 0) * 100
+            : formatNumber((token?.dev_balance_ratio_cur ?? 0) * 100, 2)
         }}%</span
       >
     </div>
-    <div class="item ml-24px">
-      <span class="cursor-pointer flex-start" @click="showCheck = !showCheck">
+    <div class="item ml-24px cursor-pointer" @click="showCheck = !showCheck">
+      <span class="flex-start">
         {{ $t('audit1') }}
         <Icon
           name="material-symbols:arrow-forward-ios-rounded"
@@ -597,8 +597,8 @@
       </div>
       <Check v-model="showCheck" />
     </div>
-    <div v-if="chain === 'solana'" class="item ml-24px">
-      <span class="cursor-pointer flex-start" @click="showRun = !showRun"
+    <div v-if="chain === 'solana'" class="item ml-24px cursor-pointer" @click="showRun = !showRun">
+      <span class="flex-start"
         >{{ t('flag_rug_pull') }}
         <Icon
           v-if="
@@ -610,13 +610,12 @@
         />
       </span>
       <div
-        class="color-text-1 mt-8px font-500 flex-start text-12px"
+        class="mt-8px font-500 flex-start text-12px"
         :style="{
           color:
-            (rugPull?.rates?.rugged_rate ?? 0) > 60 ? '#F6465D' : '#959A9F',
+            (rugPull?.rates?.rugged_rate ?? 0) > 60 ? '#F6465D' : 'var(--d-999-l-666)',
         }"
       >
-        <!-- <i class="iconfont icon-rug font-12 mr-2px"></i> -->
         <Icon name="custom:rug" class="text-12px mr-2px" />
         {{
           rugPull?.rates?.rugged_rate == -1

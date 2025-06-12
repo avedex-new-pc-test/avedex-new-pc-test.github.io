@@ -232,11 +232,7 @@
       >
         <template #header>
           <div style="display: inline-flex; align-items: center">
-            <span
-              >{{ isShowBalance ? $t('bal') : $t('amount') }}/{{
-                $t('ratio')
-              }}</span
-            >
+            <span>{{ $t('ratio')}}/{{ isShowBalance ? $t('bal') : $t('amount') }}</span>
             <img
               v-show="isShowBalance"
               class="clickable ml-3"
@@ -265,38 +261,40 @@
           </template>
           <template v-else>
             <div
+              style="line-height: 1.3"
+
+              :style="{
+                color: !row?.balance_ratio
+                  ? 'var(--d-666-l-999)'
+                  : '',
+              }"
+            >
+              {{ formatNumber((row?.balance_ratio || 0) * 100, 1) }}%
+            </div>
+            <div
               v-if="isShowBalance"
+              class="text-12px"
               style="line-height: 1.3"
               :style="{
-                color: !row?.balance_usd ? 'var(--d-666-l-999)' : '',
+                color: !row?.balance_usd ? 'var(--d-666-l-999)' : 'var(--d-666-l-999)',
               }"
             >
               {{ '$' + formatNumber(row?.balance_usd || 0, 1) }}
             </div>
             <div
               v-else
+              class="text-12px"
               style="line-height: 1.3"
               :style="{
-                color: !row?.balance ? 'var(--d-666-l-999)' : '',
+                color: !row?.balance ? 'var(--d-666-l-999)' : 'var(--d-666-l-999)',
               }"
             >
               {{ formatNumber(row?.balance || 0, 1) }}
             </div>
-            <div
-              style="line-height: 1.3"
-              class="text-12px"
-              :style="{
-                color: !row?.balance_ratio
-                  ? 'var(--d-666-l-999)'
-                  : 'var(--d-666-l-999)',
-              }"
-            >
-              {{ formatNumber((row?.balance_ratio || 0) * 100, 1) }}%
-            </div>
           </template>
         </template>
       </el-table-column>
-       <el-table-column
+      <el-table-column
         class-name="bg-12B8861A"
         :label="$t('totalPnL')"
         align="right"

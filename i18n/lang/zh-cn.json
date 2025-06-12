@@ -70,7 +70,7 @@
   "whetherToClearHistory": "是否清空历史记录？",
   "enterAddress/token": "搜索代币名称/合约/钱包地址",
   "tokenName": "币种",
-  "popularSearches": "热门搜索",
+  "popularSearches": "热门",
   "wallet": "钱包",
   "24Volume": "24h交易额",
   "holders": "持币人",
@@ -639,5 +639,10 @@
   "liquidity": "池子大小",
   "holderBubble": "筹码气泡图",
   "Chg": "涨幅",
-  "alertNotice": "该币暂未收录，请自行注意风险"
+  "alertNotice": "该币暂未收录，请自行注意风险",
+  "markets": "行情",
+  "pump1": "扫链",
+  "smarter2": "聪明钱",
+  "balances": "资产",
+  "currencyOverview": "简介"
 }

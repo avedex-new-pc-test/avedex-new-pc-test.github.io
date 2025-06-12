@@ -234,5 +234,9 @@
   "liquidity": "Likidite",
   "wallet": "Cüzdan",
   "volume": "Hacim",
-  "alertNotice": "Doğrulanmamış token. Kendi araştırmanızı yapın"
+  "alertNotice": "Doğrulanmamış token. Kendi araştırmanızı yapın",
+  "markets": "Piyasalar",
+  "smarter2": "akıllı para",
+  "balances": "Bakiye",
+  "currencyOverview": "Para Birimi Tanıtımı"
 }
