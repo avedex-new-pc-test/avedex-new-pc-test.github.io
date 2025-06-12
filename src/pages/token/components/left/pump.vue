@@ -306,7 +306,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
       {{ t('amountB') }}
       <Icon
         name="custom:price"
-        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-[--d-999-l-666]':'color-[--d-666-l-999]'}`"
+        :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'}`"
         @click.stop.self="isVolUSDT=!isVolUSDT"
       />
       /{{ t('Txs') }}

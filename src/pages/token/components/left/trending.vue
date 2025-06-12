@@ -48,7 +48,7 @@ const sortedHotList = computed(() => {
 })
 const columns = computed(() => {
   return [{
-    label: t('token') + '/' + t('mcap'),
+    label: t('token') + '/' + t('mCap'),
     value: 'mcap',
     flex: 'flex-[3]',
     sort: true
