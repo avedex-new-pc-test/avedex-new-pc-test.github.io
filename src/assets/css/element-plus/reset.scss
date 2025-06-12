@@ -1,32 +1,35 @@
-// :root.dark {
-//   .el-popper[role="tooltip"] {
-//     --el-bg-color: #fff;
-//     --el-text-color-primary: #333;
-//     border: none;
-//   }
-// }
+:root:root.dark {
+  .el-popper[role="tooltip"] {
+    --el-bg-color: #333;
+    --el-text-color-primary: #f2f2f2;
+    border: none;
+  }
+}
 
-// :root.light {
-//   .el-popper[role="tooltip"] {
-//     --el-bg-color: #fff;
-//     --el-text-color-primary: #333;
-//   }
-// }
+:root:root.light {
+  .el-popper[role="tooltip"] {
+    // --el-bg-color: #ccc;
+    --el-bg-color-overlay: #333;
+    color: #ccc;
+    // --el-text-color-primary: #333;
+  }
+}
 
 :root:root {
   --el-text-color-regular: var(--d-F5F5F5-l-333);
   .el-popper[role="tooltip"] {
-    --el-bg-color: #fff;
+    --el-bg-color: #ccc;
     --el-text-color-primary: #333;
   }
 }
 
 .el-table {
   &.el-table {
-    --el-table-header-bg-color: var(--d-333-l-F2F2F2);
+    --el-table-header-bg-color: var(--d-222-l-F2F2F2);
     --el-table-border: 0 none;
     --el-table-text-color: var(--d-F2F2F2-l-333);
     --el-table-header-text-color: #999;
+    --el-table-row-hover-bg-color: var(--d-222-l-F2F2F2);
   }
 
   .el-table__inner-wrapper {

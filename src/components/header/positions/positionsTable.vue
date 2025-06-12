@@ -10,7 +10,7 @@ class="table-position w-100%" :data="dataSource" :height="400" @row-click="table
         <template #header="{ column }">
           <div v-if="column.property == 'total_profit_ratio'" class="flex items-center text-right justify-end">
             <span>{{ column.label }}</span>
-            <el-tooltip :effect="mode" placement="top-end" :content="$t('PnLTips')">
+            <el-tooltip :effect="mode" placement="top-end" :content="$t('PnLTips')" persistent>
               <el-icon style="cursor: pointer; font-size: 14px; margin-left: 2px;">
                 <QuestionFilled />
               </el-icon>
