@@ -567,7 +567,7 @@ export function getColorClass(val: string|number) {
   } else if (Number(val) < 0) {
     return 'color-#FF646D'
   } else {
-    return 'color-#959A9F'
+    return 'color-[--d-666-l-999]'
   }
 }
 export function desensitizeEmail(email: string) {

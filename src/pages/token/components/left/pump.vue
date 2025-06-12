@@ -368,13 +368,13 @@ function getTargetToken(row: GetHomePumpListResponse) {
           </div>
         </div>
         <div class="w-92px flex-col flex items-end">
-          <span>{{ isVolUSDT ? '$' : '' }}{{
+          <span class="color-[--d-999-l-666]">{{ isVolUSDT ? '$' : '' }}{{
               isVolUSDT ? formatNumber(row.volume_u_24h, 2) : formatNumber(row.volume_u_24h / row.current_price_usd, 2)
             }}</span>
           <span class="color-[--d-666-l-999]">{{ formatNumber(row.tx_24h_count) }}</span>
         </div>
         <div class="w-70px flex-col flex items-end">
-          <span>${{ formatNumber(row.market_cap, 2) }}</span>
+          <span class="color-[--d-999-l-666]">${{ formatNumber(row.market_cap, 2) }}</span>
           <span :class="getColorClass(row.price_change_24h)">{{ addSign(Number(row.price_change_24h)) }}{{
               formatNumber(Math.abs(Number(row.price_change_24h)), 1)
             }}%</span>
