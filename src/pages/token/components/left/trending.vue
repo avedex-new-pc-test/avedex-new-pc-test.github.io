@@ -8,7 +8,7 @@ import {ProvideType} from '~/utils/constants'
 import {getMCap} from '~/utils'
 
 defineProps({
-  winHeight: {
+  finalHeight: {
     type: Number,
     required: true
   }
@@ -109,7 +109,7 @@ async function _getHotTokens() {
       :columns="columns"
     />
     <el-scrollbar
-      :height="Math.max(500,winHeight-500)"
+      :height="Math.max(500,finalHeight-130)"
       class="[&&]:h-auto"
     >
       <NuxtLink

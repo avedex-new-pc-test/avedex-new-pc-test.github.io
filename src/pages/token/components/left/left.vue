@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import TopLeftTable from './topLeftTable.vue'
 import BottomLeftTable from '~/pages/token/components/left/bottomLeftTable.vue'
+import {useEventBus} from '@vueuse/core'
+import {DefaultHeight} from '~/utils/constants'
 
-const topLeftHeight = shallowRef(370)
+const topLeftHeight = shallowRef(DefaultHeight.TOPLEFT)
 const canDrag = shallowRef(false)
 const globalStore = useGlobalStore()
+const leftDragEvent = useEventBus(BusEventType.LEFT_DRAG)
 
 function drag(e: MouseEvent) {
   let dy = e.clientY
@@ -27,6 +30,7 @@ function drag(e: MouseEvent) {
     canDrag.value = false
     document.onmousemove = null
     document.onmouseup = null
+    leftDragEvent.emit(topLeftHeight.value)
   }
   return false
 }
@@ -40,7 +44,7 @@ function drag(e: MouseEvent) {
         class="w-full cursor-row-resize bg-[--d-222-l-F2F2F2] gap-1px hover:bg-[--d-666-l-CCC] flex items-center justify-center h-4px"
         @mousedown.stop.prevent="drag"
       >
-        <span v-for="i in 4" :key="i" class="bg-#444 w-2px h-2px rounded-full"></span>
+        <span v-for="i in 4" :key="i" class="bg-#444 w-2px h-2px rounded-full"/>
       </div>
     </div>
     <BottomLeftTable/>
