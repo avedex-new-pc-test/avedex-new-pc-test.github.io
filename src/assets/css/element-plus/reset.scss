@@ -28,8 +28,26 @@
     --el-table-header-bg-color: var(--d-222-l-F2F2F2);
     --el-table-border: 0 none;
     --el-table-text-color: var(--d-F2F2F2-l-333);
-    --el-table-header-text-color: #999;
+    --el-table-header-text-color: var(--d-666-l-999);
     --el-table-row-hover-bg-color: var(--d-222-l-F2F2F2);
+    thead{
+      .el-table__cell{
+        height: 32px;
+        padding: 0;
+      }
+    }
+    .descending .sort-caret.descending{
+      border-top-color: var(--d-F5F5F5-l-333);
+    }
+    .ascending .sort-caret.ascending{
+      border-bottom-color: var(--d-F5F5F5-l-333);
+    }
+    .sort-caret.ascending {
+      border-bottom-color: var(--d-666-l-999);
+    }
+    .sort-caret.descending{
+      border-top-color: var(--d-666-l-999);
+    }
   }
 
   .el-table__inner-wrapper {

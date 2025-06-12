@@ -4,7 +4,7 @@
       <el-col :span="24">
         <div class="title text-12px color-[--d-FFF-l-000]">
           {{ $t('holdersDetail') }}
-          <span class="color-#848E9C">({{ $t('excludeNullAndPoll') }})</span>
+          <span class="color-[--d-999-l-666]">({{ $t('excludeNullAndPoll') }})</span>
         </div>
         <div class="checkbox-container checkbox-old mt-10px">
           <el-checkbox v-model="checked[0]" class="checkbox-FFCC00">
@@ -57,11 +57,11 @@
             ref="tableRef"
             v-loading="loadingTop100Balance"
             class="mt-15px"
-            cell-class-name="color-[--d-999-l-959A9F] text-12px"
+            cell-class-name="color-[--d-999-l-666] text-12px"
             :data="top100balanceC"
             fit
             :height="355"
-            style="width: 100%"
+            style="width: 100%; font-size: 12px"
             @row-click="goLink"
           >
             <template #empty>
@@ -356,17 +356,17 @@ function handlerDialogProfitLoss(row: { address: string }) {
 <style lang="scss" scoped>
 .tabs {
   .tab-item {
-    background: var(--d-1F242A-l-F5F5F5);
     border-radius: 4px;
     font-size: 12px;
     color: #787b86;
     letter-spacing: 0;
     line-height: 16px;
     font-weight: 400;
-    padding: 4px 10px;
+    padding: 4px 12px;
     cursor: pointer;
     &.active {
-      color: var(--d-FFF-l-000);
+      color: var(--d-F5F5F5-l-333);
+      background-color: var(--d-222-l-F2F2F2);
     }
     & ~ .tab-item {
       margin-left: 5px;
@@ -381,34 +381,5 @@ function handlerDialogProfitLoss(row: { address: string }) {
 :deep(.el-dropdown-menu) {
   background-color: var(--custom-bg-1-color);
   // border: 1px solid var(--d-33353D-l-f5f5f5);
-}
-
-:deep(.el-table) {
-  // --el-table-tr-bg-color: #0A0B0D;
-  // --el-table-bg-color: #0A0B0D;
-  --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
-  --el-fill-color-lighter: #0A0B0D;
-  --el-table-header-text-color: var(--d-999-l-666);
-  // --el-table-border-color: var(--d-33353D-l-f5f5f5);
-  --el-table-row-hover-bg-color: var(--d-333-l-F2F2F2);
-  // background: var(--d-111-l-FFF);
-  --el-bg-color: var(--d-111-l-FFF);
-  // --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
-  font-size: 13px;
-
-  th {
-    padding: 6px 0;
-    border-bottom: none !important;
-    height: 32px;
-
-    &.el-table__cell.is-leaf {
-      border-bottom: none;
-    }
-
-    .cell {
-      font-weight: 400;
-      font-size: 12px;
-    }
-  }
 }
 </style>
