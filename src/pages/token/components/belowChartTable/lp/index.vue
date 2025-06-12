@@ -30,7 +30,7 @@
                   <span class="color-#12B886">{{ formatNumber(row.main_token_amount1, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.main_token_symbol }}</span>
                 </div>
-                <span v-if="!row.main_token_amount_usd1">0</span>
+                <span v-if="row.main_token_amount_usd1=='0'">0</span>
                 <span v-else-if="row.main_token_amount_usd1 == '--'">--</span>
                 <span v-else>{{`${Number(row.main_token_amount_usd1) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd1)), 1)}`}}</span>
               </div>
@@ -39,7 +39,7 @@
                   <span class="color-#12B886">{{ formatNumber(row.target_token_amount1, 1) }}&nbsp;</span>
                   <span>{{ lpRest?.target_token_symbol }}</span>
                 </div>
-                <span v-if="!row.target_token_amount_usd1">0</span>
+                <span v-if="row.target_token_amount_usd1=='0'">0</span>
                 <span v-else-if="row.target_token_amount_usd1 == '--'">--</span>
                 <span v-else>{{`${Number(row.target_token_amount_usd1) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd1)), 1)}`}}</span>
               </div>
