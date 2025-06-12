@@ -70,6 +70,7 @@ export const useTokenStore = defineStore('token', () => {
   })
 
   const warningStatus = computed(() => {
+    
     let status = false
     const id = route.params.id as string
     const tokenWarningNotice: Record<string, boolean> =
@@ -85,7 +86,7 @@ export const useTokenStore = defineStore('token', () => {
     return status
   })
   const isShowWaring = computed(() => {
-    return (token?.value?.risk_level ?? 0) < 0 || warningStatus
+    return (token?.value?.risk_level ?? 0) < 0 || warningStatus.value
   })
 
   function switchPair(pair1: TokenInfo['pairs'][0]['pair']) {

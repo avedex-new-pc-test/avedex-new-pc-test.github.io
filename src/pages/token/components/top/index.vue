@@ -1,5 +1,5 @@
 <!-- eslint-disable vue/no-parsing-error -->
-<template>
+<template>--{{tokenStore.isShowWaring}}--
   <el-alert
     v-if="(tokenStore?.token?.risk_level ?? 0) < 0"
     class="myTxs-notice"

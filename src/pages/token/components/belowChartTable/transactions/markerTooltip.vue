@@ -106,14 +106,16 @@ async function _getTxsUserBrief() {
             class="color-[--d-999-l-666]"
             :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
           />
+          <Icon v-copy="currentRow.wallet_address" name="bxs:copy"
+                class="cursor-pointer color-[--d-666-l-999] text-10px"/>
           <slot/>
         </div>
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">{{ $t('position1') }}:</span>
           <div>
-            ${{ formatNumber(userBriefData.balance_usd || 0, 2) }}({{
+            ${{ formatNumber(userBriefData.balance_usd || 0, 2) }}<span class="color-[--d-666-l-999]">({{
               formatNumber(userBriefData.balance_amount || 0, 3)
-            }}/{{ formatNumber(userBriefData.history_max_balance_amount || 0, 3) }})
+            }}/{{ formatNumber(userBriefData.history_max_balance_amount || 0, 3) }})</span>
             <el-progress
               :color="themeStore.isDark?'#F5F5F5':'#333'"
               :show-text="false"
@@ -135,7 +137,7 @@ async function _getTxsUserBrief() {
         </div>
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">{{ $t('unrealized_profit') }}:</span>
-          <span>
+          <span class="color-#12B886">
             <template v-if="userBriefData.unrealized_profit==='0'">--</template>
             <template v-else>
               {{ userBriefData.unrealized_profit >= 0 ? '' : '-' }}${{
@@ -154,7 +156,7 @@ async function _getTxsUserBrief() {
             <span class="color-#12B886 mr-10px">{{
                 userBriefData.total_purchase_usd ? `$${formatNumber(userBriefData.total_purchase_usd, 2)}` : '--'
               }}</span>
-            <span>{{
+            <span class="color-[--d-666-l-999]">{{
                 userBriefData.total_purchase_amount
                   ? formatNumber(userBriefData.total_purchase_amount, 2)
                   : '--'
@@ -171,7 +173,7 @@ async function _getTxsUserBrief() {
             <span class="color-#F6465D mr-10px">{{
                 userBriefData.total_sold_usd ? `$${formatNumber(userBriefData.total_sold_usd, 2)}` : '--'
               }}</span>
-            <span>{{
+            <span class="color-[--d-666-l-999]">{{
                 userBriefData.total_sold_amount
                   ? formatNumber(userBriefData.total_sold_amount, 2)
                   : '--'
@@ -184,7 +186,7 @@ async function _getTxsUserBrief() {
         />
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">7D {{ $t('winRate2') }}:</span>
-          <span>{{ formatNumber(userBriefData.win_ratio, 1) }}%</span>
+          <span class="color-#12B886">{{ formatNumber(userBriefData.win_ratio, 1) }}%</span>
         </div>
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">7D {{ $t('profit2') }}:</span>
@@ -197,7 +199,7 @@ async function _getTxsUserBrief() {
         </div>
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">7D {{ $t('token') }}:</span>
-          <span>{{ formatNumber(userBriefData.token_txns) }}</span>
+          <span class="color-[--d-666-l-999]">{{ formatNumber(userBriefData.token_txns) }}</span>
         </div>
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">{{ $t('walletAge') }}:</span>
@@ -208,7 +210,7 @@ async function _getTxsUserBrief() {
             :end-time="60"
           >
             <template #default="{seconds}">
-              <span>
+              <span class="color-[--d-666-l-999]">
                 <template v-if="seconds<60">
                   {{ seconds }}{{ $t('ss') }}
                 </template>
@@ -218,7 +220,7 @@ async function _getTxsUserBrief() {
               </span>
             </template>
           </TimerCount>
-          <span v-else>
+          <span class="color-[--d-666-l-999]" v-else>
             {{
               !!Number(userBriefData.wallet_age || 0)
                 ? dayjs(userBriefData.wallet_age * 1000).fromNow()
@@ -231,23 +233,24 @@ async function _getTxsUserBrief() {
           style="margin:0"
         />
         <div v-if="userBriefData.top3_blue_chip?.length > 0">
-          <div class="color-[--d-999-l-666]">TOP3 {{ $t('blueChips') }}:</div>
-          <ul class="flex-wrap flex items-center gap-x-20px gap-y-6px">
-            <li
+          <div class="color-[--d-999-l-666] lh-16px mb-8px">TOP3 {{ $t('blueChips') }}:</div>
+          <div class="flex-wrap flex items-center gap-x-20px gap-y-6px">
+            <NuxtLink
               v-for="(item) in userBriefData.top3_blue_chip"
               :key="item.token"
-              class="flex items-center color-[--d-999-l-666]"
+              class="flex items-center [&&]:color-[--d-999-l-666]"
+              :to="`/token/${item.token}-${item.chain}`"
+              @click.self="visible=false"
             >
               <TokenImg
                 :row="{
                   logo_url: item.logoUrl,
                 }"
-                token-class="w-16px h-16px [&&]:mr-0"
+                token-class="w-16px h-16px [&&]:mr-0 color-[--d-999-l-666]"
               />
-              <span class="ml-3px">{{ item.symbol }}</span>
-              <Icon v-copy="item.token" name="bxs:copy" class="ml-3px cursor-pointer"/>
-            </li>
-          </ul>
+              <span class="ml-4px">{{ item.symbol }}</span>
+            </NuxtLink>
+          </div>
         </div>
         <div class="flex justify-center mt-10px">
           <img v-if="themeStore.isDark" src="@/assets/images/aveai.svg" alt="" class="h-14px">

@@ -289,7 +289,7 @@ function getAllTagsActivityList() {
       }
       .tab-item {
         color: #787b86;
-        background: var(--d-1f242a-l-F5f5f5);
+        background: var(--d-1F242A-l-F5F5F5);
         font-size: 12px;
         letter-spacing: 0;
         line-height: 16px;
