@@ -262,8 +262,8 @@ onMounted(() => {
   justify-content: space-between;
   margin: 5px 0 15px;
   padding: 10px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--d-222-l-F2F2F2);
+  border-bottom: 1px solid var(--d-222-l-F2F2F2);
   background-color: var(--custom-bg-1-color);
 
   .stat-item {
