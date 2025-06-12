@@ -23,7 +23,7 @@ const tabs = computed(() => {
   return [
   { name: t('transactions'), component: 'Transactions' as const },
   { name: t('holders'), component: 'Holders' as const },
-  { name: 'LP'+`(${pairHolders.value})`, component: 'LP' as const },
+  { name: 'LP', component: 'LP' as const },
   // { name: t('attention1'), component: 'Attention' as const },
   { name: t('orders'), component: 'Orders' as const },
   { name: t('mySwap'), component: 'MySwap' as const },
@@ -107,9 +107,13 @@ const comProps = computed(() => {
         @click="activeTab = item.component">
         <div v-if="item.component == 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"></div>
         <div
-          :class="`b-b-solid b-b-2px pb-12px ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
+          :class="`b-b-solid b-b-2px pb-12px flex-start ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
           {{ item.name }}
           <span v-if="item.component === 'Orders'">({{ tokenStore.registrationNum }})</span>
+          <span v-if="item.component === 'LP'" class="flex-start">
+            ({{ pairHolders }})
+             <Icon v-if="pairHolders" color="#B3920E" name="material-symbols:lock" />
+          </span>  
           <span v-if="item.component == 'Holders' && holders">
             ({{ token?.holders ? formatNumber(token?.holders || 0, {limit: 10}) : '' }})
               <template v-if="isInsiderOrSniperSupported && isInsiderOrSniperSupported">
