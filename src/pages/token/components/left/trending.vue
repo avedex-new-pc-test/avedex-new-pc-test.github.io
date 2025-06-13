@@ -123,10 +123,16 @@ async function _getHotTokens() {
             :row="row"
           />
           <div class="ml-6px">
-            <div class="flex">
+            <div class="flex items-center">
               <span class="color-[--d-F5F5F5-l-333] max-w-80px overflow-hidden text-ellipsis whitespace-nowrap">{{
                   row.symbol
                 }}</span>
+              <img
+                v-if="row.launchpad"
+                class="ml-2px w-10px h-10px"
+                :src="formatIconTag(row.launchpad)"
+                alt=""
+              >
               <Icon
                 v-if="row.risk_score > 55"
                 name="custom:danger"
