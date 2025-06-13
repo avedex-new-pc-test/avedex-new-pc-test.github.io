@@ -26,7 +26,7 @@ const filterTime = ref([])
     :width="420"
     trigger="click"
     teleported
-    popper-style="max-width: 420px"
+    popper-style="max-width: 420px;--el-text-color-primary:--d-666-l-999"
     popper-class="transaction-popover"
   >
     <template #reference>
