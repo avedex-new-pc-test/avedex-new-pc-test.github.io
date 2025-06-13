@@ -11,7 +11,7 @@ const route = useRoute()
 const tokenStore = useTokenStore()
 const botStore = useBotStore()
 const { t } = useI18n()
-const {token, tokenInfoExtra ,pairAddress} = storeToRefs(useTokenStore())
+const {token, tokenInfoExtra ,pairAddress,commonHeight} = storeToRefs(useTokenStore())
 const activeTab = shallowRef<keyof typeof components>('Transactions')
 const components = {
   Transactions,
@@ -91,6 +91,7 @@ const comProps = computed(() => {
     LP: {
       token: token.value,
       pairAddress: pairAddress.value,
+      height:commonHeight.value
     },
     Transactions: {},
     Holders: {},
