@@ -1,7 +1,6 @@
 <template>
   <div>
-    <el-table v-loading="loading && !txOrder?.length" :data="txOrder" fit stripe max-height="700"
-      style="width: 100%; min-height: 450px;" @row-click="tableRowClick">
+    <el-table v-loading="loading && !txOrder?.length" :data="txOrder" fit stripe :height="tableHeight" style="width: 100%" @row-click="tableRowClick">
       <template #empty>
         <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
           <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
@@ -15,23 +14,27 @@
           <div class="flex items-center justify-start" @click="handleTokenClick(row)">
             <div class="icon-token-container mr-5px">
               <div class="relative">
-                <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
+                <el-image
+                  class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
                   chain: row?.chain,
                   symbol: row.swapType === 2 || row.swapType === 6 ? row?.inTokenSymbol : row.outTokenSymbol,
                   logo_url: row.swapType === 2 || row.swapType === 6 ? row?.inTokenLogoUrl : row.outTokenLogoUrl
                 })">
                   <template #error>
-                    <img class="w-32px h-32px"
+                    <img
+                      class="w-32px h-32px"
                       :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)"
                       alt="" srcset="">
                   </template>
                   <template #placeholder>
-                    <img class="w-32px h-32px"
+                    <img
+                      class="w-32px h-32px"
                       :src="getChainDefaultIcon(row?.chain, !row?.isBuy ? row?.inTokenSymbol : row.outTokenSymbol)"
                       alt="" srcset="">
                   </template>
                 </el-image>
-                <img v-if="row?.chain" class="w-12px h-12px absolute bottom-3px right-3px"
+                <img
+                  v-if="row?.chain" class="w-12px h-12px absolute bottom-3px right-3px"
                   :src="`${configStore.token_logo_url}chain/${row.chain}.png`" alt="" srcset="">
               </div>
             </div>
@@ -49,7 +52,8 @@
             <div class="flex items-center">
               <div>{{ t('type') }}</div>
               <el-dropdown trigger="click" @command="handleTypeCommand">
-                <Icon name="custom:filter" :class="[filterConditions.swapType?.length === 1 && 'color-#286DFF']"
+                <Icon
+                  name="custom:filter" :class="[filterConditions.swapType?.length === 1 && 'color-#286DFF']"
                   class="color-[--d-666-l-999] cursor-pointer text-10px" />
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -67,12 +71,10 @@
           </div>
         </template>
         <template #default="{ row }">
-          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px"
-            style="background: rgba(246, 70, 93, 0.10)">
+          <div v-if="row.swapType === 6" class="text-13px text-[#F6465D] text-center px-5px py-2px  rounded-4px" style="background: rgba(246, 70, 93, 0.10)">
             {{ t('limit') }}/{{ t('sell') }}
           </div>
-          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px"
-            style="background: rgba(18, 184, 134, 0.10)">
+          <div v-if="row.swapType === 5" class="text-13px text-[#12B886] text-center px-5px py-2px rounded-4px" style="background: rgba(18, 184, 134, 0.10)">
             {{ t('limit') }}/{{ t('buy') }}
           </div>
         </template>
@@ -153,8 +155,7 @@
       </el-table-column>
       <el-table-column :label="t('operate')" align="right">
         <template #default="{ row }">
-          <div v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer"
-            @click.stop="handleCancelOrder(row)">
+          <div v-if="row.status === 'waiting'" class="text-[#F6465D] text-14px cursor-pointer" @click.stop="handleCancelOrder(row)">
             {{ t('cancel') }}
           </div>
           <div v-else>
@@ -205,6 +206,10 @@ const filterConditions = ref({
 const txOrder = ref([])
 const loading = ref(false)
 // const isUnit = ref(true)
+
+const tableHeight = computed(() => {
+  return Math.max(tokenStore.commonHeight - 260, 450)
+})
 
 watch([() => props.currentToken, () => botStore.userInfo?.evmAddress || ''], () => {
   getUserPendingTx()

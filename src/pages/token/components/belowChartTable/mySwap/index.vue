@@ -99,6 +99,7 @@ function setActiveTab(val: string) {
   activeTab.value = val
   getWalletTxData()
 }
+
 function toggleCurrentToken() {
   botOrderOnlyCurrentToken.value = !botOrderOnlyCurrentToken.value
 }

@@ -14,7 +14,7 @@
              ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]'
              : ''
          }`"
-          @click="setActiveTab(item.value)"
+          @click="setActiveTab(item.value as typeof activeTab.value)"
         >
           {{ item.label }}
         </a>
@@ -204,7 +204,6 @@ import {
 } from '@/api/holders'
 import { useLocalStorage } from '@vueuse/core'
 import List from './list.vue'
-import { templateRef } from '@vueuse/core'
 const holderListSortObj = useLocalStorage('holderListSortObj', {
   all: {
     sort_by: '',
@@ -227,11 +226,10 @@ const holderListSortObj = useLocalStorage('holderListSortObj', {
     order: '',
   },
 })
-const { price, token} = storeToRefs(useTokenStore())
+const { price, totalHolders} = storeToRefs(useTokenStore())
 const route = useRoute()
 const botStore = useBotStore()
 const { t } = useI18n()
-const { totalHolders } = storeToRefs(useTokenStore())
 const activeTab = shallowRef<'all' | 'buy' |'sell' | 'buy24h' | 'sell24h'>('all')
 
 const searchKeyword = shallowRef('')
@@ -244,7 +242,7 @@ const aggregateStatsObj = ref<Record<string, AggregateStats>>({})
 
 const searchOriginKeyword = shallowRef('')
 const searchOriginType = shallowRef('')
-const holdersRef = templateRef('holdersRef')
+const holdersRef = useTemplateRef('holdersRef')
 
 const tabs = computed(() => {
   const arr: Array<{ label: string; value: string }> = []
