@@ -258,7 +258,7 @@ export interface GetHotTokensResponse {
 
 export function getHotTokens(): Promise<GetHotTokensResponse[]> {
   const { $api } = useNuxtApp()
-  return $api('/v1api/v2/tokens/hot', {
+  return $api('/v2api/token/v1/hot', {
     method: 'get',
   })
 }

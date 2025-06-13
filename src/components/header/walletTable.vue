@@ -145,7 +145,7 @@
               </div>
             </div>
             <div class="color-[--d-999-l-666]">
-              ${{formatNumber((Number(0) || 0),2)}} Sol
+              {{formatNumber((Number(row.main_token_balance_amount) || 0),2)}} {{ row.main_token_symbol }}
             </div>
             <div style="margin-left: 5px; text-align: right">
               <div

@@ -203,13 +203,14 @@
                   </template>
                   <img
                     v-if="row.launchpad"
+                    class="ml-5px"
                     :src="formatIconTag(row.launchpad)"
                     alt=""
                     :width="10"
-                  />
+                  >
                 </div>
                 <div class="text-12px color-text-2 flex-start mt-3px">
-                  <div v-if="row.opening_at" class="mr-5px text-10px">
+                  <div v-if="row.opening_at" class="mr-5px text-10px" >
                     <TimerCount
                       v-if="
                         !isShowDate &&
@@ -231,7 +232,7 @@
                         </span>
                       </template>
                     </TimerCount>
-                    <span v-else class="color-#FFA622">
+                    <span v-else :class=" Number(formatTimeFromNow(row.opening_at, true )) <= 600 ? 'color-#FFA622' : ''">
                       {{
                         isShowDate
                           ? formatDate(row.opening_at, 'HH:mm:ss')
@@ -239,7 +240,7 @@
                       }}
                     </span>
                   </div>
-                  {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
+                  {{ row.token?.slice(0, 4) + '...' + row.token?.slice(-4) }}
                   <Icon
                     v-copy="row.token"
                     name="bxs:copy"
@@ -292,7 +293,7 @@
                   :class="
                     Number(getMCap(row)) > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
                   "
-                  >{{ formatNumber(getMCap(row) || 0, 2) }}</span
+                  >${{ formatNumber(getMCap(row) || 0, 2) }}</span
                 >
                 <div class="text-12px mt-3px">
                   ${{ formatNumber(row?.pool_size || 0, 2) }}
