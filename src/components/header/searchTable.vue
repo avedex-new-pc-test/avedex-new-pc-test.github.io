@@ -201,12 +201,15 @@
                       <use xlink:href="#icon-huoyan" />
                     </svg>
                   </template>
-                  <div v-if="row.opening_at" class="ml-5px">
+                  <img v-if="row.launchpad" :src="formatIconTag(row.launchpad)" alt=""  :width="10">
+                </div>
+                <div class="text-12px color-text-2 flex-start mt-3px">
+                  <div v-if="row.opening_at" class="mr-5px text-10px">
                     <TimerCount
                       v-if="!isShowDate && row.opening_at && Number(formatTimeFromNow(row.opening_at, true)) < 60"
                       :key="`${row.opening_at}${$Index}`" :timestamp="row.opening_at" :end-time="60">
                       <template #default="{ seconds }">
-                        <span class="color-[--d-999-l-666]">
+                        <span class="color-#FFA622">
                           <template v-if="seconds < 60">
                             {{ seconds }}s
                           </template>
@@ -216,7 +219,7 @@
                         </span>
                       </template>
                     </TimerCount>
-                    <span v-else class="color-[--d-999-l-666]">
+                    <span v-else class="color-#FFA622 ">
                         {{
                           isShowDate
                             ? formatDate(row.opening_at, 'HH:mm:ss')
@@ -224,8 +227,6 @@
                         }}
                     </span>
                   </div>
-                </div>
-                <div class="text-12px color-text-2 flex-start mt-3px">
                   {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
                   <Icon
                     v-copy="row.token"
