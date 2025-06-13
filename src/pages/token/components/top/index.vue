@@ -4,12 +4,13 @@
     v-if="(tokenStore?.token?.risk_level ?? 0) < 0"
     class="myTxs-notice"
     type="warning"
-    :title="t('myTxsNotice')"
+    :title="$t('riskWarning') + ': ' + $t('riskWarningContent1')"
     show-icon
     :style="{
       backgroundColor: mode === 'light' ? '#ffa94d0d' : '#36131C',
       color: '#f00',
       border: 'none',
+      fontSize: '12px'
     }"
     :closable="false"
   />
@@ -24,6 +25,7 @@
       backgroundColor: mode === 'light' ? '#ffa94d0d' : '#3b1e0c',
       color: '#ED6A0C',
       border: 'none',
+      fontSize: '12px'
     }"
     @close="handleNoticeClose"
   />

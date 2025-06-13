@@ -302,7 +302,7 @@
   "transferred": "权限已转让",
   "cannotSellAll": "一次不能卖出100%，需预留手续费再卖出",
   "riskWarning": "风险提示",
-  "riskWarningContent1": "当前币种存在巨大风险，平台仅提供数据信息和展示，以供大家参考，无法对您的任何交易行为承担担保、赔偿责任。",
+  "riskWarningContent1": "高风险币种，请注意安全。",
   "ownerChangeBalance": "所有者可以篡改余额",
   "ownerNoChangeBalance": "所有者不能篡改余额",
   "hasNoAuth": "因权限转让，",
