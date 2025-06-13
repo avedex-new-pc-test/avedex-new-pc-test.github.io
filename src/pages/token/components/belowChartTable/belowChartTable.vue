@@ -4,6 +4,8 @@ import OrdersTab from './orders/index.vue'
 import OneClick from '../right/botSwap/oneClick.vue'
 import Bubble from './holders/new/bubble.vue'
 import { useBotStore } from '@/stores/bot'
+import {useEventBus, useWindowSize} from '@vueuse/core'
+import {DefaultHeight} from '~/utils/constants'
 const { globalConfig } = storeToRefs(useConfigStore())
 const route = useRoute()
 const tokenStore = useTokenStore()
@@ -29,6 +31,20 @@ const tabs = computed(() => {
   { name: t('mySwap'), component: 'MySwap' as const },
   ]
 })
+
+const centerDragEvent = useEventBus<number>(BusEventType.CENTER_DRAG)
+const centerTopHeight = shallowRef(DefaultHeight.KLINE)
+const {height} = useWindowSize()
+const commonHeight = computed(() => height.value - centerTopHeight.value)
+centerDragEvent.on(setCenterTopHeight)
+
+onUnmounted(() => {
+  centerDragEvent.off(setCenterTopHeight)
+})
+
+function setCenterTopHeight(_height: number) {
+  centerTopHeight.value = _height
+}
 
 watch(
   () => tokenStore.placeOrderUpdate,
@@ -102,10 +118,11 @@ const comProps = computed(() => {
 <template>
   <div class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1">
     <div class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-#FFFFFF08 mb-12px">
-      <a v-for="(item) in tabsList" :key="item.component" href="javascript:;"
+      <a
+        v-for="(item) in tabsList" :key="item.component" href="javascript:;"
          :class="`flex items-center decoration-none text-12px lh-20px text-center color-[--d-666-l-999] ${activeTab === item.component ? 'color-[--d-F5F5F5-l-222] b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`"
         @click="activeTab = item.component">
-        <div v-if="item.component == 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"></div>
+        <div v-if="item.component == 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"/>
         <div
           :class="`b-b-solid b-b-2px pb-12px flex-start ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
           {{ item.name }}
@@ -113,12 +130,13 @@ const comProps = computed(() => {
           <span v-if="item.component === 'LP'" class="flex-start">
             ({{ pairHolders }})
              <Icon v-if="pairHolders" color="#B3920E" name="material-symbols:lock" />
-          </span>  
+          </span>
           <span v-if="item.component == 'Holders' && holders">
             ({{ token?.holders ? formatNumber(token?.holders || 0, {limit: 10}) : '' }})
               <template v-if="isInsiderOrSniperSupported && isInsiderOrSniperSupported">
-                <img class="align-middle"  v-if="tokenInfoExtra?.insiders_balance_ratio_cur??0 > 0.3" src="@/assets/images/insiders.svg" :width="14">
-                <img  class="align-middle" v-else src="@/assets/images/insiders-gray.svg" :width="14">
+                <img v-if="tokenInfoExtra?.insiders_balance_ratio_cur??0 > 0.3" class="align-middle"
+                     src="@/assets/images/insiders.svg" :width="14">
+                <img v-else class="align-middle" src="@/assets/images/insiders-gray.svg" :width="14">
                 <template v-if="(tokenInfoExtra?.insiders_balance_ratio_cur ??0) * 100 > 0.1">
                   {{ formatNumber((tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100, 2) + '%' }}
                 </template>
@@ -135,9 +153,9 @@ const comProps = computed(() => {
       <OneClick />
       <Bubble />
     </div>
-    <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
+    <OrdersTab v-show="activeTab === 'Orders'" :currentActiveTab="activeTab" :commonHeight="commonHeight"/>
     <KeepAlive v-show="activeTab !== 'Orders'">
-      <component :is="Component" v-bind="comProps"/>
+      <component :is="Component" v-bind="comProps" :commonHeight="commonHeight"/>
     </KeepAlive>
   </div>
 </template>

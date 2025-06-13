@@ -38,6 +38,14 @@ onActivated(() => {
   }
   firstActivated.value = false
 })
+
+const props = defineProps({
+  commonHeight: {
+    type: Number,
+    required: true
+  }
+})
+const finalHeight = computed(() => Math.max(500, props.commonHeight - 250))
 // 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
 const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 const tabs = computed(() => {
@@ -231,22 +239,6 @@ useVisibilityChange(() => {
   _getPairLiq()
 })
 
-const centerDragEvent = useEventBus<number>(BusEventType.CENTER_DRAG)
-const centerTopHeight = shallowRef(DefaultHeight.KLINE)
-const {height} = useWindowSize()
-const finalHeight = computed(() => Math.max(560, height.value - centerTopHeight.value - 250))
-centerDragEvent.on(setCenterTopHeight)
-// onMounted(() => {
-//   document.addEventListener('mousemove', mouseInsideTxs)
-// })
-onUnmounted(() => {
-  // document.removeEventListener('mousemove', mouseInsideTxs)
-  centerDragEvent.off(setCenterTopHeight)
-})
-
-function setCenterTopHeight(_height: number) {
-  centerTopHeight.value = _height
-}
 //
 // const txsBounding = useElementBounding(aveTableRef)
 // const mouseInsideTxs = useThrottleFn((event: MouseEvent) => {
