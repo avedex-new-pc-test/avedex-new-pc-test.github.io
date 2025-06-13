@@ -563,10 +563,10 @@ function bigWallet(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderPr
 function getGradient(row: IGetTokenTxsResponse) {
   const str = `${useThemeStore().isDark}-${isBuy(row)}`
   const map = {
-    'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
-    'true-false': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
-    'false-false': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
-    'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
+    'true-true': 'bg-[linear-gradient(270deg,#111_0%,#12654C_70%,#12B886_100%)]',
+    'true-false': 'bg-[linear-gradient(270deg,#111_0%,#7F2A36_70%,#F6465D_100%)]',
+    'false-false': 'bg-[linear-gradient(270deg,#FFF_0%,#88DBC3_70%,#12B886_100%)]',
+    'false-true': 'bg-[linear-gradient(270deg,#FFF_0%,#FBA2AE_70%,#F6465D_100%)]',
   } as { [key: string]: string }
   return map[str]
 }
@@ -818,7 +818,7 @@ function resetMakerAddress() {
         </template>
         <template #cell-amountU="{ row }">
           <div
-            v-if="row.type === undefined" :class="`absolute h-full ${getGradient(row)}`"
+            v-if="row.type === undefined" :class="`absolute h-full ${getGradient(row)} opacity-15`"
             :style="`width:${Math.min(getAmount(row, true, true) / 20, 100)}%`" />
           <div v-if="row.type === undefined" :class="`${getRowColor(row)} w-full h-full flex items-center justify-end`">
             <template v-if="tableView.isVolUSDT">
