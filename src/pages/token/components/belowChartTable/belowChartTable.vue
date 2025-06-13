@@ -118,7 +118,7 @@ const comProps = computed(() => {
           <span v-if="item.component == 'Holders' && holders">
             ({{ token?.holders ? formatNumber(token?.holders || 0, {limit: 10}) : '' }})
               <template v-if="isInsiderOrSniperSupported && isInsiderOrSniperSupported">
-                <Icon name="custom:insiders" class="text-12px align-middle" :class="(tokenInfoExtra?.insiders_balance_ratio_cur??0) > 0.3? '#AC3EEC': ''" />
+                <Icon v-if="(tokenInfoExtra?.insiders_balance_ratio_cur??0) > 0.01" name="custom:insiders" class="text-12px align-middle" :class="(tokenInfoExtra?.insiders_balance_ratio_cur??0) > 0.3? '#AC3EEC': ''" />
                 <template v-if="(tokenInfoExtra?.insiders_balance_ratio_cur ??0) * 100 >1">
                   {{ formatNumber((tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100, 2) + '%' }}
                 </template>

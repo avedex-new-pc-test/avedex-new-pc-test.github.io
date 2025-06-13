@@ -3,6 +3,7 @@
     <div class="top h-39px">
       <span style="width: 40px; flex: none">#</span>
       <span>{{ $t('wallet') }}</span>
+      <span>{{ $t('balance1') }}</span>
       <span style="text-align: right">PnL</span>
       <span>{{ $t('volume') }}</span>
       <span>{{ $t('Txs') }}</span>
@@ -142,6 +143,9 @@
                   </el-tooltip>-->
                 </div>
               </div>
+            </div>
+            <div class="color-[--d-999-l-666]">
+              ${{formatNumber((Number(0) || 0),2)}} Sol
             </div>
             <div style="margin-left: 5px; text-align: right">
               <div
@@ -343,6 +347,10 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
       flex: 1;
       text-align: right;
     }
+    > :nth-child(7) {
+      flex: 1;
+      text-align: right;
+    }
   }
   .content {
     padding: 0 0 20px;
@@ -444,7 +452,10 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
       > :nth-child(6) {
         flex: 1;
         text-align: right;
-        color: #eaecef;
+      }
+      > :nth-child(7) {
+        flex: 1;
+        text-align: right;
       }
     }
     > span {
