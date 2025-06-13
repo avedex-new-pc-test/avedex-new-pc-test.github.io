@@ -7,8 +7,7 @@
       fit
       scrollbar-always-on
       :height="tableHeight"
-      max-height="560"
-      style="width: 100%; min-height: 400px"
+      style="width: 100%;"
       @sort-change="handleSortChange"
       @row-click="tableRowClick"
     >
@@ -934,6 +933,7 @@ import BigNumber from 'bignumber.js'
 import { getChainInfo, formatDate, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
 
 import dayjs from 'dayjs'
+const tokenStore = useTokenStore()
 const props = defineProps({
   modelValue: Boolean,
   tableList: {
@@ -983,7 +983,7 @@ const addressAndChain = computed(() => {
   }
 })
 const tableHeight = computed(() => {
-  return Math.max(tokenStore.commonHeight - 36, 450)
+  return Math.max(tokenStore.commonHeight-250, 450)
 })
 function tableRowClick(rowData: {holder: string, remark: string}) {
   console.log('----------rowData----------',rowData)

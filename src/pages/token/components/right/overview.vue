@@ -35,6 +35,13 @@
         <span class="color-[--d-999-l-666]">{{ formatNumber(Number(token?.total || 0) * (tokenStore?.price || 0))
           }}</span>
       </li>
+      <li v-if="checkStore.checkResult?.creator_address" class="flex justify-between mb-10px">
+        <span class="color-[--d-666-l-999]">{{ $t('contractCreator') }}</span>
+        <div class="flex items-center justify-end color-[--d-999-l-666]">
+          <a class="clickable color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333] text-decoration-none"  :href="formatExplorerUrl(token?.chain as string, checkStore.checkResult.creator_address, 'address')" target="_blank"> {{ formatAddress(checkStore.checkResult?.creator_address || '') }}</a>
+          <Icon v-copy="checkStore.checkResult.creator_address || ''" name="bxs:copy" class="ml-5px clickable" />
+        </div>
+      </li>
       <li v-if="owner" class="flex justify-between mb-10px">
         <span class="color-[--d-666-l-999]">{{ $t('contractOwner') }}</span>
         <div class="flex items-center justify-end color-[--d-999-l-666]">
@@ -97,9 +104,6 @@ const showAll = ref(false)
 
 const owner = computed(() => {
   const owner = checkStore?.checkResult?.owner || token.value?.owner || ''
-  if (Number(owner) === 0) {
-    return ''
-  }
   return owner
 })
 
