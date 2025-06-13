@@ -6,7 +6,7 @@
     popper-class="chains-table-filter"
     title=""
     :width="370"
-    trigger="hover"
+    trigger="click"
   >
     <template #reference>
       <a class="top50 bg-btn text-10px" href="" @click.stop.prevent>

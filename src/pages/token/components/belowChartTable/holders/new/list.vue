@@ -6,8 +6,9 @@
       :data="tableList"
       fit
       scrollbar-always-on
+      :height="tableHeight"
       max-height="560"
-      style="width: 100%; min-height: 250px"
+      style="width: 100%; min-height: 400px"
       @sort-change="handleSortChange"
       @row-click="tableRowClick"
     >
@@ -980,6 +981,9 @@ const addressAndChain = computed(() => {
     address: token.value?.token || '',
     chain: token.value?.chain || '',
   }
+})
+const tableHeight = computed(() => {
+  return Math.max(tokenStore.commonHeight - 36, 450)
 })
 function tableRowClick(rowData: {holder: string, remark: string}) {
   console.log('----------rowData----------',rowData)
