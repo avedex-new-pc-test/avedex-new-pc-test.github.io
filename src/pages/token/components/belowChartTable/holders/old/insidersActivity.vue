@@ -9,6 +9,7 @@
         fit
         style="width: 100%;font-size: 12px"
         class="table-container"
+        :height="tableHeight"
         cell-class-name="color-[--d-999-l-959A9F] text-12px"
         :default-sort="defaultSort"
         @row-click="tableRowClick"
@@ -132,6 +133,7 @@ const props = defineProps<{
   tableList: any[]
   loading?: boolean
 }>()
+const tokenStore = useTokenStore()
 const route = useRoute()
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
@@ -150,6 +152,9 @@ const addressAndChain = computed(() => {
     address: token.value?.token || '',
     chain: token.value?.chain || '',
   }
+})
+const tableHeight = computed(() => {
+  return Math.max(tokenStore.commonHeight - 400, 450)
 })
 watch(
   () => props.tableList,

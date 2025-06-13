@@ -7,7 +7,7 @@
         v-loading="isLoading"
         :data="tableDataFilter"
         fit
-        :height="400"
+        :height="tableHeight"
         style="width: 100%;font-size: 12px"
         class="table-container"
         cell-class-name="color-[--d-999-l-959A9F] text-12px"
@@ -134,6 +134,7 @@ import { getAddressAndChainFromId } from '@/utils/index'
 import { formatNumber } from '@/utils/formatNumber'
 import { upColor, downColor } from '@/utils/constants'
 import ProfitLoss from './profitLoss.vue'
+const tokenStore = useTokenStore()
 
 const props = defineProps<{
   tableList: any[]
@@ -158,6 +159,9 @@ const isLoading = computed(() => props.loading)
 const chain = computed(
   () => getAddressAndChainFromId(route.params.id as string)?.chain
 )
+const tableHeight = computed(() => {
+  return Math.max(tokenStore.commonHeight - 400, 450)
+})
 const conditions = ref({
   page: 1,
   page_size: 300,

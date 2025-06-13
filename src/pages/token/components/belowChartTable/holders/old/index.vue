@@ -51,7 +51,7 @@
             </template>
           </div>
         </div>
-        <el-scrollbar :height="355">
+        <!-- <el-scrollbar :height="tableHeight"> -->
           <el-table
             v-show="tabActive == '100'"
             ref="tableRef"
@@ -60,7 +60,7 @@
             cell-class-name="color-[--d-999-l-666] text-12px"
             :data="top100balanceC"
             fit
-            :height="355"
+            :height="tableHeight"
             style="width: 100%; font-size: 12px"
             @row-click="goLink"
           >
@@ -145,7 +145,7 @@
             :insidersObj="insidersObj"
             :type="tabActive"
           />
-        </el-scrollbar>
+        <!-- </el-scrollbar> -->
       </el-col>
     </el-row>
     <ProfitLoss ref="profitLossRef1" v-model="dialogProfitLoss"/>
@@ -168,6 +168,7 @@ import {
   type Top100Balance,
   type AllTagsStats,
 } from '@/api/holders'
+const tokenStore = useTokenStore()
 const route = useRoute()
 const { t } = useI18n()
 const { mode } = storeToRefs(useGlobalStore())
@@ -240,6 +241,9 @@ const tabs = computed(() => {
 })
 const top100balanceC = computed(() => {
   return top100balance.value.slice(0, Number(tabActive.value) || 200)
+})
+const tableHeight = computed(() => {
+  return Math.max(tokenStore.commonHeight - 380, 355)
 })
 
 console.log('-------totalHolders-------', totalHolders)
