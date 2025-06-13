@@ -30,7 +30,7 @@
   </component>
 </template>
 
-<script setup lang='tsx'>
+<script setup lang='ts'>
 import {getUserBalance} from '~/api/swap'
 
 const botStore = useBotStore()
@@ -61,7 +61,6 @@ const loadComponent = async () => {
 function handleChange(newUserIds: string[]) {
   console.log('handleChange userIds', newUserIds)
   tableFilter.value.user_ids = newUserIds
-  // fetchHolderNum()
 }
 
 watch(tableFilter, () => {
@@ -83,7 +82,6 @@ watch(() => botStore.userInfo, (newValue) => {
 }, { immediate: true })
 
 onMounted(() => {
-  // fetchHolderNum()
 })
 
 </script>
