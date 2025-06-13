@@ -2,7 +2,7 @@
   <header
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
-    <a href="https://ave.ai" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
+    <a :href="homeUrl" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
         <a :href="item.src" target="_blank" :class="{ active: item.id == route?.name }">
@@ -121,6 +121,15 @@ const list = computed(() => {
     { id: 'assets', name: t('balances'), src: 'https://ave.ai/address' + query },
   ]
 })
+
+const homeUrl = computed(() => {
+  let query = ''
+  if (botStore.accessToken && botStore.refreshToken) {
+    query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+  }
+  return 'https://ave.ai/' + query
+})
+
 const dialogVisible_search = shallowRef(false)
 
 const lazyComponent = shallowRef<Component | null>(null)
