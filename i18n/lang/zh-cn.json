@@ -662,5 +662,6 @@
   "tm_start_trade_at_block": "第几个区块开启交易",
   "mechanism_intro": "说明",
   "antiWhaleModifiable": "可修改大额交易限制",
-  "check2": "安全检测"
+  "check2": "安全检测",
+  "tax": "税"
 }

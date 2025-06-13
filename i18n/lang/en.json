@@ -661,5 +661,6 @@
   "tm_start_trade_at_block": "Start Trade at Block",
   "mechanism_intro": "Additional",
   "antiWhaleModifiable": "Anti whale modifiable",
-  "check2": "Check"
+  "check2": "Check",
+  "tax": "Tax"
 }

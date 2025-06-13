@@ -659,5 +659,6 @@
   "tm_start_trade_at_block": "第幾個區塊開啟交易",
   "mechanism_intro": "說明",
   "antiWhaleModifiable": "可修改大額交易限制",
-  "check2": "安全檢測"
+  "check2": "安全檢測",
+  "tax": "稅"
 }

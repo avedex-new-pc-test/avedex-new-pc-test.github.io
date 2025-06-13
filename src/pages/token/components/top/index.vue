@@ -34,7 +34,7 @@
   >
     <Icon
       name="material-symbols:kid-star"
-      class="color-#696E7C h-16px w-16px clickable"
+      class="color-var(--d-999-l-666) h-16px w-16px clickable"
       :class="collected ? 'color-#ffbb19' : ''"
       @click="collect"
     />
@@ -320,6 +320,26 @@
             class="ml-5px hover:color-[--d-F5F5F5-l-333] leading-12px font-400 mr-8px"
             >{{ dayjs(pair?.created_at * 1000).fromNow() }}</span
           >
+          <div
+            v-if="(tokenInfoExtra?.buy_tax??0) > 0 || (tokenInfoExtra?.sell_tax??0) > 0"
+            class="flex-start bg-btn"
+          >
+            <span>{{ $t('tax') }}:</span>
+            <span
+            v-if="(tokenInfoExtra?.buy_tax??0) > 0"
+              class="text-12px tax-text"
+              :style="{ color: upColor[0] }"
+            >
+              {{ formatNumber(tokenInfoExtra?.buy_tax ||0, 1) }}%
+            </span>
+            <span
+              v-if="(tokenInfoExtra?.sell_tax??0) > 0"
+              class="text-12px tax-text ml-4px"
+              :style="{ color: downColor[0] }"
+            >
+              {{ formatNumber(tokenInfoExtra?.sell_tax ||0, 1) }}%
+            </span>
+          </div>
           <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
             <div
               v-for="(i, index) in getTags(pair)?.signal_arr?.slice(0, 3)"
@@ -762,6 +782,9 @@ const appendix = computed(() => {
     return JSON.parse(token.value?.appendix)
   }
   return {}
+})
+const tokenInfoExtra= computed(()=>{
+  return tokenStore.tokenInfoExtra
 })
 const medias = computed(() => {
   return [
