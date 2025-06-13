@@ -10,6 +10,7 @@
       backgroundColor: mode === 'light' ? '#ffa94d0d' : '#36131C',
       color: '#f00',
       border: 'none',
+      fontSize: '12px'
     }"
     :closable="false"
   />
@@ -24,6 +25,7 @@
       backgroundColor: mode === 'light' ? '#ffa94d0d' : '#3b1e0c',
       color: '#ED6A0C',
       border: 'none',
+      fontSize: '12px'
     }"
     @close="handleNoticeClose"
   />
