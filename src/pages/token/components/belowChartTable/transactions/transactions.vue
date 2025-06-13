@@ -16,11 +16,10 @@ import {
 } from '~/api/token'
 import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 
-import {useEventBus, useThrottleFn, useWindowSize} from '@vueuse/core'
+import {useThrottleFn} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import type {AveTable} from '#components'
-import {DefaultHeight} from "~/utils/constants";
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
