@@ -299,7 +299,7 @@
   "transferred": "權限已轉讓",
   "cannotSellAll": "一次不能賣出100%，需預留手續費再賣出",
   "riskWarning": "風險提示",
-  "riskWarningContent1": "當前幣種存在巨大風險，平台僅提供數據信息和展示，以供大家參考，無法對您的任何交易行為承擔擔保、賠償責任。",
+  "riskWarningContent1": "高風險幣種，請注意安全。",
   "ownerChangeBalance": "所有者可以篡改餘額",
   "ownerNoChangeBalance": "所有者不能篡改餘額",
   "hasNoAuth": "因權限轉讓，",
