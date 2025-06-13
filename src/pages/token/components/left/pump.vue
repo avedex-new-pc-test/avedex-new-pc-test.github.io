@@ -303,7 +303,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
       @update:sort="sortChange"
     >
     <template #current_price_usd>
-      {{ t('amountB') }}
+      {{ t('amountU') }}
       <Icon
         name="custom:price"
         :class="`ml-2px mr-2px cursor-pointer text-10px ${isVolUSDT?'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'}`"
