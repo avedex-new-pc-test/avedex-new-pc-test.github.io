@@ -2,7 +2,7 @@
 <template>
   <div>
     <el-table v-loading="loading && !txHistory?.length" :data="txHistory" fit stripe :height="tableHeight"
-      style="width: 100%; min-height: 350px;" @row-click="tableRowClick">
+      style="width: 100%;" @row-click="tableRowClick">
       <template #empty>
         <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
           <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
