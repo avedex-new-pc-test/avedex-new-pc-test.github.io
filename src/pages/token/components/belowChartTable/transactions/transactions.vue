@@ -885,7 +885,7 @@ function resetMakerAddress() {
               class="w-16px h-16px cursor-pointer rounded-full"
               :src="formatIconSwap(row.amm)" alt="" @click.stop.self="goBrowser(row)">
             <Icon
-              name="custom:browser" class="text-16px color-[--d-999-l-666] cursor-pointer"
+              name="custom:browser" class="text-16px color-[--d-666-l-999] cursor-pointer"
               @click.stop.self="goBrowser(row)" />
           </div>
         </template>
