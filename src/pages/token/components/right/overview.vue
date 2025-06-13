@@ -47,6 +47,7 @@
         <div class="flex items-center justify-end color-[--d-999-l-666]">
           <a class="clickable color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333] text-decoration-none"  :href="formatExplorerUrl(token?.chain as string, owner, 'address')" target="_blank"> {{ formatAddress(owner) }}</a>
           <Icon v-copy="checkStore?.checkResult?.owner || token?.owner || ''" name="bxs:copy" class="ml-5px clickable" />
+          <Icon style="display: none;" name="custom:checked" />
         </div>
       </li>
       <!-- <template v-for="(item, index) in medias?.slice()" :key="index">
@@ -124,7 +125,7 @@ const intro = computed(() => {
 
 const effectiveTotal = computed(() => {
   return new BigNumber(token.value?.total || 0)
-    .minus(token.value?.burn_amount_dec || 0).toFixed()
+    .minus(token.value?.burn_amount || 0).toFixed()
 })
 
 function formatAddress(address: string) {
