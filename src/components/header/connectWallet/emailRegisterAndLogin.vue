@@ -196,15 +196,6 @@
     <ul v-show="cType === 'login'" class="w-loginByThird">
       <li class="relative">
         <el-button class="w-[100%]" :color="isDark ? '#333' : '#F2F2F2'" :loading="loading4" :disabled="disabled4">
-          <!-- <img
-            v-show="loading4"
-            class="googleLoading cursor-pointer border-[none]"
-            src="@/assets/images/googleSVG.svg"
-            alt=""
-            width="36"
-            height="36"
-            loading="lazy"
-          > -->
           <div id="g_id_onload" :class="[loading4 ? 'loading' : '']" />
         </el-button>
       </li>
@@ -216,25 +207,15 @@
     </ul>
     <!-- <slot v-if="cType == 'login'" name="nav" /> -->
   </div>
-  <!-- <loading
-    v-model:active="loading3"
-    :can-cancel="false"
-    loader="dots"
-    :opacity="0.2"
-    :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
-    color="var(--custom-primary-color)"
-    :is-full-page="false"
-  /> -->
 </template>
 
 <script setup lang="ts">
-import { ArrowUp, ArrowDown } from '@element-plus/icons-vue'
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import Cookies from 'js-cookie'
-import { ElMessage } from 'element-plus'
+import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 import sha256 from 'crypto-js/sha256'
-import { storeToRefs } from 'pinia'
+import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import Cookies from 'js-cookie'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type RuleForm = {
   email: string;
@@ -246,7 +227,6 @@ type RuleForm = {
 };
 
 console.log('emailRegisterAndLogin')
-// const { t } = useI18n()
 const userStore = useUserStore()
 const botStore = useBotStore()
 const {mode,lang,isDark} = storeToRefs(useGlobalStore())
@@ -641,17 +621,6 @@ onBeforeUnmount(() => {
 
   .btn {
     height: 48px;
-
-    /* :deep() &.el-button {
-      color: #000000;
-      background-color: #F5F5F5;
-    } */
-
-    /* :deep() &.el-button.is-disabled,
-    :deep() &.el-button.is-disabled:hover {
-      color: #000000;
-      background-color: rgb(248, 248, 248);
-    } */
   }
 
   .el-link.el-link--primary {
@@ -760,19 +729,6 @@ onBeforeUnmount(() => {
 
 .light {
   &.w-emailRegister {
-    /* .btn {
-      :deep() &.el-button {
-        color: #F5F5F5;
-        background-color: #333333;
-      }
-
-      :deep() &.el-button.is-disabled,
-      :deep() &.el-button.is-disabled:hover {
-        color: #F5F5F5;
-        background-color: #333333c2;
-      }
-    } */
-
     .el-link.el-link--primary {
       --el-link-text-color: #333333;
       --el-link-hover-text-color: #333333;
@@ -838,11 +794,5 @@ onBeforeUnmount(() => {
   height: 20px;
   background: url("@/assets/images/ggIcon.svg") center no-repeat;
   background-size: cover;
-
-  &.loading {
-    /* visibility: hidden;
-    background: none;
-    background-size: cover; */
-  }
 }
 </style>
