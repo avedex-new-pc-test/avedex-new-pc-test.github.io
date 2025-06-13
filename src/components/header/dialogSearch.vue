@@ -1,8 +1,8 @@
 <template>
   <el-dialog
     v-model="visible"
-    width="860"
-    height="600"
+    width="780"
+    height="590"
     :show-close="false"
     class="search-dialog"
     header-class="p-0!"

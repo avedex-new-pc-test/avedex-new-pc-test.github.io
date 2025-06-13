@@ -47,7 +47,7 @@
         class="flex-end cursor-pointer select-none"
         @click.stop="switchSort('mcap')"
       >
-        {{ $t('mCap') }}
+        {{ $t('mCap') + '/' + $t('pool') }}
         <div class="flex flex-col items-center justify-center ml-5px">
           <i
             :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
@@ -63,7 +63,7 @@
           />
         </div>
       </div>
-      <div
+      <!-- <div
         class="flex-end cursor-pointer select-none"
         @click.stop="switchSort('pool_size')"
       >
@@ -82,7 +82,7 @@
             @click.stop="switchSort('pool_size', 1)"
           />
         </div>
-      </div>
+      </div> -->
       <div
         class="flex-end cursor-pointer select-none"
         @click.stop="switchSort('holders')"
@@ -138,7 +138,7 @@
             class="flex no-underline h-50p"
             @click.stop.prevent="tableRowClick(row.token + '-' + row.chain)"
           >
-            <div class=" text-12px">
+            <div class="text-12px">
               {{ $index < 9 ? '0' + Number($index + 1) : $index + 1 }}
             </div>
             <div class="token-info">
@@ -201,13 +201,25 @@
                       <use xlink:href="#icon-huoyan" />
                     </svg>
                   </template>
-                  <img v-if="row.launchpad" :src="formatIconTag(row.launchpad)" alt=""  :width="10">
+                  <img
+                    v-if="row.launchpad"
+                    :src="formatIconTag(row.launchpad)"
+                    alt=""
+                    :width="10"
+                  />
                 </div>
                 <div class="text-12px color-text-2 flex-start mt-3px">
                   <div v-if="row.opening_at" class="mr-5px text-10px">
                     <TimerCount
-                      v-if="!isShowDate && row.opening_at && Number(formatTimeFromNow(row.opening_at, true)) < 60"
-                      :key="`${row.opening_at}${$Index}`" :timestamp="row.opening_at" :end-time="60">
+                      v-if="
+                        !isShowDate &&
+                        row.opening_at &&
+                        Number(formatTimeFromNow(row.opening_at, true)) < 60
+                      "
+                      :key="`${row.opening_at}${$Index}`"
+                      :timestamp="row.opening_at"
+                      :end-time="60"
+                    >
                       <template #default="{ seconds }">
                         <span class="color-#FFA622">
                           <template v-if="seconds < 60">
@@ -219,12 +231,12 @@
                         </span>
                       </template>
                     </TimerCount>
-                    <span v-else class="color-#FFA622 ">
-                        {{
-                          isShowDate
-                            ? formatDate(row.opening_at, 'HH:mm:ss')
-                            : formatTimeFromNow(row.opening_at)
-                        }}
+                    <span v-else class="color-#FFA622">
+                      {{
+                        isShowDate
+                          ? formatDate(row.opening_at, 'HH:mm:ss')
+                          : formatTimeFromNow(row.opening_at)
+                      }}
                     </span>
                   </div>
                   {{ row.token?.slice(0, 4) + '*' + row.token?.slice(-4) }}
@@ -275,16 +287,18 @@
                   </span>
                 </div>
               </div>
-              <span
-                :class="
-                  row.tx_volume_u_24h > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
-                "
-                >{{ formatNumber(getMCap(row) || 0,2) }}</span
-              >
-              <div :class="row.pool_size > 0 ? 'color-[--d-F5F5F5-l-333]' : ''">
-                ${{ formatNumber(row?.pool_size || 0, 2) }}
+              <div>
+                <span
+                  :class="
+                    Number(getMCap(row)) > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
+                  "
+                  >{{ formatNumber(getMCap(row) || 0, 2) }}</span
+                >
+                <div class="text-12px mt-3px">
+                  ${{ formatNumber(row?.pool_size || 0, 2) }}
+                </div>
               </div>
-              <div>{{ formatNumber(row?.holders || 0, {limit: 10}) }}</div>
+              <div>{{ formatNumber(row?.holders || 0, { limit: 10 }) }}</div>
               <!-- <div class="text-12px color-text-2">
                 {{ formatNumber(row?.tx_count_24h || 0) }}
               </div> -->
@@ -344,11 +358,15 @@
               </count-down> -->
 
               <TimerCount
-                v-if="row.opening_at >0"
-                :key="`${row.opening_at}${$Index}`" :timestamp="row.opening_at" :end-time="60">
+                v-if="row.opening_at > 0"
+                :key="`${row.opening_at}${$Index}`"
+                :timestamp="row.opening_at"
+                :end-time="60"
+              >
                 <template #default="{ formattedData }">
                   <span class="color-[--d-999-l-666]">
-                      {{ formattedData.days }}D {{formattedData.hours}}H {{ formattedData.minutes }}M {{  formattedData.seconds }}S
+                    {{ formattedData.days }}D {{ formattedData.hours }}H
+                    {{ formattedData.minutes }}M {{ formattedData.seconds }}S
                   </span>
                 </template>
               </TimerCount>
@@ -414,10 +432,9 @@ const tokens1 = computed(() => {
   const list = props.tokens?.slice(0)
   if (activeSort.value === 0 || sortBy.value === '') {
     return props.tokens
-  } else if (sortBy.value=='mcap') {
+  } else if (sortBy.value == 'mcap') {
     return list?.sort(
-      (a, b) =>
-       (Number(getMCap(b))  - Number(getMCap(a))) * activeSort.value
+      (a, b) => (Number(getMCap(b)) - Number(getMCap(a))) * activeSort.value
     )
   } else {
     return list?.sort(
