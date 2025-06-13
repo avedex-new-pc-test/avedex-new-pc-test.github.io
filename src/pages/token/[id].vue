@@ -53,9 +53,9 @@ const route = useRoute()
 const tagStore = useTagStore()
 const tokenStore = useTokenStore()
 const scrollbarHeight = computed(() => {
-  // if (tokenStore.isShowWaring) {
-  //   return 'calc(100vh - 198px)'
-  // }
+  if (tokenStore.isShowWaring) {
+    return 'calc(100vh - 198px)'
+  }
   return 'calc(100vh - 158px)'
 })
 const globalStore = useGlobalStore()
