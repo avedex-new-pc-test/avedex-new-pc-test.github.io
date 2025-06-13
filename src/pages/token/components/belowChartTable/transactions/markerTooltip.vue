@@ -113,9 +113,11 @@ async function _getTxsUserBrief() {
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">{{ $t('position1') }}:</span>
           <div>
-            ${{ formatNumber(userBriefData.balance_usd || 0, 2) }}<span class="color-[--d-666-l-999]">({{
+            <span class="color-[--d-666-l-999]">({{
               formatNumber(userBriefData.balance_amount || 0, 3)
-            }}/{{ formatNumber(userBriefData.history_max_balance_amount || 0, 3) }})</span>
+              }}/{{
+                formatNumber(userBriefData.history_max_balance_amount || 0, 3)
+              }})</span>${{ formatNumber(userBriefData.balance_usd || 0, 2) }}
             <el-progress
               :color="themeStore.isDark?'#F5F5F5':'#333'"
               :show-text="false"
@@ -129,7 +131,7 @@ async function _getTxsUserBrief() {
           <span :class="`${getColorClass(userBriefData.total_profit)}`">
             <template v-if="userBriefData.total_profit==='0'">--</template>
             <template v-else>
-              {{ userBriefData.total_profit >= 0 ? '' : '-' }}${{
+              {{ addSign(userBriefData.total_profit) }}${{
                 formatNumber(Math.abs(userBriefData.total_profit), 1)
               }}
             </template>
@@ -137,10 +139,10 @@ async function _getTxsUserBrief() {
         </div>
         <div class="flex justify-between">
           <span class="color-[--d-999-l-666]">{{ $t('unrealized_profit') }}:</span>
-          <span class="color-#12B886">
+          <span :class="`${getColorClass(userBriefData.unrealized_profit)}`">
             <template v-if="userBriefData.unrealized_profit==='0'">--</template>
             <template v-else>
-              {{ userBriefData.unrealized_profit >= 0 ? '' : '-' }}${{
+              {{ addSign(userBriefData.unrealized_profit) }}${{
                 formatNumber(Math.abs(userBriefData.unrealized_profit), 1)
               }}
             </template>
@@ -153,13 +155,13 @@ async function _getTxsUserBrief() {
             ({{ userBriefData.total_purchase }})
           </template>:</span>
           <span>
-            <span class="color-#12B886 mr-10px">{{
+             <span class="color-[--d-666-l-999] mr-10px">{{
+                 userBriefData.total_purchase_amount
+                   ? formatNumber(userBriefData.total_purchase_amount, 2)
+                   : '--'
+               }}</span>
+            <span class="color-#12B886">{{
                 userBriefData.total_purchase_usd ? `$${formatNumber(userBriefData.total_purchase_usd, 2)}` : '--'
-              }}</span>
-            <span class="color-[--d-666-l-999]">{{
-                userBriefData.total_purchase_amount
-                  ? formatNumber(userBriefData.total_purchase_amount, 2)
-                  : '--'
               }}</span>
          </span>
         </div>
@@ -170,13 +172,13 @@ async function _getTxsUserBrief() {
             ({{ userBriefData.total_sold }})
           </template>:</span>
           <span>
-            <span class="color-#F6465D mr-10px">{{
+             <span class="color-[--d-666-l-999] mr-10px">{{
+                 userBriefData.total_sold_amount
+                   ? formatNumber(userBriefData.total_sold_amount, 2)
+                   : '--'
+               }}</span>
+            <span class="color-#F6465D">{{
                 userBriefData.total_sold_usd ? `$${formatNumber(userBriefData.total_sold_usd, 2)}` : '--'
-              }}</span>
-            <span class="color-[--d-666-l-999]">{{
-                userBriefData.total_sold_amount
-                  ? formatNumber(userBriefData.total_sold_amount, 2)
-                  : '--'
               }}</span>
          </span>
         </div>
