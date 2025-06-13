@@ -125,7 +125,7 @@ const intro = computed(() => {
 
 const effectiveTotal = computed(() => {
   return new BigNumber(token.value?.total || 0)
-    .minus(token.value?.burn_amount || 0).toFixed()
+    .minus(token.value?.burn_amount_dec || 0).toFixed()
 })
 
 function formatAddress(address: string) {

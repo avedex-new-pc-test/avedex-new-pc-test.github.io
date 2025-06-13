@@ -6,7 +6,7 @@
     :size="430"
     class="draw-right"
   >
-    <div class="check-container bg-[--d-222-l-FFF] h-100vh color-[--d-F5F5F5-l-333]">
+    <div class="check-container bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]">
       <div class="flex items-center justify-between text-20px p-20px sticky top-0 bg-[--d-222-l-FFF] z-1">
         <span>{{ $t('check2') }}</span>
         <Icon name="ri:close-large-fill" class="clickable" @click.stop="visible = false" />

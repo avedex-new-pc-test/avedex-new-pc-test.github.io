@@ -6,7 +6,7 @@ import { BigNumber } from 'bignumber.js'
 import type { GetTotalHoldersResponse} from '~/api/stats'
 import {getTotalHolders} from '~/api/stats'
 import { ElMessage } from 'element-plus'
-import {DefaultHeight} from "~/utils/constants";
+import {DefaultHeight} from '~/utils/constants'
 
 type Token = {
   chain?: string
@@ -66,9 +66,9 @@ export const useTokenStore = defineStore('token', () => {
 
   const circulation = computed(() => {
     const circulation = new BigNumber(token.value?.total || 0)
-      .minus(token.value?.lock_amount || 0)
-      .minus(token.value?.other_amount || 0)
-      .minus(token.value?.burn_amount || 0)
+      .minus(token.value?.lock_amount_dec || 0)
+      .minus(token.value?.other_amount_dec || 0)
+      .minus(token.value?.burn_amount_dec || 0)
     return circulation.lt(0) ? new BigNumber(0) : circulation
   })
 
