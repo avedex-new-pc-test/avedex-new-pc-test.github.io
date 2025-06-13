@@ -47,7 +47,7 @@ const tokenSymbol = computed(() => {
   return walletTxData.value ? walletTxData.value.symbol : tokenStore.tokenInfo?.token?.symbol
 })
 const realizedProfit = computed(() => {
-  return walletTxData.value ? parseFloat((walletTxData.value.realized_profit * 100).toString() || '0') : 0
+  return walletTxData.value ? parseFloat((walletTxData.value.realized_profit).toString() || '0') : 0
 })
 
 const realizedProfitPercentage = computed(() => {
