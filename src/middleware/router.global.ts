@@ -14,7 +14,12 @@ export default defineNuxtRouteMiddleware((to) => {
   }
   const needRedirectToOld = redirectToOldUrls.find((url) => to.fullPath.includes(url))
   if(needRedirectToOld){
-    navigateTo('https://ave.ai'+to.path,{
+    let query = ''
+    const botStore = useBotStore()
+    if (botStore.accessToken &&  botStore.refreshToken) {
+      query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+    }
+    navigateTo('https://ave.ai'+to.path + query,{
       open:{
         target:'_blank'
       }
