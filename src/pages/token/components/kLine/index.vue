@@ -638,7 +638,6 @@ let isMask = false
 const kHeight = shallowRef(DefaultHeight.KLINE)
 const wHeight = useWindowSize().height
 const dom = useTemplateRef('kline')
-const centerDragEvent = useEventBus(BusEventType.CENTER_DRAG)
 function drag(e: MouseEvent) {
   let dy = e.clientY
   isMask = true
@@ -669,7 +668,7 @@ function drag(e: MouseEvent) {
     isMask = false
     document.onmousemove = null
     document.onmouseup = null
-    centerDragEvent.emit(kHeight.value)
+    tokenStore.centerTopHeight = kHeight.value
   }
   // e.stopPropagation()
   // e.preventDefault()

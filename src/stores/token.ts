@@ -1,11 +1,12 @@
 // stores/theme.ts
-import { useSessionStorage, useLocalStorage } from '@vueuse/core'
+import {useSessionStorage, useLocalStorage, useWindowSize} from '@vueuse/core'
 import { defineStore } from 'pinia'
 import type { TokenInfo, TokenInfoExtra } from '~/api/types/token'
 import { BigNumber } from 'bignumber.js'
 import type { GetTotalHoldersResponse} from '~/api/stats'
 import {getTotalHolders} from '~/api/stats'
 import { ElMessage } from 'element-plus'
+import {DefaultHeight} from "~/utils/constants";
 
 type Token = {
   chain?: string
@@ -51,6 +52,9 @@ export const useTokenStore = defineStore('token', () => {
       }
     }
   })
+  const centerTopHeight = shallowRef(DefaultHeight.KLINE)
+  const {height} = useWindowSize()
+  const commonHeight = computed(() => height.value - centerTopHeight.value)
 
   const swap = reactive<{
     native: Token
@@ -261,7 +265,9 @@ export const useTokenStore = defineStore('token', () => {
     onSwitchMainPairV2,
     isShowWaring,
     warningStatus,
-    tokenWarningObj
+    tokenWarningObj,
+    centerTopHeight,
+    commonHeight
   }
 })
 

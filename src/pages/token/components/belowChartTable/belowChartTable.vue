@@ -32,20 +32,6 @@ const tabs = computed(() => {
   ]
 })
 
-const centerDragEvent = useEventBus<number>(BusEventType.CENTER_DRAG)
-const centerTopHeight = shallowRef(DefaultHeight.KLINE)
-const {height} = useWindowSize()
-const commonHeight = computed(() => height.value - centerTopHeight.value)
-centerDragEvent.on(setCenterTopHeight)
-
-onUnmounted(() => {
-  centerDragEvent.off(setCenterTopHeight)
-})
-
-function setCenterTopHeight(_height: number) {
-  centerTopHeight.value = _height
-}
-
 watch(
   () => tokenStore.placeOrderUpdate,
   () => {
@@ -148,9 +134,9 @@ const comProps = computed(() => {
       <OneClick />
       <Bubble />
     </div>
-    <OrdersTab v-show="activeTab === 'Orders'" :currentActiveTab="activeTab" :commonHeight="commonHeight"/>
+    <OrdersTab v-show="activeTab === 'Orders'" :currentActiveTab="activeTab"/>
     <KeepAlive v-show="activeTab !== 'Orders'">
-      <component :is="Component" v-bind="comProps" :commonHeight="commonHeight"/>
+      <component :is="Component" v-bind="comProps"/>
     </KeepAlive>
   </div>
 </template>

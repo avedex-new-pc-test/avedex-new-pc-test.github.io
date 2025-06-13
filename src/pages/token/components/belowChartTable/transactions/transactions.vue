@@ -24,7 +24,7 @@ import {DefaultHeight} from "~/utils/constants";
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
-const { totalHolders, pairAddress, token, pair } = storeToRefs(useTokenStore())
+const {totalHolders, pairAddress, token, pair, commonHeight} = storeToRefs(useTokenStore())
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
@@ -39,13 +39,7 @@ onActivated(() => {
   firstActivated.value = false
 })
 
-const props = defineProps({
-  commonHeight: {
-    type: Number,
-    required: true
-  }
-})
-const finalHeight = computed(() => Math.max(500, props.commonHeight - 250))
+const finalHeight = computed(() => Math.max(500, commonHeight.value - 250))
 // 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
 const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 const tabs = computed(() => {
