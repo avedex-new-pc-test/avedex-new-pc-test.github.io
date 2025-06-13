@@ -4,8 +4,6 @@ import OrdersTab from './orders/index.vue'
 import OneClick from '../right/botSwap/oneClick.vue'
 import Bubble from './holders/new/bubble.vue'
 import { useBotStore } from '@/stores/bot'
-import {useEventBus, useWindowSize} from '@vueuse/core'
-import {DefaultHeight} from '~/utils/constants'
 const { globalConfig } = storeToRefs(useConfigStore())
 const route = useRoute()
 const tokenStore = useTokenStore()
