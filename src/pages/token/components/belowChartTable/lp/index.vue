@@ -383,6 +383,7 @@ function init2() {
 .m-table {
   .el-table.el-table{
     --el-table-header-bg-color: var(--d-222-l-F2F2F2);
+    --el-table-tr-bg-color: transparent;
   }
   :deep() .cell{
     padding-top: 0;
