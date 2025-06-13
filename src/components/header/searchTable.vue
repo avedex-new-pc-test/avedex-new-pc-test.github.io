@@ -25,26 +25,6 @@
       </div>
       <div
         class="flex-end cursor-pointer select-none"
-        @click.stop="switchSort('current_price_usd')"
-      >
-        {{ $t('price') }}
-        <div class="flex flex-col items-center justify-center ml-5px">
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
-            ${getActiveClass(-1, 'current_price_usd', 'b')}
-            `"
-            @click.stop="switchSort('current_price_usd', -1)"
-          />
-          <i
-            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
-            ${getActiveClass(1, 'current_price_usd', 't')}
-            `"
-            @click.stop="switchSort('current_price_usd', 1)"
-          />
-        </div>
-      </div>
-      <div
-        class="flex-end cursor-pointer select-none"
         @click.stop="switchSort('mcap')"
       >
         {{ $t('mCap') + '/' + $t('pool') }}
@@ -60,6 +40,26 @@
             ${getActiveClass(1, 'mcap', 't')}
             `"
             @click.stop="switchSort('mcap', 1)"
+          />
+        </div>
+      </div>
+      <div
+        class="flex-end cursor-pointer select-none"
+        @click.stop="switchSort('current_price_usd')"
+      >
+        {{ $t('price') }}
+        <div class="flex flex-col items-center justify-center ml-5px">
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer
+            ${getActiveClass(-1, 'current_price_usd', 'b')}
+            `"
+            @click.stop="switchSort('current_price_usd', -1)"
+          />
+          <i
+            :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer
+            ${getActiveClass(1, 'current_price_usd', 't')}
+            `"
+            @click.stop="switchSort('current_price_usd', 1)"
           />
         </div>
       </div>
@@ -203,13 +203,14 @@
                   </template>
                   <img
                     v-if="row.launchpad"
+                    v-tooltip="row.launchpad"
                     class="ml-5px"
                     :src="formatIconTag(row.launchpad)"
                     alt=""
                     :width="10"
                   >
                 </div>
-                <div class="text-12px color-text-2 flex-start mt-3px">
+                <div class="text-12px color-text-2 mt-3px flex-start" style="align-items:end">
                   <div v-if="row.opening_at" class="mr-5px text-10px" >
                     <TimerCount
                       v-if="
@@ -261,6 +262,17 @@
               <div>
                 <span
                   :class="
+                    Number(getMCap(row)) > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
+                  "
+                  >${{ formatNumber(getMCap(row) || 0, 2) }}</span
+                >
+                <div class="text-12px mt-3px">
+                  ${{ formatNumber(row?.pool_size || 0, 2) }}
+                </div>
+              </div>
+              <div>
+                <span
+                  :class="
                     Number(row.current_price_usd) > 0
                       ? 'color-[--d-F5F5F5-l-333]'
                       : ''
@@ -286,17 +298,6 @@
                   >
                     {{ formatNumber(row.price_change || 0) }}%
                   </span>
-                </div>
-              </div>
-              <div>
-                <span
-                  :class="
-                    Number(getMCap(row)) > 0 ? 'color-[--d-F5F5F5-l-333]' : ''
-                  "
-                  >${{ formatNumber(getMCap(row) || 0, 2) }}</span
-                >
-                <div class="text-12px mt-3px">
-                  ${{ formatNumber(row?.pool_size || 0, 2) }}
                 </div>
               </div>
               <div>{{ formatNumber(row?.holders || 0, { limit: 10 }) }}</div>

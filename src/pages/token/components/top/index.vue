@@ -75,6 +75,7 @@
             token?.name
           }}</span>
           <div class="flex items-center justify-start">
+            <img v-if="(token?.risk_level??0) < 0" class="bg-btn" src="@/assets/images/fengxian.png" :width="12">
             <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
               <div
                 v-for="(i, index) in getTags(pair)?.normal_tag"
@@ -140,6 +141,14 @@
                 </template>
               </div>
             </div>
+            <img
+              v-if="token?.launchpad"
+              v-tooltip="token.launchpad"
+              class="bg-btn cursor-pointer"
+              :src="formatIconTag(token.launchpad)"
+              alt=""
+              :width="10"
+            >
             <a
               class="media-item bg-btn"
               :href="`https://x.com/search?q=($${token?.symbol} OR ${token?.token})&src=typed_query&f=live`"
