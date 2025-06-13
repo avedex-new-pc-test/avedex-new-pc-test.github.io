@@ -260,5 +260,6 @@
   "tm_kill_block_after_open": "Bloquear N tras abrir",
   "tm_start_trade_at_block": "Iniciar comercio en el bloque",
   "mechanism_intro": "Adicional",
-  "antiWhaleModifiable": "Antiballena modificable"
+  "antiWhaleModifiable": "Antiballena modificable",
+  "tax": "Impuesto"
 }

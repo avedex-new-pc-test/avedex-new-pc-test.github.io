@@ -873,7 +873,7 @@
                           v-if="
                             (item?.lock?.length ?? 0) > 0 &&
                             item?.lock?.every?.(
-                              (i) => i.unlockDate ?? 0 * 1000 <= Date.now()
+                              (i) => (i.unlockDate ?? 0) * 1000 <= Date.now()
                             )
                           "
                           style="height: 15px"

@@ -255,5 +255,6 @@
   "tm_kill_block_after_open": "Açılıştan sonra N blok öldür",
   "tm_start_trade_at_block": "Hangi blokta ticaret başlayacak",
   "mechanism_intro": "Ek",
-  "antiWhaleModifiable": "Değiştirilebilir büyük işlem kısıtlaması"
+  "antiWhaleModifiable": "Değiştirilebilir büyük işlem kısıtlaması",
+  "tax": "Vergi"
 }

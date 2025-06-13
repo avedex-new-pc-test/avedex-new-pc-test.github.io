@@ -433,5 +433,6 @@
   "tm_kill_block_after_open": "Убить N блоков",
   "tm_start_trade_at_block": "Начать торговлю с блока",
   "mechanism_intro": "Дополнительно",
-  "antiWhaleModifiable": "Изменяемый анти-кит"
+  "antiWhaleModifiable": "Изменяемый анти-кит",
+  "tax": "Налог"
 }

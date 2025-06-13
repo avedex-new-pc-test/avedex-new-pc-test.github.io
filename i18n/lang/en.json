@@ -301,7 +301,7 @@
   "transferred": "Renounced",
   "cannotSellAll": "Can not sell all",
   "riskWarning": "Risk Warning",
-  "riskWarningContent1": "There are huge risks in the current token. The platform only provides data information and display for your reference, and cannot guarantee or compensate for any of your transaction behaviors.",
+  "riskWarningContent1": "High risk token, please pay attention to security.",
   "ownerChangeBalance": "Owner can tamper with balance",
   "ownerNoChangeBalance": "Owner can not tamper with balance",
   "hasNoAuth": "Renounced, ",
@@ -661,5 +661,6 @@
   "tm_start_trade_at_block": "Start Trade at Block",
   "mechanism_intro": "Additional",
   "antiWhaleModifiable": "Anti whale modifiable",
-  "check2": "Check"
+  "check2": "Check",
+  "tax": "Tax"
 }
