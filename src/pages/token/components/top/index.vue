@@ -1138,11 +1138,7 @@ function getRugPull() {
 }
 function handleNoticeClose() {
   const id = route.params.id as string
-  const tokenWarningNotice: Record<string, boolean> = localStorage?.tokenWarningNotice
-    ? JSON.parse(localStorage?.tokenWarningNotice)
-    : {}
-  tokenWarningNotice[id] = true
-  localStorage.tokenWarningNotice = JSON.stringify(tokenWarningNotice)
+  tokenStore.tokenWarningObj[id] = true
 }
 </script>
 

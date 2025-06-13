@@ -138,13 +138,12 @@ const comProps = computed(() => {
                      src="@/assets/images/insiders.svg" :width="14">
                 <img v-else class="align-middle" src="@/assets/images/insiders-gray.svg" :width="14">
                 <template v-if="(tokenInfoExtra?.insiders_balance_ratio_cur ??0) * 100 > 0.1">
+                <Icon name="custom:insiders" class="text-12px align-middle" :class="(tokenInfoExtra?.insiders_balance_ratio_cur??0) > 0.3? '#AC3EEC': ''" />
+                <template v-if="(tokenInfoExtra?.insiders_balance_ratio_cur ??0) * 100 >1">
                   {{ formatNumber((tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100, 2) + '%' }}
                 </template>
-                <template v-else-if="(tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100 > 0.01">
-                  {{ Number((tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100 || 0)?.toFixed(2) + '%' }}
-                </template>
                 <template v-else>
-                  {{ '&lt;0.01%' }}
+                  {{ '&lt;1%' }}
                 </template>
               </template>
           </span>

@@ -204,6 +204,7 @@ import {
 } from '@/api/holders'
 import { useLocalStorage } from '@vueuse/core'
 import List from './list.vue'
+import { templateRef } from '@vueuse/core'
 const holderListSortObj = useLocalStorage('holderListSortObj', {
   all: {
     sort_by: '',
@@ -243,6 +244,7 @@ const aggregateStatsObj = ref<Record<string, AggregateStats>>({})
 
 const searchOriginKeyword = shallowRef('')
 const searchOriginType = shallowRef('')
+const holdersRef = templateRef('holdersRef')
 
 const tabs = computed(() => {
   const arr: Array<{ label: string; value: string }> = []
@@ -352,22 +354,21 @@ watch(activeTab, (val) => {
   // if (searchKeyword) {
   //   this.filterAddress(this.searchKeyword)
   // }
-  // if (val === 'buy' || val === 'sell') {
-  //   let prop = val === 'buy' ? 'ascending' : 'descending'
-  //   this.$refs.holdersRef.sort('total_profit', prop)
-  // } else if (val === 'buy24h' || val === 'sell24h') {
-  //   let prop = val === 'buy24h' ? 'bought_usd' : 'sold_usd'
-  //   this.$refs.holdersRef.sort(prop, 'descending')
-  // } else {
-  //   let sort = this.holderListSortObj?.[val] || {}
-  //   if (sort.sort_by && sort.order) {
-  //     this.$refs.holdersRef.sort(sort.sort_by, sort.order + 'ending')
-  //   } else {
-  //     this.$refs.holdersRef.clearSort()
-  //     this.getHoldersList()
-  //   }
-  // }
-  getHoldersList()
+  if (val === 'buy' || val === 'sell') {
+    const prop = val === 'buy' ? 'ascending' : 'descending'
+    holdersRef?.value?.sort('total_profit', prop)
+  } else if (val === 'buy24h' || val === 'sell24h') {
+    const prop = val === 'buy24h' ? 'bought_usd' : 'sold_usd'
+    holdersRef?.value?.sort(prop, 'descending')
+  } else {
+    const sort = holderListSortObj?.value[val] || {}
+    if (sort.sort_by && sort.order) {
+      holdersRef?.value?.sort(sort.sort_by, sort.order + 'ending')
+    } else {
+      holdersRef?.value?.clearSort()
+      getHoldersList()
+    }
+  }
 })
 onMounted(() => {
   getHoldersList()
@@ -540,32 +541,32 @@ function filterOriginAddress(row:{ address: string, type: string }) {
   // border: 1px solid var(--d-33353D-l-f5f5f5);
 }
 
-:deep(.el-table) {
-  // --el-table-tr-bg-color: #0A0B0D;
-  // --el-table-bg-color: #0A0B0D;
-  --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
-  --el-fill-color-lighter: #0A0B0D;
-  --el-table-header-text-color: var(--d-999-l-666);
-  // --el-table-border-color: var(--d-33353D-l-f5f5f5);
-  --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
-  // background: var(--d-111-l-FFF);
-  --el-bg-color: var(--d-111-l-FFF);
-  // --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
-  font-size: 13px;
+// :deep(.el-table) {
+//   // --el-table-tr-bg-color: #0A0B0D;
+//   // --el-table-bg-color: #0A0B0D;
+//   --el-table-header-bg-color: var(--d-17191C-l-F2F2F2);
+//   --el-fill-color-lighter: #0A0B0D;
+//   --el-table-header-text-color: var(--d-999-l-666);
+//   // --el-table-border-color: var(--d-33353D-l-f5f5f5);
+//   --el-table-row-hover-bg-color: var(--d-333333-l-eaecef);
+//   // background: var(--d-111-l-FFF);
+//   --el-bg-color: var(--d-111-l-FFF);
+//   // --el-table-border: 0.5px solid var(--d-33353D-l-f5f5f5);
+//   font-size: 13px;
 
-  th {
-    padding: 6px 0;
-    border-bottom: none !important;
-    height: 32px;
+//   th {
+//     padding: 6px 0;
+//     border-bottom: none !important;
+//     height: 32px;
 
-    &.el-table__cell.is-leaf {
-      border-bottom: none;
-    }
+//     &.el-table__cell.is-leaf {
+//       border-bottom: none;
+//     }
 
-    .cell {
-      font-weight: 400;
-      font-size: 12px;
-    }
-  }
-}
+//     .cell {
+//       font-weight: 400;
+//       font-size: 12px;
+//     }
+//   }
+// }
 </style>

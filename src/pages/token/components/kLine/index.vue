@@ -59,6 +59,13 @@ const amm = computed(() => {
   return tokenStore?.pair?.amm || ''
 })
 
+watch(() => route.params.id, (val) => {
+  if (!val) return
+  if (_widget?.activeChart()) {
+    _widget?.activeChart()?.removeAllShapes?.()
+  }
+})
+
 
 watch(pair, (val) => {
   if (val === klinePair.value) return
