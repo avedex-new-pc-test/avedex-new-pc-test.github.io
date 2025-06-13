@@ -41,7 +41,7 @@
             <span class="text-[var(--d-eaecef-l-333333)] text-13px">{{ row.swapType === 2 || row.swapType === 6 ?
               row?.inTokenSymbol :
               row.outTokenSymbol
-              }}</span>
+            }}</span>
           </div>
         </template>
       </el-table-column>
@@ -169,7 +169,7 @@
 <script setup lang="ts">
 // import { useStorage } from '@vueuse/core'
 import BigNumber from 'bignumber.js'
-import { formatDate, getChainDefaultIcon, formatExplorerUrl, getAddressAndChainFromId } from '~/utils'
+import { formatDate, getChainDefaultIcon, getAddressAndChainFromId } from '~/utils'
 import { formatNumber } from '~/utils/formatNumber'
 import { bot_getUserPendingTx, bot_cancelLimitOrdersByBatch } from '@/api/token'
 import { evm_utils } from '@/utils'
@@ -260,8 +260,11 @@ function handleTypeCommand(command: string) {
 // }
 
 function tableRowClick(row: any) {
-  if (!row.txHash) return
-  window.open(formatExplorerUrl(row.chain, row.txHash, 'tx'))
+  const token = row.swapType === 2 || row.swapType === 6 ? row?.inTokenAddress : row.outTokenAddress
+  if (!token) {
+    return
+  }
+  router.push(`/token/${token}-${row.chain}`)
 }
 
 const getUserPendingTx = async (chainValue?: string) => {
