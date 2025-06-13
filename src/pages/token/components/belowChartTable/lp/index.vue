@@ -2,7 +2,7 @@
   <div class="w-lp">
     <div  class="w-[100%]">
       <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px">
-        <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
+        <div class="font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
         <el-radio-group v-model="activeTime" class="m-radio-group" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
           <el-radio-button label="7D" :value="7" />
           <el-radio-button label="1M" :value="30" />
@@ -394,7 +394,6 @@ function init2() {
      background-color: var(--d-222-l-F2F2F2);
   }
   :deep() th {
-    font-family: Poppins;
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
@@ -403,7 +402,6 @@ function init2() {
   }
 
   :deep() td {
-    font-family: Poppins;
     font-weight: 400;
     font-size: 13px;
     line-height: 1;
