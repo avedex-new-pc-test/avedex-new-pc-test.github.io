@@ -16,15 +16,14 @@ import {
 } from '~/api/token'
 import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
 
-import {useEventBus, useThrottleFn, useWindowSize} from '@vueuse/core'
+import {useThrottleFn} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import type {AveTable} from '#components'
-import {DefaultHeight} from "~/utils/constants";
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 const { t } = useI18n()
-const { totalHolders, pairAddress, token, pair } = storeToRefs(useTokenStore())
+const {totalHolders, pairAddress, token, pair, commonHeight} = storeToRefs(useTokenStore())
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
@@ -38,6 +37,8 @@ onActivated(() => {
   }
   firstActivated.value = false
 })
+
+const finalHeight = computed(() => Math.max(500, commonHeight.value - 250))
 // 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
 const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 const tabs = computed(() => {
@@ -231,22 +232,6 @@ useVisibilityChange(() => {
   _getPairLiq()
 })
 
-const centerDragEvent = useEventBus<number>(BusEventType.CENTER_DRAG)
-const centerTopHeight = shallowRef(DefaultHeight.KLINE)
-const {height} = useWindowSize()
-const finalHeight = computed(() => Math.max(560, height.value - centerTopHeight.value - 250))
-centerDragEvent.on(setCenterTopHeight)
-// onMounted(() => {
-//   document.addEventListener('mousemove', mouseInsideTxs)
-// })
-onUnmounted(() => {
-  // document.removeEventListener('mousemove', mouseInsideTxs)
-  centerDragEvent.off(setCenterTopHeight)
-})
-
-function setCenterTopHeight(_height: number) {
-  centerTopHeight.value = _height
-}
 //
 // const txsBounding = useElementBounding(aveTableRef)
 // const mouseInsideTxs = useThrottleFn((event: MouseEvent) => {
@@ -563,10 +548,10 @@ function bigWallet(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderPr
 function getGradient(row: IGetTokenTxsResponse) {
   const str = `${useThemeStore().isDark}-${isBuy(row)}`
   const map = {
-    'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
-    'true-false': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
-    'false-false': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(246,70,93,0.2)_100%)]',
-    'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.2)_0%,rgba(18,184,134,0.2)_100%)]',
+    'true-true': 'bg-[linear-gradient(270deg,#111_0%,#12654C_70%,#12B886_100%)]',
+    'true-false': 'bg-[linear-gradient(270deg,#111_0%,#7F2A36_70%,#F6465D_100%)]',
+    'false-false': 'bg-[linear-gradient(270deg,#FFF_0%,#88DBC3_70%,#12B886_100%)]',
+    'false-true': 'bg-[linear-gradient(270deg,#FFF_0%,#FBA2AE_70%,#F6465D_100%)]',
   } as { [key: string]: string }
   return map[str]
 }
@@ -818,7 +803,7 @@ function resetMakerAddress() {
         </template>
         <template #cell-amountU="{ row }">
           <div
-            v-if="row.type === undefined" :class="`absolute h-full ${getGradient(row)}`"
+            v-if="row.type === undefined" :class="`absolute h-full ${getGradient(row)} opacity-15`"
             :style="`width:${Math.min(getAmount(row, true, true) / 20, 100)}%`" />
           <div v-if="row.type === undefined" :class="`${getRowColor(row)} w-full h-full flex items-center justify-end`">
             <template v-if="tableView.isVolUSDT">

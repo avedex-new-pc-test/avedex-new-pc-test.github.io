@@ -102,10 +102,11 @@ const comProps = computed(() => {
 <template>
   <div class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1">
     <div class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-#FFFFFF08 mb-12px">
-      <a v-for="(item) in tabsList" :key="item.component" href="javascript:;"
+      <a
+        v-for="(item) in tabsList" :key="item.component" href="javascript:;"
          :class="`flex items-center decoration-none text-12px lh-20px text-center color-[--d-666-l-999] ${activeTab === item.component ? 'color-[--d-F5F5F5-l-222] b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`"
         @click="activeTab = item.component">
-        <div v-if="item.component == 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"></div>
+        <div v-if="item.component == 'Orders'" class="w-1px h-20px bg-[var(--custom-br-1-color)] mr-20px mb-8px"/>
         <div
           :class="`b-b-solid b-b-2px pb-12px flex-start ${activeTab === item.component ? ' b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`">
           {{ item.name }}
@@ -117,7 +118,7 @@ const comProps = computed(() => {
           <span v-if="item.component == 'Holders' && holders">
             ({{ token?.holders ? formatNumber(token?.holders || 0, {limit: 10}) : '' }})
               <template v-if="isInsiderOrSniperSupported && isInsiderOrSniperSupported">
-                <Icon name="custom:insiders" class="text-12px align-middle" :class="(tokenInfoExtra?.insiders_balance_ratio_cur??0) > 0.3? '#AC3EEC': ''" />
+                <Icon v-if="(tokenInfoExtra?.insiders_balance_ratio_cur??0) > 0.01" name="custom:insiders" class="text-12px align-middle" :class="(tokenInfoExtra?.insiders_balance_ratio_cur??0) > 0.3? '#AC3EEC': ''" />
                 <template v-if="(tokenInfoExtra?.insiders_balance_ratio_cur ??0) * 100 >1">
                   {{ formatNumber((tokenInfoExtra?.insiders_balance_ratio_cur??0) * 100, 2) + '%' }}
                 </template>
@@ -131,7 +132,7 @@ const comProps = computed(() => {
       <OneClick />
       <Bubble />
     </div>
-    <OrdersTab :currentActiveTab="activeTab" v-show="activeTab === 'Orders'" />
+    <OrdersTab v-show="activeTab === 'Orders'" :currentActiveTab="activeTab"/>
     <KeepAlive v-show="activeTab !== 'Orders'">
       <component :is="Component" v-bind="comProps"/>
     </KeepAlive>

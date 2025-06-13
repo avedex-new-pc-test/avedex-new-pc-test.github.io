@@ -931,7 +931,7 @@
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
 import { getChainInfo, formatDate, getAddressAndChainFromId, getTextWidth } from '@/utils/index'
-import { templateRef } from '@vueuse/core'
+
 import dayjs from 'dayjs'
 const props = defineProps({
   modelValue: Boolean,
@@ -969,7 +969,7 @@ const isShowBalance = shallowRef(false)
 const visible = shallowRef(false)
 const searchKeyword = shallowRef('')
 const keyword = shallowRef('')
-const holderListRef = templateRef('holderListRef')
+const holderListRef = useTemplateRef('holderListRef')
 
 const addressAndChain = computed(() => {
   const id = route.params.id as string
