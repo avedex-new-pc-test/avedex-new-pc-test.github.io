@@ -103,7 +103,7 @@ async function _getHotTokens() {
 </script>
 
 <template>
-  <div class="color-[var(--d-F5F5F5-l-333)]">
+  <div class="color-[--d-F5F5F5-l-333]">
     <THead
       v-model:sort="sort"
       :columns="columns"

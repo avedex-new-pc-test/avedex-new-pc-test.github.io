@@ -374,7 +374,7 @@ function getTargetToken(row: GetHomePumpListResponse) {
           <span class="color-[--d-666-l-999]">{{ formatNumber(row.tx_24h_count) }}</span>
         </div>
         <div class="w-70px flex-col flex items-end">
-          <span class="color-[--d-999-l-666]">${{ formatNumber(row.market_cap, 2) }}</span>
+          <span class="color-[--d-F5F5F5-l-333]">${{ formatNumber(row.market_cap, 2) }}</span>
           <span :class="getColorClass(row.price_change_24h)">{{ addSign(Number(row.price_change_24h)) }}{{
               formatNumber(Math.abs(Number(row.price_change_24h)), 1)
             }}%</span>
