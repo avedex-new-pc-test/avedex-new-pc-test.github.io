@@ -1,9 +1,9 @@
 <template>
   <div class="w-lp">
     <div  class="w-[100%]">
-      <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px" style="display: flex;gap: 10px;align-items: center;margin-left: 12px;">
+      <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px">
         <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
-        <el-radio-group class="m-radio-group" v-model="activeTime" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
+        <el-radio-group v-model="activeTime" class="m-radio-group" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
           <el-radio-button label="7D" :value="7" />
           <el-radio-button label="1M" :value="30" />
         </el-radio-group>
@@ -11,9 +11,19 @@
       <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"  :showLeft="showLeft" />
     </div>
     <div class="m-table mt20px">
-      <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
-        :row-key="getRowKey"  :style="{height: currentHeight>=245?`${currentHeight}px`:'245px'}" size="small">
-        <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
+      <el-table 
+        v-loading="loading2" :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
+        :row-key="getRowKey"  :style="{height: currentHeight>=245?`${currentHeight}px`:'245px'}" size="small" >
+        <template #empty>
+          <div v-if="!loading2" class="flex flex-col items-center justify-center py-30px">
+            <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
+            <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
+            <span>{{ t('emptyNoData') }}</span>
+          </div>
+          <span v-else />
+        </template>
+        <el-table-column 
+          v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
           :align="col.align">
           <template #default="{ row }">
             <Column :row="row" :col="col" :customKeys="['mark', 'addAmt', 'netAmt', 'txns', 'percent']">
@@ -69,7 +79,8 @@
         <el-table-column type="expand">
           <template #default="{ row }">
             <el-table v-if="row?.lock && row?.lock.length" :data="row?.lock" style="width: 100%">
-              <el-table-column v-for="col2 in columns2" :key="col2.prop" :label="col2.label" :prop="col2.prop"
+              <el-table-column
+                v-for="col2 in columns2" :key="col2.prop" :label="col2.label" :prop="col2.prop"
                 :align="col2.align">
                 <template #default="{ row: row2 }">
                   <Column :row="row2" :col="col2" />
@@ -84,15 +95,15 @@
 </template>
 
 <script setup lang="ts">
-import { getLPHolders, getPairLiqNew } from '~/api/token'
-import type {  GetLPHoldersResponse,  IHolder,  LockType,  GetPairLiqNewResponse} from '~/api/token'
 import BigNumber from 'bignumber.js'
+import type { GetLPHoldersResponse, GetPairLiqNewResponse, IHolder, LockType } from '~/api/token'
+import { getLPHolders, getPairLiqNew } from '~/api/token'
 import tag from './components/tag.vue'
 // import type {IColumn}  from './components/columns.vue'
-import { upColor, downColor } from '@/utils/constants'
+import { downColor, upColor } from '@/utils/constants'
+import type { Token } from '~/api/types/token'
 import Column from './components/columns.vue'
 import Line from './components/line.vue'
-import type { Token } from '~/api/types/token'
 
 const props=defineProps({
   pairAddress: {
@@ -119,6 +130,7 @@ const { t } = useI18n()
 const lpRest = ref<any>({})
 const showSeries = shallowRef([true, true])
 const loading = ref(false)
+const loading2 = ref(false)
 
 const currentHeight=computed(()=>{
   console.log('currentHeight',props.height)
@@ -330,6 +342,7 @@ function init1() {
 }
 function init2() {
   const expandedRowKeys1 = [] as string[]
+  loading2.value = true
   if (props.token?.token && addressAndChain.value?.chain) {
     getLPHolders((props.token?.token || '') + ('-' + addressAndChain.value?.chain)).then((res: GetLPHoldersResponse) => {
       console.log('getLPHolders', res)
@@ -354,10 +367,12 @@ function init2() {
       console.log(err)
       dataSource.value = []
     }).finally(() => {
+      loading2.value = false
     })
   } else {
     dataSource.value = []
     lpRest.value = {}
+    loading2.value = false
   }
   expandedRowKeys.value = expandedRowKeys1
 }
@@ -367,11 +382,7 @@ function init2() {
 <style scoped lang="scss">
 .m-table {
   .el-table.el-table{
-    /* --el-table-header-text-color: var(--d-666-l-999); */
     --el-table-header-bg-color: var(--d-222-l-F2F2F2);
-  }
-  :deep() .el-table__expand-column {
-    /* display: none; */
   }
   :deep() .cell{
     padding-top: 0;
@@ -381,7 +392,6 @@ function init2() {
     display: none;
   }
   :deep() .el-table__expanded-cell td {
-    /* --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2); */
     --el-table-row-hover-bg-color:var(--d-222-l-F2F2F2);
      background-color: var(--d-222-l-F2F2F2);
   }
@@ -401,16 +411,12 @@ function init2() {
     line-height: 1;
     letter-spacing: 0px;
     color: var(--d-999-l-666);
-    /* padding-top: 0;
-    padding-bottom: 0; */
     .cell{
       line-height: 1.5;
     }
   }
 }
 .m-radio-group{
-  :deep() .el-radio-button__inner:hover{
-  }
   :deep() .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
     border-color: var(--d-333-l-666);
   }

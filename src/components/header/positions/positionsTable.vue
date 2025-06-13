@@ -2,8 +2,16 @@
   <el-dialog v-model="dialogVisible" class="dialog-position" :title="$t('myPosition1')" width="680" append-to-body>
     <slot/>
     <el-table
-class="table-position w-100%" :data="dataSource" :height="400" @row-click="tableRowClick
-  ">
+      class="table-position w-100%" :data="dataSource" :height="400" @row-click="tableRowClick
+      ">  
+      <template #empty>
+        <div v-if="!paginationParams.loaded" class="flex flex-col items-center justify-center py-30px">
+          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
+          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
+          <span>{{ t('emptyNoData') }}</span>
+        </div>
+        <span v-else />
+      </template>
       <el-table-column
         v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col?.minWidth"
         :align="col.align" :show-overflow-tooltip="col?.showOverflowTooltip || false">
@@ -25,8 +33,6 @@ class="table-position w-100%" :data="dataSource" :height="400" @row-click="table
             <template v-if="col?.prop === 'token'">
               <div class="flex items-center gap-8px clickable flex-nowrap">
                 <TokenImg :row="row" class="w-24px h-24px" />
-                <!-- <el-tooltip :effect="mode" placement="top-end" :content="row?.symbol">
-                </el-tooltip> -->
                 <div class="whitespace-nowrap text-ellipsis overflow-hidden max-w-90px">{{ row?.symbol }}</div>
                 <Icon
                     v-if="row.risk_score > 55 || row.risk_level < 0"
@@ -37,7 +43,6 @@ class="table-position w-100%" :data="dataSource" :height="400" @row-click="table
             <span v-else-if="row[col.prop] === '--'" :class="col?.getClassName ? col.getClassName(row) : ''">--</span>
             <span v-else-if="row[col.prop] === 0" :class="col?.getClassName ? col.getClassName(row) : ''">0</span>
             <span v-else :class="col?.getClassName ? col.getClassName(row) : ''">{{ col.formatter ? col.formatter(row) :row[col.prop] }}</span>
-            <!-- <Icon v-if="col?.prop === 'total_profit_ratio'" name="circum:share-1" class="text-12px ml-4px" @click.stop = "handleShare(row)"/> -->
             <div  v-if="col?.prop === 'total_profit_ratio'" class="pr-10px inline-block" >
               <share :address="row.address" :statistics="row" :chain="row.chain" type="topHolder"/>
             </div>
@@ -53,24 +58,22 @@ class="table-position w-100%" :data="dataSource" :height="400" @row-click="table
           :infinite-scroll-delay="200"
           :infinite-scroll-immediate="true"
         />
-          <div v-if="paginationParams.loaded && dataSource?.length > 0"  style="text-align: center; padding:  15px 0 10px; font-size: 12px; color: #959a9f;">{{ $t('loading') }} </div>
-          <div v-else-if="paginationParams.finished && dataSource?.length > 0"  style="text-align: center; padding: 15px 0 10px; font-size: 12px; color: #959a9f;">{{ $t('noMore') }}</div>
+          <div v-if="paginationParams.loaded && dataSource?.length > 0"  class="text-center px-0 pt-15px pb-10px text-12px text-[#959a9f]">{{ $t('loading') }} </div>
+          <div v-else-if="paginationParams.finished && dataSource?.length > 0" class="text-center px-0 pt-15px pb-10px text-12px text-[#959a9f]">{{ $t('noMore') }}</div>
       </template>
     </el-table>
   </el-dialog>
 </template>
 
-<script setup lang="tsx">
-// import { ref } from 'vue'
-import { QuestionFilled } from '@element-plus/icons-vue'
+<script setup lang="ts">
 import TokenImg from '@/components/tokenImg.vue'
-import { getUserBalance ,type GetUserBalanceResponse} from '~/api/swap'
-import { upColor, downColor ,defaultPaginationParams} from '@/utils/constants'
+import { defaultPaginationParams, downColor, upColor } from '@/utils/constants'
+import { QuestionFilled } from '@element-plus/icons-vue'
+import { getUserBalance, type GetUserBalanceResponse } from '~/api/swap'
+
 const { mode } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
 const $router = useRouter()
-
-
 const columns = computed(() => {
   return [
     {
@@ -131,7 +134,6 @@ const columns = computed(() => {
   ]
 })
 type rowProps = GetUserBalanceResponse & { index: string }
-// If you have a type for GetUserBalanceResponse, use it here. Otherwise, use any[].
 const dataSource = shallowRef<(rowProps)[]>([])
 
 const props = defineProps({
@@ -205,7 +207,7 @@ watch(() => dialogVisible.value, (val) => {
 
 onMounted(() => {
   // fetchTable()
-  console.log('mounted positionsTable')
+  // console.log('mounted positionsTable')
 })
 </script>
 
@@ -221,7 +223,6 @@ onMounted(() => {
   --el-table-header-text-color:var(--d-999-l-666);
   --el-table-text-color:var(--d-F5F5F5-l-222);
   --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
-  /* --el-table-border: 0.5px solid var(--d-33353D-l-F5F5F5); */
   :deep() thead{
     font-size: 10px;
     tr{
@@ -239,83 +240,4 @@ onMounted(() => {
   }
 
 }
-/* .table-position.el-table {
-  --el-table-tr-bg-color: var(--custom-bg-1-color);
-  // --el-bg-color: var(--custom-primary-lighter-0-color);
-  --el-table-bg-color: var(--custom-bg-1-color);
-  // --el-table-row-hover-bg-color: var(--custom-td-hover-2-color);
-  --el-table-text-color: var(--a-text-1-color);
-  --el-table-header-bg-color: var(--custom-table-th-bg-color);
-  // --el-fill-color-lighter: var(--custom-table-stripe-bg-color);
-  --el-fill-color-lighter: var(--custom-bg-1-color);
-  --el-table-header-text-color: var(--a-text-2-color);
-  --el-table-border-color: var(--custom-br-1-color);
-  --el-table-row-hover-bg-color: var(--a-table-hover-bg-color);
-  background: var(--custom-bg-1-color);
-  --el-bg-color: var(--custom-bg-1-color);
-  --el-table-border: 0.5px solid var(--custom-br-1-color);
-  font-size: 14px;
-
-  th {
-    padding: 6px 0;
-    border-bottom: none !important;
-    height: 32px;
-
-    &.el-table__cell.is-leaf {
-      border-bottom: none;
-
-      &.descending {
-        .cell {
-          color: var(--custom-primary-color);
-
-          .sort-caret {
-            &.descending {
-              border-top-color: var(--custom-primary-color);
-            }
-          }
-        }
-      }
-
-      &.ascending {
-        .cell {
-          color: var(--custom-primary-color);
-
-          .sort-caret {
-            &.ascending {
-              border-bottom-color: var(--custom-primary-color);
-            }
-          }
-        }
-      }
-    }
-
-    .cell {
-      font-weight: 400;
-      font-size: 12px;
-    }
-  }
-
-  .table-empty {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 30px 0;
-    // min-height: 200px;
-  }
-
-  .icon-token-container {
-    .token-icon {
-      width: 32px;
-      height: 32px;
-    }
-
-    .icon-symbol {
-      width: 12px;
-      height: 12px;
-      top: 21px;
-      left: 21px;
-    }
-  }
-} */
 </style>

@@ -423,7 +423,7 @@ export interface GetPairLiqNewResponse {
   removeliquidity_total: number;
   addliquidity_total: number
 }
-export async function getPairLiqNew(pair:string, interval = 7):Promise<GetPairLiqNewResponse[]> {
+export async function getPairLiqNew(pair:string, interval = 30):Promise<GetPairLiqNewResponse[]> {
   if (!pair) {
     return []
   }

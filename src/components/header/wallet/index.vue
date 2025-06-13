@@ -1,14 +1,10 @@
 <template>
-  <!--
-      v-model:visible="tgWalletVisible"
-    -->
   <el-popover
     v-model:visible="tgWalletVisible" placement="bottom-end" :width="360" trigger="click"
     :popper-style="`--el-popover-padding: 0; --el-bg-color-overlay: ${mode === 'dark' ? '#222222' : '#ffffff'}`">
     <template #reference>
       <div
         class="flex text-12px clickable-btn text-[--d-E9E9E9-l-222] h-32px cursor-pointer flex items-center bg-[--d-222-l-F2F2F2] border-rd-4px px-10px py-0 min-w-80px  ml-8px">
-        <!-- <img src="@/assets/images/tg-1.svg" class="mr-5px" height="16" alt="" srcset=""> -->
         <img
           class="border-rd-[50%] mr-5px" height="16" :src="generateAvatarIcon(botStore?.userInfo?.name || '')"
           alt="">
@@ -41,7 +37,6 @@
                 <div class="text-16px">{{ getChainInfo(item.chain)?.name }}</div>
                 <div class="text-12px color-[--d-999-l-959A9F] mt-5px">
                   <span>{{ item.address?.replace?.(new RegExp('(.{6})(.+)(.{4})'), '$1...$3') }}</span>
-                  <!-- <i v-copy="item.address" class="iconfont icon-copy ml-5px" style="font-size: 12px" @click.stop /> -->
                   <Icon v-copy="item.address" name="bxs:copy" class="ml-5px mb--1px clickable" @click.stop />
                 </div>
               </div>
@@ -125,8 +120,6 @@
                 class="text-12px"
                 style="display: flex; align-items: center; word-break: break-all; line-height: 1.2; padding: 20px 20px 40px; color: var(--d-999-l-222);">
                 <span>{{ depositChainInfo?.address || '' }}</span>
-                <!-- <i v-if="depositChainInfo?.address" v-copy="depositChainInfo?.address" class="iconfont icon-copy ml-5px"
-                  style="font-size: 16px; cursor: pointer;" /> -->
                 <Icon
                   v-if="depositChainInfo?.address" v-copy="depositChainInfo?.address" name="bxs:copy"
                   class="ml-5px mb--1px clickable" @click.stop />
@@ -193,12 +186,6 @@
                   }}</span>
               </div>
             </el-form-item>
-
-            <!-- <el-form-item v-if="withdrawForm.chain === 'ton'" label="memo" label-position="top" prop="memo">
-              <el-input v-model="withdrawForm.memo"
-                style="background: var( --d-333-l-F2F2F2); --el-input-bg-color: var( --d-333-l-F2F2F2); --el-input-border-color: var( --d-333-l-F2F2F2); border-radius: 4px;--el-input-height:48px;"
-                clearable placeholder="" />
-            </el-form-item> -->
             <el-button
               native-type="submit" style="width: 100%; margin-top: 25px" size="large"
               :color="mode === 'dark' ? '#f5f5f5' : '#333333'" :loading="loadingWithdraw">{{ t('withdraw')
@@ -216,19 +203,18 @@
 </template>
 
 <script setup lang="ts">
-import { Back, ArrowDownBold } from '@element-plus/icons-vue'
-// import { useRoute, useRouter } from 'vue-router'
-import BigNumber from 'bignumber.js'
-import QrCodeWithLogo from 'qr-code-with-logo'
 import { bot_createSafeTransferTx, bot_getTransferGasFee } from '@/api/bot'
-import { NATIVE_TOKEN } from '@/utils/constants'
-import { throttle } from 'lodash-es'
 import { generateAvatarIcon, getChainInfo, isValidAddress, evm_utils as utils } from '@/utils'
 import { formatBotError, handleBotError } from '@/utils/bot'
+import { NATIVE_TOKEN } from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
-import doubleCheck from './doubleCheck.vue'
-import { ElMessage, ElMessageBox, ElNotification as ElNotify, type FormInstance } from 'element-plus'
+import { ArrowDownBold, Back } from '@element-plus/icons-vue'
 import { useEventBus } from '@vueuse/core'
+import BigNumber from 'bignumber.js'
+import { ElMessage, ElMessageBox, ElNotification as ElNotify, type FormInstance } from 'element-plus'
+import { throttle } from 'lodash-es'
+import QrCodeWithLogo from 'qr-code-with-logo'
+import doubleCheck from './doubleCheck.vue'
 
 const { mode, token_logo_url } = storeToRefs(useGlobalStore())
 const { t } = useI18n()
