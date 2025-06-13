@@ -95,7 +95,7 @@
   "time": "Time",
   "type": "Type",
   "swapPrice": "Price",
-  "amountB": "Volume",
+  "amountB": "Amount",
   "amountU": "Volume",
   "makers": "Maker",
   "filterTime": "Filter by date",

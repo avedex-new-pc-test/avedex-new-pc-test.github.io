@@ -58,7 +58,7 @@ const columns = computed(() => {
     flex: 'flex-1 justify-end',
     sort: true
   }, {
-    label: t('Chg'),
+    label: t('Chg') + '%',
     value: 'price_change',
     flex: 'flex-1 justify-end',
     sort: true
@@ -136,7 +136,7 @@ async function _getHotTokens() {
               <template v-if="row.current_price_usd === 0">0</template>
               <template v-else-if="row.current_price_usd === '--'">--</template>
               <template v-else>
-                {{ formatNumber(getMCap(row), 2) }}
+                ${{ formatNumber(getMCap(row), 2) }}
               </template>
             </div>
           </div>
