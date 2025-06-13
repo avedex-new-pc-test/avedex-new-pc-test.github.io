@@ -146,6 +146,7 @@ interface ContractData {
   mechanism_intro?: string
   tm_bonus_token_for_holders?: string
   tm_bonus_token_name_for_lp?: string
+  creator_address?: string
 }
 interface TokenContract {
   chain?: string

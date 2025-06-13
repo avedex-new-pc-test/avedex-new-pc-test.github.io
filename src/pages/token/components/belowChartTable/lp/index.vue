@@ -10,9 +10,9 @@
       </div>
       <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"  :showLeft="showLeft" />
     </div>
-    <div class="m-table mt20px" :style="{maxHeight: (dataList.length > 0||loading)?'250px':'500px'}">
+    <div class="m-table mt20px">
       <el-table :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
-        :row-key="getRowKey"  :style="{height: (dataList.length > 0||loading)?'245px':'490px'}" size="small">
+        :row-key="getRowKey"  :style="{height: currentHeight>=245?`${currentHeight}px`:'245px'}" size="small">
         <el-table-column v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
           :align="col.align">
           <template #default="{ row }">
@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { getLPHolders, getPairLiqNew,getTokensPrice } from '~/api/token'
+import { getLPHolders, getPairLiqNew } from '~/api/token'
 import type {  GetLPHoldersResponse,  IHolder,  LockType,  GetPairLiqNewResponse} from '~/api/token'
 import BigNumber from 'bignumber.js'
 import tag from './components/tag.vue'
@@ -102,6 +102,10 @@ const props=defineProps({
   token: {
     type: Object as PropType<Token>,
     default: () => ({})
+  },
+  height: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -116,6 +120,10 @@ const lpRest = ref<any>({})
 const showSeries = shallowRef([true, true])
 const loading = ref(false)
 
+const currentHeight=computed(()=>{
+  console.log('currentHeight',props.height)
+  return props.height-47-((dataList.value.length > 0||loading.value)?465:182)
+})
 
 const columns = computed(() => {
   return [
