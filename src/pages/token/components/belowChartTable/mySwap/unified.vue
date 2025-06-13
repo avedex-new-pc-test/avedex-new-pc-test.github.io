@@ -1,10 +1,10 @@
 <!-- eslint-disable vue/first-attribute-linebreak -->
 <template>
   <div>
-    <el-table v-loading="loading && !txHistory?.length" :data="txHistory" fit stripe max-height="700"
+    <el-table v-loading="loading && !txHistory?.length" :data="txHistory" fit stripe :height="tableHeight"
       style="width: 100%; min-height: 350px;" @row-click="tableRowClick">
       <template #empty>
-        <div class="flex flex-col items-center justify-center py-30px" v-if="!loading">
+        <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
           <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
           <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
           <span>{{ t('emptyNoData') }}</span>
@@ -217,6 +217,7 @@ const botStore = useBotStore()
 const route = useRoute()
 const router = useRouter()
 const { mode } = storeToRefs(useGlobalStore())
+const tokenStore = useTokenStore()
 const { t } = useI18n()
 const configStore = useConfigStore()
 const filterConditions = ref<any>({
@@ -227,6 +228,11 @@ const filterConditions = ref<any>({
 
 const txHistory = ref([])
 const loading = ref(false)
+
+const tableHeight = computed(() => {
+  return Math.max(tokenStore.commonHeight - 360, 450)
+})
+
 // const isUnit = ref(true)
 
 watch([() => props.chain, () => props.currentToken], () => {
