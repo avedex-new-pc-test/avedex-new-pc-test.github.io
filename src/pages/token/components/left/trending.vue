@@ -132,6 +132,7 @@ async function _getHotTokens() {
                 class="ml-2px w-10px h-10px"
                 :src="formatIconTag(row.launchpad)"
                 alt=""
+                v-tooltip="row.launchpad"
               >
               <Icon
                 v-if="row.risk_score > 55"
