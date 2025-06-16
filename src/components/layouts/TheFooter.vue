@@ -2,17 +2,19 @@
   <footer class="h-32px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer fixed bottom-0">
     <ul class="left gap-12px">
       <NuxtLink
-        v-for="item in data" :key="item.symbol || item.logo_url"
+        v-for="item in newData" :key="item.symbol || item.logo_url"
         class="color-[--d-999-l-666]  flex items-center gap-5px"
         :to="`/token/${item.id}`"
       >
-        <TokenImg
-        :row="{
-          logo_url: item.logo_url,
-          chain: ''
-        }" token-class="w-16px h-16px [&&]:mr-0" />
-        <span>{{ item.symbol }}</span>
-        <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
+        <template v-if="!item?.hidden">
+          <TokenImg
+          :row="{
+            logo_url: item.logo_url,
+            chain: ''
+          }" token-class="w-16px h-16px [&&]:mr-0" />
+          <span>{{ item.symbol }}</span>
+          <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
+        </template>
       </NuxtLink>
     </ul>
     <ul class="right">
@@ -73,6 +75,18 @@ import { getTokensPrice } from '@/api/token'
 import { upColor, downColor } from '@/utils/constants'
 const globalStore = useGlobalStore()
 const { lang } = storeToRefs(globalStore)
+const { token } = storeToRefs(useTokenStore())
+const route = useRoute()
+const addressAndChain = computed(() => {
+  const id = route.params.id as string
+  if (id) {
+    return getAddressAndChainFromId(id)
+  }
+  return {
+    address: token.value?.token || '',
+    chain: token.value?.chain || '',
+  }
+})
 const ids = [
   '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c-bsc',
   '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2-eth',
@@ -84,6 +98,8 @@ const data = ref<Array<{
   logo_url: string
   color: string
   current_price_usd: number
+  id: string
+  hidden?: boolean
 }>>([])
 onMounted(() => {
   // Add any initialization logic if needed
@@ -100,6 +116,7 @@ const initPage = () => {
         ...i,
         symbol,
         logo_url: i.logo_url,
+        hidden: false,
         color: i.price_change >= 0 ? upColor[0] : downColor[0],
         id: ids[index]
       }
@@ -110,6 +127,19 @@ const initPage = () => {
     data.value[3] = newVal.filter(i => i.symbol === 'SOL')[0]
   })
 }
+const newData = computed(() => {
+  return data.value.map((item, idx) => {
+    if (idx === 2) {
+      return { ...item, hidden: addressAndChain.value.chain !== 'bsc' }
+    }
+    if (idx === 3) {
+      return { ...item, hidden: addressAndChain.value.chain === 'bsc' }
+    }
+    return item
+  })
+})
+
+
 watch(()=>globalStore.footerTokensPrice, (newVal) => {
   // console.log('globalStore.footerTokensPrice', newVal)
   if(data.value.length){
