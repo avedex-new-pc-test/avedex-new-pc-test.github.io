@@ -2,7 +2,7 @@
   <div class="w-lp">
     <div  class="w-[100%]">
       <div v-show="dataList.length > 0||loading" class="flex gap-10px items-center ml-12px">
-        <div class="font-Poppins font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
+        <div class="font-400 text-12px lh-16px color-[--d-999-l-666]">{{ $t('liquidity') }}</div>
         <el-radio-group v-model="activeTime" class="m-radio-group" size="small" :fill="isDark?'#333':'#666'" :text-color="isDark?'#F5F5F5':'#FFF'" @change="init1">
           <el-radio-button label="7D" :value="7" />
           <el-radio-button label="1M" :value="30" />
@@ -11,7 +11,7 @@
       <Line v-if="dataList.length > 0||loading" :dataList="dataList" :loading="loading" :showSeries="showSeries"  :showLeft="showLeft" />
     </div>
     <div class="m-table mt20px">
-      <el-table 
+      <el-table
         v-loading="loading2" :data="dataSource" style="width: 100%" :expand-row-keys="expandedRowKeys" preserve-expanded-content fit
         :row-key="getRowKey"  :style="{height: currentHeight>=245?`${currentHeight}px`:'245px'}" size="small" >
         <template #empty>
@@ -22,7 +22,7 @@
           </div>
           <span v-else />
         </template>
-        <el-table-column 
+        <el-table-column
           v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth"
           :align="col.align">
           <template #default="{ row }">
@@ -31,9 +31,7 @@
                 <Icon v-if="formatLock(row)" color="#B3920E" name="material-symbols:lock" />
                 <Icon v-if="row.is_contract == 1" name="iconamoon:file-document-thin"  />
                 <tag v-if="Number(row?.analysis_show_creator) === 1">{{ $t('contractCreator') }}</tag>
-                <el-tooltip :effect="mode" placement="top-end" :content="row?.mark||row?.address">
-                  <div style="max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
-                </el-tooltip>
+                <div v-tooltip="row?.mark||row?.address" class="max-w-140px whitespace-nowrap overflow-hidden text-ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
               </div>
               <div v-else-if="col.prop == 'addAmt'" class="flex flex-col">
                 <!-- class="color-#12B886" -->
@@ -41,18 +39,18 @@
                 <!-- <div>
                   <span>{{ lpRest?.main_token_symbol }}</span>
                 </div> -->
-                <span v-if="row.main_token_amount_usd=='0'">0</span>
+                <!-- <span v-if="row.main_token_amount_usd=='0'">0</span>
                 <span v-else-if="row.main_token_amount_usd == '--'">--</span>
-                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span>
+                <span v-else>{{`${Number(row.main_token_amount_usd) > 0 ? '$' : '-$'}${formatNumber(Math.abs(Number(row.main_token_amount_usd)), 1)}`}}</span> -->
               </div>
               <div v-else-if="col.prop == 'netAmt'" class="flex flex-col">
                 <span >{{ formatNumber(row.target_token_amount, 1) }}</span>
                 <!-- <div>
                   <span>{{ lpRest?.target_token_symbol }}</span>
                 </div> -->
-                <span v-if="row.target_token_amount_usd=='0'">0</span>
+                <!-- <span v-if="row.target_token_amount_usd=='0'">0</span>
                 <span v-else-if="row.target_token_amount_usd == '--'">--</span>
-                <span v-else>{{`${Number(row.target_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd)), 1)}`}}</span>
+                <span v-else>{{`${Number(row.target_token_amount_usd) > 0 ? '+$' : '-$'}${formatNumber(Math.abs(Number(row.target_token_amount_usd)), 1)}`}}</span> -->
               </div>
               <div v-else-if="col.prop == 'txns'" class="flex flex-col">
 
@@ -200,7 +198,6 @@ const columns = computed(() => {
     //     return Array.isArray(row.lock) ? formatNumber((row.lock.reduce((prev: any, cur: any) => prev.amount || 0 + cur.amount || 0, 0)), 2) : 0
     //   }
     // },
-  
     {
       label: t('value'),
       prop: 'value1',
@@ -383,6 +380,7 @@ function init2() {
 .m-table {
   .el-table.el-table{
     --el-table-header-bg-color: var(--d-222-l-F2F2F2);
+    --el-table-tr-bg-color: transparent;
   }
   :deep() .cell{
     padding-top: 0;
@@ -396,7 +394,6 @@ function init2() {
      background-color: var(--d-222-l-F2F2F2);
   }
   :deep() th {
-    font-family: Poppins;
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
@@ -405,7 +402,6 @@ function init2() {
   }
 
   :deep() td {
-    font-family: Poppins;
     font-weight: 400;
     font-size: 13px;
     line-height: 1;
@@ -427,7 +423,7 @@ function init2() {
   display: flex;
   background: var(--d-666-l-999);
   border-radius: 1.5px;
-  margin-top: 11px;
+  margin-top: 5px;
   margin-bottom: 3px;
 
   >span {

@@ -260,5 +260,6 @@
   "tm_kill_block_after_open": "Destruir e Bloquear após Abertura",
   "tm_start_trade_at_block": "Iniciar Negociação no Bloco",
   "mechanism_intro": "Adicional",
-  "antiWhaleModifiable": "Anti-baleia modificável"
+  "antiWhaleModifiable": "Anti-baleia modificável",
+  "tax": "Imposto"
 }

@@ -64,12 +64,14 @@ const copyDirective = {
         }
 
         // 更改图标的状态
-        if (el?.classList?.contains?.('icon-copy')) {
-          el.classList.remove('color-848E9C')
-          el.classList.add('icon-checked')
+        if (el?.classList?.contains?.('i-bxs:copy')) {
+          el.classList.add('color-#3F80F7')
+          el.classList.add('i-custom:checked')
+          el.classList.remove('i-bxs:copy')
           timer_copy = setTimeout(() => {
-            el.classList.remove('icon-checked')
-            el.classList.add('color-848E9C')
+            el.classList.remove('i-custom:checked')
+            el.classList.remove('color-#3F80F7')
+            el.classList.add('i-bxs:copy')
           }, 1500)
         }
       }

@@ -433,5 +433,6 @@
   "tm_kill_block_after_open": "Giết N block sau mở",
   "tm_start_trade_at_block": "Bắt đầu giao dịch tại block",
   "mechanism_intro": "Bổ sung",
-  "antiWhaleModifiable": "Có thể sửa đổi chống cá voi"
+  "antiWhaleModifiable": "Có thể sửa đổi chống cá voi",
+  "tax": "Thuế"
 }

@@ -130,6 +130,7 @@ export interface Token {
   owner?: string
   is_audited: boolean
   dev_balance_ratio_cur: number
+  launchpad: string
 }
 
 export interface Volume {

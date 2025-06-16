@@ -6,7 +6,7 @@
     :size="430"
     class="draw-right"
   >
-    <div class="check-container bg-[--d-222-l-FFF] h-100vh color-[--d-F5F5F5-l-333]">
+    <div class="check-container bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]">
       <div class="flex items-center justify-between text-20px p-20px sticky top-0 bg-[--d-222-l-FFF] z-1">
         <span>{{ $t('check2') }}</span>
         <Icon name="ri:close-large-fill" class="clickable" @click.stop="visible = false" />
@@ -163,7 +163,7 @@
                 class="flex items-start justify-between"
               >
                 <ul
-                  class="flex-1 mr-15px pr-15px border-r border-[#97979733]"
+                  class="flex-1 pr-15px border-r border-[#97979733]"
                 >
                   <li
                     class="card-list-item cursor-pointer"
@@ -873,7 +873,7 @@
                           v-if="
                             (item?.lock?.length ?? 0) > 0 &&
                             item?.lock?.every?.(
-                              (i) => i.unlockDate ?? 0 * 1000 <= Date.now()
+                              (i) => (i.unlockDate ?? 0) * 1000 <= Date.now()
                             )
                           "
                           style="height: 15px"
@@ -2398,6 +2398,7 @@ onMounted(() => {})
   border-radius: 4px;
   width: 100%;
   font-size: 12px;
+  padding: 5px;
   td,
   th {
     text-align: left;

@@ -2,7 +2,7 @@
   <header
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
-    <a href="https://ave.ai" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
+    <a :href="homeUrl" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
         <a :href="item.src" target="_blank" :class="{ active: item.id == route?.name }">
@@ -98,7 +98,7 @@
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
 import wallet from '@/components/header/wallet/index.vue'
-import Notice from "~/components/layouts/components/notice.vue"
+import Notice from '~/components/layouts/components/notice.vue'
 // const connectWallet = shallowRef<Component | null>(null)
 import positions from '@/components/header/positions/index.vue'
 // import connectWallet from '@/components/header/connectWallet/index.vue'
@@ -110,13 +110,26 @@ const route = useRoute()
 const langStore = useLocaleStore()
 const {t } = useI18n()
 const list = computed(() => {
+  let query = ''
+  if (botStore.accessToken && botStore.refreshToken) {
+    query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+  }
   return [
-  { id: 'index', name: t('markets'), src: 'https://ave.ai/' },
-  { id: 'pump', name: t('pump1'), src: 'https://ave.ai/pump' },
-  { id: 'smart', name: t('smarter2'), src: 'https://ave.ai/smart' },
-  { id: 'assets', name: t('balances'), src: 'https://ave.ai/address' },
+    { id: 'index', name: t('markets'), src: 'https://ave.ai/' + query },
+    { id: 'pump', name: t('pump1'), src: 'https://ave.ai/pump' + query },
+    { id: 'smart', name: t('smarter2'), src: 'https://ave.ai/smart' + query },
+    { id: 'assets', name: t('balances'), src: 'https://ave.ai/address' + query },
   ]
 })
+
+const homeUrl = computed(() => {
+  let query = ''
+  if (botStore.accessToken && botStore.refreshToken) {
+    query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+  }
+  return 'https://ave.ai/' + query
+})
+
 const dialogVisible_search = shallowRef(false)
 
 const lazyComponent = shallowRef<Component | null>(null)
