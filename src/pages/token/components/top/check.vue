@@ -163,7 +163,7 @@
                 class="flex items-start justify-between"
               >
                 <ul
-                  class="flex-1 mr-15px pr-15px border-r border-[#97979733]"
+                  class="flex-1 pr-15px border-r border-[#97979733]"
                 >
                   <li
                     class="card-list-item cursor-pointer"
@@ -2398,6 +2398,7 @@ onMounted(() => {})
   border-radius: 4px;
   width: 100%;
   font-size: 12px;
+  padding: 5px;
   td,
   th {
     text-align: left;
