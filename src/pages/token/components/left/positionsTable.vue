@@ -15,6 +15,7 @@ const botStore = useBotStore()
 const botSwapStore = useBotSwap()
 const priceV2Store = usePriceV2Store()
 const tokenStore = useTokenStore()
+const configStore = useConfigStore()
 watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
   const idToPriceMap: { [key: string]: IPriceV2Response['prices'][0] } = {}
   val.prices.forEach((item) => {
@@ -240,14 +241,11 @@ async function _getUserBalance() {
     })
     if (Array.isArray(res?.data) && res.data.length > 0) {
       if (pageNo === 1) {
-        listData.value = res.data.map(i => ({...i, index: `${i.token}-${i.chain}`}))
+        listData.value = res.data.map(addIndexAndWrapperAddress)
       } else {
         const list = res.data
           .filter(i => listData.value.every(j => j.index !== `${i.token}-${i.chain}`))
-          .map(i => ({
-            ...i,
-            index: `${i.token}-${i.chain}`
-          }))
+          .map(addIndexAndWrapperAddress)
         listData.value = listData.value.concat(list)
       }
       listStatus.value.finished = res.data.length < listStatus.value.pageSize
@@ -266,6 +264,25 @@ async function _getUserBalance() {
   } finally {
     listStatus.value.loading = false
     triggerRef(listStatus)
+  }
+}
+
+// 添加 index 和主币 wrapper 地址
+function addIndexAndWrapperAddress(row: GetUserBalanceResponse) {
+  const index = `${row.token}-${row.chain}`
+  const isMain = row.token === NATIVE_TOKEN
+  if (isMain) {
+    const current = configStore.chainConfig.find(el => {
+      if (el.name.toUpperCase() === row.chain.toUpperCase()) {
+        return el
+      }
+    })
+    if (current) {
+      return {index, ...row, token: current.wmain_wrapper}
+    }
+  }
+  return {
+    index, ...row
   }
 }
 
@@ -517,7 +534,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                 style="padding:4px"
                 @click.stop.prevent="handleSellAmount(row)"
               >
-                {{ $t('sellAll') }}
+                {{ $t('closePosition') }}
               </el-button>
               <span v-else class="color-[var(--d-EAECEF-l-333)]">--</span>
             </div>
