@@ -520,7 +520,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                 v-if="botStore.evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
                 size="small"
                 :loading="loadingSwap[row.index]"
-                class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2] font-normal"
+                class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2] [&&]:font-normal"
                 style="padding:4px"
                 @click.stop.prevent="handleSellAmount(row)"
               >
