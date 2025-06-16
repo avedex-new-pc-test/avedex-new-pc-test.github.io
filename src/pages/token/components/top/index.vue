@@ -297,6 +297,7 @@
               </div>
             </template>
           </el-popover>
+          <DeBox/>
         </div>
         <div class="text-12px font-500 flex items-center mt-4px">
           <a
@@ -671,6 +672,7 @@
 import Top50 from './top50.vue'
 import Run from './run.vue'
 import Check from './check.vue'
+import DeBox from './deBox.vue'
 import {
   getSymbolDefaultIcon,
   getChainDefaultIcon,
