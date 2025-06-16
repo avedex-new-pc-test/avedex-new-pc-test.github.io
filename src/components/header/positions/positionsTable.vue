@@ -3,7 +3,7 @@
     <slot/>
     <el-table
       class="table-position w-100%" :data="dataSource" :height="400" @row-click="tableRowClick
-      ">  
+      ">
       <template #empty>
         <div v-if="!paginationParams.loaded" class="flex flex-col items-center justify-center py-30px">
           <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
@@ -172,9 +172,18 @@ const fetchTable = async () => {
     const data=res?.data||[]
     if (Array.isArray(data) && data?.length > 0) {
       if(pageNO === 1) {
-        dataSource.value = data?.map(i => ({ ...i, index: `${i.token}-${i.chain}` }))
+        dataSource.value = data?.map(i => ({
+          ...i, index: i.token === NATIVE_TOKEN
+              ? getChainInfo(i.chain)?.wmain_wrapper + '-' + i.chain
+              : `${i.token}-${i.chain}`
+        }))
       }else{
-        dataSource.value = [...dataSource.value].concat(data.filter?.(i => dataSource.value?.every?.(j => j.index !== `${i.token}-${i.chain}`))?.map(i => ({ ...i, index: `${i.token}-${i.chain}` })))
+        dataSource.value = [...dataSource.value].concat(data.filter?.(i => dataSource.value?.every?.(j => j.index !== `${i.token}-${i.chain}`))
+            ?.map(i => ({
+              ...i, index: i.token === NATIVE_TOKEN
+                  ? getChainInfo(i.chain)?.wmain_wrapper + '-' + i.chain
+                  : `${i.token}-${i.chain}`
+            })))
       }
       paginationParams.value.finished = data?.length < pageSize
       if (!paginationParams.value.finished) {

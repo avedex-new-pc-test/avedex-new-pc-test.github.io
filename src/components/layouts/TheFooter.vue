@@ -4,7 +4,7 @@
       <NuxtLink
         v-for="item in data" :key="item.symbol || item.logo_url"
         class="color-[--d-999-l-666]  flex items-center gap-5px"
-        :to="`/token/${item.token}-${item.chain}`"
+        :to="`/token/${item.id}`"
       >
         <TokenImg
         :row="{
@@ -94,16 +94,14 @@ const initPage = () => {
   getTokensPrice(ids).then((res) => {
     //WETH BTCB SOL
     console.log('getTokensPrice',res)
-    const newVal = res.map(i=>{
+    const newVal = res.map((i, index) => {
       const symbol = {WETH: 'ETH', BTCB: 'BTC', WBNB: 'BNB', SOL: 'SOL'}[i.symbol as string] || i.symbol
-      const current = useConfigStore().chainConfig.find(el => el.main_name.toUpperCase() === symbol.toUpperCase())
       return {
         ...i,
         symbol,
         logo_url: i.logo_url,
         color: i.price_change >= 0 ? upColor[0] : downColor[0],
-        token: current?.wmain_wrapper,
-        chain: current?.net_name
+        id: ids[index]
       }
     })
     data.value[0] = newVal.filter(i => i.symbol === 'BTC')[0]

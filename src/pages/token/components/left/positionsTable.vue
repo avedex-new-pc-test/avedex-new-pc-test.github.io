@@ -15,7 +15,6 @@ const botStore = useBotStore()
 const botSwapStore = useBotSwap()
 const priceV2Store = usePriceV2Store()
 const tokenStore = useTokenStore()
-const configStore = useConfigStore()
 watch(() => wsStore.wsResult[WSEventType.PRICEV2], (val: IPriceV2Response) => {
   const idToPriceMap: { [key: string]: IPriceV2Response['prices'][0] } = {}
   val.prices.forEach((item) => {
@@ -241,11 +240,21 @@ async function _getUserBalance() {
     })
     if (Array.isArray(res?.data) && res.data.length > 0) {
       if (pageNo === 1) {
-        listData.value = res.data.map(addIndexAndWrapperAddress)
+        listData.value = res.data.map(i => ({
+          ...i,
+          index: i.token === NATIVE_TOKEN
+            ? getChainInfo(i.chain)?.wmain_wrapper + '-' + i.chain
+            : `${i.token}-${i.chain}`,
+        }))
       } else {
         const list = res.data
           .filter(i => listData.value.every(j => j.index !== `${i.token}-${i.chain}`))
-          .map(addIndexAndWrapperAddress)
+          .map(i => ({
+            ...i,
+            index: i.token === NATIVE_TOKEN
+              ? getChainInfo(i.chain)?.wmain_wrapper + '-' + i.chain
+              : `${i.token}-${i.chain}`
+          }))
         listData.value = listData.value.concat(list)
       }
       listStatus.value.finished = res.data.length < listStatus.value.pageSize
@@ -264,25 +273,6 @@ async function _getUserBalance() {
   } finally {
     listStatus.value.loading = false
     triggerRef(listStatus)
-  }
-}
-
-// 添加 index 和主币 wrapper 地址
-function addIndexAndWrapperAddress(row: GetUserBalanceResponse) {
-  const index = `${row.token}-${row.chain}`
-  const isMain = row.token === NATIVE_TOKEN
-  if (isMain) {
-    const current = configStore.chainConfig.find(el => {
-      if (el.name.toUpperCase() === row.chain.toUpperCase()) {
-        return el
-      }
-    })
-    if (current) {
-      return {index, ...row, token: current.wmain_wrapper}
-    }
-  }
-  return {
-    index, ...row
   }
 }
 
@@ -479,7 +469,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
           <NuxtLink
             v-for="(row,$index) in listData" :key="$index"
             class="text-12px flex justify-between pl-10px py-10px cursor-pointer hover:bg-[var(--d-222-l-F2F2F2)]"
-            :to="`/token/${row.token}-${row.chain}`"
+            :to="`/token/${row.index}`"
           >
             <div class="flex-[1.5] flex items-center">
               <TokenImg
@@ -530,7 +520,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                 v-if="botStore.evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
                 size="small"
                 :loading="loadingSwap[row.index]"
-                class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2]"
+                class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2] font-normal"
                 style="padding:4px"
                 @click.stop.prevent="handleSellAmount(row)"
               >
