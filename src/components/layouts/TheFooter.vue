@@ -1,7 +1,11 @@
 <template>
   <footer class="h-32px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer fixed bottom-0">
     <ul class="left gap-12px">
-      <li v-for="item in data" :key="item.symbol || item.logo_url" class="color-[--d-999-l-666]  flex items-center gap-5px">
+      <NuxtLink
+        v-for="item in data" :key="item.symbol || item.logo_url"
+        class="color-[--d-999-l-666]  flex items-center gap-5px"
+        :to="`/token/${item.id}`"
+      >
         <TokenImg
         :row="{
           logo_url: item.logo_url,
@@ -9,7 +13,7 @@
         }" token-class="w-16px h-16px [&&]:mr-0" />
         <span>{{ item.symbol }}</span>
         <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
-      </li>
+      </NuxtLink>
     </ul>
     <ul class="right">
       <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
@@ -90,12 +94,14 @@ const initPage = () => {
   getTokensPrice(ids).then((res) => {
     //WETH BTCB SOL
     console.log('getTokensPrice',res)
-    const newVal = res.map(i=>{
+    const newVal = res.map((i, index) => {
+      const symbol = {WETH: 'ETH', BTCB: 'BTC', WBNB: 'BNB', SOL: 'SOL'}[i.symbol as string] || i.symbol
       return {
         ...i,
-        symbol: {WETH:'ETH',BTCB:'BTC',WBNB:'BNB',SOL:'SOL'}[i.symbol as string] || i.symbol,
+        symbol,
         logo_url: i.logo_url,
-        color:i.price_change>=0?upColor[0]:downColor[0]
+        color: i.price_change >= 0 ? upColor[0] : downColor[0],
+        id: ids[index]
       }
     })
     data.value[0] = newVal.filter(i => i.symbol === 'BTC')[0]

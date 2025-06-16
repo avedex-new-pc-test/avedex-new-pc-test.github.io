@@ -240,13 +240,20 @@ async function _getUserBalance() {
     })
     if (Array.isArray(res?.data) && res.data.length > 0) {
       if (pageNo === 1) {
-        listData.value = res.data.map(i => ({...i, index: `${i.token}-${i.chain}`}))
+        listData.value = res.data.map(i => ({
+          ...i,
+          index: i.token === NATIVE_TOKEN
+            ? getChainInfo(i.chain)?.wmain_wrapper + '-' + i.chain
+            : `${i.token}-${i.chain}`,
+        }))
       } else {
         const list = res.data
           .filter(i => listData.value.every(j => j.index !== `${i.token}-${i.chain}`))
           .map(i => ({
             ...i,
-            index: `${i.token}-${i.chain}`
+            index: i.token === NATIVE_TOKEN
+              ? getChainInfo(i.chain)?.wmain_wrapper + '-' + i.chain
+              : `${i.token}-${i.chain}`
           }))
         listData.value = listData.value.concat(list)
       }
@@ -462,7 +469,7 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
           <NuxtLink
             v-for="(row,$index) in listData" :key="$index"
             class="text-12px flex justify-between pl-10px py-10px cursor-pointer hover:bg-[var(--d-222-l-F2F2F2)]"
-            :to="`/token/${row.token}-${row.chain}`"
+            :to="`/token/${row.index}`"
           >
             <div class="flex-[1.5] flex items-center">
               <TokenImg
@@ -513,11 +520,11 @@ function handleTxSuccess(res: any, _batchId: string, tokenId: string) {
                 v-if="botStore.evmAddress && row.token!=='0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
                 size="small"
                 :loading="loadingSwap[row.index]"
-                class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2]"
+                class="[--el-border:0] [&&]:[--el-button-bg-color:--d-222-l-F2F2F2] font-normal"
                 style="padding:4px"
                 @click.stop.prevent="handleSellAmount(row)"
               >
-                {{ $t('sellAll') }}
+                {{ $t('closePosition') }}
               </el-button>
               <span v-else class="color-[var(--d-EAECEF-l-333)]">--</span>
             </div>
