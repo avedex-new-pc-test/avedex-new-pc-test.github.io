@@ -18,7 +18,7 @@ export default defineNuxtPlugin(() => {
       const GA = window.GameAnalytics
 
       // GameAnalytics.configureBuild('1.0.0');
-      GA('setEnabledInfoLog', true)
+      GA('setEnabledInfoLog', false)
       GA('initialize', 'f0c5b7066f930031fd7fc70f9fafc376', '1fa8b7bf923a2eaf5274ab7a79bd8a90ec170299')
 
       // 可选：追踪一个事件
