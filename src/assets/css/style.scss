@@ -145,3 +145,8 @@
 .search-input .el-input__clear {
   display: none !important;
 }
+debox-chat-widget {
+  @media (max-width: 1920px){
+    --debox-chat-height: 400px; /* 缩放到 80% */
+  }
+}

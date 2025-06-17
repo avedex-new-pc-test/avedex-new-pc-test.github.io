@@ -114,7 +114,7 @@
                 </span>
               </div>
             </template>
-            <div v-if="medias?.length > 0" class="flex text-10px">
+            <div v-if="medias?.length > 0" class="flex text-20px">
               <div v-for="(item, index) in medias" :key="index" class="tag-btn">
                 <template v-if="item.url">
                   <span
@@ -124,7 +124,7 @@
                   >
                     <Icon
                       :name="`custom:${item.icon}`"
-                      class="text-[--d-666-l-999] h-10px"
+                      class="text-[--d-666-l-999] text-12px"
                     />
                   </span>
                   <a
@@ -137,7 +137,7 @@
                   >
                     <Icon
                       :name="`custom:${item.icon}`"
-                      class="text-[--d-666-l-999] h-10px"
+                      class="text-[--d-666-l-999] text-12px"
                     />
                   </a>
                 </template>
@@ -146,10 +146,11 @@
             <img
               v-if="token?.launchpad"
               v-tooltip="token.launchpad"
-              class="bg-btn cursor-pointer"
+              class="rounded-100% bg-btn cursor-pointer"
               :src="formatIconTag(token.launchpad)"
               alt=""
-              :width="10"
+              :width="12"
+              style="border-radius: 100%"
             >
             <a
               class="media-item bg-btn"
@@ -157,7 +158,7 @@
               target="_blank"
             >
               <Icon
-                class="text-[--d-666-l-999] h-16px w-10px"
+                class="text-[--d-666-l-999] h-16px w-12px"
                 name="ep:search"
               />
             </a>
@@ -174,7 +175,7 @@
             <template #reference>
               <a class="w-zu flex-start bg-btn" href="" @click.stop.prevent>
                 <Icon
-                  class="text-[--d-666-l-999] h-12px"
+                  class="text-[--d-666-l-999] text-12px"
                   name="custom:groups"
                 />
                 <span class="ml-2px ellipsis block" style="max-width: 140px">
@@ -247,7 +248,7 @@
             <template #reference>
               <a class="w-zu flex-start bg-btn" href="" @click.stop.prevent>
                 <Icon
-                  class="text-[--d-666-l-999] h-12px"
+                  class="text-[--d-666-l-999] text-12px"
                   name="custom:remark"
                 />
                 <span class="ml-2px ellipsis block" style="max-width: 140px">{{
