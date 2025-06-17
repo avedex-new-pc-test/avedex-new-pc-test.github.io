@@ -94,6 +94,8 @@ export default defineNuxtConfig({
     '@/assets/css/element-plus/reset.scss'
   ],
   plugins: [
+    // 添加 gameanalytics 
+    '@/plugins/gameanalytics.client.ts',
     '@/plugins/directives/index.ts', // 引入自定义指令插件
     '@/plugins/pwa-meta.client.ts', // 引入 pwa-meta 插件
     '@/plugins/i18n-sync.client.ts',

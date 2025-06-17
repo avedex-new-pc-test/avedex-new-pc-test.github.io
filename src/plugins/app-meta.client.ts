@@ -1,7 +1,7 @@
 // plugins/app-meta.client.ts
 export default defineNuxtPlugin(() => {
-  const config = useRuntimeConfig()
-  const GA = config.public.ga
+  // const config = useRuntimeConfig()
+  // const GA = config.public.ga
   useHead({
     title: 'Ave.ai',
     meta: [
@@ -37,22 +37,22 @@ export default defineNuxtPlugin(() => {
       { rel: 'icon', href: '/favicon.ico' },
       { rel: 'shortcut icon', href: '/favicon.ico' },
     ],
-    script: [
-      {
-        src: `https://www.googletagmanager.com/gtag/js?id=${GA}`,
-        async: true,
-      },
-      {
-        id: 'gtag-init', // 或 id: 'gtag-init'
-        innerHTML: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GA}');
-        `,
-        type: 'text/javascript',
-      },
-    ],
+    // script: [
+    //   {
+    //     src: `https://www.googletagmanager.com/gtag/js?id=${GA}`,
+    //     async: true,
+    //   },
+    //   {
+    //     id: 'gtag-init', // 或 id: 'gtag-init'
+    //     innerHTML: `
+    //       window.dataLayer = window.dataLayer || [];
+    //       function gtag(){dataLayer.push(arguments);}
+    //       gtag('js', new Date());
+    //       gtag('config', '${GA}');
+    //     `,
+    //     type: 'text/javascript',
+    //   },
+    // ],
   })
 
   // 执行跳转/安全逻辑
