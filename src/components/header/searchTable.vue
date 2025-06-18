@@ -551,7 +551,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     li {
       padding: 0 20px;
       &:hover {
-        background-color: var(--d-333-l-F2F2F2);
+        background-color: var(--d-2A2A2A-l-F2F2F2);
       }
     }
     .token-info {
@@ -618,7 +618,7 @@ function switchSort(sortBy1: string, activeSort1?: SortValue) {
     }
     a:hover {
       text-decoration: none;
-      background-color: var(--d-333-l-F2F2F2);
+      background-color: var(--d-2A2A2A-l-F2F2F2);
       opacity: 1;
     }
     li:nth-child(1) .flex {

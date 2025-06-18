@@ -117,6 +117,7 @@ function calculateColumnWidths() {
       <!-- 透传所有 $attrs，支持 el-table-v2 的其它属性 -->
       <ElTableV2
         ref="tableRef"
+        class="el-table"
         style="--el-table-border:0;--el-bg-color:transparent;font-size: 12px;"
         header-class="bg-[--d-222-l-F2F2F2]"
         :header-height="32"

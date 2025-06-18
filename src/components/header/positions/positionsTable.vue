@@ -231,7 +231,7 @@ onMounted(() => {
   --el-table-header-bg-color:transparent;
   --el-table-header-text-color:var(--d-999-l-666);
   --el-table-text-color:var(--d-F5F5F5-l-222);
-  --el-table-row-hover-bg-color:var(--d-333-l-F2F2F2);
+  --el-table-row-hover-bg-color:var(--d-2A2A2A-l-F2F2F2);
   :deep() thead{
     font-size: 10px;
     tr{
