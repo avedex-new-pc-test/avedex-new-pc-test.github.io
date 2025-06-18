@@ -434,5 +434,13 @@
   "tm_start_trade_at_block": "Bắt đầu giao dịch tại block",
   "mechanism_intro": "Bổ sung",
   "antiWhaleModifiable": "Có thể sửa đổi chống cá voi",
-  "tax": "Thuế"
+  "tax": "Thuế",
+  "quick": "Mua nhanh",
+  "default": "Mặc định",
+  "collected": "Đã thu thập",
+  "filters": "Lọc",
+  "dev_sold_out": "DEV bán hết",
+  "MC": "Vốn hóa",
+  "progress": "Tiến độ",
+  "volume4": "Khối lượng"
 }

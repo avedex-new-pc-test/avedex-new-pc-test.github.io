@@ -434,5 +434,13 @@
   "tm_start_trade_at_block": "Начать торговлю с блока",
   "mechanism_intro": "Дополнительно",
   "antiWhaleModifiable": "Изменяемый анти-кит",
-  "tax": "Налог"
+  "tax": "Налог",
+  "quick": "Быстрая покупка",
+  "default": "По умолчанию",
+  "collected": "Собрано",
+  "filters": "Фильтр",
+  "dev_sold_out": "DEV продал всё",
+  "MC": "КАП",
+  "progress": "Прогресс",
+  "volume4": "Объем"
 }
