@@ -3,22 +3,16 @@ import { ref, onMounted } from 'vue'
 import { formatNumber2 } from '~/utils/formatNumber'
 import { getChainDefaultIcon } from '~/utils'
 import ArcProgress from '~/components/arcProgress.vue'
-import { getNewFavoriteList } from '~/api/fav'
+import { getNewFavoriteList, getUserFavoriteGroups, removeFavorite } from '~/api/fav'
 
 const botStore = useBotStore()
 const configStore = useConfigStore()
 const currentAccount = localStorage.getItem('currentAccount')
 const router = useRouter()
 const { t } = useI18n()
-const activeTab = ref('symbol')
+const activeTab = ref(0)
 
-const tabs = ref([{
-  label: '自选币种',
-  value: 'symbol'
-}, {
-  label: '关注地址',
-  value: 'address'
-}])
+const tabsGroup = ref<any[]>([])
 
 const loading = ref(false)
 const pageData = ref({
@@ -29,8 +23,10 @@ const pageData = ref({
 const tableList = ref<any[]>([])
 const { mode } = storeToRefs(useGlobalStore())
 
-const setActiveTab = (val: string) => {
+const setActiveTab = (val: number) => {
   activeTab.value = val
+  pageData.value.page = 1
+  getList()
 }
 
 const tableRowClick = (row: any) => {
@@ -58,14 +54,37 @@ const tableRowClick = (row: any) => {
   }
 }
 
+const handleSortChange = ({ prop, order }: any) => {
+  if (prop) {
+    if (order === 'ascending') {
+      tableList.value = tableList.value.toSorted((a, b) => a[prop] - b[prop])
+    } else if (order === 'descending') {
+      tableList.value = tableList.value.toSorted((a, b) => b[prop] - a[prop])
+    }
+  }
+}
+
 const collect = (row: any) => {
-  console.log(row)
+  if (!verifyLogin()) {
+    return
+  }
+  loading.value = true
+  removeFavorite(`${row.token}-${row.chain}`, botStore.evmAddress)
+    .then(() => {
+      getList()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const getList = async () => {
   const res = await getNewFavoriteList({
     address: botStore.evmAddress,
-    group: 0,
+    group: activeTab.value,
     pageNO: pageData.value.page,
     pageSize: pageData.value.pageSize
   })
@@ -82,23 +101,40 @@ const getList = async () => {
   tableList.value = tableData
 }
 
+const getGroupList = async () => {
+  const res = await getUserFavoriteGroups(botStore.evmAddress)
+  tabsGroup.value = (res || []).filter(el => !!el.name).map((item) => ({
+    ...item,
+    label: item.name,
+    value: item.group_id
+  }))
+}
+
 onMounted(() => {
   getList()
+  getGroupList()
 })
 </script>
 
 <template>
   <div>
     <div class="flex items-center p-12px gap-8px overflow-x-auto scrollbar-hide">
-      <div v-for="(item) in tabs" :key="item.value"
+      <div
         class="cursor-pointer text-12px color-[--d-999-l-666] bg-[--d-15171c-l-f2f2f2] px-8px py-4px rounded-4px shrink-0"
+        :class="[activeTab === 0 && 'bg-[--d-333-l-0A0B0C] color-[#F5F5F5]']" @click="setActiveTab(0)">
+        {{ t('defaultGroup') }}
+      </div>
+      <div v-for="(item) in tabsGroup" :key="item.value"
+        class="cursor-pointer text-12px color-[--d-999-l-666] bg-[--d-15171c-l-f2f2f2] px-8px py-4px rounded-4px shrink-0 flex items-center"
         :class="[activeTab === item.value && 'bg-[--d-333-l-0A0B0C] color-[#F5F5F5]']"
         @click="setActiveTab(item.value)">
         {{ item.label }}
+        <!-- <Icon name="custom:add_icon" class="text-12px text-[#F6465D] clickable" /> -->
       </div>
     </div>
 
-    <el-table v-loading="loading" :data="tableList" stripe fit @row-click="tableRowClick">
+    <el-table v-loading="loading" :data="tableList" stripe fit @sort-change="handleSortChange"
+      @row-click="tableRowClick">
       <template #empty>
         <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
           <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
@@ -115,7 +151,7 @@ onMounted(() => {
               <span class="text-[#848E9C] text-12px mr-5px">
                 #{{ (pageData.page - 1) * pageData.pageSize + $index + 1 }}
               </span>
-              <Icon v-if="botStore?.userInfo?.evmAddress || currentAccount" name="material-symbols:kid-star"
+              <Icon v-if="botStore.evmAddress || currentAccount" name="material-symbols:kid-star"
                 class="color-var(--d-999-l-666) h-16px w-16px clickable color-#ffbb19"
                 @click.stop.prevent="collect(row)" />
 
@@ -145,8 +181,6 @@ onMounted(() => {
           </NuxtLink>
         </template>
       </el-table-column>
-
-
       <el-table-column :label="t('holders')" sortable="custom" :sort-orders="['descending', 'ascending', null]"
         prop="holders" align="right">
         <template #default="{ row }">
@@ -155,14 +189,12 @@ onMounted(() => {
           </span>
         </template>
       </el-table-column>
-      <!-- <el-table-column :label="t('price')" sortable="custom" :sort-orders="['descending', 'ascending', null]"
+      <el-table-column :label="t('price')" sortable="custom" :sort-orders="['descending', 'ascending', null]"
         prop="current_price_usd" align="right">
         <template #default="{ row }">
-          <span v-html="'$' + formatNumber3(row.current_price_usd)"
-            v-animation-trigger-table:animation-bg="row.current_price_usd"></span>
+          <span v-html="'$' + formatNumber2(row.current_price_usd)"></span>
         </template>
-      </el-table-column> -->
-
+      </el-table-column>
       <el-table-column label="24h%" sortable="custom" :sort-orders="['descending', 'ascending', null]"
         prop="price_change_24h" align="right">
         <template #default="{ row }">

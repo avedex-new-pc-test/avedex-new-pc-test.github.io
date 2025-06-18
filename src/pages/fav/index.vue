@@ -2,14 +2,14 @@
 import { ref } from 'vue'
 import Symbol from './components/symbol/index.vue'
 
-// const { t } = useI18n()
+const { t } = useI18n()
 const activeTab = ref('symbol')
 
 const tabs = ref([{
-  label: '自选币种',
+  label: 'customToken',
   value: 'symbol'
 }, {
-  label: '关注地址',
+  label: 'watchAddress',
   value: 'address'
 }])
 
@@ -25,7 +25,7 @@ const setActiveTab = (val: string) => {
         class="cursor-pointer text-14px color-[--d-999-l-666] bg-[--d-15171c-l-f2f2f2] px-12px py-8px rounded-4px"
         :class="[activeTab === item.value && 'bg-[--d-333-l-0A0B0C] color-[#F5F5F5]']"
         @click="setActiveTab(item.value)">
-        {{ item.label }}
+        {{ t(item.label) }}
       </div>
     </div>
 
