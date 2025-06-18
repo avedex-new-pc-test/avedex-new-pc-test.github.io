@@ -256,5 +256,6 @@
   "tm_start_trade_at_block": "Hangi blokta ticaret başlayacak",
   "mechanism_intro": "Ek",
   "antiWhaleModifiable": "Değiştirilebilir büyük işlem kısıtlaması",
-  "tax": "Vergi"
+  "tax": "Vergi",
+  "follow": "Takip et"
 }

@@ -261,6 +261,7 @@ export default defineNuxtConfig({
           pages.splice(i, 1)
         }
       }
+      console.log('pages', JSON.stringify(pages))
     }
   }
 })
