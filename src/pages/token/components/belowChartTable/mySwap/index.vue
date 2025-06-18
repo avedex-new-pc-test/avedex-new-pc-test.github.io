@@ -176,7 +176,7 @@ onMounted(() => {
   <div>
     <div class="px-12px mb-10px flex justify-between">
       <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
-        <a 
+        <a
           v-for="(item) in tabs" :key="item.chain" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
           ${activeTab === item.chain ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
           @click="setActiveTab(item.chain)">
@@ -196,7 +196,7 @@ onMounted(() => {
     <!-- 顶部交易统计区域 -->
     <div class="transaction-stats">
       <div class="stat-item">
-        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('balance1') }}</div>
+        <div class="stat-label text-[var(--d-666-l-999)]">{{ t('balance1') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]">${{ formatNumber(balance, 2) }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">
           {{ formatNumber(walletTxData?.balance_amount || 0, 4) }} {{ tokenSymbol }}
@@ -206,7 +206,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('totalProfit') }}</div>
+        <div class="stat-label text-[var(--d-666-l-999)]">{{ t('totalProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]" :style="{ color: totalProfit >= 0 ? '#12B886' : '#ff646d' }">
           {{ totalProfit >= 0 ? '+' : '-' }}${{ removeLeadingMinus(formatNumber(totalProfit, 2)) }}
         </div>
@@ -215,7 +215,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('realizedProfit') }}</div>
+        <div class="stat-label text-[var(--d-666-l-999)]">{{ t('realizedProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]" :style="{ color: realizedProfit >= 0 ? '#12B886' : '#ff646d' }">
           {{ realizedProfit >= 0 ? '+' : '-' }}${{ removeLeadingMinus(formatNumber(realizedProfit, 2)) }}
         </div>
@@ -224,7 +224,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('unrealizedProfit') }}</div>
+        <div class="stat-label text-[var(--d-666-l-999)]">{{ t('unrealizedProfit') }}</div>
         <div class="stat-value table-field-text text-[var(--d-999-l-959A9F)]" :style="{ color: unrealizedProfit >= 0 ? '#12B886' : '#ff646d' }">
           {{ unrealizedProfit >= 0 ? '+' : '-' }}${{ removeLeadingMinus(formatNumber(unrealizedProfit, 2)) }}
         </div>
@@ -233,13 +233,13 @@ onMounted(() => {
         </div>
       </div>
       <div class="stat-item">
-        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('buyPriceWithSlash') }}</div>
+        <div class="stat-label text-[var(--d-666-l-999)]">{{ t('buyPriceWithSlash') }}</div>
         <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ buyTokenAmount }} {{
           tokenSymbol }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ buyUsdAmount }}</div>
       </div>
       <div class="stat-item">
-        <div class="stat-label text-[var(--d-999-l-959A9F)]">{{ t('sellPriceWithSlash') }}</div>
+        <div class="stat-label text-[var(--d-666-l-999)]">{{ t('sellPriceWithSlash') }}</div>
         <div class="stat-value token-amount table-field-text text-[var(--d-999-l-959A9F)]">{{ sellTokenAmount }} {{
           tokenSymbol }}</div>
         <div class="stat-change table-field-text text-[var(--d-999-l-959A9F)]">{{ sellUsdAmount }}</div>
