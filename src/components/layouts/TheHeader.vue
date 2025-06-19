@@ -12,7 +12,7 @@
     </ul> -->
      <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
-       <NuxtLink :to="item.src" :target="item.target" :class="{ active: item.id == route?.name }">
+       <NuxtLink :to="item.src" :target="item.target" :class="{ active: String(route?.name)?.indexOf(item.id) > -1 }">
         {{item.name }}
       </NuxtLink>
       </li>
