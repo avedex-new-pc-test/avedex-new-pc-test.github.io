@@ -663,5 +663,12 @@
   "mechanism_intro": "说明",
   "antiWhaleModifiable": "可修改大额交易限制",
   "check2": "安全检测",
-  "tax": "税"
+  "tax": "税",
+  "times": "次",
+  "MaximumIncrease": "最大涨幅",
+  "CurrentMC": "当前市值",
+  "firstSignal": "首次信号",
+  "firstMarketCap": "首次市值",
+  "currentMarketCap": "当前市值",
+  "signalUnit": "个"
 }

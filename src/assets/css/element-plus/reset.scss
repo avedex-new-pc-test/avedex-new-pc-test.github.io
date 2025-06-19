@@ -125,3 +125,7 @@
 .el-checkbox.el-checkbox {
   --el-checkbox-font-weight: 400;
 }
+
+.el-select--small .el-select__wrapper.el-select__wrapper {
+  padding: 4px;
+}

@@ -2,7 +2,10 @@
   <div>
     <div :style="botStore.connectVisible&&[{filter: 'url(#blur)'}]">
       <TheHeader />
-      <slot />
+      <div class="flex">
+        <Signal/>
+        <slot/>
+      </div>
       <TheFooter />
     </div>
     <svg v-if="botStore.connectVisible" width="0" height="0" class="absolute">

@@ -662,5 +662,12 @@
   "mechanism_intro": "Additional",
   "antiWhaleModifiable": "Anti whale modifiable",
   "check2": "Check",
-  "tax": "Tax"
+  "tax": "Tax",
+  "times": "times",
+  "MaximumIncrease": "Maximum Increase",
+  "CurrentMC": "Current MC",
+  "firstSignal": "First Signal",
+  "firstMarketCap": "First MC",
+  "currentMarketCap": "Current MC",
+  "signalUnit": ""
 }
