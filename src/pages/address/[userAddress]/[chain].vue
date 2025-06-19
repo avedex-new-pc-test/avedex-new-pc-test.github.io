@@ -34,8 +34,27 @@
       <el-radio-button label="30D" value="30d" />
     </el-radio-group>
   </div>
+
+  <div class="align-stretch">
+    <Statistic
+      ref="statistic"
+      :isSelfAddress="isSelfAddress"
+      :address="address"
+      :chain="chain"
+      :interval="interval"
+      :intervalText="intervalText"
+    />
+    <!-- <TradeData
+      :interval="interval"
+      :intervalText="intervalText"
+      :address="address"
+      :chain="chain"
+      @txAnalysisChange="txAnalysisChange"
+    /> -->
+  </div>
 </template>
 <script setup>
+import { Statistic } from './components'
 const radio3 = ref('24h')
 const smartChains = [
   {
