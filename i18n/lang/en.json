@@ -665,5 +665,6 @@
   "tax": "Tax",
   "poolPair": "Pair",
   "customToken": "Custom Token",
-  "watchAddress": "Watch Address"
+  "watchAddress": "Watch Address",
+  "tokenGroup": "Token grouping"
 }

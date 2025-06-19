@@ -666,5 +666,6 @@
   "tax": "税",
   "poolPair": "配对",
   "customToken": "自选币种",
-  "watchAddress": "关注地址"
+  "watchAddress": "关注地址",
+  "tokenGroup": "代币分组"
 }
