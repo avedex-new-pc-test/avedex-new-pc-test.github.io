@@ -273,5 +273,8 @@
   "exportCode": "Código de exportación",
   "importTip": "*Importa el código para sincronizar los datos seleccionados.",
   "plsImport": "",
-  "plsImportCorrect": "Por favor, introduce el código correcto"
+  "plsImportCorrect": "Por favor, introduce el código correcto",
+  "customToken": "Token Personalizado",
+  "watchAddress": "Dirección de Observación",
+  "remarkLib": "Dirección de alias biblioteca"
 }

@@ -263,6 +263,9 @@
   "antiWhaleModifiable": "Anti-baleia modificável",
   "tax": "Imposto",
   "follow": "Seguir",
+  "customToken": "Token Personalizado",
+  "watchAddress": "Endereço de Observação",
+  "remarkLib": "Endereço Alias ​​Library",
   "selectNetwork": "Selecione a rede ",
   "selectWallet": "Escolha a carteira",
   "detected": "Detectado",
@@ -275,3 +278,4 @@
   "plsImport": "",
   "plsImportCorrect": "Por favor, insira o código correto"
 }
+

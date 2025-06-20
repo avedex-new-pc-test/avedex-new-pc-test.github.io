@@ -664,6 +664,9 @@
   "check2": "Check",
   "tax": "Tax",
   "follow": "Follow",
+  "customToken": "Custom Token",
+  "watchAddress": "Watch Address",
+  "remarkLib": "Address alias library",
   "chainWallet": "Extension Wallet",
   "selectNetwork": "Select network",
   "selectWallet": "Choose Wallet",
@@ -678,3 +681,4 @@
   "plsImport": "Please import the self-selected Code in the App settings to automatically synchronize the app's self-selected data.",
   "plsImportCorrect": "Please enter the correct code"
 }
+ 

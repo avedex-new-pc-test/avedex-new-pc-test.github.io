@@ -436,7 +436,10 @@
   "antiWhaleModifiable": "Изменяемый анти-кит",
   "tax": "Налог",
   "follow": "Подписаться",
-  "selectNetwork": "Выбрать сеть",
+  "customToken": "Свой токен",
+  "watchAddress": "Отслеживать адрес",
+  "remarkLib": "Адрес библиотеки псевдоним",
+   "selectNetwork": "Выбрать сеть",
   "selectWallet": "Выберите кошелек",
   "detected": "Обнаружено",
   "addNetFirst": "Пожалуйста, добавьте сеть сначала",
@@ -448,3 +451,4 @@
   "plsImport": "Импортируйте код настроек",
   "plsImportCorrect": "Введите правильный код"
 }
+

@@ -665,6 +665,9 @@
   "check2": "安全检测",
   "tax": "税",
   "follow": "关注",
+  "customToken": "自选币种",
+  "watchAddress": "关注地址",
+  "remarkLib": "地址别名库",
   "chainWallet": "插件钱包",
   "selectNetwork": "选择网络",
   "selectWallet": "选择钱包",
@@ -679,3 +682,4 @@
   "plsImport": "请导入App设置里面的自选Code，自动同步app自选数据",
   "plsImportCorrect": "请输入正确的code"
 }
+
