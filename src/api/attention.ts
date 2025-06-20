@@ -22,7 +22,14 @@ export async function addAttention(body: {
     body
   })
 }
-export function getFavoriteList2(group = 0, address =localStorage.bot_evmAddress||localStorage.walletAddress) {
+// req=[
+//   {
+//     "group_id": 3763,
+//     "name": "base",
+//     "show_index": -1
+//   }
+// ]
+export function getFavoriteList2(group: number = 0, address: string = localStorage.bot_evmAddress||localStorage.walletAddress) {
   if (!address || address === 'undefined') {
     return Promise.resolve([])
   }
@@ -38,7 +45,11 @@ export function getFavoriteList2(group = 0, address =localStorage.bot_evmAddress
 
 // 组
 // // get user favorite group
-export function getUserFavoriteGroups2(address=localStorage.bot_evmAddress||localStorage.walletAddress) {
+export function getUserFavoriteGroups2(address: string =localStorage.bot_evmAddress||localStorage.walletAddress) : Promise<Array<{
+  group_id: number
+  name: string
+  show_index: number
+}>> {
   if (!address || address === 'undefined') {
     return Promise.resolve([])
   }
@@ -55,7 +66,7 @@ export function removeFavorite2({user_chain, user_address,address =localStorage.
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/delete', {
     method: 'post',
-    data: {
+    body: {
       address,
       user_chain,
       user_address
@@ -72,7 +83,7 @@ export function moveFavoriteGroup2({user_chain, user_address, group, address = l
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/move', {
     method: 'post',
-    data: {
+    body: {
       address,
       user_chain,
       user_address,
@@ -90,7 +101,7 @@ export function changeFavoritesIndex2({user1_chain, user1_address, user2_chain, 
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/changeIndex',{
     method: 'post',
-    data: {
+    body: {
       address,
       group,
       user1_address,
@@ -112,7 +123,7 @@ export function changeFavoritesTop2({
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/setTop',{
     method: 'post',
-    data: {
+    body: {
       address: address,
       user_address,
       user_chain,
@@ -130,7 +141,7 @@ export function addFavoriteGroup2(name: string, address = localStorage.bot_evmAd
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/add',{
     method: 'post',
-    data: {
+    body: {
       address,
       name
     }
@@ -146,7 +157,7 @@ export function changeFavoriteGroupName2(name: string, group: number|string, add
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/update', {
     method: 'post',
-    data: {
+    body: {
       address,
       name,
       group
@@ -163,7 +174,7 @@ export function removeFavoriteGroup2(group: number|string, address = localStorag
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/delete', {
     method: 'post',
-    data: {
+    body: {
       address,
       group
     }
@@ -178,7 +189,7 @@ export function setTopFavoriteGroup2(group: number|string, address = localStorag
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/setTop', {
     method: 'post',
-    data: {
+    body: {
       address,
       group,
       // name
@@ -191,7 +202,7 @@ export function setTopFavoriteGroup2(group: number|string, address = localStorag
 //   return $api({
 //     method: 'post',
 //     url: `/v1api/v3/tokens/favorite/editRemark`,
-//     data: {
+//     body: {
 //       token: tokenId,
 //       remark,
 //       address
@@ -202,11 +213,11 @@ export function setTopFavoriteGroup2(group: number|string, address = localStorag
 
 
 // update remark
-// export function updateWhaleRemark(data) {
+// export function updateWhaleRemark(body) {
 //   return $api({
 //     method: "post",
 //     url: `/v2api/walletinfo/v1/remark`,
-//     data,
+//     body,
 //   });
 // }
 // delete group
@@ -218,7 +229,7 @@ export function changeIndexFavoriteGroup2(group1: number|string, group2: number|
   const {$api} = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/changeIndex', {
     method: 'post',
-    data: {
+    body: {
       address,
       group1,
       group2
