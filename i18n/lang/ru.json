@@ -435,5 +435,8 @@
   "mechanism_intro": "Дополнительно",
   "antiWhaleModifiable": "Изменяемый анти-кит",
   "tax": "Налог",
-  "follow": "Подписаться"
+  "follow": "Подписаться",
+  "customToken": "Свой токен",
+  "watchAddress": "Отслеживать адрес",
+  "remarkLib": "Адрес библиотеки псевдоним"
 }

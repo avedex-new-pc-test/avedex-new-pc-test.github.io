@@ -661,5 +661,8 @@
   "antiWhaleModifiable": "可修改大額交易限制",
   "check2": "安全檢測",
   "tax": "稅",
-  "follow": "關注"
+  "follow": "關注",
+  "customToken": "自選幣種",
+  "watchAddress": "關注地址",
+  "remarkLib": "地址別名庫"
 }

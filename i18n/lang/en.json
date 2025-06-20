@@ -663,5 +663,8 @@
   "antiWhaleModifiable": "Anti whale modifiable",
   "check2": "Check",
   "tax": "Tax",
-  "follow": "Follow"
+  "follow": "Follow",
+  "customToken": "Custom Token",
+  "watchAddress": "Watch Address",
+  "remarkLib": "Address alias library"
 }

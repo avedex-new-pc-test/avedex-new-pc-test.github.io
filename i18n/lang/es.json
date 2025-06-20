@@ -262,5 +262,8 @@
   "mechanism_intro": "Adicional",
   "antiWhaleModifiable": "Antiballena modificable",
   "tax": "Impuesto",
-  "follow": "Seguir"
+  "follow": "Seguir",
+  "customToken": "Token Personalizado",
+  "watchAddress": "Dirección de Observación",
+  "remarkLib": "Dirección de alias biblioteca"
 }
