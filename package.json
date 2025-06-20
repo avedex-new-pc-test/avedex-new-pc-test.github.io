@@ -41,7 +41,8 @@
     "unocss-preset-scrollbar-hide": "^1.0.1",
     "uuid": "^11.1.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "numeral": "^2.0.6"
   },
   "devDependencies": {
     "@element-plus/nuxt": "^1.1.1",

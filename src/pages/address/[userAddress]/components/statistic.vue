@@ -5,7 +5,7 @@
         <UserAvatar
           :wallet_logo="{
             ...(statistics.wallet_logo || {}),
-            ...(address === bot.userInfo?.evmAddress ? { name: bot.userInfo?.name } : {}),
+            ...(address === botStore?.evmAddress ? { name: userInfo?.name } : {}),
           }"
           :address="address"
           :chain="chain"
@@ -22,7 +22,7 @@
               :wallet_logo="statistics.wallet_logo"
               iconEditSize="16px"
               :maxRemarkLength="15"
-              @updateRemark="getWalletBasicInfo"
+              @updateRemark="onGetWalletBasicInfo"
             />
             <a
               v-if="statistics.x_url"
@@ -39,7 +39,7 @@
                 "
                 alt=""
               />
-              {{ $f.formatNumber2(statistics.x_followers, 2, 4, 4) }}
+              {{ formatNumber2(statistics.x_followers, 2, 4, 4) }}
             </a>
             <a
               v-else-if="isSelfAddress"
@@ -59,8 +59,8 @@
             </div>
             <div class="statistic-media-left">
               <i class="iconfont icon-time" />
-              <span>{{ wallet_age.value }}</span>
-              <span>{{ wallet_age.unit }}</span>
+              <span>{{ wallet_age?.value }}</span>
+              <span>{{ wallet_age?.unit }}</span>
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@
 
         <el-switch v-model="currencyStandard" inactive-value="U" :active-value="chain">
           <template #active-action>
-            <ChainToken :chain="chain" :width="16" />
+            <!-- <ChainToken :chain="chain" :width="16" /> -->
           </template>
           <template #inactive-action>
             <span class="statistic-money-u">$</span>
@@ -82,16 +82,16 @@
       <p class="total-profit">
         {{ $t('totalPnL2') }}（{{ intervalText }}）
         <Number :value="statistics.profit" :signVisible="isUSDT">
-          {{ $f.formatNumber2(Math.abs(statistics.profit / main_token_price), 2, 4, 4) }}
+          {{ formatNumber2(Math.abs(statistics.profit / main_token_price), 2, 4, 4) }}
           {{ main_token_symbol }}
         </Number>
         <Number :value="statistics.profit_ratio"
-          >{{ $f.formatNumberS(Math.abs(statistics.profit_ratio * 100), 2) }}%
+          >{{ formatNumberS(Math.abs(statistics.profit_ratio * 100), 2) }}%
         </Number>
       </p>
       <p class="total-profit">
         {{ $t('winRate2') }}（{{ intervalText }}）<Number :value="statistics.win_rate"
-          >{{ $f.formatNumberS(Math.abs(statistics.win_rate)) }}%</Number
+          >{{ formatNumberS(Math.abs(statistics.win_rate ?? 0)) }}%</Number
         >
       </p>
     </div>
@@ -116,7 +116,7 @@
       <div>
         <div class="statistic-pnl" />
         <AveEmpty v-if="pnl.dataset.source.length <= 0" style="height: 80px" :showText="false" />
-        <AveCharts
+        <!-- <AveCharts
           v-else
           ref="profit"
           :containerStyle="{
@@ -127,7 +127,7 @@
           :series="pnl.series"
           :dataset="pnl.dataset"
           :tooltip="pnl.tooltip"
-        />
+        /> -->
       </div>
     </div>
     <el-dialog
@@ -168,9 +168,9 @@
           <div class="flex-start mt-40">
             <div class="icon-token-container share">
               <img
-                v-if="address === bot.userInfo?.evmAddress"
+                v-if="address === botStore?.evmAddress"
                 class="avatar"
-                :src="$f.generateAvatarIcon(bot.userInfo?.name || '')"
+                :src="$f.generateAvatarIcon(userInfo?.name || '')"
                 alt=""
                 width="80px"
                 height="80px"
@@ -187,21 +187,23 @@
               />
             </div>
             <span style="font-size: 14px; color: #999">
-              {{ address?.slice(0, 4) + '...' + address?.slice(-4) }}
+              {{ address.value.slice(0, 4) + '...' + address.value.slice(-4) }}
             </span>
           </div>
           <div class="mt-30" style="font-size: 40px">
             <span
-              v-if="statistics?.total_profit_ratio > 0 || statistics?.total_profit_ratio < 0"
+              v-if="
+                statistics.value.total_profit_ratio > 0 || statistics.value.total_profit_ratio < 0
+              "
               :style="{
                 color:
-                  statistics?.total_profit_ratio > 0
+                  statistics.value.total_profit_ratio > 0
                     ? $store.getters.upColor[7]
                     : $store.getters.downColor[7],
               }"
             >
               {{ statistics?.total_profit_ratio > 0 ? '+' : ''
-              }}{{ $f.formatNumberS(statistics?.total_profit_ratio * 100 || 0, 2) }}%
+              }}{{ formatNumberS(statistics?.total_profit_ratio * 100 || 0, 2) }}%
             </span>
             <span v-else-if="statistics?.total_profit_ratio === 0" class="color-999">0</span>
             <span v-else class="color-999">--</span>
@@ -228,12 +230,12 @@
                     v-if="statistics?.total_profit > 0 > 0"
                     :style="{ color: $store.getters.upColor[7] }"
                   >
-                    ${{ $f.formatNumber2(statistics?.total_profit || 0, 2, 4, 4) }}
+                    ${{ formatNumber2(statistics?.total_profit || 0, 2, 4, 4) }}
                   </span>
                   <span v-else-if="statistics?.total_profit == 0">0</span>
                   <span v-else-if="statistics?.total_profit == '--'">--</span>
                   <span :style="{ color: $store.getters.downColor[7] }" v-else>
-                    {{ '-$' + $f.formatNumber2(Math.abs(statistics?.total_profit) || 0, 2, 4, 4) }}
+                    {{ '-$' + formatNumber2(Math.abs(statistics?.total_profit) || 0, 2, 4, 4) }}
                   </span>
                 </td>
               </tr>
@@ -246,12 +248,12 @@
                     v-if="statistics?.total_win_rate > 0"
                     :style="{ color: $store.getters.upColor[7] }"
                   >
-                    {{ $f.formatNumber2(statistics?.total_win_rate || 0, 2) + '%' }}
+                    {{ formatNumber2(statistics?.total_win_rate || 0, 2) + '%' }}
                   </span>
                   <span v-else-if="statistics?.total_win_rate === 0">0</span>
                   <span v-else-if="statistics?.total_win_rate === '--'">--</span>
                   <span v-else :style="{ color: $store.getters.downColor[7] }">
-                    {{ $f.formatNumber2(statistics?.total_win_rate || 0, 2) + '%' }}
+                    {{ formatNumber2(statistics?.total_win_rate || 0, 2) + '%' }}
                   </span>
                 </td>
               </tr>
@@ -289,28 +291,34 @@
 
 <script setup lang="ts">
 //组件
-import AveCharts from '@/components/charts/aveCharts.vue'
+// import AveCharts from '@/components/charts/aveCharts.vue'
 
 // 工具、方法
-import * as echarts from 'echarts'
-import { mapGetters, mapState } from 'vuex'
+// import * as echarts from 'echarts'
+// import { mapGetters, mapState } from 'vuex'
 import QRCode from 'qrcode'
 import html2canvas from 'html2canvas'
 import numeral from 'numeral'
 import dayjs from 'dayjs'
-import { getBalanceAnalysis, getWalletBasicInfo, updateWhaleRemark } from '@/api'
-import { bindTwitter } from '@/api/twitter'
+import {
+  getBalanceAnalysis,
+  getWalletBasicInfo,
+  updateWhaleRemark,
+  bindTwitter,
+} from '@/api/wallet'
 import { download } from '@/utils/download'
-import { isNumericString } from '@/utils/utils'
+
 import UserRemark from '@/components/userRemark.vue'
 import UserAvatar from '@/components/userAvatar.vue'
 
 // 资源
 import up1 from '@/assets/images/share/up_1.webp'
 import down1 from '@/assets/images/share/down_1.webp'
-import ChainToken from '@/components/chainToken.vue'
+// import ChainToken from '@/components/chainToken.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
-import Number from '@/views/wallet/walletDetail/components/Number.vue'
+import Number from '../components/Number.vue'
+import { verifyLogin, formatRemark } from '@/utils'
+import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
 
 const props = defineProps({
   chain: {
@@ -326,26 +334,58 @@ const props = defineProps({
     default: '',
   },
   isSelfAddress: Boolean,
-  intervalText: String,
+  intervalText: {
+    type: String,
+    default: '',
+  },
 })
 
-const { address, interval } = toRefs(props)
+const { address, chain, interval, intervalText } = toRefs(props)
+const botStore = useBotStore()
+const themeStore = useThemeStore()
+const globalConfig = useConfigStore().globalConfig
 
-const statistics: {}
+const { userInfo } = storeToRefs(useBotStore())
+
+interface Statistics {
+  wallet_logo?: any
+  remark?: string
+  x_name?: string
+  x_url?: string
+  x_followers?: number
+  is_wallet_address_fav?: number
+  total_profit_ratio?: number
+  total_profit?: number | string
+  total_win_rate?: number | string
+  win_rate?: number
+  profit?: number
+  profit_ratio?: number
+  wallet_age?: number | string
+  [key: string]: any
+}
+
+const statistics = ref<Statistics>({})
+
 const remark = {
   value: '',
   isEdit: false,
   loading: false,
 }
-const share = {
+interface ShareProps {
+  qrcodeUrl: string
+  bgImg: string
+  canvas: HTMLCanvasElement | null
+  dialogVisible: boolean
+}
+const share = ref<ShareProps>({
   qrcodeUrl: '',
   bgImg: '',
   canvas: null,
   dialogVisible: false,
-}
-const balanceAnalysis = {}
+})
+const currentAccount = ''
+const balanceAnalysis = ref({ profit: [], total_balance_without_risk: undefined })
 const currencyStandard = 'U'
-
 //   ...mapState([
 //     "token_user",
 //     "currentAccount",
@@ -356,7 +396,7 @@ const currencyStandard = 'U'
 //   ...mapGetters(["language"]),
 
 const pnl = computed(() => {
-  const { profit = [] } = balanceAnalysis
+  const { profit = [] } = balanceAnalysis.value
   const xData = []
   profit.forEach((el) => {
     xData.push(el.time)
@@ -383,10 +423,16 @@ const pnl = computed(() => {
         },
       },
       padding: 8,
-      backgroundColor: isDark ? 'rgba(0,0,0,.8)' : '#fff',
+      backgroundColor: isDark.value ? 'rgba(0,0,0,.8)' : '#fff',
       borderWidth: 0,
-      formatter: (params) => {
-        const tooltipData = params[0].data || {}
+      formatter: (params: { data: any }[]) => {
+        const tooltipData =
+          (params[0].data as {
+            value: number
+            absValue: number
+            time: string
+            negative?: boolean
+          }) || {}
         let color,
           sign = ''
         if (tooltipData.value > 0) {
@@ -398,12 +444,12 @@ const pnl = computed(() => {
         }
         return `<div style="font-size: 12px;">
              <div>
-                 <span style="color:${color}">${sign}${uSymbol}${$f.formatNumberS(
-                   tooltipData?.absValue / main_token_price
-                 )}${main_token_symbol}</span>
+                 <span style="color:${color}">${sign}${uSymbol.value}${formatNumberS(
+                   tooltipData?.absValue / main_token_price.value
+                 )}${main_token_symbol.value}</span>
              </div>
              <div>
-                  ${$dayjs(tooltipData.time).format('MM/DD')}
+                  ${dayjs(tooltipData.time).format('MM/DD')}
              </div>
          </div>`
       },
@@ -418,7 +464,7 @@ const pnl = computed(() => {
             if (Math.abs(params.value?.value) > 0) {
               return params.value?.negative ? '#F6465D' : '#12B886'
             }
-            return isDark ? '#999' : '#E5E5E5'
+            return isDark.value ? '#999' : '#E5E5E5'
           },
         },
       },
@@ -427,47 +473,46 @@ const pnl = computed(() => {
 })
 
 const defaultRemark = computed(() => {
-  const result =
-    (token_user?.address === address ? token_user?.remark : statistics?.remark) || statistics.x_name
+  // const result =
+  //   (userInfo?.address === address ? token_user?.remark : statistics?.remark) || statistics.x_name
 
-  return result
+  return statistics.value.remark //result
 })
 
 const shortedAddress = computed(() => {
-  return address.replace(new RegExp('(.+)(.{5}$)'), '*$2')
+  return address.value.replace(new RegExp('(.+)(.{5}$)'), '*$2')
 })
 
 const isDark = computed(() => {
-  return mode === 'dark'
+  return themeStore.isDark
 })
 
 const addressText = computed(() => {
-  return address.slice(0, 4) + '...' + address.slice(-4)
+  return address.value.slice(0, 4) + '...' + address.value.slice(-4)
 })
 
 const selfAddress = computed(() => {
-  return bot.userInfo?.evmAddress || currentAccount
+  return botStore?.evmAddress || currentAccount
 })
 
 const upImg = computed(() => {
-  let shareImg = globalConfig?.pc_share_image?.replace(/^.*\|/, '')
-  return shareImg.split(',').map((img) => {
+  const shareImg = globalConfig?.pc_share_image?.replace(/^.*\|/, '')
+  return shareImg.split(',').map((img: string) => {
     return globalConfig?.token_logo_url + 'pc_share/' + img
   })
 })
 
 const downImg = computed(() => {
-  let shareImg = globalConfig?.pc_share_image?.replace(/\|.*$/, '')
+  const shareImg = globalConfig?.pc_share_image?.replace(/\|.*$/, '')
   return shareImg?.split(',')?.map?.((img) => {
     return globalConfig?.token_logo_url + 'pc_share/' + img
   })
 })
 
 const wallet_age = computed(() => {
-  const wallet_age = statistics.wallet_age
-  return ['--', '0'].includes(wallet_age)
-    ? { value: '--' }
-    : getDuring(wallet_age ? wallet_age * 1000 : undefined, $t)
+  const wallet_age = statistics.value.wallet_age
+  return ['--', '0'].includes(wallet_age) ? { value: '--' } : { value: '--' }
+  //getDuring(wallet_age ? wallet_age * 1000 : undefined, $t)
 })
 
 const total_balance = computed(() => {
@@ -475,8 +520,10 @@ const total_balance = computed(() => {
     solana: '0,0.00',
     bsc: '0,0.0000',
   }
-  let { total_balance_without_risk } = balanceAnalysis
-  return numeral(total_balance_without_risk / main_token_price).format(formatMap[chain])
+  const { total_balance_without_risk } = balanceAnalysis.value
+  return numeral(
+    (total_balance_without_risk ?? 0) / main_token_price.value
+  ).format(formatMap[chain.value])
 })
 
 const isUSDT = computed(() => {
@@ -484,109 +531,85 @@ const isUSDT = computed(() => {
 })
 
 const main_token_price = computed(() => {
-  return isUSDT ? 1 : balanceAnalysis.main_token_price
+  return isUSDT.value ? 1 : balanceAnalysis.value.main_token_price
 })
 
 const uSymbol = computed(() => {
-  return isUSDT ? '$' : ''
+  return isUSDT.value ? '$' : ''
 })
 
 const main_token_symbol = computed(() => {
-  return isUSDT ? '' : balanceAnalysis.main_token_symbol
+  return isUSDT.value ? '' : balanceAnalysis.value.main_token_symbol
 })
 
 const chainAddress = computed(() => {
-  return [chain, address]
+  return [chain.value, address.value]
 })
 
-watch(interval, () => {
-  getBalanceAnalysis()
-})
+// watch(
+//   () => props.interval,
+//   (newVal) => {
+//     if (newVal) {
+//       onGetBalanceAnalysis()
+//     }
+//   },
+//   { immediate: true } // Remove if causing loops
+// )
 
-watch(address, () => {
-  getWalletBasicInfo()
-  getBalanceAnalysis()
-})
+// watch(
+//   () => props.address,
+//   (newVal) => {
+//     if (newVal) {
+//       onGetWalletBasicInfo()
+//       onGetBalanceAnalysis()
+//     }
+//   },
+//   { immediate: true } // Remove if causing loops
+// )
 
 onMounted(() => {
-  getWalletBasicInfo()
-  getBalanceAnalysis()
+  onGetWalletBasicInfo()
+  onGetBalanceAnalysis()
 })
-function toggleEdit() {
-  if (!$f.verifyLogin()) {
-    return
-  }
-  remark.isEdit = true
-}
-function updateWhaleRemark() {
-  if (!$f.verifyLogin()) {
-    return
-  }
-  if (!remark.value) {
-    remark.isEdit = false
-    return
-  }
-  if (remark.value.length > 50) {
-    return ElMessage.error($t('maximum10characters'))
-  }
+
+async function onGetWalletBasicInfo() {
   const params = {
     user_address: address,
-    self_address: selfAddress,
-    remark: remark.value,
-    user_chain: chain,
+    // self_address: selfAddress,
+    user_chain: chain.value,
   }
-  remark.loading = true
-  updateWhaleRemark(params)
-    .then(() => {
-      ElMessage.success($t('success'))
-      getWalletBasicInfo()
-    })
-    .catch((err) => {
-      ElMessage.error($t('fail'))
-      console.log(err)
-    })
-    .finally(() => {
-      remark.loading = false
-      remark.isEdit = false
-    })
-}
-function getWalletBasicInfo() {
-  const params = {
-    user_address: address,
-    self_address: selfAddress,
-    user_chain: chain,
+  const res = await getWalletBasicInfo(params)
+  console.log(res, 'res=>')
+  statistics.value = {
+    ...statistics,
+    ...(res || {}),
   }
-  getWalletBasicInfo(params).then((res) => {
-    statistics = {
-      ...statistics,
-      ...(res || {}),
-    }
-    if (address === bot.userInfo?.evmAddress) {
-      remark.value = res.remark || bot.userInfo?.name
-    }
-  })
+
+  if (address === botStore?.evmAddress) {
+    remark.value = res.remark || userInfo?.name
+  }
 }
 
 function deleteAttention() {
-  if (currentAccount === '' && !bot.userInfo?.evmAddress) {
+  if (currentAccount === '' && !botStore?.evmAddress) {
     $store.commit('changeConnectVisible', true)
     return
   }
   $store
     .dispatch('deleteAttention', {
-      address: address,
-      chain: chain,
+      address: address.value,
+      chain: chain.value,
     })
     .then(() => {
       ElMessage.success($t('attention1Canceled'))
-      statistics.is_wallet_address_fav = 0
+      statistics.value.is_wallet_address_fav = 0
     })
     .catch((err) => {
       ElMessage.error(err)
     })
 }
 async function addAttention() {
-  if (currentAccount === '' && !bot.userInfo?.evmAddress) {
+  if (currentAccount === '' && !botStore?.evmAddress) {
     $store.commit('changeConnectVisible', true)
     return
   }
@@ -595,10 +618,10 @@ async function addAttention() {
     return
   }
   $store
-    .dispatch('addAttention', { address: address, chain: chain })
+    .dispatch('addAttention', { address: address, chain: chain.value })
     .then(() => {
       ElMessage.success($t('attention1Success'))
-      statistics.is_wallet_address_fav = 1
+      statistics.value.is_wallet_address_fav = 1
     })
     .catch((err) => {
       ElMessage.error(err)
@@ -634,7 +657,7 @@ function getQRCode() {
 }
 
 function getShareImg() {
-  let postersDom = document.querySelector('.share-card')
+  const postersDom = document.querySelector('.share-card') as HTMLElement
   if (postersDom) {
     return html2canvas(postersDom, {
       backgroundColor: null,
@@ -644,14 +667,14 @@ function getShareImg() {
       scrollY: 0,
       scrollX: 0,
       height: postersDom.clientHeight - 1,
-    }).then((canvas) => {
+    }).then((canvas: HTMLCanvasElement) => {
       share.canvas = canvas
       return canvas
     })
   }
 }
 function downloadSharePoster() {
-  let postersDom = document.querySelector('.share-card')
+  const postersDom = document.querySelector('.share-card') as HTMLElement
   if (postersDom) {
     html2canvas(postersDom, {
       backgroundColor: null,
@@ -660,50 +683,41 @@ function downloadSharePoster() {
       useCORS: true,
       scrollY: 0,
       scrollX: 0,
-    }).then((canvas) => {
-      let dataURL = canvas.toDataURL('image/png')
+    }).then((canvas: HTMLCanvasElement) => {
+      const dataURL = canvas.toDataURL('image/png')
       download(dataURL, `ave-${Date.now()}.png`)
     })
   }
 }
-function getBalanceAnalysis() {
-  const { address, chain, interval } = this
+async function onGetBalanceAnalysis() {
   const params = {
-    user_address: address,
-    user_chain: chain,
-    interval,
+    user_address: address.value,
+    user_chain: chain.value,
+    interval: interval.value,
   }
-  getBalanceAnalysis(params)
-    .then((res) => {
-      balanceAnalysis = res
-      // setTimeout(() => {
-      //   if ( balanceAnalysis.profit?.length > 0) {
-      //      initEvent()
-      //   }
-      // }, 20)
-    })
-    .catch(console.log)
+  const res = await getBalanceAnalysis(params)
+  balanceAnalysis.value = res
 }
 
 async function bindTwitter() {
-  $f.verifyLogin()
+  verifyLogin()
   let signature = ''
   if (address) {
     signature = await $f.signTwitterConfirm()
   }
-  let data = {
-    user_address: address,
-    user_chain: chain,
+  const data = {
+    user_address: address.value,
+    user_chain: chain.value,
     signature: signature,
     origin: window.location.href,
   }
-  if ($store.state.bot.accessToken) {
-    data.authorization = bot.accessToken
+  if (botStore.accessToken) {
+    data.authorization = botStore.accessToken
   }
   if (signature) {
     data.signature = signature
   }
-  loadingBind = true
+  // loadingBind = true
   bindTwitter(data)
     .then((res) => {
       console.log('----ave_param-------', res)
@@ -723,7 +737,7 @@ async function bindTwitter() {
       console.log(err)
     })
     .finally(() => {
-      loadingBind = false
+      // loadingBind = false
     })
 }
 
@@ -733,6 +747,8 @@ function getRandom(min, max) {
 }
 
 function getDuring(time, $t) {
+  if (!time) return { value: '--', unit: '' } // Prevent infinite l
+  // debugger
   const minutes = Math.abs(dayjs().diff(time, 'minute', true))
   // 单位换算表
   const thresholds = [
@@ -744,3 +760,297 @@ function getDuring(time, $t) {
   return { value: parseInt(value), unit }
 }
 </script>
+
+<style scoped lang="scss">
+.statistic {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 20px;
+  flex: 1;
+  border-radius: 8px;
+  background-color: var(--custom-bg-10-color);
+
+  .statistic-avatar {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 24px;
+
+    .avatar-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+
+    .statistic-name {
+      gap: 6px;
+      font-size: 24px;
+      line-height: 30px;
+      color: var(--a-text-5-color);
+    }
+  }
+
+  .statistic-edit {
+    margin-bottom: 6px;
+    width: fit-content;
+
+    button {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      font-size: 12px;
+      padding: 2px 5px;
+    }
+
+    ::v-deep(.el-input__wrapper) {
+      background: var(--a-bg-7-color);
+      box-shadow: none;
+
+      &.height_36 {
+        padding: 3px 11px;
+      }
+
+      .el-input__inner {
+        color: var(--a-text-1-color);
+      }
+    }
+  }
+
+  .statistic-media {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .statistic-media-left {
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 24px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--d-666-l-959A9F);
+      background-color: var(--custom-bg-media-color);
+
+      .iconfont {
+        font-size: 12px;
+      }
+    }
+  }
+  .statistic-media-right {
+    margin-left: 24px;
+    gap: 4px;
+    padding: 4px 8px;
+    height: 24px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--d-fff-l-18181B);
+    background: linear-gradient(
+      90.25deg,
+      rgba(18, 184, 134, 0.1) 0.27%,
+      rgba(139, 79, 221, 0.1) 89.4%
+    );
+
+    > a {
+      &:hover {
+        color: inherit;
+      }
+    }
+  }
+
+  .statistic-address {
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+
+    .statistic-address-copy {
+      padding: 7px 8px;
+      height: 24px;
+      border-radius: 4px;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--d-999-l-18181B);
+      background-color: var(--custom-bg-media-color);
+
+      > i {
+        font-size: 10px;
+        color: var(--d-999-l-333);
+      }
+    }
+
+    .statistic-tag {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--d-222-l-F4F4F5);
+    }
+  }
+
+  .statistic-money {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: bold;
+
+    .statistic-money-sum {
+      font-size: 24px;
+      line-height: 30px;
+      color: var(--d-fff-l-333);
+    }
+
+    .statistic-money-profit {
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      color: var(--color-teal-300);
+
+      &-negative {
+        color: var(--color-red-500);
+      }
+    }
+
+    ::v-deep(.el-switch) {
+      --el-switch-off-color: var(--d-333333-l-F2F2F2);
+      --el-switch-on-color: var(--d-666-l-D8D8D8);
+    }
+
+    .statistic-money-u {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border-radius: 50%;
+      color: var(--d-fff-l-333);
+      background-color: var(--d-666-l-fff);
+    }
+  }
+
+  .statistic-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+
+    .statistic-operations {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+      height: 60px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .statistic-right-share,
+    .statistic-right-trade,
+    .statistic-right-attention {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 11px 18px;
+      background: var(--d-222-l-fff);
+      color: var(--d-fff-l-333);
+      font-size: 12px;
+      line-height: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+
+      &:before {
+        font-size: 16px;
+      }
+    }
+
+    .statistic-right-attention {
+      width: 100px;
+      padding-left: 0;
+      padding-right: 0;
+      box-sizing: border-box;
+
+      &-followed {
+        color: var(--d-666-l-999);
+        background: var(--d-0A0B0C-l-E5E5E5);
+
+        .statistic-right-attention-cancel {
+          display: none;
+        }
+
+        &:hover {
+          opacity: 1;
+          border-color: #f6465d;
+          background-color: rgba(246, 70, 93, 0.1);
+
+          > i,
+          .statistic-right-attention-text {
+            display: none;
+          }
+
+          .statistic-right-attention-cancel {
+            color: #f6465d;
+            display: inline;
+          }
+        }
+      }
+    }
+
+    .statistic-right-trade {
+      color: var(--d-333-l-fff);
+      background: var(--d-fff-l-3F80F7);
+    }
+
+    .statistic-pnl {
+      margin-bottom: 20px;
+      font-size: 16px;
+      line-height: 32px;
+      text-align: right;
+
+      > span {
+        color: var(--d-999-l-959A9F);
+      }
+    }
+
+    .statistic-profit {
+      font-size: 12px;
+      line-height: 15px;
+    }
+  }
+
+  .total-profit {
+    margin: 0 0 8px;
+    line-height: 20px;
+    font-size: 14px;
+    color: var(--d-666-l-959A9F);
+    > span {
+      margin-left: 8px;
+    }
+  }
+}
+
+.dialog-wallet {
+  &.el-dialog .el-dialog__title {
+    color: #fff;
+  }
+
+  &.dialog-share .content {
+    .share-card {
+      width: 558px;
+    }
+  }
+}
+
+.avatar {
+  border-radius: 100%;
+}
+.icon-chain {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+</style>

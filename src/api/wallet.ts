@@ -134,6 +134,13 @@ export function getTokenFilterList(params) {
   })
 }
 
-
+// bindTwitter
+export function bindTwitter(params) {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/walletinfo/v2/cache_x_callback', {
+    method: 'get',
+    query: params,
+  })
+}
 
 
