@@ -94,7 +94,7 @@ export default defineNuxtConfig({
     '@/assets/css/element-plus/reset.scss'
   ],
   plugins: [
-    // 添加 gameanalytics 
+    // 添加 gameanalytics
     '@/plugins/gameanalytics.client.ts',
     '@/plugins/directives/index.ts', // 引入自定义指令插件
     '@/plugins/pwa-meta.client.ts', // 引入 pwa-meta 插件
@@ -106,6 +106,7 @@ export default defineNuxtConfig({
     '@/plugins/tradingview.client.ts',
     '@/plugins/tooltip.client.ts',
     '@/plugins/popover.client.ts',
+    '@/plugins/dialog.client.ts',
   ],
   // unocss: {
   //   nuxtLayers: true,

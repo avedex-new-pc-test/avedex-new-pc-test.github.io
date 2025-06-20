@@ -435,5 +435,16 @@
   "mechanism_intro": "Bổ sung",
   "antiWhaleModifiable": "Có thể sửa đổi chống cá voi",
   "tax": "Thuế",
-  "follow": "Theo dõi"
+  "follow": "Theo dõi",
+  "selectNetwork": "Chọn mạng",
+  "selectWallet": "Chọn ví",
+  "detected": "Đã phát hiện",
+  "addNetFirst": "Vui lòng thêm mạng trước",
+  "notSupportChain": "Ví không hỗ trợ mạng này",
+  "disconnect": "Ngắt kết nối",
+  "exportTip": "Để đồng bộ",
+  "exportCode": "Xuất mã",
+  "importTip": "Nhập mã để đồng bộ",
+  "plsImport": "Nhập mã từ cài đặt",
+  "plsImportCorrect": "Nhập mã chính xác"
 }

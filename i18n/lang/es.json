@@ -262,5 +262,16 @@
   "mechanism_intro": "Adicional",
   "antiWhaleModifiable": "Antiballena modificable",
   "tax": "Impuesto",
-  "follow": "Seguir"
+  "follow": "Seguir",
+  "selectNetwork": "Seleccionar red",
+  "selectWallet": "Elija la billetera",
+  "detected": "Detectado",
+  "addNetFirst": "Agregue primero la red",
+  "notSupportChain": "La billetera no admite esta red",
+  "disconnect": "Desconectado",
+  "exportTip": "Para sincronizar los datos de favoritos, por favor haz clic.",
+  "exportCode": "Código de exportación",
+  "importTip": "*Importa el código para sincronizar los datos seleccionados.",
+  "plsImport": "",
+  "plsImportCorrect": "Por favor, introduce el código correcto"
 }

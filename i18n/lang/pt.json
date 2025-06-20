@@ -262,5 +262,16 @@
   "mechanism_intro": "Adicional",
   "antiWhaleModifiable": "Anti-baleia modificável",
   "tax": "Imposto",
-  "follow": "Seguir"
+  "follow": "Seguir",
+  "selectNetwork": "Selecione a rede ",
+  "selectWallet": "Escolha a carteira",
+  "detected": "Detectado",
+  "addNetFirst": "Por favor, adicione a rede primeiro",
+  "notSupportChain": "A carteira não suporta esta rede",
+  "disconnect": "Desligar ",
+  "exportTip": "Para sincronizar os dados favoritos, por favor clique",
+  "exportCode": "Exportar código",
+  "importTip": "*Importar Código para sincronizar os dados selecionados",
+  "plsImport": "",
+  "plsImportCorrect": "Por favor, insira o código correto"
 }

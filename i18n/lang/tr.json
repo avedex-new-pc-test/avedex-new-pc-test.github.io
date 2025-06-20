@@ -257,5 +257,16 @@
   "mechanism_intro": "Ek",
   "antiWhaleModifiable": "Değiştirilebilir büyük işlem kısıtlaması",
   "tax": "Vergi",
-  "follow": "Takip et"
+  "follow": "Takip et",
+  "selectNetwork": "Ağı Seç",
+  "selectWallet": "Cüzdan seçin",
+  "detected": "Tespit Edildi",
+  "addNetFirst": "Lütfen önce ağı ekleyin",
+  "notSupportChain": "Cüzdan bu ağı desteklemiyor",
+  "disconnect": "Bağlantıyı Kes",
+  "exportTip": "Bu adresin favori verilerini senkronize etmek için lütfen tıklayın",
+  "exportCode": "Kod dışa aktar",
+  "importTip": "*Kodu içe aktararak bu adresin favori verilerini senkronize edebilirsiniz",
+  "plsImport": "Lütfen kodu girin",
+  "plsImportCorrect": "Lütfen doğru kodu girin"
 }
