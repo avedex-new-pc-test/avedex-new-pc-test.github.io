@@ -437,7 +437,7 @@ async function initChart() {
           const params = {
             interval: interval,
             pair_id: pair.value + '-' + chain.value,
-            token_id: route.params.id as string,
+            token_id: pair.value ? undefined : route.params.id as string,
             from,
             to: firstDataRequest ? 0 : Math.max(to, firstBarTime || 0)
           }
