@@ -434,5 +434,16 @@
   "tm_start_trade_at_block": "Начать торговлю с блока",
   "mechanism_intro": "Дополнительно",
   "antiWhaleModifiable": "Изменяемый анти-кит",
-  "tax": "Налог"
+  "tax": "Налог",
+  "selectNetwork": "Выбрать сеть",
+  "selectWallet": "Выберите кошелек",
+  "detected": "Обнаружено",
+  "addNetFirst": "Пожалуйста, добавьте сеть сначала",
+  "notSupportChain": "Кошелек не поддерживает эту сеть",
+  "disconnect": "Отключить",
+  "exportTip": "Для синхронизации нажмите",
+  "exportCode": "Экспорт кода",
+  "importTip": "Импорт кода для синхронизации",
+  "plsImport": "Импортируйте код настроек",
+  "plsImportCorrect": "Введите правильный код"
 }

@@ -434,5 +434,16 @@
   "tm_start_trade_at_block": "Bắt đầu giao dịch tại block",
   "mechanism_intro": "Bổ sung",
   "antiWhaleModifiable": "Có thể sửa đổi chống cá voi",
-  "tax": "Thuế"
+  "tax": "Thuế",
+  "selectNetwork": "Chọn mạng",
+  "selectWallet": "Chọn ví",
+  "detected": "Đã phát hiện",
+  "addNetFirst": "Vui lòng thêm mạng trước",
+  "notSupportChain": "Ví không hỗ trợ mạng này",
+  "disconnect": "Ngắt kết nối",
+  "exportTip": "Để đồng bộ",
+  "exportCode": "Xuất mã",
+  "importTip": "Nhập mã để đồng bộ",
+  "plsImport": "Nhập mã từ cài đặt",
+  "plsImportCorrect": "Nhập mã chính xác"
 }

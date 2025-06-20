@@ -57,6 +57,7 @@
     useBotStore().getUserInfo()
     useRemarksStore().initRemarks()
     useBotSwapStore().sendNativePriceWs()
+    useWalletStore().initWallet()
   }
 
   onBeforeMount(() => {

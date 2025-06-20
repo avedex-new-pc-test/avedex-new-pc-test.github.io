@@ -145,3 +145,16 @@
 .search-input .el-input__clear {
   display: none !important;
 }
+
+.wallet-connect.el-dialog {
+  --el-dialog-border-radius: 36px;
+  --el-dialog-title-font-size: 16px;
+  .el-dialog__header {
+    text-align: center;
+    padding-left: 36px;
+    padding-bottom: 16px;
+    .el-dialog__title {
+      font-weight: 600;
+    }
+  }
+}
