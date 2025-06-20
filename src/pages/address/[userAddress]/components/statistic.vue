@@ -311,9 +311,6 @@ const defaultRemark = computed(() => {
   return statistics.value.remark //result
 })
 
-const shortedAddress = computed(() => {
-  return address.value.replace(new RegExp('(.+)(.{5}$)'), '*$2')
-})
 
 const isDark = computed(() => {
   return themeStore.isDark
@@ -327,24 +324,10 @@ const selfAddress = computed(() => {
   return botStore?.evmAddress || currentAccount
 })
 
-const upImg = computed(() => {
-  const shareImg = globalConfig?.pc_share_image?.replace(/^.*\|/, '')
-  return shareImg.split(',').map((img: string) => {
-    return globalConfig?.token_logo_url + 'pc_share/' + img
-  })
-})
-
-const downImg = computed(() => {
-  const shareImg = globalConfig?.pc_share_image?.replace(/\|.*$/, '')
-  return shareImg?.split(',')?.map?.((img) => {
-    return globalConfig?.token_logo_url + 'pc_share/' + img
-  })
-})
-
 const wallet_age = computed(() => {
+  const $t = getGlobalT()
   const wallet_age = statistics.value.wallet_age
-  return ['--', '0'].includes(wallet_age) ? { value: '--' } : { value: '--' }
-  //getDuring(wallet_age ? wallet_age * 1000 : undefined, $t)
+  return  ['--','0'].includes(wallet_age)? {value: '--'} : getDuring(wallet_age ? wallet_age * 1000 : undefined, $t)
 })
 
 const total_balance = computed(() => {
@@ -407,7 +390,7 @@ onMounted(() => {
 async function onGetWalletBasicInfo() {
   const params = {
     user_address: address,
-    // self_address: selfAddress,
+    self_address: selfAddress,
     user_chain: chain.value,
   }
   const res = await getWalletBasicInfo(params)
@@ -573,7 +556,6 @@ function getRandom(min, max) {
 
 function getDuring(time, $t) {
   if (!time) return { value: '--', unit: '' } // Prevent infinite l
-  // debugger
   const minutes = Math.abs(dayjs().diff(time, 'minute', true))
   // 单位换算表
   const thresholds = [

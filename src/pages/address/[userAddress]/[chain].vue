@@ -1,5 +1,5 @@
 <template>
-  <div className="flex flex-col gap-4 p-[20px] pb-0">
+  <div className="flex flex-col gap-3 p-[20px] pt-[10px]  pb-0">
     <div class="flex-between">
       <el-select
         :style="{ width: '120px' }"
@@ -46,7 +46,7 @@
       </el-radio-group>
     </div>
 
-    <div class="align-stretch">
+    <div class="flex align-stretch">
       <Statistic
         ref="statistic"
         :isSelfAddress="isSelfAddress"
@@ -55,6 +55,7 @@
         :interval="interval"
         :intervalText="intervalText"
       />
+      <div className="w-[40vw]">s</div>
       <!-- <TradeData
       :interval="interval"
       :intervalText="intervalText"
