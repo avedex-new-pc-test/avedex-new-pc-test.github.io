@@ -1,5 +1,5 @@
 <template>
-  <div class="statistic p-20">
+  <div class="statistic p-[20px]">
     <div>
       <div class="statistic-avatar">
         <UserAvatar
@@ -38,7 +38,7 @@
                     : require('@/assets/images/connect-x-light.png')
                 "
                 alt=""
-              />
+              >
               {{ formatNumber2(statistics.x_followers, 2, 4, 4) }}
             </a>
             <a
@@ -109,8 +109,9 @@
         <a v-else class="statistic-right-attention" @click="addAttention">
           <i class="iconfont icon-guanzhushu" />{{ $t('follow') }}
         </a>
-        <a class="statistic-right-share" @click="openShareDialog">
-          <i class="iconfont icon-fenxiangtubiao" />{{ $t('share') }}
+        <a class="statistic-right-share">
+           {{ $t('share') }}
+          <Share :statistics="statistics" :address="address" :chain="chain"/>
         </a>
       </div>
       <div>
@@ -130,162 +131,6 @@
         /> -->
       </div>
     </div>
-    <el-dialog
-      v-model="share.dialogVisible"
-      class="dialog-share dialog-wallet"
-      :title="$t('share')"
-      width="628"
-      append-to-body
-    >
-      <div class="content">
-        <div class="share-card" style="background: #111; width: 558px">
-          <img class="share-bg-img" :src="share.bgImg" alt="share" />
-          <div style="display: inline-block">
-            <div class="flex" style="flex-direction: column">
-              <div class="flex-start">
-                <img
-                  src="@/assets/images/avedex_mobile_logo.png"
-                  style="height: 24px"
-                  height="24"
-                  alt=""
-                  srcset=""
-                />
-                <span class="ml-5 text-20px">Ave.ai</span>
-              </div>
-              <span
-                class="mt_5 block"
-                style="
-                  margin-left: auto;
-                  font-size: 10px;
-                  color: #fff;
-                  max-width: 180px;
-                  text-align: center;
-                "
-                >{{ $t('campaignTitle') }}</span
-              >
-            </div>
-          </div>
-          <div class="flex-start mt-40">
-            <div class="icon-token-container share">
-              <img
-                v-if="address === botStore?.evmAddress"
-                class="avatar"
-                :src="$f.generateAvatarIcon(userInfo?.name || '')"
-                alt=""
-                width="80px"
-                height="80px"
-                onerror=" src='/icon-default.png'"
-              />
-              <img
-                v-else
-                class="avatar"
-                :src="$f.generateAvatarIcon(address || '')"
-                alt=""
-                width="40px"
-                height="40px"
-                onerror=" src='/icon-default.png'"
-              />
-            </div>
-            <span style="font-size: 14px; color: #999">
-              {{ address.value.slice(0, 4) + '...' + address.value.slice(-4) }}
-            </span>
-          </div>
-          <div class="mt-30" style="font-size: 40px">
-            <span
-              v-if="
-                statistics.value.total_profit_ratio > 0 || statistics.value.total_profit_ratio < 0
-              "
-              :style="{
-                color:
-                  statistics.value.total_profit_ratio > 0
-                    ? $store.getters.upColor[7]
-                    : $store.getters.downColor[7],
-              }"
-            >
-              {{ statistics?.total_profit_ratio > 0 ? '+' : ''
-              }}{{ formatNumberS(statistics?.total_profit_ratio * 100 || 0, 2) }}%
-            </span>
-            <span v-else-if="statistics?.total_profit_ratio === 0" class="color-999">0</span>
-            <span v-else class="color-999">--</span>
-          </div>
-          <table class="mt-30 share-table">
-            <tbody>
-              <tr>
-                <td
-                  :style="{
-                    width: $f.getTextWidth($t('total_profit')) + 20 + 'px',
-                  }"
-                >
-                  {{ $t('total_profit') }}
-                </td>
-                <td
-                  :style="{
-                    color:
-                      statistics?.total_profit > 0
-                        ? $store.getters.upColor[7]
-                        : $store.getters.downColor[7],
-                  }"
-                >
-                  <span
-                    v-if="statistics?.total_profit > 0 > 0"
-                    :style="{ color: $store.getters.upColor[7] }"
-                  >
-                    ${{ formatNumber2(statistics?.total_profit || 0, 2, 4, 4) }}
-                  </span>
-                  <span v-else-if="statistics?.total_profit == 0">0</span>
-                  <span v-else-if="statistics?.total_profit == '--'">--</span>
-                  <span :style="{ color: $store.getters.downColor[7] }" v-else>
-                    {{ '-$' + formatNumber2(Math.abs(statistics?.total_profit) || 0, 2, 4, 4) }}
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td :style="{ width: $f.getTextWidth($t('winRate')) + 20 + 'px' }">
-                  {{ $t('winRate') }}
-                </td>
-                <td>
-                  <span
-                    v-if="statistics?.total_win_rate > 0"
-                    :style="{ color: $store.getters.upColor[7] }"
-                  >
-                    {{ formatNumber2(statistics?.total_win_rate || 0, 2) + '%' }}
-                  </span>
-                  <span v-else-if="statistics?.total_win_rate === 0">0</span>
-                  <span v-else-if="statistics?.total_win_rate === '--'">--</span>
-                  <span v-else :style="{ color: $store.getters.downColor[7] }">
-                    {{ formatNumber2(statistics?.total_win_rate || 0, 2) + '%' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="invite">
-            <div class="tr mt_10">
-              <span class="font-20 font_weight_700 block">{{ $t('campaignSubTitle') }}</span>
-              <span class="font-12 font_weight_400 mt_10">{{ $t('campaignDesc') }}</span>
-            </div>
-            <div class="ml_10">
-              <img :src="share.qrcodeUrl" :alt="$t('campaignScan')" width="60px" height="60px" />
-              <span class="font-14 font_weight_400 mt_5 block">{{ $t('campaignScan') }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="flex mt-20 text-12px" style="width: 300px; color: #999">
-          <div class="flex-col flex-center clickable" @click.stop="downloadSharePoster">
-            <img src="@/assets/images/share/download.svg" height="48" alt="" srcset="" />
-            <span class="mt-8">{{ $t('download') }}</span>
-          </div>
-          <div class="flex-col flex-center clickable" @click.stop="$f.jumpX()">
-            <img src="@/assets/images/share/twitter.svg" height="48" alt="" srcset="" />
-            <span class="mt-8">Twitter</span>
-          </div>
-          <div class="flex-col flex-center clickable" @click.stop="$f.jumpTg()">
-            <img src="@/assets/images/share/tg.svg" height="48" alt="" srcset="" />
-            <span class="mt-8">Telegram</span>
-          </div>
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -297,23 +142,21 @@
 // import * as echarts from 'echarts'
 // import { mapGetters, mapState } from 'vuex'
 import QRCode from 'qrcode'
+
 import html2canvas from 'html2canvas'
 import numeral from 'numeral'
 import dayjs from 'dayjs'
 import {
   getBalanceAnalysis,
   getWalletBasicInfo,
-  updateWhaleRemark,
   bindTwitter,
 } from '@/api/wallet'
 import { download } from '@/utils/download'
 
 import UserRemark from '@/components/userRemark.vue'
 import UserAvatar from '@/components/userAvatar.vue'
+import Share from '@/components/share.vue'
 
-// 资源
-import up1 from '@/assets/images/share/up_1.webp'
-import down1 from '@/assets/images/share/down_1.webp'
 // import ChainToken from '@/components/chainToken.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 import Number from '../components/Number.vue'
@@ -371,18 +214,7 @@ const remark = {
   isEdit: false,
   loading: false,
 }
-interface ShareProps {
-  qrcodeUrl: string
-  bgImg: string
-  canvas: HTMLCanvasElement | null
-  dialogVisible: boolean
-}
-const share = ref<ShareProps>({
-  qrcodeUrl: '',
-  bgImg: '',
-  canvas: null,
-  dialogVisible: false,
-})
+
 const currentAccount = ''
 const balanceAnalysis = ref({ profit: [], total_balance_without_risk: undefined })
 const currencyStandard = 'U'
@@ -521,9 +353,9 @@ const total_balance = computed(() => {
     bsc: '0,0.0000',
   }
   const { total_balance_without_risk } = balanceAnalysis.value
-  return numeral(
-    (total_balance_without_risk ?? 0) / main_token_price.value
-  ).format(formatMap[chain.value])
+  return numeral((total_balance_without_risk ?? 0) / main_token_price.value).format(
+    formatMap[chain.value]
+  )
 })
 
 const isUSDT = computed(() => {
@@ -546,26 +378,26 @@ const chainAddress = computed(() => {
   return [chain.value, address.value]
 })
 
-// watch(
-//   () => props.interval,
-//   (newVal) => {
-//     if (newVal) {
-//       onGetBalanceAnalysis()
-//     }
-//   },
-//   { immediate: true } // Remove if causing loops
-// )
+watch(
+  () => props.interval,
+  (newVal) => {
+    if (newVal) {
+      onGetBalanceAnalysis()
+    }
+  },
+  { immediate: true } // Remove if causing loops
+)
 
-// watch(
-//   () => props.address,
-//   (newVal) => {
-//     if (newVal) {
-//       onGetWalletBasicInfo()
-//       onGetBalanceAnalysis()
-//     }
-//   },
-//   { immediate: true } // Remove if causing loops
-// )
+watch(
+  () => props.address,
+  (newVal) => {
+    if (newVal) {
+      onGetWalletBasicInfo()
+      onGetBalanceAnalysis()
+    }
+  },
+  { immediate: true } // Remove if causing loops
+)
 
 onMounted(() => {
   onGetWalletBasicInfo()
@@ -634,13 +466,6 @@ function openShareDialog() {
   setTimeout(() => {
     getShareImg()
   }, 100)
-}
-// 随机获取背景图片
-function getRandomBg(isUp = false) {
-  const imgs = isUp ? upImg : downImg
-  const len = imgs.length
-  const index = getRandom(1, len)
-  share.bgImg = imgs?.[index] || (isUp ? up1 : down1)
 }
 
 function getQRCode() {
@@ -768,7 +593,7 @@ function getDuring(time, $t) {
   margin-right: 20px;
   flex: 1;
   border-radius: 8px;
-  background-color: var(--custom-bg-10-color);
+  background-color: #15171c;
 
   .statistic-avatar {
     margin-bottom: 20px;
@@ -953,7 +778,7 @@ function getDuring(time, $t) {
       justify-content: center;
       gap: 4px;
       padding: 11px 18px;
-      background: var(--d-222-l-fff);
+      background: var(--custom-br-1-color);
       color: var(--d-fff-l-333);
       font-size: 12px;
       line-height: 16px;
