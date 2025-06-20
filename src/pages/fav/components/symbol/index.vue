@@ -5,7 +5,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { formatNumber2 } from '~/utils/formatNumber'
 import { getChainDefaultIcon } from '~/utils'
 import ArcProgress from '~/components/arcProgress.vue'
-import { getNewFavoriteList, getUserFavoriteGroups, removeFavorite, removeFavoriteGroup, addFavoriteGroup, changeFavoriteGroupName, moveFavoriteGroup } from '~/api/fav'
+import { getNewFavoriteList, getUserFavoriteGroups, removeFavorite, removeFavoriteGroup, addFavoriteGroup, changeFavoriteGroupName, moveFavoriteGroup, editTokenFavRemark } from '~/api/fav'
 
 const botStore = useBotStore()
 const configStore = useConfigStore()
@@ -26,7 +26,9 @@ const moveValue = ref('')
 const addGroupPopoverRef = ref()
 const editGroupPopoverRef = ref()
 const moveGroupPopoverRef = ref()
+const remarkGroupPopoverRef = ref()
 const groupValue = ref('')
+const remarkValue = ref('')
 const editId = ref<number | undefined>(undefined)
 
 const loading = ref(false)
@@ -37,6 +39,13 @@ const pageData = ref({
 })
 const tableList = ref<any[]>([])
 const { mode } = storeToRefs(useGlobalStore())
+
+const appendix = (row: any) => {
+  if (row.value?.appendix && isJSON(row.value?.appendix)) {
+    return JSON.parse(row.value?.appendix)
+  }
+  return {}
+}
 
 // 选择分组
 const setActiveTab = (val: number) => {
@@ -103,6 +112,17 @@ const handleMoveGroupConfirm = () => {
   moveGroupPopoverRef.value?.hide()
   tabsGroup.value = cloneDeep(moveList.value)
   ElMessage.success(t('success'))
+}
+
+// 备注
+const handleRemarkGroup = async (row: any) => {
+  if (!remarkValue.value.trim()) return ElMessage.error(t('enterRemark'))
+  if (remarkValue.value.length > 20) return ElMessage.error(t('remarkError'))
+  const tokenId = row.token + '-' + row.chain
+  await editTokenFavRemark(tokenId, remarkValue.value, botStore.evmAddress)
+  ElMessage.success(t('success'))
+  remarkGroupPopoverRef.value?.hide()
+  getList()
 }
 
 const tableRowClick = (row: any) => {
@@ -311,7 +331,7 @@ onMounted(() => {
                 #{{ (pageData.page - 1) * pageData.pageSize + $index + 1 }}
               </span>
               <Icon v-if="botStore.evmAddress || currentAccount" name="material-symbols:kid-star"
-                class="color-var(--d-999-l-666) h-16px w-16px clickable color-#ffbb19"
+                class="color-var(--d-999-l-666) h-16px w-16px clickable shrink-0 color-#ffbb19"
                 @click.stop.prevent="collect(row)" />
               <div class="relative ml-3px">
                 <el-image class="w-32px h-32px rounded-full" :src="getSymbolDefaultIcon({
@@ -331,11 +351,53 @@ onMounted(() => {
                   onerror="this.src='/icon-default.png'" srcset="" />
               </div>
               <div class="ml-5px">
-                <span class="text-13px mr-3px">{{ row.symbol }}</span>
-                <span class="text-[#666]">({{ '*' + row.token?.slice(-4) }})</span>
-                <button
-                  class="text-[#3f80f7] border-[0.5px] border-[#3f80f7] rounded-[4px] bg-transparent text-[10px] font-[400] ml-0.5 px-1 py-0.5 max-w-[60px]"
-                  :title="row.remark" v-if="row.remark">{{ row.remark }}</button>
+                <div class="flex items-center">
+                  <span class="text-13px mr-3px">{{ row.symbol }}</span>
+                  <span class="text-[--d-666-l-999]">({{ '*' + row.token?.slice(-4) }})</span>
+                  <span
+                    class="text-[#3f80f7] border-[0.5px] border-solid border-[#3f80f7] rounded-4px bg-transparent text-10px ml-2px px-4px max-w-[60px] truncate"
+                    :title="row.remark" v-if="row.remark">{{ row.remark }}</span>
+
+                  <el-popover trigger="click" @hide="remarkValue = ''" ref="remarkGroupPopoverRef" :width="250">
+                    <template #reference>
+                      <!-- 备注 -->
+                      <div @click.stop.prevent='remarkValue = row.remark'>
+                        <Icon class="text-[--d-666-l-999] w-12px h-12px ml-4px" name="custom:remark" />
+                      </div>
+                    </template>
+                    <div>
+                      <div>{{ t('editRemark') }}</div>
+                      <el-input v-model="remarkValue" :placeholder="t('enterRemark')" class="mt-8px w-200px" />
+                      <div class="flex items-center justify-between mt-12px gap-12px">
+                        <div @click="remarkGroupPopoverRef?.hide()"
+                          class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
+                          {{ t('cancel') }}
+                        </div>
+                        <div @click="handleRemarkGroup(row)"
+                          class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[#3F80F7] px-12px py-8px rounded-4px">
+                          {{ t('confirm') }}
+                        </div>
+                      </div>
+                    </div>
+                  </el-popover>
+                  <a class="ml-4px"
+                    :href="`https://x.com/search?q=(${row?.symbol}OR${row?.token})&src=typed_query&f=live`"
+                    target="_blank" @click.stop>
+                    <Icon class="text-[--d-666-l-999] h-12px w-12px" name="ep:search" />
+                  </a>
+                </div>
+                <div class="flex items-center mt-2px">
+                  <div class="text-8px text-[--d-666-l-999]">
+                    {{ row?.token?.replace(new RegExp('(.{4})(.+)(.{4}$)'), '$1...$3') }}
+                  </div>
+                  <Icon v-copy="row?.token" name="bxs:copy" class="ml-5px clickable text-[--d-666-l-999]" />
+                  <a class="flex items-center" v-tooltip="appendix(row)?.twitter" :href="appendix(row)?.twitter" target="_blank" @click.stop>
+                    <Icon :name="`custom:twitter`" class="text-[--d-666-l-999] h-14px w-14px" />
+                  </a>
+                  <a class="flex items-center" v-tooltip="appendix(row)?.telegram" :href="appendix(row)?.telegram" target="_blank" @click.stop>
+                    <Icon :name="`custom:tg`" class="text-[--d-666-l-999] h-14px w-14px" />
+                  </a>
+                </div>
               </div>
             </div>
           </NuxtLink>
