@@ -15,12 +15,12 @@
 const props = defineProps({
   options: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   activeValue: {
     type: [Number, String],
-    default: ''
-  }
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:activeValue', 'change'])
@@ -55,8 +55,8 @@ const click = (item) => {
     text-align: center;
 
     &.active {
-      color: var(--a-text-1-color);
-      background: var(--a-bg-2-color);
+      color: #f5f5f5;
+      background: #333;
     }
   }
 }

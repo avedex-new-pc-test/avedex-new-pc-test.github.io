@@ -75,17 +75,19 @@
         </el-switch>
       </div>
       <p class="total-profit">
-        {{ $t('totalPnL') }}（{{ intervalText }}）
-        <Number :value="statistics.profit" :signVisible="isUSDT"> </Number>
-        <Number :value="statistics.profit_ratio"
-          >{{ formatNumberS(Math.abs(statistics.profit_ratio * 100), 2) }}%
+        {{ $t("totalPnL") }}（{{ intervalText }}）
+        <Number :value="statistics.profit" :signVisible="isUSDT">
+          {{ formatNumber2(Math.abs((statistics.profit ?? 0) / main_token_price), 2, 4, 4) }} {{ main_token_symbol }}
+        </Number>
+        <Number :value="statistics.profit_ratio">
+          {{ formatNumberS(Math.abs((statistics?.profit_ratio ?? 0) * 100), 2) }}%
         </Number>
       </p>
       <p class="total-profit">
-        {{ $t('winRate2') }}（{{ intervalText }}）
-        <Number :value="statistics.win_rate"
-          >{{ formatNumberS(Math.abs(statistics.win_rate ?? 0)) }}%</Number
-        >
+        {{ $t("winRate2") }}（{{ intervalText }}）
+        <Number :value="statistics.win_rate">
+          {{formatNumberS(Math.abs(statistics.win_rate ?? 0))}}%
+        </Number>
       </p>
     </div>
     <div class="statistic-right">
@@ -129,19 +131,12 @@
 
 <script setup lang="ts">
 //组件
-import AveCharts from '@/components/charts/aveCharts.vue'
 import numeral from 'numeral'
 import dayjs from 'dayjs'
 import { getBalanceAnalysis, getWalletBasicInfo, bindTwitter } from '@/api/wallet'
 
-import UserRemark from '@/components/userRemark.vue'
-import UserAvatar from '@/components/userAvatar.vue'
-import Share from '@/components/share.vue'
-import AveEmpty from '@/components/aveEmpty.vue'
-
-import ChainToken from '@/components/chainToken.vue'
 import Number from '../components/Number.vue'
-import { verifyLogin, formatRemark } from '@/utils'
+import { verifyLogin } from '@/utils'
 import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
 
 const props = defineProps({
@@ -313,7 +308,7 @@ const wallet_age = computed(() => {
 })
 
 const total_balance = computed(() => {
-  const formatMap = {
+  const formatMap: { [key: string]: string } = {
     solana: '0,0.00',
     bsc: '0,0.0000',
   }
@@ -378,7 +373,7 @@ async function onGetWalletBasicInfo() {
   const res = await getWalletBasicInfo(params)
   console.log(res, 'res=>')
   statistics.value = {
-    ...statistics,
+    ...statistics.value,
     ...(res || {}),
   }
   // if (address === botStore?.evmAddress) {
@@ -454,7 +449,6 @@ async function bindTwitter() {
   // loadingBind = true
   bindTwitter(data)
     .then((res) => {
-      console.log('----ave_param-------', res)
       let ave_param = res?.ave_param
       const host =
         process.env.VUE_APP_BASE_API === 'https://0ftrfsdb.xyz'
@@ -489,10 +483,11 @@ function getDuring(time, $t) {
 }
 
 function mergeStatistics(data) {
-  statistics.value = {
-    ...statistics,
+  const d = {
+    ...statistics.value,
     ...data,
   }
+  statistics.value = d
 }
 defineExpose({
   mergeStatistics,
@@ -778,3 +773,11 @@ defineExpose({
   }
 }
 </style>
+
+function defineExpose(arg0: { mergeStatistics: (data: any) => void }) {
+  throw new Error('Function not implemented.')
+}
+
+function defineExpose(arg0: { mergeStatistics: (data: any) => void }) {
+  throw new Error('Function not implemented.')
+}

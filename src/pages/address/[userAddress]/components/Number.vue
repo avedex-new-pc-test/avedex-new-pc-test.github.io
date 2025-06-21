@@ -5,8 +5,7 @@
       negative: Number(props.value) < 0,
     }"
   >
-    {{ Number(props.value) > 0 ? '+' : '' }}{{ Number(props.value) < 0 ? '-' : '' }}{{ props.signVisible ? '$' : ''
-    }}
+    {{ Number(props.value) > 0 ? '+' : '' }}{{ Number(props.value) < 0 ? '-' : '' }}{{ props.signVisible ? '$' : ''}}
     <slot />
   </span>
 </template>

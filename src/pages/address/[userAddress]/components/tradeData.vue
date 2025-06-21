@@ -1,7 +1,7 @@
 <template>
   <div class="trade">
     <div class="trade-pnl">
-      <div class="flex-between mb-28">
+      <div class="flex-between mb-[28px]">
         <span class="trade-pnl-title"> {{ $t('bestToken2') }}（{{ intervalText }}） </span>
         <ButtonGroup
           v-model:active-value="bestToken.filter"
@@ -25,7 +25,7 @@
       />
     </div>
     <div class="trade-pnl">
-      <p class="trade-pnl-title trade-pnl-title2 mb-28">
+      <p class="trade-pnl-title trade-pnl-title2 mb-[28px]">
         {{ $t('profit3') }}（{{ intervalText }}）
       </p>
       <ul class="trade-pnl-stage">
@@ -341,6 +341,9 @@ onMounted(() => {
   width: 40vw;
   border-radius: 8px;
   background-color: #15171c;
+  --a-text-1-light-color: #222;
+  --color-teal-300: #12b886;
+  --color-red-500: #f6465d;
 
   &-pnl {
     min-width: 0;
