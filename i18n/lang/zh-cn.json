@@ -680,5 +680,6 @@
   "scan": "扫码",
   "importTip": "*导入Code即可同步该地址的自选数据",
   "plsImport": "请导入App设置里面的自选Code，自动同步app自选数据",
-  "plsImportCorrect": "请输入正确的code"
+  "plsImportCorrect": "请输入正确的code",
+  "groupPlaceholder": "请输入分组"
 }

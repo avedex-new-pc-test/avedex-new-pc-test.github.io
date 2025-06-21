@@ -8,51 +8,35 @@
       :class="{ active: props.modelValue === item.group_id, 'px-0px!': edits[item.group_id] }"
       @click.stop.prevent="emit('update:modelValue', item.group_id)">
       <el-input 
-        v-if="edits[item.group_id]" v-model="name" style="width: 140px" size="default"
+        v-if="edits[item.group_id]" v-model="groupName" style="width: 140px" size="default"
         class="name-input">
         <template #suffix>
           <Icon 
             name="mynaui:x-square-solid" class="text-18px color-[var(--d-F5F5F5-l-222)] clickable"
-            @click.stop.prevent="handleCancelEdit" />
+            @click.stop.prevent="handleCancelEdit"/>
           <!-- <Icon v-else name="mynaui:x-square" class="text-18px color-#666"/> -->
           <Icon 
             name="mynaui:check-square-solid" class="text-18px color-[var(--d-F5F5F5-l-222)] clickable"
-            @click.stop.prevent="handleConfirmEdit" />
+            :class="{ 'cursor-not-allowed': !groupName }" @click.stop.prevent="groupName&&handleConfirmEdit"/>
           <!-- <Icon v-else name="mynaui:check-square" class="text-18px color-#666"/> -->
         </template>
       </el-input>
       <template v-else>
         <span>{{ item.name }}</span>
         <Icon 
-          :ref="(el: EventTarget) => $refs.buttonRefs[item.group_id] = el" 
+          :ref="(el: any) => $refs.buttonRefs[item.group_id] = el" 
           v-click-outside="() => visible = false"
           name="mdi:dots-vertical"
           class="text-14px"
-          @click.stop.prevent="buttonRef = $refs.buttonRefs[item.group_id]; visible = true; currentEditGroup = item.group_id; name = item.name"
+          @click.stop.prevent="buttonRef = $refs.buttonRefs[item.group_id]; visible = true; currentEditGroup = item.group_id; groupName = item.name"
            />
       </template>
     </li>
-     <el-popover :width="400" trigger="click">
-        <template #reference>
-         <li class="clickable color-#3F80F7! flex gap-2px">
-            <Icon name="material-symbols:add-circle" class="text-12px" />
-            <span>{{ $t('newGroup') }}</span>
-        </li>
-        </template>
-        <template #default="scope">
-          scope:{{ JSON.stringify(scope) }}
-          <el-form>
-            <el-form-item :label="$t('newGroup')" prop="name" required label-position="top">
-              <el-input v-model="form.name" :placeholder="$t('enterGroupName')" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary">{{ $t('cancel') }}</el-button>
-              <el-button native-type="submit">{{ $t('confirm') }}</el-button>
-            </el-form-item>
-          </el-form>
-      </template>
-      </el-popover>
-      <el-popover :width="400" trigger="click">
+    <li ref="addButtonRef" class="clickable color-#3F80F7! flex gap-2px">
+        <Icon name="material-symbols:add-circle" class="text-12px" />
+        <span>{{ $t('newGroup') }}</span>
+    </li>
+    <el-popover :width="400" trigger="click">
        <template #reference>
          <li class="clickable color-#3F80F7! flex gap-2px" @click.stop.prevent="openSetting">
            <Icon name="material-symbols:format-list-bulleted" class="text-12px" />
@@ -62,7 +46,7 @@
        <template #default>
          <div>content2</div>
        </template>
-     </el-popover>
+    </el-popover>
   </ul>
   <el-popover 
     ref="popoverRef" :visible="visible" :virtual-ref="buttonRef" trigger="click" title="" virtual-triggering
@@ -72,20 +56,22 @@
         class="font-500 text-14px lh-[100%] tracking-0px  mb-20px flex-start gap-4px clickable"
         @click.stop.prevent="handleRenameGroup">
         <Icon name="fe:edit" class="color-#666 text-14px mt-3px" />
-        <span>重命名</span>
+        <span>{{ $t('rename') }}</span>
       </li>
       <li 
         class="font-500 text-14px lh-[100%] tracking-0px clickable flex-start gap-4px"
         @click.stop.prevent="handleDelGroup">
         <Icon name="bx:bxs-trash-alt" class="text-15px color-#666 mt-3px" />
-        <span>删除</span>
+        <span>{{ $t('delete') }}</span>
       </li>
     </ul>
   </el-popover>
+  <ProPopover ref="proPopoverRef" v-model="addGroupName" :button-ref="addButtonRef || {}" width="400" :label="$t('newGroup')" :placeholder="$t('groupPlaceholder')" prop="name" @onConfirm="handleAddGroup"/>
 </template>
 
 <script setup lang="ts">
 import { ClickOutside as vClickOutside } from 'element-plus'
+import ProPopover from './proPopover.vue'
 const emit = defineEmits<{
   (e: 'onConfirm', groupId: number, name: string): void
   (e: 'onDelete' | 'onCancel' | 'update:modelValue', groupId: number): void
@@ -102,17 +88,17 @@ const props = defineProps({
     default: 0
   }
 })
-const form = reactive({
-  name: ''
-})
 const $refs = ref({
   buttonRefs: {} as Record<number, any>
 })
-const name = ref('')
+const groupName = ref('')
+const addGroupName = ref('')
 const edits = ref<Record<number, boolean>>({})
 const currentEditGroup = ref()
 const visible = ref(false)
 const buttonRef = ref()
+const addButtonRef = ref()
+const proPopoverRef = ref()
 const popoverRef = ref()
 
 function handleRenameGroup() {
@@ -127,17 +113,23 @@ function handleCancelEdit() {
 }
 function handleConfirmEdit() {
   edits.value[currentEditGroup.value] = false
-  emit('onConfirm', currentEditGroup.value, name.value)
+  emit('onConfirm', currentEditGroup.value, groupName.value)
 }
 function handleDelGroup() {
   emit('onDelete', currentEditGroup.value)
 }
 function handleAddGroup() {
-  emit('onAdd',name.value)
+  emit('onAdd',addGroupName.value)
 }
 function openSetting() {
   emit('onChangeIndex',1,2)
 }
+watch(addGroupName, val => {
+  console.log('addGroupName changed', val)
+})
+// defineExpose({
+//   close:proPopoverRef.value?.close
+// })
 </script>
 
 <style scoped lang="scss">
