@@ -1,7 +1,0 @@
-// export {default as AiSummary} from './aiSummary.vue'
-// export {default as ActivityCharts} from './activityCharts.vue'
-// export {default as TradeData} from './tradeData.vue'
-export {default as Statistic} from './statistic.vue'
-// export {default as StatisticsTable} from './statisticsTable.vue'
-// export {default as DeployedTokenList} from './deployedTokenList.vue'
-// export {default as PnlDetail} from './pnlDetail.vue'

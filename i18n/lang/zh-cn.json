@@ -664,5 +664,9 @@
   "mechanism_intro": "说明",
   "antiWhaleModifiable": "可修改大额交易限制",
   "check2": "安全检测",
-  "tax": "税"
+  "tax": "税",
+  "days2": "天",
+  "bestToken2": "最佳代币",
+  "profit3": "利润",
+  "ROI": "倍数"
 }

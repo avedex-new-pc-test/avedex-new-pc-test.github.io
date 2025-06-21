@@ -48,31 +48,33 @@
 
     <div class="flex align-stretch">
       <Statistic
-        ref="statistic"
+        ref="statisticRef"
         :isSelfAddress="isSelfAddress"
         :address="address"
         :chain="chain"
         :interval="interval"
         :intervalText="intervalText"
       />
-      <div className="w-[40vw]">s</div>
-      <!-- <TradeData
-      :interval="interval"
-      :intervalText="intervalText"
-      :address="address"
-      :chain="chain"
-      @txAnalysisChange="txAnalysisChange"
-    /> -->
+      <TradeData
+        :interval="interval"
+        :intervalText="intervalText"
+        :address="address"
+        :chain="chain"
+        @txAnalysisChange="txAnalysisChange"
+      />
     </div>
   </div>
 </template>
 <script setup>
-import { Statistic } from './components'
+import Statistic from './components/statistic.vue'
+import TradeData from './components/tradeData.vue'
 const interval = ref('7D')
 const route = useRoute()
 const chain = route.params.chain
 const address = route.params.userAddress
 const $t = getGlobalT()
+const statisticRef = ref(null)
+
 const options = [
   {
     name: `24${$t('H')}`,
@@ -87,16 +89,49 @@ const options = [
     id: '30D',
   },
 ]
+//computed
+const currentBot = computed(() => {
+  return getBot(chain || 'solana')
+})
 
 const intervalText = computed(() => {
   return options.find((item) => interval.value === item.id)?.name
 })
-const smartChains = [
-  {
-    name: 'solana',
-  },
-  { name: 'bsc' },
-]
+const smartChains = computed(() => {
+  const chainIds = ['solana', 'bsc']
+  // 如果是自己的钱包地址且为 bot 钱包那么展示所有的链，链钱包后面再改
+  // if (currentBot.value?.address === userAddress || chain) {
+  //   const botChains = this.bot?.userInfo?.addresses?.filter((el) => chainIds.includes(el.chain))
+  //   if (botChains && botChains.length > 0) {
+  //     return botChains
+  //   }
+  // }
+  return [
+    {
+      chain,
+    },
+  ]
+})
+
+const statisticsTableRef = computed(() => {
+  return this.$refs.statisticsTable
+})
+
+//methods
+function changeTrendQuery(params) {
+  const $trendList = this.$refs.statisticsTable.$refs.trendList
+  if ($trendList) {
+    $trendList.parentSetTime(params)
+  }
+}
+function getBot(val) {
+  return {} //bot.value?.userInfo?.addresses?.find?.((i) => i?.chain === val) || {}
+}
+function txAnalysisChange(data) {
+  if (statisticRef.value) {
+    statisticRef.value.mergeStatistics(data) // 调用子组件方法
+  }
+}
 </script>
 
 <style scoped lang="scss">

@@ -3,7 +3,8 @@
     <div>
       <div class="statistic-avatar">
         <UserAvatar
-          :wallet_logo="{
+          :key="statistics?.wallet_logo?.logo"
+           :wallet_logo="{
             ...(statistics.wallet_logo || {}),
             ...(address === botStore?.evmAddress ? { name: userInfo?.name } : {}),
           }"
@@ -30,15 +31,9 @@
               :href="statistics.x_url"
               target="_blank"
             >
-              <img
-                width="16"
-                :src="
-                  isDark
-                    ? require('@/assets/images/connect-x-dark.png')
-                    : require('@/assets/images/connect-x-light.png')
-                "
-                alt=""
-              >
+              <img v-if="isDark" :width="16" src="@/assets/images/connect-x-dark.png" alt="" />
+              <img v-else :width="16" src="@/assets/images//connect-x-light.png" alt="" />
+
               {{ formatNumber2(statistics.x_followers, 2, 4, 4) }}
             </a>
             <a
@@ -72,7 +67,7 @@
 
         <el-switch v-model="currencyStandard" inactive-value="U" :active-value="chain">
           <template #active-action>
-            <!-- <ChainToken :chain="chain" :width="16" /> -->
+            <ChainToken :chain="chain" :width="16" />
           </template>
           <template #inactive-action>
             <span class="statistic-money-u">$</span>
@@ -80,17 +75,15 @@
         </el-switch>
       </div>
       <p class="total-profit">
-        {{ $t('totalPnL2') }}（{{ intervalText }}）
-        <Number :value="statistics.profit" :signVisible="isUSDT">
-          {{ formatNumber2(Math.abs(statistics.profit / main_token_price), 2, 4, 4) }}
-          {{ main_token_symbol }}
-        </Number>
+        {{ $t('totalPnL') }}（{{ intervalText }}）
+        <Number :value="statistics.profit" :signVisible="isUSDT"> </Number>
         <Number :value="statistics.profit_ratio"
           >{{ formatNumberS(Math.abs(statistics.profit_ratio * 100), 2) }}%
         </Number>
       </p>
       <p class="total-profit">
-        {{ $t('winRate2') }}（{{ intervalText }}）<Number :value="statistics.win_rate"
+        {{ $t('winRate2') }}（{{ intervalText }}）
+        <Number :value="statistics.win_rate"
           >{{ formatNumberS(Math.abs(statistics.win_rate ?? 0)) }}%</Number
         >
       </p>
@@ -110,14 +103,14 @@
           <i class="iconfont icon-guanzhushu" />{{ $t('follow') }}
         </a>
         <a class="statistic-right-share">
-           {{ $t('share') }}
-          <Share :statistics="statistics" :address="address" :chain="chain"/>
+          {{ $t('share') }}
+          <Share :statistics="statistics" :address="address" :chain="chain" />
         </a>
       </div>
       <div>
         <div class="statistic-pnl" />
         <AveEmpty v-if="pnl.dataset.source.length <= 0" style="height: 80px" :showText="false" />
-        <!-- <AveCharts
+        <AveCharts
           v-else
           ref="profit"
           :containerStyle="{
@@ -128,7 +121,7 @@
           :series="pnl.series"
           :dataset="pnl.dataset"
           :tooltip="pnl.tooltip"
-        /> -->
+        />
       </div>
     </div>
   </div>
@@ -136,29 +129,17 @@
 
 <script setup lang="ts">
 //组件
-// import AveCharts from '@/components/charts/aveCharts.vue'
-
-// 工具、方法
-// import * as echarts from 'echarts'
-// import { mapGetters, mapState } from 'vuex'
-import QRCode from 'qrcode'
-
-import html2canvas from 'html2canvas'
+import AveCharts from '@/components/charts/aveCharts.vue'
 import numeral from 'numeral'
 import dayjs from 'dayjs'
-import {
-  getBalanceAnalysis,
-  getWalletBasicInfo,
-  bindTwitter,
-} from '@/api/wallet'
-import { download } from '@/utils/download'
+import { getBalanceAnalysis, getWalletBasicInfo, bindTwitter } from '@/api/wallet'
 
 import UserRemark from '@/components/userRemark.vue'
 import UserAvatar from '@/components/userAvatar.vue'
 import Share from '@/components/share.vue'
-
-// import ChainToken from '@/components/chainToken.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
+
+import ChainToken from '@/components/chainToken.vue'
 import Number from '../components/Number.vue'
 import { verifyLogin, formatRemark } from '@/utils'
 import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
@@ -186,7 +167,6 @@ const props = defineProps({
 const { address, chain, interval, intervalText } = toRefs(props)
 const botStore = useBotStore()
 const themeStore = useThemeStore()
-const globalConfig = useConfigStore().globalConfig
 
 const { userInfo } = storeToRefs(useBotStore())
 
@@ -207,17 +187,17 @@ interface Statistics {
   [key: string]: any
 }
 
-const statistics = ref<Statistics>({})
+const statistics = ref<Statistics>({ wallet_logo: {} })
 
-const remark = {
+const remark = ref({
   value: '',
   isEdit: false,
   loading: false,
-}
+})
 
 const currentAccount = ''
 const balanceAnalysis = ref({ profit: [], total_balance_without_risk: undefined })
-const currencyStandard = 'U'
+const currencyStandard = ref('U')
 //   ...mapState([
 //     "token_user",
 //     "currentAccount",
@@ -235,6 +215,7 @@ const pnl = computed(() => {
     el.negative = el.value < 0
     el.absValue = Math.abs(el.value)
   })
+  console.log('pnl', xData)
   return {
     xAxis: {
       data: xData,
@@ -311,7 +292,6 @@ const defaultRemark = computed(() => {
   return statistics.value.remark //result
 })
 
-
 const isDark = computed(() => {
   return themeStore.isDark
 })
@@ -327,7 +307,9 @@ const selfAddress = computed(() => {
 const wallet_age = computed(() => {
   const $t = getGlobalT()
   const wallet_age = statistics.value.wallet_age
-  return  ['--','0'].includes(wallet_age)? {value: '--'} : getDuring(wallet_age ? wallet_age * 1000 : undefined, $t)
+  return ['--', '0'].includes(wallet_age)
+    ? { value: '--' }
+    : getDuring(wallet_age ? wallet_age * 1000 : undefined, $t)
 })
 
 const total_balance = computed(() => {
@@ -342,7 +324,7 @@ const total_balance = computed(() => {
 })
 
 const isUSDT = computed(() => {
-  return currencyStandard === 'U'
+  return currencyStandard.value == 'U'
 })
 
 const main_token_price = computed(() => {
@@ -363,7 +345,7 @@ const chainAddress = computed(() => {
 
 watch(
   () => props.interval,
-  (newVal) => {
+  (newVal: any) => {
     if (newVal) {
       onGetBalanceAnalysis()
     }
@@ -373,7 +355,7 @@ watch(
 
 watch(
   () => props.address,
-  (newVal) => {
+  (newVal: any) => {
     if (newVal) {
       onGetWalletBasicInfo()
       onGetBalanceAnalysis()
@@ -389,8 +371,8 @@ onMounted(() => {
 
 async function onGetWalletBasicInfo() {
   const params = {
-    user_address: address,
-    self_address: selfAddress,
+    user_address: address.value,
+    self_address: selfAddress.value,
     user_chain: chain.value,
   }
   const res = await getWalletBasicInfo(params)
@@ -399,10 +381,9 @@ async function onGetWalletBasicInfo() {
     ...statistics,
     ...(res || {}),
   }
-
-  if (address === botStore?.evmAddress) {
-    remark.value = res.remark || userInfo?.name
-  }
+  // if (address === botStore?.evmAddress) {
+  remark.value = res.remark || userInfo?.name
+  // }
 }
 
 function deleteAttention() {
@@ -441,61 +422,6 @@ async function addAttention() {
     .catch((err) => {
       ElMessage.error(err)
     })
-}
-function openShareDialog() {
-  share.dialogVisible = true
-  getQRCode()
-  getRandomBg(statistics?.total_profit_ratio > 0)
-  setTimeout(() => {
-    getShareImg()
-  }, 100)
-}
-
-function getQRCode() {
-  const inviterUrl = globalConfig.inviter_url_v2 || 'https://share.ave.ai'
-  const refCode = bot.referralInfo.refCode
-  const shareLink = inviterUrl + '?code=' + refCode + '&lang=' + language
-  QRCode.toDataURL(shareLink, { margin: 1 })
-    .then((url) => {
-      share.qrcodeUrl = url
-    })
-    .catch((err) => {
-      console.error(err)
-    })
-}
-
-function getShareImg() {
-  const postersDom = document.querySelector('.share-card') as HTMLElement
-  if (postersDom) {
-    return html2canvas(postersDom, {
-      backgroundColor: null,
-      scale: 3,
-      allowTaint: true,
-      useCORS: true,
-      scrollY: 0,
-      scrollX: 0,
-      height: postersDom.clientHeight - 1,
-    }).then((canvas: HTMLCanvasElement) => {
-      share.canvas = canvas
-      return canvas
-    })
-  }
-}
-function downloadSharePoster() {
-  const postersDom = document.querySelector('.share-card') as HTMLElement
-  if (postersDom) {
-    html2canvas(postersDom, {
-      backgroundColor: null,
-      scale: 3,
-      allowTaint: true,
-      useCORS: true,
-      scrollY: 0,
-      scrollX: 0,
-    }).then((canvas: HTMLCanvasElement) => {
-      const dataURL = canvas.toDataURL('image/png')
-      download(dataURL, `ave-${Date.now()}.png`)
-    })
-  }
 }
 async function onGetBalanceAnalysis() {
   const params = {
@@ -549,11 +475,6 @@ async function bindTwitter() {
     })
 }
 
-// 获取1-5的随机值
-function getRandom(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
 function getDuring(time, $t) {
   if (!time) return { value: '--', unit: '' } // Prevent infinite l
   const minutes = Math.abs(dayjs().diff(time, 'minute', true))
@@ -566,6 +487,16 @@ function getDuring(time, $t) {
   const { value, unit } = thresholds.find((t) => t.value < t.limit) || {}
   return { value: parseInt(value), unit }
 }
+
+function mergeStatistics(data) {
+  statistics.value = {
+    ...statistics,
+    ...data,
+  }
+}
+defineExpose({
+  mergeStatistics,
+})
 </script>
 
 <style scoped lang="scss">
@@ -636,8 +567,7 @@ function getDuring(time, $t) {
       border-radius: 4px;
       font-size: 12px;
       color: var(--d-666-l-959A9F);
-      background-color: var(--custom-bg-media-color);
-
+      background-color: #222;
       .iconfont {
         font-size: 12px;
       }
@@ -657,7 +587,6 @@ function getDuring(time, $t) {
       rgba(18, 184, 134, 0.1) 0.27%,
       rgba(139, 79, 221, 0.1) 89.4%
     );
-
     > a {
       &:hover {
         color: inherit;
@@ -677,7 +606,7 @@ function getDuring(time, $t) {
       gap: 4px;
       font-size: 12px;
       color: var(--d-999-l-18181B);
-      background-color: var(--custom-bg-media-color);
+      background-color: #15171c;
 
       > i {
         font-size: 10px;
@@ -720,8 +649,8 @@ function getDuring(time, $t) {
     }
 
     ::v-deep(.el-switch) {
-      --el-switch-off-color: var(--d-333333-l-F2F2F2);
-      --el-switch-on-color: var(--d-666-l-D8D8D8);
+      --el-switch-off-color: #333;
+      --el-switch-on-color: #666;
     }
 
     .statistic-money-u {
@@ -847,17 +776,5 @@ function getDuring(time, $t) {
       width: 558px;
     }
   }
-}
-
-.avatar {
-  border-radius: 100%;
-}
-.icon-chain {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
 }
 </style>

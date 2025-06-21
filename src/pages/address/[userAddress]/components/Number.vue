@@ -1,25 +1,28 @@
 <template>
-<span
-:class="{
-  positive:value > 0,
-  negative:value < 0
-}">
-  {{value > 0 ? '+':''}}{{value < 0 ?'-':''}}{{signVisible?'$':''}}<slot/>
-</span>
+  <span
+    :class="{
+      positive: Number(props.value) > 0,
+      negative: Number(props.value) < 0,
+    }"
+  >
+    {{ Number(props.value) > 0 ? '+' : '' }}{{ Number(props.value) < 0 ? '-' : '' }}{{ props.signVisible ? '$' : ''
+    }}
+    <slot />
+  </span>
 </template>
 
-<script>
-export default {
-  name: "Number",
-  props:{
-    value:[String,Number],
-    signVisible:Boolean
-  }
-}
+<script setup lang="ts">
+const props = defineProps({
+  value: {
+    type: [String, Number],
+    default: 0,
+  },
+  signVisible: Boolean,
+})
 </script>
 
 <style scoped lang="scss">
-span{
+span {
   color: var(--d-666-l-959A9F);
   &.positive {
     color: var(--color-teal-300);

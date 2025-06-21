@@ -663,5 +663,10 @@
   "mechanism_intro": "Additional",
   "antiWhaleModifiable": "Anti whale modifiable",
   "check2": "Check",
-  "tax": "Tax"
+  "tax": "Tax",
+  "days2": "days",
+  "bestToken2": "Best Token",
+  "profit3": "Profit",
+  "ROI": "ROI",
+  "Vol": "Vol"
 }
