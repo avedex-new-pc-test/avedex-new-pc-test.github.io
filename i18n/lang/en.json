@@ -664,7 +664,23 @@
   "check2": "Check",
   "tax": "Tax",
   "poolPair": "Pair",
+  "tokenGroup": "Token grouping",
+  "follow": "Follow",
   "customToken": "Custom Token",
   "watchAddress": "Watch Address",
-  "tokenGroup": "Token grouping"
+  "remarkLib": "Address alias library",
+  "chainWallet": "Extension Wallet",
+  "selectNetwork": "Select network",
+  "selectWallet": "Choose Wallet",
+  "detected": "Detected",
+  "addNetFirst": "Please add the network first",
+  "notSupportChain": "The wallet does not support this network",
+  "disconnect": "Disconnect",
+  "exportTip": "To synchronize the fav data, please click",
+  "exportCode": "Export code",
+  "scan": "Scan QR Code",
+  "importTip": "*Import Code to synchronize the selected data",
+  "plsImport": "Please import the self-selected Code in the App settings to automatically synchronize the app's self-selected data.",
+  "plsImportCorrect": "Please enter the correct code"
 }
+ 

@@ -217,7 +217,7 @@
   "winRate2": "胜率",
   "paused": "已暂停",
   "tgBotWallet": "BOT钱包",
-  "connectChainWallet": "连接链钱包",
+  "connectChainWallet": "连接插件钱包",
   "importAddress": "观察地址",
   "appCode": "App Code",
   "startConfirmPasswordError": "两次密码输入不一致",
@@ -665,7 +665,23 @@
   "check2": "安全检测",
   "tax": "税",
   "poolPair": "配对",
+  "tokenGroup": "代币分组",
+  "follow": "关注",
   "customToken": "自选币种",
   "watchAddress": "关注地址",
-  "tokenGroup": "代币分组"
+  "remarkLib": "地址别名库",
+  "chainWallet": "插件钱包",
+  "selectNetwork": "选择网络",
+  "selectWallet": "选择钱包",
+  "detected": "已安装",
+  "addNetFirst": "请先添加网络",
+  "notSupportChain": "钱包不支持该网络",
+  "disconnect": "断开连接",
+  "exportTip": "如需同步该地址自选数据，请点击",
+  "exportCode": "导出code",
+  "scan": "扫码",
+  "importTip": "*导入Code即可同步该地址的自选数据",
+  "plsImport": "请导入App设置里面的自选Code，自动同步app自选数据",
+  "plsImportCorrect": "请输入正确的code"
 }
+
