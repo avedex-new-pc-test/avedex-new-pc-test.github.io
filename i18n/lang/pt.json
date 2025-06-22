@@ -276,5 +276,7 @@
   "exportCode": "Exportar código",
   "importTip": "*Importar Código para sincronizar os dados selecionados",
   "plsImport": "",
-  "plsImportCorrect": "Por favor, insira o código correto"
+  "plsImportCorrect": "Por favor, insira o código correto",
+  "bulkProcess": "Importação em massa / Exportação em massa",
+  "monitorList": "Lista de monitoramento"
 }

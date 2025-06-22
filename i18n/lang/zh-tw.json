@@ -677,5 +677,7 @@
   "scan": "掃碼",
   "importTip": "*導入Code即可同步該地址的自選數據",
   "plsImport": "請導入App設定裡面的自選Code，自動同步app自選數據",
-  "plsImportCorrect": "請輸入正確的code"
+  "plsImportCorrect": "請輸入正確的code",
+  "bulkProcess": "批量導入/導出",
+  "monitorList": "監控列表"
 }

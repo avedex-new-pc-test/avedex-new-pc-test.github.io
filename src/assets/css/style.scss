@@ -158,3 +158,8 @@
     }
   }
 }
+.m-radio-group{
+  :deep() .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
+    border-color: var(--d-333-l-666);
+  }
+}

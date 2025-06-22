@@ -1,12 +1,14 @@
 <template>
-  <el-popover ref="popoverRef" :width="width" trigger="click" placement="bottom" :virtual-ref="props.buttonRef" virtual-triggering :title="props.title" :persistent="false" :teleported="true" >
+  <el-popover ref="popoverRef" :width="props?.width" trigger="click" placement="bottom" :virtual-ref="props.buttonRef" virtual-triggering :title="props?.title" :persistent="false" :teleported="true" popper-class="" popper-style="--el-popover-title-font-size:12px;--el-popover-title-text-color:var(--d-FFF-l-000)">
     <el-form ref="formRef" :model="form" :rules="rules" @submit.prevent.stop="handleSubmit(formRef)">
-      <el-form-item :prop="props.prop" :required="props.required" label-position="top">
+      <el-form-item :prop="props.prop" :required="props.required" label-position="top" size="large" class="mb-12px!">
         <el-input v-model="form[props.prop]" :placeholder="placeholder" :maxlength="props.maxlength"/>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click.stop.prevent="handleCancel">{{ $t('cancel') }}</el-button>
-        <el-button native-type="submit">{{ $t('confirm') }}</el-button>
+      <el-form-item class="mb-0px!">
+        <div class="flex-between w-100%">
+          <el-button style="background: var(--d-333-l-F2F2F2)" class="flex-1" @click.stop.prevent="handleCancel">{{ $t('cancel') }}</el-button>
+          <el-button type="primary" class="flex-1" native-type="submit">{{ $t('confirm') }}</el-button>
+        </div>
       </el-form-item>
     </el-form>
   </el-popover>
@@ -19,7 +21,7 @@ const {lang} = storeToRefs(useGlobalStore())
 const props=defineProps({
   width:{
     type:String,
-    default:'200'
+    default:'248'
   },
   required:{
     type:Boolean,
@@ -89,12 +91,14 @@ function handleSubmit(formEl: FormInstance | undefined) {
   formEl.validate((valid, fields) => {
     if (valid) {
       emits('onConfirm',form[props.prop])
+      formRef.value?.resetFields()
     } else {
       console.log('error submit!', fields)
     }
   })
 }
 function handleCancel() {
+  formRef.value?.resetFields()
   close()
 }
 function close() {
@@ -105,9 +109,27 @@ defineExpose({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .el-popover__reference {
   margin-bottom: 10px;
+}
+:deep() .el-input {
+  --el-input-border-color: #444444;
+  --el-input-placeholder-color: var(--d-666-l-999);
+  --el-text-color-placeholder: #999;
+  --el-input-bg-color: var(--d-333-l-F2F2F2)
+}
+:deep() .el-button {
+  --el-border:none;
+}
+:deep() .el-input__wrapper {
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+
+  &:hover {
+    box-shadow: 0 0 0 1px #3F80F7 inset;
+  }
 }
 </style>
 

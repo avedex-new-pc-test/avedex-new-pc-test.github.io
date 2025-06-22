@@ -276,5 +276,7 @@
   "plsImportCorrect": "Por favor, introduce el código correcto",
   "customToken": "Token Personalizado",
   "watchAddress": "Dirección de Observación",
-  "remarkLib": "Dirección de alias biblioteca"
+  "remarkLib": "Dirección de alias biblioteca",
+  "bulkProcess": "Importación masiva / Exportación masiva",
+  "monitorList": "Lista de monitoreo"
 }

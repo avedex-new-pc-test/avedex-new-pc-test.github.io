@@ -271,5 +271,7 @@
   "exportCode": "Kod dışa aktar",
   "importTip": "*Kodu içe aktararak bu adresin favori verilerini senkronize edebilirsiniz",
   "plsImport": "Lütfen kodu girin",
-  "plsImportCorrect": "Lütfen doğru kodu girin"
+  "plsImportCorrect": "Lütfen doğru kodu girin",
+  "bulkProcess": "Toplu İçe Aktarma / Toplu Dışa Aktarma",
+  "monitorList": "İzleme Listesi"
 }

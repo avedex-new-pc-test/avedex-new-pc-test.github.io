@@ -412,11 +412,11 @@ function init2() {
     }
   }
 }
-.m-radio-group{
+/* .m-radio-group{
   :deep() .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
     border-color: var(--d-333-l-666);
   }
-}
+} */
 .line-bar {
   width: 100%;
   height: 3px;

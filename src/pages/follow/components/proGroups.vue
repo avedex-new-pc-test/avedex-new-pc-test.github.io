@@ -1,5 +1,5 @@
 <template>
-  <ul class="w-tabs">
+  <ul class="w-tabs flex-1 flex-wrap">
     <li class="clickable" :class="{ active: props.modelValue === 0 }" @click.stop.prevent="emit('update:modelValue', 0)">
       <span>{{ $t('defaultGroup') }}</span>
     </li>
@@ -17,7 +17,7 @@
           <!-- <Icon v-else name="mynaui:x-square" class="text-18px color-#666"/> -->
           <Icon 
             name="mynaui:check-square-solid" class="text-18px color-[var(--d-F5F5F5-l-222)] clickable"
-            :class="{ 'cursor-not-allowed': !groupName }" @click.stop.prevent="groupName&&handleConfirmEdit"/>
+            :class="{ 'cursor-not-allowed': !groupName }" @click.stop.prevent="groupName&&handleConfirmEdit()"/>
           <!-- <Icon v-else name="mynaui:check-square" class="text-18px color-#666"/> -->
         </template>
       </el-input>
@@ -66,7 +66,7 @@
       </li>
     </ul>
   </el-popover>
-  <ProPopover ref="proPopoverRef" v-model="addGroupName" :button-ref="addButtonRef || {}" width="400" :label="$t('newGroup')" :placeholder="$t('groupPlaceholder')" prop="name" @onConfirm="handleAddGroup"/>
+  <ProPopover ref="proPopoverRef" v-model="addGroupName" :button-ref="addButtonRef || {}" width="248" :label="$t('newGroup')" :placeholder="$t('groupPlaceholder')" prop="name" @onConfirm="handleAddGroup" :title="$t('newGroup')"/>
 </template>
 
 <script setup lang="ts">
@@ -120,6 +120,7 @@ function handleDelGroup() {
 }
 function handleAddGroup() {
   emit('onAdd',addGroupName.value)
+  proPopoverRef.value?.close?.()
 }
 function openSetting() {
   emit('onChangeIndex',1,2)
