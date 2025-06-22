@@ -33,18 +33,41 @@
       </template>
     </li>
     <li ref="addButtonRef" class="clickable color-#3F80F7! flex gap-2px">
-        <Icon name="material-symbols:add-circle" class="text-12px" />
-        <span>{{ $t('newGroup') }}</span>
+      <Icon name="material-symbols:add-circle" class="text-12px" />
+      <span>{{ $t('newGroup') }}</span>
     </li>
-    <el-popover :width="400" trigger="click">
+    <el-popover :width="293" trigger="click" ref="popoverRef2">
        <template #reference>
-         <li class="clickable color-#3F80F7! flex gap-2px" @click.stop.prevent="openSetting">
+         <li class="clickable color-#3F80F7! flex gap-2px">
            <Icon name="material-symbols:format-list-bulleted" class="text-12px" />
            <span>{{ $t('groupManage') }}</span>
          </li>
        </template>
        <template #default>
-         <div>content2</div>
+        <div class="font-500 text-14px lh-[120%] tracking-0% text-[--d-FFF-l-000] ">
+          <div class="mb-8px text-12px lh-16px">{{ $t('groupManage') }}</div>
+         <VueDraggableNext
+            class="flex flex-col mb-12px"
+            tag="ul"
+            v-model="sortOptions"
+            v-bind="{ animation: 200}"
+            @start="drag = true"
+            @end="drag = false"
+            item-key="show_index"
+          >
+            <transition-group type="transition" name="flip-list">
+              <li v-for="item in sortOptions" :key="item.show_index" class="flex-between px-12px py-8px hover:bg-[--d-2A2A2A-l-F2F2F2] cursor-move"
+              >
+                <span>{{ item.name }}</span>
+                <Icon name="material-symbols:dehaze"/>
+              </li>
+            </transition-group>
+          </VueDraggableNext>
+          <div class="flex-between w-100%">
+            <el-button style="background: var(--d-333-l-F2F2F2);--el-border:none" class="flex-1" @click.stop.prevent="()=>popoverRef2?.hide?.()">{{ $t('cancel') }}</el-button>
+            <el-button type="primary" class="flex-1" @click.stop.prevent="handleSort">{{ $t('confirm') }}</el-button>
+          </div>
+        </div>
        </template>
     </el-popover>
   </ul>
@@ -72,11 +95,15 @@
 <script setup lang="ts">
 import { ClickOutside as vClickOutside } from 'element-plus'
 import ProPopover from './proPopover.vue'
+import {VueDraggableNext} from 'vue-draggable-next'
+
+
 const emit = defineEmits<{
   (e: 'onConfirm', groupId: number, name: string): void
   (e: 'onDelete' | 'onCancel' | 'update:modelValue', groupId: number): void
   (e: 'onChangeIndex', groupId: number, groupId2: number): void
   (e: 'onAdd', name: string): void
+  (e: 'update:options', options: Array<{ group_id: number; name: string; show_index: number }>): void
 }>()
 const props = defineProps({
   options: {
@@ -91,6 +118,12 @@ const props = defineProps({
 const $refs = ref({
   buttonRefs: {} as Record<number, any>
 })
+// emit('update:options', val)
+// const options = computed({
+//   get: () => props.options,
+//   set: (val) => emit('update:options', val)
+// })
+const sortOptions = ref(props.options)
 const groupName = ref('')
 const addGroupName = ref('')
 const edits = ref<Record<number, boolean>>({})
@@ -100,7 +133,9 @@ const buttonRef = ref()
 const addButtonRef = ref()
 const proPopoverRef = ref()
 const popoverRef = ref()
+const popoverRef2 = ref()
 
+const drag=ref(false)
 function handleRenameGroup() {
   edits.value[currentEditGroup.value] = true
   nextTick(() => {
@@ -121,6 +156,13 @@ function handleDelGroup() {
 function handleAddGroup() {
   emit('onAdd',addGroupName.value)
   proPopoverRef.value?.close?.()
+}
+function handleSort() {
+  // emit('onAdd',addGroupName.value)
+  // proPopoverRef.value?.close?.()
+  popoverRef2.value?.hide?.()
+  console.log('handleSort',props.options,sortOptions.value)
+  // emit('onChangeIndex',1,2)
 }
 function openSetting() {
   emit('onChangeIndex',1,2)
@@ -162,5 +204,12 @@ ul.w-tabs {
     }
   }
 }
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+
 </style>
 

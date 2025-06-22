@@ -17,7 +17,11 @@
         </li>
       </ul>
     </div>
-    <div claas="m-table" />
+    <div claas="m-table">
+      <!-- <el-table :data="tableData" style="width: 100%">
+
+      </el-table> -->
+    </div>
   </div>
 
 </template>
