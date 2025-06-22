@@ -1,9 +1,449 @@
+<script setup lang="ts">
+import { ref, onMounted, computed, watch } from 'vue'
+import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
+import { cloneDeep } from 'lodash-es'
+import { VueDraggable } from 'vue-draggable-plus'
+import { formatNumber2 } from '~/utils/formatNumber'
+import { getRemarksDetail, getUserFavoriteGroups, removeFavorite, removeFavoriteGroup, addFavoriteGroup, changeFavoriteGroupName, editTokenFavRemark } from '~/api/fav'
+
+const botStore = useBotStore()
+const walletStore = useWalletStore()
+const router = useRouter()
+const { t } = useI18n()
+const activeTab = ref(0)
+const tabsGroup = ref<any[]>([])
+const allTabsGroup = computed(() => {
+  return [
+    { label: t('defaultGroup'), value: 0 },
+    ...tabsGroup.value
+  ]
+})
+const moveList = ref<any[]>([])
+const moveValue = ref('')
+
+const addGroupPopoverRef = ref()
+const editGroupPopoverRef = ref()
+const moveGroupPopoverRef = ref()
+const remarkGroupPopoverRef = ref()
+const groupValue = ref('')
+const remarkValue = ref('')
+const editId = ref<number | undefined>(undefined)
+
+const loading = ref(false)
+const pageData = ref({
+  total: 10,
+  page: 1,
+  pageSize: 10
+})
+const tableList = ref<any[]>([])
+const { mode } = storeToRefs(useGlobalStore())
+
+watch(() => botStore.evmAddress, (newVal) => {
+  if (newVal) {
+    getList()
+    getGroupList()
+  } else {
+    tableList.value = []
+    tabsGroup.value = []
+  }
+})
+
+watch(() => walletStore.address, (newVal) => {
+  if (newVal) {
+    getList()
+    getGroupList()
+  } else {
+    tableList.value = []
+    tabsGroup.value = []
+  }
+})
+
+// 选择分组
+const setActiveTab = (val: number) => {
+  activeTab.value = val
+  pageData.value.page = 1
+  getList()
+}
+
+// 删除分组
+const handleDeleteGroup = async (groupId: number) => {
+  await ElMessageBox.confirm(t('removeFavGroupTips'), t('tips'), {
+    confirmButtonText: t('confirm'),
+    cancelButtonText: t('cancel'),
+    dangerouslyUseHTMLString: true,
+    customClass: '',
+  })
+  await removeFavoriteGroup(groupId, botStore.evmAddress)
+  ElMessage.success(t('success'))
+  getGroupList()
+  if (activeTab.value === groupId) {
+    setActiveTab(0)
+  }
+}
+
+// 添加分组
+const handleAddGroup = async () => {
+  if (!groupValue.value.trim()) return ElMessage.error(t('enterGroupName'))
+  if (groupValue.value.length > 20) return ElMessage.error(t('maximum10characters'))
+  await addFavoriteGroup(groupValue.value, botStore.evmAddress)
+  ElMessage.success(t('success'))
+  addGroupPopoverRef.value?.hide()
+  getGroupList()
+}
+
+// 重命名分组
+const handleUpdateGroup = (item: any) => {
+  editId.value = item.value
+  groupValue.value = item.label
+}
+
+const editHide = () => {
+  editId.value = undefined
+  groupValue.value = ''
+}
+
+// 确认编辑
+const handleUpdateGroupConfirm = async (item: any, index: number) => {
+  if (!groupValue.value.trim()) return ElMessage.error(t('enterGroupName'))
+  if (groupValue.value.length > 20) return ElMessage.error(t('maximum10characters'))
+  await changeFavoriteGroupName(groupValue.value, item.value, botStore.evmAddress)
+  ElMessage.success(t('success'))
+  editGroupPopoverRef.value[index]?.hide()
+  getGroupList()
+}
+
+// 处理移动分组
+const handleMoveGroup = () => {
+  moveList.value = cloneDeep(tabsGroup.value)
+}
+
+// 移动分组确认
+const handleMoveGroupConfirm = () => {
+  console.log(moveList.value)
+  moveGroupPopoverRef.value?.hide()
+  tabsGroup.value = cloneDeep(moveList.value)
+  ElMessage.success(t('success'))
+}
+
+// 备注
+const handleRemarkGroup = async (row: any) => {
+  if (!remarkValue.value.trim()) return ElMessage.error(t('enterRemark'))
+  if (remarkValue.value.length > 20) return ElMessage.error(t('remarkError'))
+  const tokenId = row.token + '-' + row.chain
+  await editTokenFavRemark(tokenId, remarkValue.value, botStore.evmAddress)
+  ElMessage.success(t('success'))
+  remarkGroupPopoverRef.value?.hide()
+  getList()
+}
+
+const tableRowClick = (row: any) => {
+  const containsSpecialString = row?.token
+    ? ['inscription', ':', '('].some(str => row.token.includes(str))
+    : false
+
+  if (
+    row.chain === 'brc20' ||
+    row.chain === 'runes' ||
+    containsSpecialString
+  ) {
+    router.push(`/brc/${row.token}-${row.chain}?from=fav`)
+  } else {
+    router.push(`/token/${row.token}-${row.chain}?from=fav`)
+  }
+}
+
+// 处理表格排序
+const handleSortChange = ({ prop, order }: any) => {
+  if (prop) {
+    if (order === 'ascending') {
+      tableList.value = tableList.value.toSorted((a, b) => a[prop] - b[prop])
+    } else if (order === 'descending') {
+      tableList.value = tableList.value.toSorted((a, b) => b[prop] - a[prop])
+    }
+  }
+}
+
+// 取消收藏
+const collect = (row: any) => {
+  if (!verifyLogin()) {
+    return
+  }
+  loading.value = true
+  removeFavorite(`${row.token}-${row.chain}`, botStore.evmAddress)
+    .then(() => {
+      getList()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+// 获取列表
+const getList = async () => {
+  const res = await getRemarksDetail({
+    address: botStore.evmAddress,
+    // group: activeTab.value,
+    pageNO: pageData.value.page,
+    pageSize: pageData.value.pageSize
+  })
+  const tableData =
+    (res.data &&
+      res.data?.map(i => ({
+        ...i,
+        total_txs: safeBigNumber(i.total_sold).plus(safeBigNumber(i.total_purchase)).toString(),
+        total_txs_usd: safeBigNumber(i.total_sold_usd).plus(safeBigNumber(i.total_purchase_usd)).toString(),
+        group_id: activeTab.value,
+      }))) ||
+    []
+  tableList.value = tableData
+}
+
+// 获取分组列表
+const getGroupList = async () => {
+  const res = await getUserFavoriteGroups(botStore.evmAddress)
+  tabsGroup.value = (res || []).filter(el => !!el.name).map((item) => ({
+    ...item,
+    label: item.name,
+    value: item.group_id
+  }))
+}
+
+function safeBigNumber(value) {
+  try {
+    // 尝试将值转换为 BigNumber
+    const result = new BigNumber(value)
+    // 如果结果是 NaN，返回 0
+    if (!result.isFinite()) {
+      return new BigNumber(0)
+    }
+    return result
+  } catch (error: any) {
+    console.log(error)
+    // 如果发生错误，返回 0
+    return new BigNumber(0)
+  }
+}
+
+onMounted(() => {
+  if (!botStore.evmAddress && !walletStore.address) return
+  getList()
+  getGroupList()
+})
+</script>
+
 <template>
-  <div class="remark">
-    remark
+  <div>
+    <div v-if="botStore.evmAddress || walletStore.address"
+      class="flex items-center px-12px mt-12px gap-8px overflow-x-auto scrollbar-hide">
+      <div v-for="(item, index) in allTabsGroup" :key="item.value"
+        class="cursor-pointer text-12px color-[--d-999-l-666] bg-[--d-15171c-l-f2f2f2] px-12px py-4px rounded-4px shrink-0 flex items-center"
+        :class="[activeTab === item.value && 'bg-[--d-333-l-0A0B0C] color-[#F5F5F5]']"
+        @click="setActiveTab(item.value)">
+        {{ item.label }}
+        <el-popover trigger="click" @hide="editHide" ref="editGroupPopoverRef" :width="editId ? 250 : 100">
+          <template #reference>
+            <img v-if="item.value > 0" @click.stop class="w-12px h-12px ml-2px" src="@/assets/icons/set_up.svg"
+              alt="" />
+          </template>
+          <div>
+            <div v-if="!editId">
+              <div class="flex items-center cursor-pointer w-100px" @click.stop="handleUpdateGroup(item)">
+                <img class="w-16px h-16px mr-2px" src="@/assets/icons/fav_edit.svg" alt="" />
+                <view class="ml-4px text-14px">{{ t('rename') }}</view>
+              </div>
+              <div class="flex items-center cursor-pointer w-100px mt-12px" @click.stop="handleDeleteGroup(item.value)">
+                <img class="w-16px h-16px mr-2px" src="@/assets/icons/delete_icon.svg" alt="" />
+                <view class="ml-4px text-14px">{{ t('delete') }}</view>
+              </div>
+            </div>
+            <div v-else>
+              <div>{{ t('rename') }}</div>
+              <el-input v-model="groupValue" :placeholder="t('enterGroupName')" class="mt-8px w-200px" />
+              <div class="flex items-center justify-between mt-12px gap-12px">
+                <div @click="editGroupPopoverRef[index]?.hide()"
+                  class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
+                  {{ t('cancel') }}
+                </div>
+                <div @click="handleUpdateGroupConfirm(item, index)"
+                  class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[#3F80F7] px-12px py-8px rounded-4px">
+                  {{ t('confirm') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-popover>
+      </div>
+
+      <el-popover trigger="click" @hide="groupValue = ''" ref="addGroupPopoverRef" :width="250">
+        <template #reference>
+          <!-- 新增 -->
+          <div style="background: rgba(63, 128, 247, 0.10);" @click="editId = undefined"
+            class="cursor-pointer text-12px color-[#3F80F7] px-12px py-4px rounded-4px shrink-0 flex items-center">
+            <img class="w-12px h-12px mr-2px" src="@/assets/icons/add_icon.svg" alt="" />
+            {{ t('newGroup') }}
+          </div>
+        </template>
+        <div>
+          <div>{{ t('newGroup') }}</div>
+          <el-input v-model="groupValue" :placeholder="t('enterGroupName')" class="mt-8px w-200px" />
+          <div class="flex items-center justify-between mt-12px gap-12px">
+            <div @click="addGroupPopoverRef?.hide()"
+              class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
+              {{ t('cancel') }}
+            </div>
+            <div @click="handleAddGroup()"
+              class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[#3F80F7] px-12px py-8px rounded-4px">
+              {{ t('confirm') }}
+            </div>
+          </div>
+        </div>
+      </el-popover>
+      <el-popover trigger="click" @hide="moveValue = ''" ref="moveGroupPopoverRef" :width="250">
+        <template #reference>
+          <div style="background: rgba(63, 128, 247, 0.10);" @click="handleMoveGroup"
+            class="cursor-pointer text-12px color-[#3F80F7] px-12px py-4px rounded-4px shrink-0 flex items-center">
+            <img class="w-12px h-12px mr-2px" src="@/assets/icons/list_icon.svg" alt="" />
+            {{ t('groupManage') }}
+          </div>
+        </template>
+        <div>
+          <div>{{ t('groupManage') }}</div>
+          <el-input v-model="moveValue" class="mt-8px" :placeholder="t('enterGroupName')" />
+          <VueDraggable v-model="moveList" :sort="true" ghost-class="ghost" :animation="300">
+            <div class="py-12px px-8px flex justify-between items-center"
+              v-for="item in moveList.filter(item => item.label.includes(moveValue))" :key="item.value">
+              {{ item.label }}
+              <img class="w-16px h-16px" src="@/assets/icons/move_icon.svg" alt="" />
+            </div>
+          </VueDraggable>
+          <div class="flex items-center justify-between mt-12px gap-12px">
+            <div @click="moveGroupPopoverRef?.hide()"
+              class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
+              {{ t('cancel') }}
+            </div>
+            <div @click="handleMoveGroupConfirm"
+              class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[#3F80F7] px-12px py-8px rounded-4px">
+              {{ t('confirm') }}
+            </div>
+          </div>
+        </div>
+      </el-popover>
+    </div>
+
+    <el-table class='mt-12px' v-loading="loading" :data="tableList" stripe fit @sort-change="handleSortChange"
+      @row-click="tableRowClick">
+      <template #empty>
+        <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
+          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
+          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
+          <span>{{ t('emptyNoData') }}</span>
+        </div>
+        <span v-else />
+      </template>
+
+      <el-table-column :label="t('poolPair')" min-width="160" show-overflow-tooltip>
+        <template #default="{ row, $index }">
+          <NuxtLink :to="`/token/${row.token}-${row.chain}`" @click.stop.prevent>
+            <div class="flex items-center">
+              <span class="text-[#848E9C] text-12px mr-5px">
+                #{{ (pageData.page - 1) * pageData.pageSize + $index + 1 }}
+              </span>
+              <Icon name="custom:attention"
+                class="color-var(--d-999-l-666) h-16px w-16px clickable shrink-0 color-[#F45469]"
+                @click.stop.prevent="collect(row)" />
+              <UserAvatar class="mx-8px" :wallet_logo="row.wallet_logo" :address="row.user_address"
+                :chain="row.user_chain" iconSize="24px"></UserAvatar>
+              <div class="ml-5px">
+                <div class="flex items-center">
+                  <span class="text-14px max-w-[60px] truncate">{{ row.remark }}</span>
+                  <el-popover trigger="click" @hide="remarkValue = ''" ref="remarkGroupPopoverRef" :width="250">
+                    <template #reference>
+                      <!-- 备注 -->
+                      <div @click.stop.prevent='remarkValue = row.remark'>
+                        <Icon class="text-[--d-666-l-999] w-12px h-12px ml-4px" name="custom:remark" />
+                      </div>
+                    </template>
+                    <div>
+                      <div>{{ t('editRemark') }}</div>
+                      <el-input v-model="remarkValue" :placeholder="t('enterRemark')" class="mt-8px w-200px" />
+                      <div class="flex items-center justify-between mt-12px gap-12px">
+                        <div @click="remarkGroupPopoverRef?.hide()"
+                          class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
+                          {{ t('cancel') }}
+                        </div>
+                        <div @click="handleRemarkGroup(row)"
+                          class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[#3F80F7] px-12px py-8px rounded-4px">
+                          {{ t('confirm') }}
+                        </div>
+                      </div>
+                    </div>
+                  </el-popover>
+                </div>
+                <div class="flex items-center mt-2px">
+                  <Icon v-copy="row?.user_address" name="bxs:copy" class="clickable text-[--d-666-l-999]" />
+                </div>
+              </div>
+            </div>
+          </NuxtLink>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('备注时间')" align="right">
+        <template #default="{ row }">
+          <div class="px-5px">
+            {{ dayjs(row.create_time).format('YYYY-MM-DD HH:mm:ss') }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('walletTotalBalance')" align="right">
+        <template #default="{ row }">
+          <div class="px-5px">
+            <div v-if="row?.main_token_balance_amount > 0">
+              {{ formatNumber2(row?.main_token_balance_amount || 0, 2) }}&nbsp;{{ row.main_token_symbol }}
+            </div>
+            <div v-else>
+              0
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('walletTotalBalance')" align="right">
+        <template #default="{ row }">
+          <div class="px-5px">
+            <div v-if="row?.total_balance > 0">
+              ${{ formatNumber2(row?.total_balance || 0, 1) }}
+            </div>
+            <div v-else>
+              $0
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column :label="t('operate')" align="right">
+        <template #default="{ row }">
+          <a class="trade" :href="`https://t.me/AveSniperBot?start=fs-${row.user_chain}-${row.user_address}`"
+            target="_blank">
+            {{ $t('跟单') }}
+          </a>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-pagination class="mt-20px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
+      layout="prev, sizes, pager, next, jumper, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<style lang="scss" scoped>
+:deep(.el-popover.el-popper) {
+  min-width: 100px;
+}
 
-<style scoped lang="scss"></style>
+:deep(.el-pagination) {
+  justify-content: center;
+}
+</style>

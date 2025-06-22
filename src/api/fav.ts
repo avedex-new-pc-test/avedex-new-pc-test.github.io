@@ -219,6 +219,15 @@ function getNewFavoriteList(query: any): Promise<GetFavListResponse[]> {
   })
 }
 
+function getRemarksDetail(query: any): Promise<GetFavListResponse[]> {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_remarks/v1/remarks_detail', {
+    method: 'get',
+    query
+  })
+}
+
+
 export {
   getUserFavoriteGroups,
   getFavoriteList,
@@ -236,5 +245,6 @@ export {
   removeFavorite,
   getCheckFavoriteGroup,
   getNewFavoriteList,
+  getRemarksDetail,
 }
 export type { GetUserFavoriteGroupsResponse, GetFavListResponse }
