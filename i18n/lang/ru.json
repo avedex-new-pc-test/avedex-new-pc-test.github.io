@@ -439,7 +439,7 @@
   "customToken": "Свой токен",
   "watchAddress": "Отслеживать адрес",
   "remarkLib": "Адрес библиотеки псевдоним",
-   "selectNetwork": "Выбрать сеть",
+  "selectNetwork": "Выбрать сеть",
   "selectWallet": "Выберите кошелек",
   "detected": "Обнаружено",
   "addNetFirst": "Пожалуйста, добавьте сеть сначала",
@@ -449,6 +449,7 @@
   "exportCode": "Экспорт кода",
   "importTip": "Импорт кода для синхронизации",
   "plsImport": "Импортируйте код настроек",
-  "plsImportCorrect": "Введите правильный код"
+  "plsImportCorrect": "Введите правильный код",
+  "bulkProcess": "Массовый импорт/экспорт",
+  "monitorList": "Список мониторинга"
 }
-

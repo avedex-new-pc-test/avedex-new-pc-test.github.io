@@ -449,5 +449,7 @@
   "exportCode": "Xuất mã",
   "importTip": "Nhập mã để đồng bộ",
   "plsImport": "Nhập mã từ cài đặt",
-  "plsImportCorrect": "Nhập mã chính xác"
+  "plsImportCorrect": "Nhập mã chính xác",
+  "bulkProcess": "Nhập/Xuất hàng loạt",
+  "monitorList": "Danh sách giám sát"
 }
