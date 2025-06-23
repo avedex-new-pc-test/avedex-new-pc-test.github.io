@@ -124,6 +124,9 @@ const $refs = ref({
 //   set: (val) => emit('update:options', val)
 // })
 const sortOptions = ref(props.options)
+watch(() => props.options, (val) => {
+  sortOptions.value = val
+})
 const groupName = ref('')
 const addGroupName = ref('')
 const edits = ref<Record<number, boolean>>({})

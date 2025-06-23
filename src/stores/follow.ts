@@ -43,6 +43,9 @@ export const useFollowStore = defineStore('follow', () => {
   const walletStore = useWalletStore()
   const addressGroups = useLocalStorage<{ group_id: number; name: string; show_index: number; }[]>('addressGroups', [])
   const currentAddress = computed(() =>  botStore?.evmAddress || walletStore?.address ||'')
+  watch(currentAddress, (val) => {
+    if(!val)addressGroups.value = []
+  })
   return {
     addressGroups,
     async getUserFavoriteGroups2(data: Parameters<typeof getUserFavoriteGroups2>[0] = currentAddress.value): Promise<Awaited<ReturnType<typeof getUserFavoriteGroups2>> | undefined> {
