@@ -89,7 +89,7 @@
       </li>
     </ul>
   </el-popover>
-  <ProPopover ref="proPopoverRef" v-model="addGroupName" :button-ref="addButtonRef || {}" width="248" :label="$t('newGroup')" :placeholder="$t('groupPlaceholder')" prop="name" @onConfirm="handleAddGroup" :title="$t('newGroup')"/>
+  <ProPopover ref="proPopoverRef" v-model="addGroupName" :button-ref="addButtonRef || {}" width="248" :label="$t('newGroup')" :placeholder="$t('groupPlaceholder')" prop="name" :title="$t('newGroup')" @onConfirm="handleAddGroup"/>
 </template>
 
 <script setup lang="ts">
