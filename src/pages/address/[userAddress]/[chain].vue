@@ -4,9 +4,9 @@
       <el-select
         :style="{ width: '120px' }"
         :model-value="chain"
-        @change="
+        @update:model-value="
           (val) => {
-            $router.push({
+            router.push({
               name: 'Balance',
               params: { chain: val, userAddress: getBot(val)?.address },
             })
@@ -17,14 +17,14 @@
           <ChainToken :chain="chain" :width="16" />
         </template>
         <el-option
-          v-for="chain in smartChains"
-          :key="chain.name"
-          :label="chain.name"
-          :value="chain.name"
+          v-for="{ chain } in smartChains"
+          :key="chain"
+          :label="getChainInfo(chain)?.name"
+          :value="chain"
         >
           <div class="flex-center" style="gap: 4px">
             <ChainToken :chain="chain" :width="16" />
-            {{ chain.name }}
+            {{ getChainInfo(chain)?.name }}
           </div>
         </el-option>
       </el-select>
@@ -32,8 +32,8 @@
         v-model="interval"
         class="m-radio-group"
         size="small"
-        :fill="isDark ? '#333' : '#666'"
-        :text-color="isDark ? '#F5F5F5' : '#FFF'"
+        :fill="themeStore.isDark ? '#333' : '#ccc'"
+        :text-color="themeStore.isDark ? '#F5F5F5' : '#FFF'"
         @change="(v) => console.log('v', v)"
       >
         <el-radio-button
@@ -63,17 +63,28 @@
         @txAnalysisChange="txAnalysisChange"
       />
     </div>
+    <ActivityCharts
+      :interval="interval"
+      :address="address"
+      :chain="chain"
+      @change="changeTrendQuery"
+    />
   </div>
 </template>
 <script setup>
-import Statistic from './components/statistic.vue'
-import TradeData from './components/tradeData.vue'
+import Statistic from './components/Statistic.vue'
+import TradeData from './components/TradeData.vue'
+import ActivityCharts from './components/activityCharts.vue'
+import { getChainInfo } from '@/utils'
+
+const currentAccount = ''
 const interval = ref('7D')
 const route = useRoute()
 const chain = route.params.chain
 const address = route.params.userAddress
 const $t = getGlobalT()
 const statisticRef = ref(null)
+const themeStore = useThemeStore()
 
 const options = [
   {
@@ -132,6 +143,44 @@ function txAnalysisChange(data) {
     statisticRef.value.mergeStatistics(data) // 调用子组件方法
   }
 }
+
+// // Initialize
+// address.value = paramsAddress.value || currentBot.value.address || currentAccount.value
+// chain.value = paramsChain.value || currentBot.value.chain || netId.value
+
+// Watchers
+watch(route, (to) => {
+  if (to.name === 'Balance') {
+    if (to.params?.chain && to.params?.userAddress) {
+      address = to.params.userAddress
+      chain = to.params.chain
+    } else if (currentAccount.value) {
+      address = currentAccount.value
+      chain.value = netId.value
+    }
+    statisticsTable.value?.onRouteChange()
+  }
+}, { deep: true })
+
+watch(currentAccount, (val) => {
+  if (val) {
+    address.value = val
+    chain.value = netId.value
+    statisticsTable.value?.onRouteChange()
+  } else {
+    address.value = ''
+    chain.value = ''
+    statisticsTable.value?.resetData()
+  }
+})
+
+// watch(chain, () => {
+//   address.value = add || currentBot.value.address || currentAccount.value
+// })
+
+// watch(() => bot.value?.userInfo?.evmAddress, () => {
+//   address.value = paramsAddress.value || currentBot.value.address || currentAccount.value
+// })
 </script>
 
 <style scoped lang="scss">

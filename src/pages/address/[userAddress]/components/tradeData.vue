@@ -204,11 +204,9 @@ const winProfitChart = ref(null)
 // 计算属性
 // const mode = computed(() => store.state.mode)
 const themeStore = useThemeStore()
-
 const mode = computed(() => {
   return themeStore.isDark ? 'dark' : 'light'
 })
-
 const bestTokenOptions = computed(() => [
   {
     id: BestTokenEnum.TOTAL_RATIO,

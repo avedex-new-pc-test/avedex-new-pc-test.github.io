@@ -131,14 +131,22 @@
 
 <script setup lang="ts">
 //组件
+import AveCharts from '@/components/charts/aveCharts.vue'
 import numeral from 'numeral'
 import dayjs from 'dayjs'
 import { getBalanceAnalysis, getWalletBasicInfo, bindTwitter } from '@/api/wallet'
 
+import UserRemark from '@/components/userRemark.vue'
+import UserAvatar from '@/components/userAvatar.vue'
+import Share from '@/components/share.vue'
+import AveEmpty from '@/components/aveEmpty.vue'
+
+import ChainToken from '@/components/chainToken.vue'
 import Number from '../components/Number.vue'
-import { verifyLogin } from '@/utils'
+import { verifyLogin, formatRemark } from '@/utils'
 import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
 
+const $t = getGlobalT()
 const props = defineProps({
   chain: {
     type: String,
