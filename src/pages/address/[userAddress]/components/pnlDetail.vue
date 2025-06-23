@@ -3,8 +3,8 @@
     <template #header>
       <span class="pnl-title">{{ $t('pnlDetail') }}</span>
     </template>
-    <div style="margin: -20px">
-      <el-divider style="margin: 0 0 20px; border-top-color: var(--d-33353D-l-f2f2f2)" />
+    <div style="margin-top: -20px">
+      <el-divider style="margin: 0 0 10px; border-top-color: #33353D" />
       <div class="pnl-row flex-between">
         <span class="pnl-row-name">{{ $t('Txs') }}</span>
         <span class="pnl-row-value">{{ eventsDetail.txns }}</span>
@@ -17,7 +17,7 @@
         <span class="pnl-row-name">{{ $t('time') }}</span>
         <span class="pnl-row-value">{{ time }}</span>
       </div>
-      <el-divider style="border-top-color: var(--d-33353D-l-f2f2f2)" />
+      <el-divider style="border-top-color: #33353D" />
       <div
         v-infinite-scroll="onLoad"
         style="padding: 0 5px"
@@ -45,7 +45,7 @@
           @row-click="tableRowClick"
         >
           <template #empty>
-            <AveEmpty class="table-empty" v-if="!loading" />
+            <AveEmpty v-if="!loading" class="table-empty" />
           </template>
           <TokenColumn
             :columnProps="{
@@ -59,10 +59,7 @@
               <span
                 class="font-12"
                 :style="{
-                  color:
-                    filterType(row?.flow_type)?.color == 'green'
-                      ? upColor[7]
-                      : downColor[7],
+                  color: filterType(row?.flow_type)?.color == 'green' ? upColor[7] : downColor[7],
                 }"
               >
                 {{ filterType(row?.flow_type)?.name }}
@@ -71,22 +68,20 @@
           </el-table-column>
           <el-table-column width="60" :label="$t('Vol')">
             <template #default="{ row }">
-              <span class="font-12"> {{ $f.formatNumberS(row.volume) }}</span>
+              <span class="font-12"> {{ formatNumberS(row.volume) }}</span>
             </template>
           </el-table-column>
           <el-table-column :label="$t('price')">
             <template #default="{ row }">
               <span class="font-12">
-                ${{
-                  row?.token_price_u > 0 ? $f.formatNumber2(row?.token_price_u || 0, 2, 4, 4) : 0
-                }}
+                ${{ row?.token_price_u > 0 ? formatNumber2(row?.token_price_u || 0, 2, 4, 4) : 0 }}
               </span>
             </template>
           </el-table-column>
           <el-table-column :label="$t('time')">
             <template #default="{ row }">
               <span class="font-12">
-                {{ $dayjs(row.block_time * 1000).format('YYYY-MM-DD HH:mm:ss') }}
+                {{ dayjs(row.block_time * 1000).format('YYYY-MM-DD HH:mm:ss') }}
               </span>
             </template>
           </el-table-column>
@@ -100,12 +95,14 @@
 </template>
 
 <script setup>
+import { formatNumberS, formatNumber2 } from '@/utils/formatNumber'
 import { upColor, downColor } from '@/utils/constants'
 import dayjs from 'dayjs'
 import TokenColumn from '@/components/tokenColumn.vue'
 // import Loading from '@/components/loading/js/Component.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 
+const $t = getGlobalT()
 const props = defineProps({
   value: Boolean,
   eventsDetail: {
@@ -152,7 +149,6 @@ const props = defineProps({
 
 const emit = defineEmits(['input', 'detailOnLoad'])
 
-
 const table_ref = ref(null)
 
 const themeStore = useThemeStore()
@@ -163,19 +159,18 @@ const mode = computed(() => {
 
 const visible = computed({
   get: () => props.value,
-  set: (val) => emit('input', val)
+  set: (val) => emit('input', val),
 })
 
 const volume = computed(() => {
   return typeof props.eventsDetail.volume === 'number'
-    ? $f.formatNumberS(props.eventsDetail.volume, {
+    ? formatNumberS(props.eventsDetail.volume, {
         decimal: 2,
       })
     : props.eventsDetail.volume
 })
 
 const time = computed(() => {
-  debugger
   const { start_time, end_time } = props.eventsDetail
   if (!start_time || !end_time) {
     return '--'
@@ -209,7 +204,7 @@ const filterType = (type) => {
 }
 
 const tableRowClick = (item) => {
-  window.open($f.formatExplorerUrl(props.chain, item.tx_hash, 'tx'))
+  window.open(formatExplorerUrl(props.chain, item.tx_hash, 'tx'))
 }
 
 const onLoad = () => {
@@ -218,6 +213,12 @@ const onLoad = () => {
 </script>
 
 <style scoped lang="scss">
+.font-14{
+  font-size: 14px;
+}
+.font-12{
+  font-size: 12px;
+}
 .header {
   padding: 18px 20px;
 }
@@ -286,6 +287,9 @@ const onLoad = () => {
     border-radius: 50%;
     width: 32px;
     height: 32px;
+  }
+  .el-table th.el-table__cell{
+    background-color: #17191c;
   }
 }
 </style>

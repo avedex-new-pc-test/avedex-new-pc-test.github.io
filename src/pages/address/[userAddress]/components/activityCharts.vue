@@ -362,20 +362,6 @@ function createRoundedImage(url, width, height, radius) {
   })
 }
 
-function formatMarkPoint(markPointArr) {
-  return Promise.all(
-    markPointArr.map(async (el) => {
-      let logo_url = el.symbol?.replace('image://', '')
-      if (logo_url) {
-        logo_url = await createRoundedImage(logo_url, 24, 24, 12).catch(async () => '')
-      }
-      return {
-        ...el,
-        symbol: 'image://' + logo_url,
-      }
-    })
-  )
-}
 </script>
 
 <style scoped lang="scss">
@@ -390,7 +376,7 @@ function formatMarkPoint(markPointArr) {
   position: relative;
   padding: 20px;
   height: 220px;
-  background-color: var(--custom-bg-10-color);
+  background-color: #15171c;
 
   .fixed-tooltip {
     display: none;

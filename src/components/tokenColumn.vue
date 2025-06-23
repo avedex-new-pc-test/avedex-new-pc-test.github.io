@@ -7,7 +7,7 @@
         @click.stop.prevent="tableRowClick(row)"
       >
         <div class="icon-token-container" style="margin-right: 10px">
-          <el-image :src="$f.formatIcon(row, row.symbol)" class="token-icon">
+          <!-- <el-image :src="$f.formatIcon(row, row.symbol)" class="token-icon">
             <template #error>
               <div
                 :style="{ background: $f.getChainDefaultIconColor(row?.chain) }"
@@ -26,10 +26,22 @@
                 {{ row.symbol?.slice(0, 1)?.toUpperCase?.() || '' }}
               </div>
             </template>
-          </el-image>
+          </el-image> -->
+          <!-- {{ row }} -->
+
+          <!-- <UserAvatar
+            :key="statistics?.wallet_logo?.logo"
+            :wallet_logo="{
+              ...(statistics.wallet_logo || {}),
+              ...(address === botStore?.evmAddress ? { name: userInfo?.name } : {}),
+            }"
+            :address="address"
+            :chain="chain"
+            iconSize="60px"
+          /> -->
           <img
             v-if="row?.network || row?.chain"
-            :src="`${$store.state.s3BaseUrl}chain/${row.chain}.png`"
+            :src="`${s3BaseUrl}chain/${row.chain}.png`"
             alt=""
             class="icon-svg icon-symbol"
             onerror="this.src='/icon-default.png'"
@@ -43,7 +55,7 @@
             </span>
             <i
               v-if="row.risk_score > 55 || row.risk_level < 0"
-              class="iconfont icon-danger font-14 ml-2"
+              class="iconfont icon-danger font-14 ml-[2px]"
             />
           </div>
           <div class="font-1 mt-2 flex-start" style="min-width: 110%" @click.stop="() => {}">
@@ -59,24 +71,28 @@
   </el-table-column>
 </template>
 
-<script>
-export default {
-  name: 'TokenColumn',
-  props: {
-    columnProps: {
-      type: Object,
-      default: () => ({}),
-    },
+<script setup>
+import { useRouter, useRoute } from 'vue-router'
+import UserAvatar from '@/components/userAvatar.vue'
+const configStore = useConfigStore()
+const s3BaseUrl = configStore.token_logo_url
+
+const props = defineProps({
+  columnProps: {
+    type: Object,
+    default: () => ({}),
   },
-  methods: {
-    tableRowClick(row) {
-      this.$router.push({
-        name: 'Token',
-        params: { id: row.token + '-' + row.chain },
-        query: { from: this.$route.name },
-      })
-    },
-  },
+})
+
+const router = useRouter()
+const route = useRoute()
+
+const tableRowClick = (row) => {
+  router.push({
+    name: 'Token',
+    params: { id: row.token + '-' + row.chain },
+    query: { from: route.name },
+  })
 }
 </script>
 
@@ -88,6 +104,28 @@ export default {
 
   .iconfont {
     font-size: 10px;
+  }
+}
+.icon-token-container {
+  position: relative;
+  margin-right: 8px;
+  display: flex;
+  .token-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+  .icon-symbol {
+    position: absolute;
+    max-width: 12px;
+    width: 100%;
+    height: 12px;
+    left: 18px;
+    z-index: 1;
+    top: 13px;
+    border-radius: 100%;
+    border: 1px solid var(--custom-primary-lighter-0-color);
+    background: var(--custom-primary-lighter-0-color);
   }
 }
 

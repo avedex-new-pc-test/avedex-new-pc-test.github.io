@@ -146,7 +146,6 @@ import Number from '../components/Number.vue'
 import { verifyLogin, formatRemark } from '@/utils'
 import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
 
-const $t = getGlobalT()
 const props = defineProps({
   chain: {
     type: String,
@@ -166,6 +165,8 @@ const props = defineProps({
     default: '',
   },
 })
+
+const $t = getGlobalT()
 
 const { address, chain, interval, intervalText } = toRefs(props)
 const botStore = useBotStore()
