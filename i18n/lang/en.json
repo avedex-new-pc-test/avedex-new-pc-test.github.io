@@ -684,5 +684,8 @@
   "plsImportCorrect": "Please enter the correct code",
   "removeFavGroupTips2": "Deleting the group will move its addresses to the default group. Continue?",
   "bulkProcess": "Bulk Import / Export / / Delete",
-  "monitorList": "Monitoring List"
+  "monitorList": "Monitoring List",
+  "noteTime": "Note time",
+  "pushTitle": "Push",
+  "documentation":"documentation"
 }

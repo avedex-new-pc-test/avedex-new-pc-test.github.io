@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { cloneDeep } from 'lodash-es'
-import { VueDraggable } from 'vue-draggable-plus'
+import { VueDraggableNext } from 'vue-draggable-next'
 import { formatNumber2 } from '~/utils/formatNumber'
 import { getChainDefaultIcon } from '~/utils'
 import ArcProgress from '~/components/arcProgress.vue'
@@ -27,10 +27,29 @@ const moveValue = ref('')
 const addGroupPopoverRef = ref()
 const editGroupPopoverRef = ref()
 const moveGroupPopoverRef = ref()
-const remarkGroupPopoverRef = ref()
 const groupValue = ref('')
-const remarkValue = ref('')
 const editId = ref<number | undefined>(undefined)
+
+const remarkValue = ref('')
+const visibleShow = ref(false)
+const coords = ref({ x: 0, y: 0 })
+const virtualRef = ref({
+  getBoundingClientRect: () => ({
+    width: 0,
+    height: 0,
+    top: coords.value.y,
+    left: coords.value.x,
+    bottom: coords.value.y,
+    right: coords.value.x,
+  }),
+  get clientWidth() {
+    return 0
+  },
+  get clientHeight() {
+    return 0
+  },
+})
+const rowData = ref<any>({})
 
 const loading = ref(false)
 const pageData = ref({
@@ -135,14 +154,24 @@ const handleMoveGroupConfirm = () => {
   ElMessage.success(t('success'))
 }
 
+const handleRemarkShow = (row: any, event: any) => {
+  const rect = event.currentTarget.getBoundingClientRect()
+  coords.value = {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2
+  }
+  visibleShow.value = true
+  rowData.value = row
+  remarkValue.value = row.remark || ''
+}
 // 备注
 const handleRemarkGroup = async (row: any) => {
   if (!remarkValue.value.trim()) return ElMessage.error(t('enterRemark'))
-  if (remarkValue.value.length > 20) return ElMessage.error(t('remarkError'))
+  if (remarkValue.value.length > 50) return ElMessage.error(t('remarkError'))
   const tokenId = row.token + '-' + row.chain
   await editTokenFavRemark(tokenId, remarkValue.value, botStore.evmAddress)
   ElMessage.success(t('success'))
-  remarkGroupPopoverRef.value?.hide()
+  visibleShow.value = false
   getList()
 }
 
@@ -245,7 +274,8 @@ onMounted(() => {
         :class="[activeTab === item.value && 'bg-[--d-333-l-0A0B0C] color-[#F5F5F5]']"
         @click="setActiveTab(item.value)">
         {{ item.label }}
-        <el-popover trigger="click" @hide="editHide" ref="editGroupPopoverRef" :width="editId ? 250 : 100">
+        <el-popover trigger="click" @hide="editHide" ref="editGroupPopoverRef" :width="editId ? 250 : 100"
+          popper-style="min-width: 86px;">
           <template #reference>
             <img v-if="item.value > 0" @click.stop class="w-12px h-12px ml-2px" src="@/assets/icons/set_up.svg"
               alt="" />
@@ -253,11 +283,11 @@ onMounted(() => {
           <div>
             <div v-if="!editId">
               <div class="flex items-center cursor-pointer w-100px" @click.stop="handleUpdateGroup(item)">
-                <img class="w-16px h-16px mr-2px" src="@/assets/icons/fav_edit.svg" alt="" />
+                <Icon name="fe:edit" class="color-#666 text-14px" />
                 <view class="ml-4px text-14px">{{ t('rename') }}</view>
               </div>
               <div class="flex items-center cursor-pointer w-100px mt-12px" @click.stop="handleDeleteGroup(item.value)">
-                <img class="w-16px h-16px mr-2px" src="@/assets/icons/delete_icon.svg" alt="" />
+                <Icon name="bx:bxs-trash-alt" class="text-15px color-#666" />
                 <view class="ml-4px text-14px">{{ t('delete') }}</view>
               </div>
             </div>
@@ -314,13 +344,13 @@ onMounted(() => {
         <div>
           <div>{{ t('groupManage') }}</div>
           <el-input v-model="moveValue" class="mt-8px" :placeholder="t('enterGroupName')" />
-          <VueDraggable v-model="moveList" :sort="true" ghost-class="ghost" :animation="300">
-            <div class="py-12px px-8px flex justify-between items-center"
+          <VueDraggableNext v-model="moveList" :sort="true" ghost-class="ghost" :animation="300">
+            <div class="py-12px px-8px flex justify-between items-center hover:bg-[--d-2A2A2A-l-F2F2F2] cursor-move"
               v-for="item in moveList.filter(item => item.label.includes(moveValue))" :key="item.value">
               {{ item.label }}
               <img class="w-16px h-16px" src="@/assets/icons/move_icon.svg" alt="" />
             </div>
-          </VueDraggable>
+          </VueDraggableNext>
           <div class="flex items-center justify-between mt-12px gap-12px">
             <div @click="moveGroupPopoverRef?.hide()"
               class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
@@ -380,29 +410,11 @@ onMounted(() => {
                   <span
                     class="text-[#3f80f7] border-[0.5px] border-solid border-[#3f80f7] rounded-4px bg-transparent text-10px ml-2px px-4px max-w-[60px] truncate"
                     :title="row.remark" v-if="row.remark">{{ row.remark }}</span>
+                  <!-- 备注 -->
+                  <div ref="buttonRef" @click.stop.prevent='handleRemarkShow(row, $event)'>
+                    <Icon class="text-[--d-666-l-999] w-12px h-12px ml-4px" name="custom:remark" />
+                  </div>
 
-                  <el-popover trigger="click" @hide="remarkValue = ''" ref="remarkGroupPopoverRef" :width="250">
-                    <template #reference>
-                      <!-- 备注 -->
-                      <div @click.stop.prevent='remarkValue = row.remark'>
-                        <Icon class="text-[--d-666-l-999] w-12px h-12px ml-4px" name="custom:remark" />
-                      </div>
-                    </template>
-                    <div>
-                      <div>{{ t('editRemark') }}</div>
-                      <el-input v-model="remarkValue" :placeholder="t('enterRemark')" class="mt-8px w-200px" />
-                      <div class="flex items-center justify-between mt-12px gap-12px">
-                        <div @click="remarkGroupPopoverRef?.hide()"
-                          class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
-                          {{ t('cancel') }}
-                        </div>
-                        <div @click="handleRemarkGroup(row)"
-                          class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[#3F80F7] px-12px py-8px rounded-4px">
-                          {{ t('confirm') }}
-                        </div>
-                      </div>
-                    </div>
-                  </el-popover>
                   <a class="ml-4px"
                     :href="`https://x.com/search?q=(${row?.symbol}OR${row?.token})&src=typed_query&f=live`"
                     target="_blank" @click.stop>
@@ -413,7 +425,7 @@ onMounted(() => {
                   <div class="text-8px text-[--d-666-l-999]">
                     {{ row?.token?.replace(new RegExp('(.{4})(.+)(.{4}$)'), '$1...$3') }}
                   </div>
-                  <Icon v-copy="row?.token" name="bxs:copy" class="ml-5px clickable text-[--d-666-l-999]" />
+                  <Icon @click.stop.prevent v-copy="row?.token" name="bxs:copy" class="ml-5px clickable text-[--d-666-l-999]" />
                   <a class="flex items-center" v-tooltip="appendix(row)?.twitter" :href="appendix(row)?.twitter"
                     target="_blank" @click.stop>
                     <Icon :name="`custom:twitter`" class="text-[--d-666-l-999] h-14px w-14px" />
@@ -486,16 +498,48 @@ onMounted(() => {
     </el-table>
 
     <el-pagination class="mt-20px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
-      layout="prev, sizes, pager, next, jumper, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" />
+      layout="prev, pager, next, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" />
+
+    <el-popover :visible="visibleShow" :virtual-ref="virtualRef" virtual-triggering trigger="click" :width="250">
+      <div>
+        <div>{{ t('editRemark') }}</div>
+        <el-input v-model="remarkValue" maxlength="50" show-word-limit :placeholder="t('enterRemark')"
+          class="mt-8px w-200px" />
+        <div class="flex items-center justify-between mt-12px gap-12px">
+          <div @click="visibleShow = false"
+            class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
+            {{ t('cancel') }}
+          </div>
+          <div @click="handleRemarkGroup(rowData)"
+            class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[#3F80F7] px-12px py-8px rounded-4px">
+            {{ t('confirm') }}
+          </div>
+        </div>
+      </div>
+    </el-popover>
   </div>
 </template>
 
 <style lang="scss" scoped>
-:deep(.el-popover.el-popper) {
-  min-width: 100px;
-}
-
 :deep(.el-pagination) {
   justify-content: center;
+
+  button {
+    border: 1px solid var(--d-333-l-00008);
+    border-radius: 50%;
+  }
+
+  ul {
+    margin: 0 16px;
+  }
+}
+
+:deep(.el-pager li.is-active) {
+  background: #3F80F7;
+  color: #fff;
+}
+
+:deep(.el-pager li) {
+  border-radius: 6px;
 }
 </style>

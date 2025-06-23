@@ -686,5 +686,8 @@
   "groupPlaceholder": "请输入分组",
   "removeFavGroupTips2": "删除分组后会将当前组的地址移入到默认分组中，是否继续?",
   "bulkProcess": "批量导入/导出/删除",
-  "monitorList": "监控列表"
+  "monitorList": "监控列表",
+  "noteTime": "备注时间",
+  "pushTitle": "推送",
+  "documentation":"跟单"
 }
