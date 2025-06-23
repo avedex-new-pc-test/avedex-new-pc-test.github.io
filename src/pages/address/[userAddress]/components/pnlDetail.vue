@@ -1,10 +1,15 @@
 <template>
-  <el-drawer v-model="visible" class="pnl" size="430">
+  <el-drawer
+    v-model="visible"
+    class="pnl bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]"
+    :size="430"
+    header-class="!mb-[20px]"
+  >
     <template #header>
       <span class="pnl-title">{{ $t('pnlDetail') }}</span>
     </template>
-    <div style="margin-top: -20px">
-      <el-divider style="margin: 0 0 10px; border-top-color: #33353D" />
+    <el-divider style="margin: 0 0 20px; border-top-color: #33353d" />
+    <div>
       <div class="pnl-row flex-between">
         <span class="pnl-row-name">{{ $t('Txs') }}</span>
         <span class="pnl-row-value">{{ eventsDetail.txns }}</span>
@@ -17,10 +22,9 @@
         <span class="pnl-row-name">{{ $t('time') }}</span>
         <span class="pnl-row-value">{{ time }}</span>
       </div>
-      <el-divider style="border-top-color: #33353D" />
+      <el-divider style="border-top-color: #33353d" class="!mb-[10px]"/>
       <div
         v-infinite-scroll="onLoad"
-        style="padding: 0 5px"
         :infinite-scroll-disabled="loading || finished || error"
         infinite-scroll-distance="300"
         :infinite-scroll-delay="200"
@@ -51,7 +55,6 @@
             :columnProps="{
               label: $t('walletToken'),
               width: '142',
-              fixed: 'left',
             }"
           />
           <el-table-column width="50" :label="$t('type')">
@@ -59,7 +62,7 @@
               <span
                 class="font-12"
                 :style="{
-                  color: filterType(row?.flow_type)?.color == 'green' ? upColor[7] : downColor[7],
+                  color: filterType(row?.flow_type)?.color == 'green' ? upColor : downColor,
                 }"
               >
                 {{ filterType(row?.flow_type)?.name }}
@@ -172,6 +175,7 @@ const volume = computed(() => {
 
 const time = computed(() => {
   const { start_time, end_time } = props.eventsDetail
+  console.log('props.eventsDetail', props.eventsDetail)
   if (!start_time || !end_time) {
     return '--'
   }
@@ -213,10 +217,10 @@ const onLoad = () => {
 </script>
 
 <style scoped lang="scss">
-.font-14{
+.font-14 {
   font-size: 14px;
 }
-.font-12{
+.font-12 {
   font-size: 12px;
 }
 .header {
@@ -259,6 +263,9 @@ const onLoad = () => {
   }
 }
 
+:deep(.el-drawer__header) {
+  margin-bottom: 10px; /* 修改为你需要的值 */
+}
 :deep(.cell) {
   font-weight: normal;
   padding: 0 5px;
@@ -287,9 +294,6 @@ const onLoad = () => {
     border-radius: 50%;
     width: 32px;
     height: 32px;
-  }
-  .el-table th.el-table__cell{
-    background-color: #17191c;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex-between mt_20 mb_10">
+    <div class="flex-between">
       <h2 class="summary-title">{{ $t('walletActivity') }}</h2>
     </div>
     <div class="activity">

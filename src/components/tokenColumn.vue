@@ -1,44 +1,23 @@
 <template>
   <el-table-column v-bind="columnProps">
     <template #default="{ row }">
+
       <div
         class="token-info table-item_d"
         style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
         @click.stop.prevent="tableRowClick(row)"
       >
-        <div class="icon-token-container" style="margin-right: 10px">
-          <!-- <el-image :src="$f.formatIcon(row, row.symbol)" class="token-icon">
-            <template #error>
-              <div
-                :style="{ background: $f.getChainDefaultIconColor(row?.chain) }"
-                class="token-icon"
-                style="line-height: 32px; text-align: center; font-size: 16px; color: #fff"
-              >
-                {{ row.symbol?.slice(0, 1)?.toUpperCase?.() || '' }}
-              </div>
-            </template>
-            <template #placeholder>
-              <div
-                :style="{ background: $f.getChainDefaultIconColor(row?.chain) }"
-                class="token-icon"
-                style="line-height: 32px; text-align: center; font-size: 16px; color: #fff"
-              >
-                {{ row.symbol?.slice(0, 1)?.toUpperCase?.() || '' }}
-              </div>
-            </template>
-          </el-image> -->
-          <!-- {{ row }} -->
-
-          <!-- <UserAvatar
-            :key="statistics?.wallet_logo?.logo"
+        <div class="icon-token-container" style="margin-right: 5px">
+          <UserAvatar
             :wallet_logo="{
-              ...(statistics.wallet_logo || {}),
-              ...(address === botStore?.evmAddress ? { name: userInfo?.name } : {}),
+              name:row?.symbol,
+              logo:`${s3BaseUrl}${row?.logo_url}`,
+              url:`${s3BaseUrl}${row?.logo_url}`,
             }"
             :address="address"
             :chain="chain"
-            iconSize="60px"
-          /> -->
+            iconSize="32px"
+          />
           <img
             v-if="row?.network || row?.chain"
             :src="`${s3BaseUrl}chain/${row.chain}.png`"
@@ -46,7 +25,7 @@
             class="icon-svg icon-symbol"
             onerror="this.src='/icon-default.png'"
             srcset=""
-          />
+          >
         </div>
         <div>
           <div class="flex-start">
@@ -58,7 +37,7 @@
               class="iconfont icon-danger font-14 ml-[2px]"
             />
           </div>
-          <div class="font-1 mt-2 flex-start" style="min-width: 110%" @click.stop="() => {}">
+          <div class="flex-start" style="min-width: 110%" @click.stop="() => {}">
             <span class="token-address">
               {{ row.token.slice(0, 4) + '...' + row.token.slice(-6) }}
               <i v-copy="row.token" class="iconfont icon-copy" />
@@ -98,10 +77,9 @@ const tableRowClick = (row) => {
 
 <style lang="scss" scoped>
 .token-address {
-  gap: 4px;
   font-size: 12px;
-  color: var(--d-666-l-959a9f);
-
+  color: #666;
+  margin-top: -5px;
   .iconfont {
     font-size: 10px;
   }
