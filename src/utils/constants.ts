@@ -81,7 +81,7 @@ export interface IFavDialogEventArgs {
 export const BusEventType = {
   TOP_FAV_CHANGE: 'top-favorite-change',
   FAV_DIALOG: 'fav-dialog',
-  LEFT_DRAG: 'left-drag',
+  // LEFT_DRAG: 'left-drag',
 }
 
 export const ProvideType = {

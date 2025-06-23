@@ -16,7 +16,7 @@ import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, get
 import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
 import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine, useAvgPriceLine } from './utils'
-import { useLocalStorage, useElementBounding, useWindowSize, useEventBus } from '@vueuse/core'
+import {useLocalStorage, useElementBounding, useWindowSize, useEventBus, useStorage} from '@vueuse/core'
 import type { WSTx, KLineBar } from './types'
 import BigNumber from 'bignumber.js'
 import { useKlineMarks } from './mark'
@@ -635,7 +635,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
 
 // 拖动缩放
 let isMask = false
-const kHeight = shallowRef(DefaultHeight.KLINE)
+const kHeight = useStorage('kHeight', DefaultHeight.KLINE)
 const wHeight = useWindowSize().height
 const dom = useTemplateRef('kline')
 function drag(e: MouseEvent) {
