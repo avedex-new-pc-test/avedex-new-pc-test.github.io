@@ -656,10 +656,12 @@ function drag(e: MouseEvent) {
       return
     }
     document.getElementById('tv_chart_container')!.style.pointerEvents = 'none'
-    if (e.clientY < dy) {
-      kHeight.value -= dy - e.clientY
-    } else {
-      kHeight.value += e.clientY - dy
+    const _kHeight = e.clientY < dy
+      ? kHeight.value - (dy - e.clientY)
+      : kHeight.value + e.clientY - dy
+
+    if (_kHeight <= wHeight.value - 164) {
+      kHeight.value = _kHeight
     }
     dy = e.clientY
   }
