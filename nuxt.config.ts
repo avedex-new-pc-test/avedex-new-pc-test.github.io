@@ -95,6 +95,7 @@ export default defineNuxtConfig({
   ],
   plugins: [
     // 添加 gameanalytics
+    '@/plugins/core-js.ts',
     '@/plugins/gameanalytics.client.ts',
     '@/plugins/directives/index.ts', // 引入自定义指令插件
     '@/plugins/pwa-meta.client.ts', // 引入 pwa-meta 插件
