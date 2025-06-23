@@ -670,5 +670,12 @@
   "firstSignal": "首次信号",
   "firstMarketCap": "首次市值",
   "currentMarketCap": "当前市值",
-  "signalUnit": "个"
+  "signalUnit": "个",
+  "filter": "过滤",
+  "TokenAddress": "币种地址",
+  "SignalCount": "信号数量",
+  "searchPlaceholder": "搜索币种地址",
+  "noAlert": "下次不再提醒",
+  "quickBuyMsg": "你即将买入{s}，买入金额为{a} {m}",
+  "signal": "信号广场"
 }

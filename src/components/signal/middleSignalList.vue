@@ -3,19 +3,13 @@ import type {GetSignalV2ListResponse} from '~/api/signal'
 import dayjs from 'dayjs'
 import BigNumber from 'bignumber.js'
 
-withDefaults(defineProps<{
-  signalList?: Array<GetSignalV2ListResponse>
-  showPop?: (...args: any[]) => void
-  hidePop?: () => void
-}>(), {
-  signalList() {
-    return []
-  },
-  showPop() {
-  },
-  hidePop() {
-  }
-})
+defineProps<{
+  signalList: Array<GetSignalV2ListResponse>
+  showPop: (...args: any[]) => void
+  hidePop: () => void
+  quickBuyValue: string
+}>()
+const botStore = useBotStore()
 </script>
 
 <template>
@@ -40,7 +34,8 @@ withDefaults(defineProps<{
         headline,
         tag,
         action_count,
-        actions
+        actions,
+        token_create_time
       },index) in signalList"
       :key="id"
       class="pb-12px border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2]"
@@ -91,19 +86,19 @@ withDefaults(defineProps<{
             </div>
             <div class="flex items-center gap-8px">
               <TimerCount
-                v-if="signal_time && Number(formatTimeFromNow(signal_time, true)) < 60"
-                :key="signal_time" :timestamp="signal_time" :end-time="60">
+                v-if="token_create_time && Number(formatTimeFromNow(token_create_time, true)) < 60"
+                :key="token_create_time" :timestamp="token_create_time" :end-time="60">
                 <template #default="{ seconds }">
                   <span v-if="seconds < 60" class="color-#FFA622 text-12px">
                     {{ seconds }}s
                   </span>
                   <span v-else class="color-[--d-999-l-666] text-12px">
-                    {{ formatTimeFromNow(signal_time) }}
+                    {{ formatTimeFromNow(token_create_time) }}
                   </span>
                 </template>
               </TimerCount>
               <div v-else class="color-[--d-999-l-666] text-12px">
-                {{ formatTimeFromNow(signal_time) }}
+                {{ formatTimeFromNow(token_create_time) }}
               </div>
               <div
                 v-if="Number(top10_ratio) > 0"
@@ -154,9 +149,9 @@ withDefaults(defineProps<{
           </div>
         </div>
       </div>
-      <div class="flex justify-between">
+      <div class="flex justify-between mt-6px">
         <el-row
-          class="w-[80%] text-12px color-[--d-666-l-999]"
+          class="w-210px text-12px color-[--d-666-l-999]"
         >
           <el-col :span="8" class="text-center">
             <div class=" mb-4px">
@@ -183,26 +178,39 @@ withDefaults(defineProps<{
               {{ $t('firstMarketCap') }}
             </div>
             <div class="color-[--d-F5F5F5-l-333]">
-              {{ formatNumber(mc, 1) }}
+              ${{ formatNumber(mc, 1) }}
             </div>
           </el-col>
           <el-col :span="8" class="text-center">
             <div class="mb-4px">
               {{ $t('currentMarketCap') }}
             </div>
-            <div class="color-[--d-F5F5F5-l-333]">
-              {{ formatNumber(mc_cur, 1) }}
+            <div class="flex items-center justify-center gap-6px"
+                 :class="{
+                  'color-#F6465D':Number(mc_cur)<Number(mc),
+                  'color-#12B886':Number(mc_cur)>Number(mc)
+                 }"
+            >
+              ${{ formatNumber(mc_cur, 1) }}
+              <Icon v-show="Number(mc_cur)>Number(mc)" key="1" name="custom:increase"/>
+              <Icon v-show="Number(mc_cur)<Number(mc)" key="2" name="custom:reduce"/>
             </div>
           </el-col>
         </el-row>
+        <QuickSwap
+          v-if="(botStore.evmAddress || !botStore.currentAccount)"
+          :quickBuyValue="quickBuyValue"
+          :row="signalList[index]"
+          classNames="min-w-70px"
+        />
       </div>
-      <div v-if="headline||'AI交易机器人, 高需求, 无代码平台, 即将创新'" class="flex items-center gap-8px mt-12px">
+      <div v-if="headline" class="flex items-center gap-8px mt-12px">
         <Icon name="custom:ai"/>
         <div class="color-[--d-666-l-999] text-12px whitespace-nowrap overflow-hidden text-ellipsis">
-          {{ headline || 'AI交易机器人, 高需求, 无代码平台, 即将创新' }}
+          {{ headline }}
         </div>
       </div>
-      <div class="mt-12px px-8px py-4px lh-14px bg-[--d-1A1A1A--l-F2F2F2] flex items-center text-12px">
+      <div class="mt-12px px-8px py-4px lh-14px bg-[--d-1A1A1A-l-F2F2F2] flex items-center text-12px rounded-4px">
         <img :src="formatIconTag(tag)" alt="" class="w-12px h-12px mr-4px">
         <TimerCount
           v-if="signal_time && Number(formatTimeFromNow(signal_time, true)) < 60"
@@ -222,8 +230,8 @@ withDefaults(defineProps<{
         <div
           class="color-[--d-F5F5F5-l-333] mx-4px cursor-pointer decoration-underline decoration-dotted"
           @mouseenter.stop="showPop($event,signalList[index].actions)"
+          @mouseleave.stop="hidePop"
         >
-          <!--@mouseleave.stop="hidePop"-->
           {{ action_count }}{{ $t('signalUnit') }}{{ $t(tag) }}
         </div>
         <span class="color-#12B886">

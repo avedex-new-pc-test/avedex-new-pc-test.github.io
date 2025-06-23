@@ -1,7 +1,14 @@
 export interface GetSignalV2ListResponse {
-  id: number;
+  first_signal_time: number;
+  last_signal_time: number;
+  max_price_change: string;
+  history_count: number;
   token: string;
   chain: string;
+  day_high_price: string;
+  first_signal_price: string;
+  first_signal_mc: string;
+  id: number;
   symbol: string;
   logo: string;
   token_tag: string;
@@ -9,16 +16,11 @@ export interface GetSignalV2ListResponse {
   top10_ratio: string;
   dev_ratio: string;
   insider_ratio: string;
-  max_price_change: string;
   mc: string;
   mc_cur: string;
   holders_cur: number;
-  first_signal_time: number;
-  history_count: number;
   signal_time: number;
   tag: string;
-  day_high_price: string;
-  first_signal_price: string;
   amm: string;
   action_wallet_type: string;
   action_type: string;
@@ -26,8 +28,8 @@ export interface GetSignalV2ListResponse {
   actions: IActionItem[];
   signal_type: string;
   issue_platform: string;
-  first_signal_mc: string;
   headline: string;
+  price_change_24h: string;
 }
 
 export interface IActionItem {
@@ -42,8 +44,6 @@ export interface IActionItem {
   action_time: number
 }
 
-[]
-
 /**
  * 信号广场列表
  */
@@ -56,7 +56,7 @@ export function getSignalV2List(query: {
 }): Promise<GetSignalV2ListResponse[]> {
   const {$api} = useNuxtApp()
   // 前面的是折叠的接口
-  const url = query.fold ? '/v2api/signals/v2/public/list/v2' : '/v2api/signals/v2/public/list'
+  const url = query.fold ? 'https://0ftrfsdb.xyz/v2api/signals/v2/public/list/v2' : '/v2api/signals/v2/public/list'
   return $api(url, {
     method: 'get',
     query

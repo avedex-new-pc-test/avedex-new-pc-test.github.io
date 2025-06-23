@@ -663,11 +663,18 @@
   "antiWhaleModifiable": "Anti whale modifiable",
   "check2": "Check",
   "tax": "Tax",
-  "times": "times",
-  "MaximumIncrease": "Maximum Increase",
+  "times": " times",
+  "MaximumIncrease": "Max Increase",
   "CurrentMC": "Current MC",
   "firstSignal": "First Signal",
   "firstMarketCap": "First MC",
   "currentMarketCap": "Current MC",
-  "signalUnit": ""
+  "signalUnit": " ",
+  "filter": "Filters",
+  "TokenAddress": "Token Address",
+  "SignalCount": "Signal Count",
+  "searchPlaceholder": "Search Token Address",
+  "noAlert": "No reminder next time",
+  "quickBuyMsg": "You are about to buy {s}, and the purchase amount is {a} {m}",
+  "signal": "Signal Plaza"
 }

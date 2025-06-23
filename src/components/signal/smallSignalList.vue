@@ -3,17 +3,19 @@ import type {GetSignalV2ListResponse} from '~/api/signal'
 
 withDefaults(defineProps<{
   signalList?: Array<GetSignalV2ListResponse>
+  quickBuyValue: string
 }>(), {
   signalList() {
     return []
   },
 })
+const botStore = useBotStore()
 </script>
 
 <template>
   <div class="flex flex-col gap-12px">
     <div
-      v-for="({chain,logo,symbol,id,token,issue_platform,mc,signal_time}) in signalList"
+      v-for="({chain,logo,symbol,id,token,issue_platform,mc,signal_time,price_change_24h},index) in signalList"
       :key="id"
       class="pb-12px border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2]"
     >
@@ -57,6 +59,12 @@ withDefaults(defineProps<{
           </div>
         </div>
         <div/>
+        <QuickSwap
+          v-if="(botStore.evmAddress || !botStore.currentAccount)"
+          :quickBuyValue="quickBuyValue"
+          :row="signalList[index]"
+          classNames="min-w-70px"
+        />
       </div>
       <div class="flex justify-between">
         <div class="flex color-[--d-666-l-999] text-12px">
@@ -65,7 +73,9 @@ withDefaults(defineProps<{
             ${{ formatNumber(mc, 1) }}
           </span>
           <span class="ml-8px">24h</span>
-          <span class="ml-4px">+342.23%</span>
+          <span class="ml-4px"
+                :class="getColorClass(price_change_24h)"
+          >{{ addSign(price_change_24h) }}{{ formatNumber(Math.abs(price_change_24h), 2) }}%</span>
         </div>
         <TimerCount
           v-if="signal_time && Number(formatTimeFromNow(signal_time, true)) < 60"

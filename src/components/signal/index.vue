@@ -8,11 +8,17 @@ import QuickBuyInput from '~/components/signal/quickBuyInput.vue'
 import SmallSignalList from '~/components/signal/smallSignalList.vue'
 import MiddleSignalList from '~/components/signal/middleSignalList.vue'
 import LargeSignalList from '~/components/signal/largeSignalList.vue'
+import dayjs from 'dayjs'
 
+const props = defineProps<{
+  containerWidth: number
+  scrollHeight: number
+}>()
 const configStore = useConfigStore()
 const botSettingStore = useBotSettingStore()
+const localeStore = useLocaleStore()
 const signalList = shallowRef<GetSignalV2ListResponse[]>([])
-const queryParams = shallowRef({
+const pageParams = shallowRef({
   pageNO: 1,
   pageSize: 20,
 })
@@ -24,6 +30,44 @@ function setActiveChain(chain: string) {
   resetAndGet()
 }
 
+const sortParams = shallowRef({
+  sortBy: undefined,
+  activeSort: 0
+})
+// token: 筛选 token
+// history_count：筛选信号数，对应值2, 5, 15
+// 市值：mc_curr，市值过滤，
+// 市值方向：mc_curr_sign， 默认 > 大于号，可选 <
+const filterParams = useStorage('signalParams', {
+  token: '',
+  history_count: undefined as undefined | number,
+  mc_curr: undefined as undefined | number,
+  mc_curr_sign: '<'
+})
+const filterSignalList = computed(() => {
+  const {sortBy, activeSort} = sortParams.value
+  return signalList.value.filter(filterCallback).toSorted((a, b) => {
+    if (sortBy) {
+      return (Number((b[sortBy] || 0)) - Number((a[sortBy] || 0))) * activeSort
+    }
+    return 0
+  })
+})
+
+function filterCallback(el: GetSignalV2ListResponse) {
+  const {token, history_count, mc_curr} = filterParams.value
+  const tokenMatched = !token || el.token === token
+  const countMatched = el.history_count > (history_count || 0)
+  const mcMatched = !mc_curr || Number(el.mc_cur) < mc_curr
+  return tokenMatched && countMatched && mcMatched
+}
+
+function resetFilterParams() {
+  filterParams.value.token = ''
+  filterParams.value.history_count = undefined
+  filterParams.value.mc_curr = undefined
+  resetAndGet()
+}
 const listStatus = ref({
   loading: false,
   finished: false,
@@ -33,19 +77,22 @@ const listStatus = ref({
 function resetAndGet() {
   listStatus.value.finished = false
   listStatus.value.error = false
-  queryParams.value.pageNO = 1
+  pageParams.value.pageNO = 1
   fetchSignalList()
 }
 
 const shouldAlert = useStorage('shouldAlert', '1')
 const quickBuyValue = useStorage('quickBuyValue', '0.01')
-const containerWidth = shallowRef(320)
-// const [containerWidth, rightDrag] = useDrag({
-//   defaultValue: 240,
-//   maxValue: 720,
-//   minValue: 240,
-//   direction: 'clientX'
-// })
+const signalStore = useSignalStore()
+const isSmallScreen = computed(() => {
+  return props.containerWidth <= 320
+})
+const isMiddleScreen = computed(() => {
+  return props.containerWidth <= 759 && props.containerWidth > 320
+})
+const isLargeScreen = computed(() => {
+  return props.containerWidth >= 760
+})
 onMounted(() => {
   fetchSignalList()
   initTimer()
@@ -53,7 +100,7 @@ onMounted(() => {
 })
 let timer: number
 watch(activeChain, () => {
-  queryParams.value.pageNO = 1
+  pageParams.value.pageNO = 1
   fetchSignalList()
   initWs()
 })
@@ -99,16 +146,20 @@ onUnmounted(() => {
 })
 
 const signalAudio = useTemplateRef('signalAudio')
-watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData) => {
-  if (shouldAlert.value === '1' && signalAudio.value) {
+watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData: GetSignalV2ListResponse) => {
+  if (shouldAlert.value === '1' && signalAudio.value && filterCallback(_signalData)) {
     signalAudio.value.currentTime = 0
     signalAudio.value.play()
   }
   const matchIndex = signalList.value.findIndex((p) =>
-    p.token === _signalData.id && p.chain === _signalData.chain
+    p.token === _signalData.token && p.chain === _signalData.chain
   )
   if (matchIndex !== -1) {
-    signalList.value[matchIndex] = _signalData
+    signalList.value.splice(matchIndex, 1)
+    signalList.value.unshift(_signalData)
+    triggerRef(signalList)
+  } else if (_signalData.history_count === 1) {
+    signalList.value.unshift(_signalData)
     triggerRef(signalList)
   }
 })
@@ -136,7 +187,7 @@ async function updateListData() {
       if (matchedNewData) {
         const result = {} as Record<string, GetSignalV2ListResponse>
         updateKeys.forEach(updateKey => {
-          result[updateKey] = matchedNewData[updateKey]
+          result[updateKey] = matchedNewData[updateKey] as any
         })
         return {
           ...item,
@@ -150,25 +201,35 @@ async function updateListData() {
   }
 }
 
+function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
+  if (listStatus.value.finished) {
+    return
+  }
+  if (direction === 'bottom') {
+    fetchSignalList()
+  }
+}
 async function fetchSignalList() {
   try {
     listStatus.value.loading = true
     const res = await getSignalV2List({
-      ...queryParams.value,
+      ...pageParams.value,
       chain: activeChain.value,
-      fold: true
+      fold: true,
+      ...filterParams.value
     })
-    if (queryParams.value.pageNO === 1) {
+    if (pageParams.value.pageNO === 1) {
       signalList.value = res || []
     } else {
       signalList.value = signalList.value.concat(res || [])
     }
-    const finished = res?.length < queryParams.value.pageSize
+    const finished = res?.length < pageParams.value.pageSize
     listStatus.value.finished = finished
     if (!finished) {
-      queryParams.value.pageNO++
+      pageParams.value.pageNO++
     }
   } catch (e) {
+    console.log('=>(index.vue:224) e', e)
     listStatus.value.error = true
     signalList.value = []
   } finally {
@@ -182,7 +243,7 @@ const currentActions = shallowRef<IActionItem[]>([])
 const popVisible = shallowRef(false)
 
 function showPopover(e: MouseEvent, actions: IActionItem[]) {
-  buttonRef.value = e.currentTarget
+  buttonRef.value = e.currentTarget as HTMLElement | null
   currentActions.value = actions || []
   popVisible.value = true
 }
@@ -201,22 +262,25 @@ function scheduleHide() {
 function cancelHide() {
   clearTimeout(hideTimer)
 }
+
+const isShowDate = ref(true)
+
 </script>
 
 <template>
   <div
-    class="bg-[--d-111-l-FFF] p-12px relative shrink-0 signal"
-    :style="{
-      width:`${containerWidth}px`,
-    }"
+    class="bg-[--d-111-l-FFF] p-12px relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] cursor-move h-full"
   >
     <div
       class="flex items-center justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5]">
-      <span class="color-[--d-FFF-l-222] text-14px">信号广场</span>
+      <span class="color-[--d-FFF-l-222] text-14px">{{ $t('signal') }}</span>
       <div class="flex items-center gap-12px">
         <Filter
-          v-if="containerWidth>540"
+          v-if="isLargeScreen"
           v-model="shouldAlert"
+          :filter-params="filterParams"
+          @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+          @onReset="resetFilterParams"
         />
         <el-select
           size="small"
@@ -248,7 +312,7 @@ function cancelHide() {
           </el-option>
         </el-select>
         <QuickBuyInput
-          v-if="containerWidth>540"
+          v-if="isLargeScreen"
           v-model="quickBuyValue"
           size="small"
           class="[--el-border-color:transparent]"
@@ -260,15 +324,19 @@ function cancelHide() {
         <Icon
           name="custom:close"
           class="text-14px shrink-0 cursor-pointer"
+          @click.self="signalStore.signalVisible=false"
         />
       </div>
     </div>
     <div
-      v-if="containerWidth<540"
+      v-if="!isLargeScreen"
       class="flex items-center justify-between mb-18px"
     >
       <Filter
         v-model="shouldAlert"
+        :filter-params="filterParams"
+        @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+        @onReset="resetFilterParams"
       />
       <QuickBuyInput
         v-model="quickBuyValue"
@@ -276,27 +344,45 @@ function cancelHide() {
         class="[--el-border-color:transparent]"
       />
     </div>
-    <SmallSignalList
-      v-if="containerWidth<320"
-      :signalList="signalList"
-    />
-    <MiddleSignalList
-      v-else-if="containerWidth<540"
-      :signalList="signalList"
-      :showPop="showPopover"
-      :hidePop="scheduleHide"
-    />
+    <el-scrollbar
+      v-if="!isLargeScreen"
+      :height="scrollHeight"
+      @endReached="endReached"
+    >
+      <SmallSignalList
+        v-if="isSmallScreen"
+        :signalList="filterSignalList"
+        :quickBuyValue="quickBuyValue"
+      />
+      <MiddleSignalList
+        v-else-if="isMiddleScreen"
+        :quickBuyValue="quickBuyValue"
+        :signalList="filterSignalList"
+        :showPop="showPopover"
+        :hidePop="scheduleHide"
+      />
+      <div
+        v-if="listStatus.loading"
+        class="flex justify-center text-12px text-[#959a9f]"
+      >
+        {{ $t('loading') }}
+      </div>
+    </el-scrollbar>
     <LargeSignalList
       v-else
-      :signalList="signalList"
+      v-model="sortParams"
+      :loading="listStatus.loading"
+      :quickBuyValue="quickBuyValue"
+      :signalList="filterSignalList"
+      :showPop="showPopover"
+      :hidePop="scheduleHide"
+      :height="signalStore.signalBoundingRect.height-96"
+      @endReached="endReached"
     />
-    <!--<div-->
-    <!--  class="absolute right-0 top-0 bottom-0 w-2px cursor-col-resize"-->
-    <!--  @mousedown.stop.prevent="rightDrag"-->
-    <!--/>-->
     <audio
       ref="signalAudio" controls style="display: none"
-      src="@/assets/audio/signal.mp3"/>
+      src="/signal.mp3"
+    />
 
     <!--  actions -->
     <el-popover
@@ -307,40 +393,59 @@ function cancelHide() {
       virtual-triggering
       append-to-body
     >
-      <div class="flex color-[--d-666-l-999] text-12px">
-        <div class="flex-1">
-          {{ $t('wallet') }}
-        </div>
-        <div class="flex-[2]">
-          {{ $t('operate') }}
-        </div>
-        <div class="flex-[2]">
-          {{ $t('time') }}
-        </div>
-      </div>
       <div
-        v-for="({
+        @mouseenter="cancelHide"
+        @mouseleave="hidePopover"
+      >
+        <div class="flex color-[--d-666-l-999] text-12px mb-8px">
+          <div class="flex-[3]">
+            {{ $t('wallet') }}
+          </div>
+          <div class="flex-[4]">
+            {{ $t('operate') }}
+          </div>
+          <div class="flex-[2] flex items-center justify-end gap-4px">
+            {{ $t('time') }}
+            <Icon
+              :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`"
+              class="color-[--d-666-l-999] cursor-pointer" @click.self="isShowDate = !isShowDate"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col gap-12px">
+          <div
+            v-for="({
           wallet_alias,
           wallet_address,
           quote_token_amount,
           quote_token_symbol,
-          quote_token_volume
+          quote_token_volume,
+          action_time
         },idx) in currentActions"
-        :key="idx"
-        class="flex color-[--d-666-l-999] text-12px"
-      >
-        <div class="flex-1 flex items-center">
-          <span class="w-10px h-10px rounded-full bg-#37B270 mt-4px"></span>
-          <span class="color-[--d-F5F5F5-l-333]">{{ wallet_alias || $t('wallet') }}</span>
-          <span class="color-[--d-999-l-666]">*{{ wallet_address.slice(-4) }})</span>
-        </div>
-        <div class="flex-[2] color-#12B886">
-          {{ $t('buy') }}{{ formatNumber(quote_token_amount, 2) }} {{
-            quote_token_symbol
-          }}<span class="color-[--d-999-l-666]">(${{ formatNumber(quote_token_volume, 0) }})</span>
-        </div>
-        <div class="flex-[2]">
-
+            :key="idx"
+            class="flex color-[--d-999-l-666] text-12px lh-14px"
+          >
+            <div class="flex-[3] flex items-center">
+              <span class="w-10px h-10px rounded-full bg-#37B270 mr-4px"/>
+              <span class="color-[--d-F5F5F5-l-333] whitespace-nowrap overflow-hidden text-ellipsis max-w-60px">{{
+                  wallet_alias || $t('wallet')
+                }}</span>
+              <span class="color-[--d-999-l-666]">(*{{ wallet_address.slice(-4) }})</span>
+            </div>
+            <div class="flex-[4] color-#12B886">
+              {{ $t('buy') }}{{ localeStore.locale === 'en' ? ' ' : '' }}{{ formatNumber(quote_token_amount, 2) }} {{
+                quote_token_symbol
+              }}<span class="color-[--d-999-l-666]">(${{ formatNumber(quote_token_volume, 0) }})</span>
+            </div>
+            <div class="flex-[2] flex justify-end">
+              <template v-if="isShowDate">
+                {{ formatDate(action_time * 1000, 'MM/DD HH:mm:ss') }}
+              </template>
+              <template v-else>
+                {{ dayjs(action_time * 1000).fromNow() }}
+              </template>
+            </div>
+          </div>
         </div>
       </div>
     </el-popover>

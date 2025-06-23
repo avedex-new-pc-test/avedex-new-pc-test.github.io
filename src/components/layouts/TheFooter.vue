@@ -16,11 +16,13 @@
           <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
         </template>
       </NuxtLink>
-      <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer">
+      <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
+           @click="signalStore.signalVisible=!signalStore.signalVisible"
+      >
         <Icon
           name="ri:signal-tower-fill"
         />
-        信号广场
+        {{ $t('signal') }}
       </div>
     </div>
     <ul class="right">
@@ -79,6 +81,8 @@
 import { formatDec } from '~/utils/formatNumber'
 import { getTokensPrice } from '@/api/token'
 import { upColor, downColor } from '@/utils/constants'
+
+const signalStore = useSignalStore()
 const globalStore = useGlobalStore()
 const { lang } = storeToRefs(globalStore)
 const { token } = storeToRefs(useTokenStore())
