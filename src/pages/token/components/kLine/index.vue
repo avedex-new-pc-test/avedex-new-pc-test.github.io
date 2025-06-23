@@ -669,6 +669,7 @@ function drag(e: MouseEvent) {
     document.onmousemove = null
     document.onmouseup = null
     tokenStore.centerTopHeight = kHeight.value
+    console.log("=>(index.vue:672) kHeight.value", kHeight.value);
   }
   // e.stopPropagation()
   // e.preventDefault()
