@@ -30,7 +30,7 @@
     --el-table-text-color: var(--d-F2F2F2-l-333);
     --el-table-header-text-color: var(--d-666-l-999);
     --el-table-row-hover-bg-color: var(--d-1A1A1A-l-F2F2F2);
-    --el-table-tr-bg-color: transparent;
+    --el-table-tr-bg-color: var(--d-111-l-FFF);
     thead{
       .el-table__cell{
         height: 32px;
