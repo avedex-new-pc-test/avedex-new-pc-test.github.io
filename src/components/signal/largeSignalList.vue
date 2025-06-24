@@ -243,7 +243,6 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
             </div>
             <div class="w-90px justify-end flex items-center">
               <QuickSwap
-                v-if="(botStore.evmAddress || !botStore.currentAccount)"
                 :quickBuyValue="quickBuyValue"
                 :row="signalList[index]"
                 classNames="min-w-70px"
