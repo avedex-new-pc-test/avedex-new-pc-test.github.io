@@ -48,7 +48,7 @@ function onResizeStop() {
     :handles="handles"
     @drag-stop="onDragStop"
     @resizing="onResizing"
-    @resizestop="onResizeStop"
+    @resizeStop="onResizeStop"
   >
     <slot/>
   </VueDraggableResizable>
