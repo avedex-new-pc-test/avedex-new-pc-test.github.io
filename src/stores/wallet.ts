@@ -119,7 +119,7 @@ export const useWalletStore = defineStore('wallet', () => {
 
   function signMessage(msg: string) {
     if (!provider.value) return
-    if (chain.value === 'solana') {
+    if (chain.value === 'solana' || chain.value === 'sui') {
       return (provider.value as Wallet)?.signMessage?.({
         message: decodeUTF8(msg),
       }).then(async res => bs58.encode(res.signature))
