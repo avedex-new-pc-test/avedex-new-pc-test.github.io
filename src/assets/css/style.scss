@@ -145,3 +145,30 @@
 .search-input .el-input__clear {
   display: none !important;
 }
+
+.hide-scrollbar {
+  > .el-scrollbar {
+    > .el-scrollbar__bar {
+      --at-apply: hidden;
+    }
+  }
+}
+
+
+.wallet-connect.el-dialog {
+  --el-dialog-border-radius: 36px;
+  --el-dialog-title-font-size: 16px;
+  .el-dialog__header {
+    text-align: center;
+    padding-left: 36px;
+    padding-bottom: 16px;
+    .el-dialog__title {
+      font-weight: 600;
+    }
+  }
+}
+.m-radio-group{
+  :deep() .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
+    border-color: var(--d-333-l-666);
+  }
+}
