@@ -161,7 +161,18 @@
                 name="ep:search"
               />
             </a>
+            <span
+              v-tooltip="
+                getTagTooltip(i) +
+                (i.tag == 'smarter_buy' || i.tag == 'smarter_sell'
+                  ? `（${$t('amountU')}>$10)`
+                  : '')
+              ">
+              <Icon name="custom:gas" class="text-14px"/>
+            </span>
+
           </div>
+
           <el-popover
             v-if="collected"
             v-model:visible="editableGroup"
