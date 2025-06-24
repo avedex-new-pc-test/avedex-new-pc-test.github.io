@@ -161,18 +161,17 @@
                 name="ep:search"
               />
             </a>
-            <span
-              v-tooltip="
-                getTagTooltip(i) +
-                (i.tag == 'smarter_buy' || i.tag == 'smarter_sell'
-                  ? `（${$t('amountU')}>$10)`
-                  : '')
-              ">
-              <Icon name="custom:gas" class="text-14px"/>
-            </span>
-
+            <a
+              v-tooltip="{
+                content: aiSummary.headline ? `<div class='w-[400px]'>${aiSummary.headline}</div>` : `${$t('aiIsAnalyzing')}`,
+                props:{
+                  placement:'top-start'
+                }
+              }"
+              class="media-item bg-btn">
+              <Icon name="custom:ai" class="text-14px"/>
+            </a>
           </div>
-
           <el-popover
             v-if="collected"
             v-model:visible="editableGroup"
@@ -702,6 +701,8 @@ import {
   moveFavoriteGroup,
   editTokenFavRemark,
 } from '@/api/fav'
+
+import  { getAiSummary } from '@/api/token'
 import { _getRugPull, type ResultRugPull } from '@/api/run'
 import type { Token, Pair } from '@/api/types/token'
 import {
@@ -715,6 +716,7 @@ import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
 import { useEventBus } from '@vueuse/core'
 import { verifyLogin } from '@/utils'
+import type { content } from 'html2canvas/dist/types/css/property-descriptors/content'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = storeToRefs(useBotStore())
@@ -732,6 +734,7 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
+const aiSummary = shallowRef({summary:'', headline:''})
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
@@ -842,19 +845,6 @@ watch(evmAddress, (val) => {
     selectedGroup.value = 0
   }
 })
-watch(
-  () => route.params.id,
-  () => {
-    if (evmAddress.value) {
-      getTokenFavoriteCheck()
-      getTokenUserFavoriteGroups() //获取分组数组
-    }
-    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
-    if (chain.value == 'solana') {
-      getRugPull()
-    }
-  }
-)
 const collected = shallowRef(false)
 const loading = shallowRef(false)
 
@@ -872,6 +862,35 @@ function getTokenFavoriteCheck() {
     })
     .finally(() => {})
 }
+
+function onGetAiSummary() {
+  getAiSummary(id.value)
+    .then((res) => {
+      aiSummary.value = res ?? { summary: '', headline: '' }
+    })
+    .catch((err: any) => {
+      console.log(err)
+    })
+    .finally(() => {})
+}
+
+onMounted(() => {
+  onGetAiSummary()
+})
+watch(
+  () => route.params.id,
+  () => {
+    onGetAiSummary()
+    if (evmAddress.value) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    }
+    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
+    if (chain.value == 'solana') {
+      getRugPull()
+    }
+  }
+)
 
 function addTokenFavorite() {
   loading.value = true
