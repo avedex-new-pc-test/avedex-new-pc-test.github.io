@@ -1,11 +1,11 @@
 import { ElMessage as Message } from 'element-plus'
 import { getGlobalT } from '@/utils/i18nBridge'
-const t=getGlobalT()
+const t = getGlobalT()
 // 用户取消关注
 export async function deleteAttention(body: {
   user_address: string, user_chain: string, address: string
 }) {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v1api/v3/users/fav/deleteUser', {
     method: 'post',
     body,
@@ -16,7 +16,7 @@ export async function deleteAttention(body: {
 export async function addAttention(body: {
   user_address: string, user_chain: string, remark?: string, address: string
 }) {
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v1api/v3/users/fav/addUser', {
     method: 'post',
     body
@@ -29,11 +29,11 @@ export async function addAttention(body: {
 //     "show_index": -1
 //   }
 // ]
-export function getFavoriteList2(group: number = 0, address: string = localStorage.bot_evmAddress||localStorage.walletAddress) {
+export function getFavoriteList2(group: number = 0, address: string = localStorage.bot_evmAddress || localStorage.walletAddress) {
   if (!address || address === 'undefined') {
     return Promise.resolve([])
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/allAddress', {
     method: 'get',
     params: {
@@ -45,7 +45,7 @@ export function getFavoriteList2(group: number = 0, address: string = localStora
 
 // 组
 // // get user favorite group
-export function getUserFavoriteGroups2(address: string =localStorage.bot_evmAddress||localStorage.walletAddress) : Promise<Array<{
+export function getUserFavoriteGroups2(address: string = localStorage.bot_evmAddress || localStorage.walletAddress): Promise<Array<{
   group_id: number
   name: string
   show_index: number
@@ -53,17 +53,17 @@ export function getUserFavoriteGroups2(address: string =localStorage.bot_evmAddr
   if (!address || address === 'undefined') {
     return Promise.resolve([])
   }
-  const {$api} = useNuxtApp()
-  return $api(`/v2api/fav_users/v1/user/${address}/groups`,{
+  const { $api } = useNuxtApp()
+  return $api(`/v2api/fav_users/v1/user/${address}/groups`, {
     method: 'get',
   })
 }
-export function removeFavorite2({user_chain, user_address,address =localStorage.bot_evmAddress||localStorage.walletAddress}:any) {
+export function removeFavorite2({ user_chain, user_address, address = localStorage.bot_evmAddress || localStorage.walletAddress }: any) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/delete', {
     method: 'post',
     body: {
@@ -75,12 +75,12 @@ export function removeFavorite2({user_chain, user_address,address =localStorage.
 }
 
 // update user favorite tokens group
-export function moveFavoriteGroup2({user_chain, user_address, group, address = localStorage.bot_evmAddress||localStorage.walletAddress}:any) {
+export function moveFavoriteGroup2({ user_chain, user_address, group, address = localStorage.bot_evmAddress || localStorage.walletAddress }: any) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/move', {
     method: 'post',
     body: {
@@ -93,13 +93,13 @@ export function moveFavoriteGroup2({user_chain, user_address, group, address = l
 }
 
 // change user favorite tokens
-export function changeFavoritesIndex2({user1_chain, user1_address, user2_chain, user2_address, group, address = localStorage.bot_evmAddress||localStorage.walletAddress}:any) {
+export function changeFavoritesIndex2({ user1_chain, user1_address, user2_chain, user2_address, group, address = localStorage.bot_evmAddress || localStorage.walletAddress }: any) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
-  return $api('/v2api/fav_users/v1/user/changeIndex',{
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_users/v1/user/changeIndex', {
     method: 'post',
     body: {
       address,
@@ -114,14 +114,14 @@ export function changeFavoritesIndex2({user1_chain, user1_address, user2_chain, 
 
 // set top favorite token
 export function changeFavoritesTop2({
-  user_chain, user_address, group=0, address = localStorage.bot_evmAddress||localStorage.walletAddress
-}:any) {
+  user_chain, user_address, group = 0, address = localStorage.bot_evmAddress || localStorage.walletAddress
+}: any) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
-  return $api('/v2api/fav_users/v1/user/setTop',{
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_users/v1/user/setTop', {
     method: 'post',
     body: {
       address: address,
@@ -133,13 +133,13 @@ export function changeFavoritesTop2({
 }
 
 // add user favorite group
-export function addFavoriteGroup2(name: string, address = localStorage.bot_evmAddress||localStorage.walletAddress) {
+export function addFavoriteGroup2(name: string, address = localStorage.bot_evmAddress || localStorage.walletAddress) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
-  return $api('/v2api/fav_users/v1/user/group/add',{
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_users/v1/user/group/add', {
     method: 'post',
     body: {
       address,
@@ -149,12 +149,12 @@ export function addFavoriteGroup2(name: string, address = localStorage.bot_evmAd
 }
 
 // change group name
-export function changeFavoriteGroupName2(name: string, group: number|string, address = localStorage.bot_evmAddress||localStorage.walletAddress) {
+export function changeFavoriteGroupName2(name: string, group: number | string, address = localStorage.bot_evmAddress || localStorage.walletAddress) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/update', {
     method: 'post',
     body: {
@@ -166,12 +166,12 @@ export function changeFavoriteGroupName2(name: string, group: number|string, add
 }
 
 // delete group
-export function removeFavoriteGroup2(group: number|string, address = localStorage.bot_evmAddress||localStorage.walletAddress) {
+export function removeFavoriteGroup2(group: number | string, address = localStorage.bot_evmAddress || localStorage.walletAddress) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/delete', {
     method: 'post',
     body: {
@@ -181,12 +181,12 @@ export function removeFavoriteGroup2(group: number|string, address = localStorag
   })
 }
 
-export function setTopFavoriteGroup2(group: number|string, address = localStorage.bot_evmAddress||localStorage.walletAddress) {
+export function setTopFavoriteGroup2(group: number | string, address = localStorage.bot_evmAddress || localStorage.walletAddress) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/setTop', {
     method: 'post',
     body: {
@@ -213,20 +213,21 @@ export function setTopFavoriteGroup2(group: number|string, address = localStorag
 
 
 // update remark
-// export function updateWhaleRemark(body) {
-//   return $api({
-//     method: "post",
-//     url: `/v2api/walletinfo/v1/remark`,
-//     body,
-//   });
-// }
+export function updateWhaleRemark(body: any) {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/walletinfo/v1/remark', {
+    method: 'post',
+    body,
+  })
+}
+
 // delete group
-export function changeIndexFavoriteGroup2(group1: number|string, group2: number|string, address = localStorage.bot_evmAddress||localStorage.walletAddress) {
+export function changeIndexFavoriteGroup2(group1: number | string, group2: number | string, address = localStorage.bot_evmAddress || localStorage.walletAddress) {
   if (!address || address === 'undefined') {
     Message.error(t('connectWalletFirst'))
     return Promise.reject(false)
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_users/v1/user/group/changeIndex', {
     method: 'post',
     body: {
@@ -237,14 +238,14 @@ export function changeIndexFavoriteGroup2(group1: number|string, group2: number|
   })
 }
 
-export function getFavUserRemarks({address, pageNO, pageSize}:any) {
+export function getFavUserRemarks({ address, pageNO, pageSize }: any) {
   if (!address) {
-    address = (localStorage.bot_evmAddress||localStorage.walletAddress)
+    address = (localStorage.bot_evmAddress || localStorage.walletAddress)
   }
   if (!address || address === 'undefined') {
     return Promise.resolve([])
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_remarks/v1/remarks', {
     method: 'get',
     params: {
@@ -255,14 +256,14 @@ export function getFavUserRemarks({address, pageNO, pageSize}:any) {
   })
 }
 
-export function getFavUserRemarks2({address, pageNO, pageSize, user_chain, time_interval, sort_dir}:any) {
+export function getFavUserRemarks2({ address, pageNO, pageSize, user_chain, time_interval, sort_dir }: any) {
   if (!address) {
-    address = (localStorage.bot_evmAddress||localStorage.walletAddress)
+    address = (localStorage.bot_evmAddress || localStorage.walletAddress)
   }
   if (!address || address === 'undefined') {
     return Promise.resolve([])
   }
-  const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   return $api('/v2api/fav_remarks/v1/remarks_detail', {
     method: 'get',
     params: {
@@ -282,18 +283,18 @@ export function getFavUserRemarks2({address, pageNO, pageSize, user_chain, time_
 
 
 
-export async function getAttentionPageList({group=0,user_chain,sort='',sort_dir='',keyword='',last_tx_time_max = '', last_tx_time_min='',time_interval='',pageSize=100,pageNO=1,address = localStorage.bot_evmAddress||localStorage.walletAddress}:any) {
+export async function getAttentionPageList({ group = 0, user_chain, sort = '', sort_dir = '', keyword = '', last_tx_time_max = '', last_tx_time_min = '', time_interval = '', pageSize = 100, pageNO = 1, address = localStorage.bot_evmAddress || localStorage.walletAddress }: any) {
   if (!address || address === 'undefined') {
     return Promise.resolve(null)
   }
-   const {$api} = useNuxtApp()
+  const { $api } = useNuxtApp()
   // if(store.state.bot?.cancelTokenSource){
   //   store.state.bot.cancelTokenSource.cancel('Operation canceled by the user.')
   // }
   // const CancelToken = axios.CancelToken
   // const source = CancelToken.source()
   // store.commit("setCancelTokenSource", source)
-  return $api(`/v2api/fav_users/v1/allusers?address=${address}&user_chain=${user_chain}&keyword=${keyword}&sort=${sort}&sort_dir=${sort_dir}&pageSize=${pageSize}&last_tx_time_max=${last_tx_time_max}&pageNO=${pageNO}&last_tx_time_min=${last_tx_time_min}&time_interval=${time_interval}&group=${group}`,{
+  return $api(`/v2api/fav_users/v1/allusers?address=${address}&user_chain=${user_chain}&keyword=${keyword}&sort=${sort}&sort_dir=${sort_dir}&pageSize=${pageSize}&last_tx_time_max=${last_tx_time_max}&pageNO=${pageNO}&last_tx_time_min=${last_tx_time_min}&time_interval=${time_interval}&group=${group}`, {
     method: 'get',
     // cancelToken: source.token,
   })

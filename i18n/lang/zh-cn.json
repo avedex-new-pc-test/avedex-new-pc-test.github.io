@@ -664,6 +664,8 @@
   "antiWhaleModifiable": "可修改大额交易限制",
   "check2": "安全检测",
   "tax": "税",
+  "poolPair": "配对",
+  "tokenGroup": "代币分组",
   "follow": "关注",
   "customToken": "自选币种",
   "watchAddress": "关注地址",
@@ -684,5 +686,8 @@
   "groupPlaceholder": "请输入分组",
   "removeFavGroupTips2": "删除分组后会将当前组的地址移入到默认分组中，是否继续?",
   "bulkProcess": "批量导入/导出/删除",
-  "monitorList": "监控列表"
+  "monitorList": "监控列表",
+  "noteTime": "备注时间",
+  "pushTitle": "推送",
+  "documentation":"跟单"
 }
