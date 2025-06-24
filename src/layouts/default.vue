@@ -63,10 +63,14 @@
       :min-height="160"
       :parent="true"
       :handles="[
-          'mr',
-          'bm',
-          'ml',
+         'tl',
           'tm',
+          'tr',
+          'mr',
+          'br',
+          'bm',
+          'bl',
+          'ml',
     ]"
       @onDragStop="signalStore.onDragStop"
       @onResizing="signalStore.onResizing"
