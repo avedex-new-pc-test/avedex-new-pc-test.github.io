@@ -4,6 +4,7 @@ import { DefaultEvmWallets, switchEthereumChain } from '~/utils/wallet/evm'
 import { walletConnect } from '~/utils/wallet/wc'
 import { getSolanaWallets, connectSolanaWallet, type Wallet } from '~/utils/wallet/solana'
 import { getTronWalletAdapters, connectTronWallet } from '~/utils/wallet/tron'
+import { getSuiWallets, connectSuiWallet } from '~/utils/wallet/sui'
 import { useLocalStorage } from '@vueuse/core'
 import { BrowserProvider } from 'ethers'
 import { decodeUTF8 } from 'tweetnacl-util'
@@ -19,6 +20,7 @@ export const useWalletStore = defineStore('wallet', () => {
   const evmWalletMap = shallowRef<EIP6963ProviderResponse>(new Map())
   const solanaWallets = shallowRef<Wallet[]>([])
   const tronWalletAdapters = shallowRef<TronWalletAdapter[]>([])
+  const suiWallets = shallowRef<Wallet[]>([])
 
 
   async function getEvmWalletList() {
@@ -110,6 +112,11 @@ export const useWalletStore = defineStore('wallet', () => {
     console.log('tronWalletAdapters', tronWalletAdapters.value)
   }
 
+  function _getSuiWallets() {
+    suiWallets.value = getSuiWallets()
+    console.log('sui', suiWallets.value)
+  }
+
   function signMessage(msg: string) {
     if (!provider.value) return
     if (chain.value === 'solana') {
@@ -183,6 +190,14 @@ export const useWalletStore = defineStore('wallet', () => {
         connectTronWallet(wallet)
       }
     }
+    // sui init
+    _getSuiWallets()
+    if (address.value && chain.value === 'sui' && walletName.value) {
+      const wallet = suiWallets.value.find(i => i.name === walletName.value)
+      if (wallet) {
+        connectSuiWallet(wallet)
+      }
+    }
   }
 
 
@@ -199,6 +214,7 @@ export const useWalletStore = defineStore('wallet', () => {
     disconnectEvmWallet,
     solanaWallets,
     tronWalletAdapters,
+    suiWallets,
     signMessage,
     signMessageForFavorite
   }

@@ -70,6 +70,13 @@
           <span v-if="item?.readyState === 'Found'" class="ml-auto color-[--d-666-l-999] text-14px">{{ item?.name === 'WalletConnect' ? $t('scan') : $t('detected') }}</span>
         </li>
       </ul>
+      <ul v-if="chain === 'sui'">
+        <li v-for="item in walletStore.suiWallets" :key="item.name" class="flex items-center mb-10px bg-[--d-333-l-F2F2F2] h-48px rd-6px px-12px clickable" @click.stop="_connectSuiWallet(item)">
+          <img :src="item.icon" class="mr-10px rd-5px" width="32" lazy alt="">
+          <span>{{ item.name }}</span>
+          <span v-if="item?.features" class="ml-auto color-[--d-666-l-999] text-14px">{{ $t('detected') }}</span>
+        </li>
+      </ul>
     </el-scrollbar>
 
   </div>
@@ -79,6 +86,7 @@
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { connectSolanaWallet } from '~/utils/wallet/solana'
 import { connectTronWallet } from '~/utils/wallet/tron'
+import { connectSuiWallet } from '~/utils/wallet/sui'
 
 const botStore = useBotStore()
 const configStore = useConfigStore()
@@ -88,7 +96,7 @@ const queryChain = ref('')
 const chains = computed(() => {
   return configStore.chainConfig?.filter?.(i => {
     const reg = new RegExp(queryChain.value, 'i')
-    return (i.vm_type === 'evm' || i.net_name === 'tron' || i.net_name === 'solana') && (reg.test(i.name || '') || reg.test(i.net_name))
+    return (i.vm_type === 'evm' || i.net_name === 'tron' || i.net_name === 'solana' || i.net_name === 'sui') && (reg.test(i.name || '') || reg.test(i.net_name))
   })
 })
 
@@ -121,6 +129,17 @@ function _connectSolanaWallet(item: typeof walletStore.solanaWallets[number]) {
 function _connectTronWallet(item: typeof walletStore.tronWalletAdapters[number]) {
   connectTronWallet(item)?.then((res) => {
     console.log('connectTronWallet res', res)
+    if (res) {
+      botStore.connectWalletTab = 0
+      botStore.connectVisible = false
+      _signMessageForFavorite()
+    }
+  })
+}
+
+function _connectSuiWallet(item: typeof walletStore.suiWallets[number]) {
+  connectSuiWallet(item)?.then((res) => {
+    console.log('connectSuiWallet res', res)
     if (res) {
       botStore.connectWalletTab = 0
       botStore.connectVisible = false
