@@ -687,5 +687,10 @@
   "monitorList": "Monitoring List",
   "noteTime": "Note time",
   "pushTitle": "Push",
-  "documentation":"documentation"
+  "documentation": "documentation",
+  "monitor": "monitor",
+  "openMonitor": "Enable monitoring",
+  "monitored": "monitored",
+  "noBotWalletTip": "Please connect your bot wallet to use this function",
+  "monitorError": "Please pay attention to this address before using the monitoring function"
 }

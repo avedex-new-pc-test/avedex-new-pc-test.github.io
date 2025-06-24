@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { formatNumber2 } from '~/utils/formatNumber'
 import { getRemarksDetail } from '~/api/fav'
-import { deleteAttention, updateWhaleRemark } from '~/api/attention'
+import { deleteAttention, updateWhaleRemark, addAttention, favUsersAddMonitor } from '~/api/attention'
 
 const botStore = useBotStore()
 const walletStore = useWalletStore()
@@ -41,6 +41,10 @@ const pageData = ref({
 const tableList = ref<any[]>([])
 const { mode } = storeToRefs(useGlobalStore())
 
+const addressValue = computed(() => {
+  return botStore.evmAddress || walletStore.address
+})
+
 watch(() => botStore.evmAddress, (newVal) => {
   if (newVal) {
     getList()
@@ -56,6 +60,23 @@ watch(() => walletStore.address, (newVal) => {
     tableList.value = []
   }
 })
+
+const handleMonitor = async (row: any) => {
+  if (!botStore.evmAddress) return ElMessage.error(t('noBotWalletTip'))
+  if (row.is_wallet_address_fav === 0) return ElMessage.error(t('monitorError'))
+  await favUsersAddMonitor({
+    address: row.user_address,
+    app: 0,
+    buy: 1,
+    chain: row.user_chain,
+    sell: 1,
+    telegram: 0,
+    user_address: addressValue.value,
+    website: 1
+  })
+  ElMessage.success(t('success'))
+  getList()
+}
 
 
 const handleRemarkShow = (row: any, event: any) => {
@@ -77,7 +98,7 @@ const handleRemarkGroup = async (row: any) => {
     remark: remarkValue.value,
     user_address: row.user_address,
     user_chain: row.user_chain,
-    self_address: botStore.evmAddress,
+    self_address: addressValue.value,
   })
   ElMessage.success(t('success'))
   visibleShow.value = false
@@ -113,15 +134,14 @@ const handleSortChange = ({ prop, order }: any) => {
 
 // 取消收藏
 const collect = (row: any) => {
-  if (!verifyLogin()) {
-    return
-  }
   loading.value = true
-  deleteAttention({
-    address: botStore.evmAddress,
+  const api = row.is_wallet_address_fav === 1 ? deleteAttention : addAttention
+  api({
+    address: addressValue.value,
     user_address: row.user_address,
     user_chain: row.user_chain
   }).then(() => {
+    ElMessage.success(row.is_wallet_address_fav === 1 ? t('attention1Canceled') : t('attention1Success'))
     getList()
   }).catch((err) => {
     console.log(err)
@@ -133,7 +153,7 @@ const collect = (row: any) => {
 // 获取列表
 const getList = async () => {
   const res: any = await getRemarksDetail({
-    address: botStore.evmAddress,
+    address: addressValue.value,
     pageNO: pageData.value.page,
     pageSize: pageData.value.pageSize
   })
@@ -143,7 +163,7 @@ const getList = async () => {
         ...i,
         total_txs: safeBigNumber(i.total_sold).plus(safeBigNumber(i.total_purchase)).toString(),
         total_txs_usd: safeBigNumber(i.total_sold_usd).plus(safeBigNumber(i.total_purchase_usd)).toString(),
-      })).filter((i: any) => i.is_wallet_address_fav === 1)) ||
+      }))) ||
     []
   tableList.value = tableData
 }
@@ -190,8 +210,8 @@ onMounted(() => {
                 #{{ (pageData.page - 1) * pageData.pageSize + $index + 1 }}
               </span>
               <Icon name="custom:attention"
-                class="color-var(--d-999-l-666) h-16px w-16px clickable shrink-0 color-[#F45469]"
-                @click.stop.prevent="collect(row)" />
+                :class="row.is_wallet_address_fav === 1 ? 'color-[#F45469]' : 'color-[#999]'"
+                class="color-var(--d-999-l-666) h-16px w-16px clickable shrink-0" @click.stop.prevent="collect(row)" />
               <UserAvatar class="mx-8px" :wallet_logo="row.wallet_logo" :address="row.user_address"
                 :chain="row.user_chain" iconSize="24px"></UserAvatar>
               <div class="ml-5px">
@@ -205,8 +225,8 @@ onMounted(() => {
                 <div class="flex items-center mt-2px">
                   <Icon @click.stop.prevent v-copy="row?.user_address" name="bxs:copy"
                     class="clickable text-[--d-666-l-999]" />
-                  <img class="w-12px h-12px mx-5px" src="@/assets/icons/sun_icon.svg" alt="" />
-                  <img class="w-12px h-12px" src="@/assets/icons/wallet_icon.svg" alt="" />
+                  <Icon name="custom:sun-icon" class="text-12px mx-5px" />
+                  <Icon name="custom:wallet-icon" class="text-12px" />
                 </div>
               </div>
             </div>
@@ -247,10 +267,32 @@ onMounted(() => {
 
       <el-table-column :label="t('pushTitle')" align="right">
         <template #default="{ row }">
-          <a class="trade" :href="`https://t.me/AveSniperBot?start=fs-${row.user_chain}-${row.user_address}`"
-            target="_blank">
-            {{ $t('documentation') }}
-          </a>
+          <div class="flex flex-row-reverse" @click.stop.prevent>
+            <a class="flex items-center"
+              :href="`https://t.me/AveSniperBot?start=fs-${row.user_chain}-${row.user_address}`" target="_blank">
+              <Icon name="custom:documentary-wallet" class="text-16px mr-2px" />
+              {{ t('documentation') }}
+            </a>
+            <div class="flex items-center mr-12px cursor-pointer" v-if="!botStore.evmAddress"
+              @click="handleMonitor(row)">
+              <Icon name="custom:monitor-icon" class="text-16px mr-2px" />
+              <div>{{ t('monitor') }}</div>
+            </div>
+            <div class="flex items-center mr-12px cursor-pointer" @click="handleMonitor(row)"
+              v-else-if="row?.is_monitored === 0 && (row?.user_chain === 'solana' || row?.user_chain === 'bsc')">
+              <Icon name="custom:monitor-icon" class="text-16px mr-2px " />
+              {{ t('openMonitor') }}
+            </div>
+            <div class="flex items-center mr-12px color-[#666] cursor-not-allowed"
+              v-else-if="row?.is_monitored === 1 && (row?.user_chain === 'solana' || row?.user_chain === 'bsc')">
+              <Icon name="custom:monitor-icon" class="text-16px mr-2px " />
+              {{ t('monitored') }}
+            </div>
+            <div class="flex items-center mr-12px color-[#666] cursor-not-allowed" v-else>
+              <Icon name="custom:monitor-icon" class="text-16px mr-2px " />
+              {{ t('monitor') }}
+            </div>
+          </div>
         </template>
       </el-table-column>
     </el-table>

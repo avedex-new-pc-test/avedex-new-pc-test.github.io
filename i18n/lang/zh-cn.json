@@ -689,5 +689,10 @@
   "monitorList": "监控列表",
   "noteTime": "备注时间",
   "pushTitle": "推送",
-  "documentation":"跟单"
+  "documentation": "跟单",
+  "monitor": "监控",
+  "openMonitor": "开启监控",
+  "monitored": "已监控",
+  "noBotWalletTip": "需要连接Bot钱包才能使用该功能",
+  "monitorError": "请先关注该地址，才能使用监控功能"
 }
