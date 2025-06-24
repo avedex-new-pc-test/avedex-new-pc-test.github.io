@@ -16,7 +16,7 @@ import { getTimezone, formatDecimals, getSwapInfo, getAddressAndChainFromId, get
 import { getKlineHistoryData } from '@/api/token'
 import { formatNumber } from '@/utils/formatNumber'
 import { switchResolution, formatLang, supportSecChains, initTradingViewIntervals, updateChartBackground, buildOrUpdateLastBarFromTx, waitForTradingView, useLimitPriceLine, useAvgPriceLine } from './utils'
-import { useLocalStorage, useElementBounding, useWindowSize, useEventBus } from '@vueuse/core'
+import {useLocalStorage, useElementBounding, useWindowSize, useEventBus, useStorage} from '@vueuse/core'
 import type { WSTx, KLineBar } from './types'
 import BigNumber from 'bignumber.js'
 import { useKlineMarks } from './mark'
@@ -437,7 +437,7 @@ async function initChart() {
           const params = {
             interval: interval,
             pair_id: pair.value + '-' + chain.value,
-            token_id: route.params.id as string,
+            token_id: pair.value ? undefined : route.params.id as string,
             from,
             to: firstDataRequest ? 0 : Math.max(to, firstBarTime || 0)
           }
@@ -635,7 +635,7 @@ function onWsKline(resolution: string, onTick: SubscribeBarsCallback, ws = wsSto
 
 // 拖动缩放
 let isMask = false
-const kHeight = shallowRef(DefaultHeight.KLINE)
+const kHeight = useStorage('kHeight', DefaultHeight.KLINE)
 const wHeight = useWindowSize().height
 const dom = useTemplateRef('kline')
 function drag(e: MouseEvent) {
@@ -656,10 +656,12 @@ function drag(e: MouseEvent) {
       return
     }
     document.getElementById('tv_chart_container')!.style.pointerEvents = 'none'
-    if (e.clientY < dy) {
-      kHeight.value -= dy - e.clientY
-    } else {
-      kHeight.value += e.clientY - dy
+    const _kHeight = e.clientY < dy
+      ? kHeight.value - (dy - e.clientY)
+      : kHeight.value + e.clientY - dy
+
+    if (_kHeight <= wHeight.value - 164) {
+      kHeight.value = _kHeight
     }
     dy = e.clientY
   }
