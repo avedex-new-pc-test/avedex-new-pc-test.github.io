@@ -663,5 +663,6 @@
   "mechanism_intro": "说明",
   "antiWhaleModifiable": "可修改大额交易限制",
   "check2": "安全检测",
-  "tax": "税"
+  "tax": "税",
+  "signal": "信号"
 }

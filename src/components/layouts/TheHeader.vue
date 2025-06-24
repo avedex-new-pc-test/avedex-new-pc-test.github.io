@@ -5,7 +5,7 @@
     <a :href="homeUrl" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
-        <a :href="item.src" target="_blank" :class="{ active: item.id == route?.name }">
+        <a :href="item.src" :target="item.target" :class="{ active: item.id == route?.name }">
           {{ item.name }}
         </a>
       </li>
@@ -115,10 +115,10 @@ const list = computed(() => {
     query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
   }
   return [
-    { id: 'index', name: t('markets'), src: 'https://ave.ai/' + query },
-    { id: 'pump', name: t('pump1'), src: 'https://ave.ai/pump' + query },
-    { id: 'smart', name: t('smarter2'), src: 'https://ave.ai/smart' + query },
-    { id: 'assets', name: t('balances'), src: 'https://ave.ai/address' + query },
+    {id: 'index', name: t('markets'), src: 'https://ave.ai/' + query, target: '_blank'},
+    {id: 'pump', name: t('pump1'), src: 'https://ave.ai/pump' + query, target: '_blank'},
+    {id: 'smart', name: t('smarter2'), src: '/smart', target: '_self'},
+    {id: 'assets', name: t('balances'), src: 'https://ave.ai/address' + query, target: '_blank'},
   ]
 })
 
