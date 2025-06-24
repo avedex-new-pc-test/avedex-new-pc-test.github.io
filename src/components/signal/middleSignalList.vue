@@ -198,7 +198,6 @@ const botStore = useBotStore()
           </el-col>
         </el-row>
         <QuickSwap
-          v-if="(botStore.evmAddress || !botStore.currentAccount)"
           :quickBuyValue="quickBuyValue"
           :row="signalList[index]"
           classNames="min-w-70px"
