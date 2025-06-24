@@ -1,0 +1,469 @@
+<script setup lang="ts">
+import {useStorage} from '@vueuse/core'
+import {getSignalV2List, type GetSignalV2ListResponse, type IActionItem} from '~/api/signal'
+import SlippageSet from '~/pages/token/components/right/botSwap/slippageSet.vue'
+import Filter from '~/components/signal/filter.vue'
+import SelectIcon from '~/components/signal/selectIcon.vue'
+import QuickBuyInput from '~/components/signal/quickBuyInput.vue'
+import SmallSignalList from '~/components/signal/smallSignalList.vue'
+import MiddleSignalList from '~/components/signal/middleSignalList.vue'
+import LargeSignalList from '~/components/signal/largeSignalList.vue'
+import dayjs from 'dayjs'
+
+const props = defineProps<{
+  containerWidth: number
+  scrollHeight: number
+}>()
+const configStore = useConfigStore()
+const botSettingStore = useBotSettingStore()
+const localeStore = useLocaleStore()
+const signalList = shallowRef<GetSignalV2ListResponse[]>([])
+const pageParams = shallowRef({
+  pageNO: 1,
+  pageSize: 20,
+})
+const chainOptions = shallowRef(['solana', 'bsc'])
+const activeChain = shallowRef('solana')
+
+function setActiveChain(chain: string) {
+  activeChain.value = chain
+  resetAndGet()
+}
+
+const sortParams = shallowRef({
+  sortBy: undefined,
+  activeSort: 0
+})
+// token: 筛选 token
+// history_count：筛选信号数，对应值2, 5, 15
+// 市值：mc_curr，市值过滤，
+// 市值方向：mc_curr_sign， 默认 > 大于号，可选 <
+const filterParams = useStorage('signalParams', {
+  token: '',
+  history_count: undefined as undefined | number,
+  mc_curr: undefined as undefined | number,
+  mc_curr_sign: '<'
+})
+const filterSignalList = computed(() => {
+  const {sortBy, activeSort} = sortParams.value
+  return signalList.value.filter(filterCallback).toSorted((a, b) => {
+    if (sortBy) {
+      return (Number((b[sortBy] || 0)) - Number((a[sortBy] || 0))) * activeSort
+    }
+    return 0
+  })
+})
+
+function filterCallback(el: GetSignalV2ListResponse) {
+  const {token, history_count, mc_curr} = filterParams.value
+  const tokenMatched = !token || el.token === token
+  const countMatched = el.history_count > (history_count || 0)
+  const mcMatched = !mc_curr || Number(el.mc_cur) < mc_curr
+  return tokenMatched && countMatched && mcMatched
+}
+
+function resetFilterParams() {
+  filterParams.value.token = ''
+  filterParams.value.history_count = undefined
+  filterParams.value.mc_curr = undefined
+  resetAndGet()
+}
+const listStatus = ref({
+  loading: false,
+  finished: false,
+  error: false
+})
+
+function resetAndGet() {
+  listStatus.value.finished = false
+  listStatus.value.error = false
+  pageParams.value.pageNO = 1
+  fetchSignalList()
+}
+
+const shouldAlert = useStorage('shouldAlert', '1')
+const quickBuyValue = useStorage('quickBuyValue', '0.01')
+const signalStore = useSignalStore()
+const isSmallScreen = computed(() => {
+  return props.containerWidth <= 320
+})
+const isMiddleScreen = computed(() => {
+  return props.containerWidth <= 759 && props.containerWidth > 320
+})
+const isLargeScreen = computed(() => {
+  return props.containerWidth >= 760
+})
+onMounted(() => {
+  fetchSignalList()
+  initTimer()
+  initWs()
+})
+let timer: number
+watch(activeChain, () => {
+  pageParams.value.pageNO = 1
+  fetchSignalList()
+  initWs()
+})
+
+const wsStore = useWSStore()
+
+function initWs() {
+  wsStore.send({
+    'jsonrpc': '2.0',
+    method: 'unsubscribe',
+    'params': [
+      'signalsv2_public_monitor',
+      activeChain.value
+    ],
+    'id': 1
+  })
+
+  wsStore.send({
+    'jsonrpc': '2.0',
+    method: 'subscribe',
+    'params': [
+      'signalsv2_public_monitor',
+      activeChain.value
+    ],
+    'id': 1
+  })
+}
+
+function initTimer() {
+  let lastFetchSignalTime = 0
+  const callback = () => {
+    if (Date.now() - lastFetchSignalTime >= 5000) {
+      updateListData()
+      lastFetchSignalTime = Date.now()
+    }
+    timer = requestAnimationFrame(callback)
+  }
+  timer = requestAnimationFrame(callback)
+}
+
+onUnmounted(() => {
+  cancelAnimationFrame(timer)
+})
+
+const signalAudio = useTemplateRef('signalAudio')
+watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData: GetSignalV2ListResponse) => {
+  if (shouldAlert.value === '1' && signalAudio.value && filterCallback(_signalData)) {
+    signalAudio.value.currentTime = 0
+    signalAudio.value.play()
+  }
+  const matchIndex = signalList.value.findIndex((p) =>
+    p.token === _signalData.token && p.chain === _signalData.chain
+  )
+  if (matchIndex !== -1) {
+    signalList.value.splice(matchIndex, 1)
+    signalList.value.unshift(_signalData)
+    triggerRef(signalList)
+  } else if (_signalData.history_count === 1) {
+    signalList.value.unshift(_signalData)
+    triggerRef(signalList)
+  }
+})
+
+/**
+ * 作为推送接口使用，只更新数据
+ */
+async function updateListData() {
+  try {
+    const res = await getSignalV2List({
+      chain: activeChain.value,
+      pageNO: 1,
+      pageSize: 50,
+      fold: true
+    })
+    const addressMap: Record<string, GetSignalV2ListResponse> = {}
+    ;(res || []).forEach((item) => {
+      if (!addressMap[item.token + item.chain]) {
+        addressMap[item.token + item.chain] = item
+      }
+    })
+    signalList.value = signalList.value.map(item => {
+      const updateKeys = ['mc_cur', 'holders_cur', 'top10_ratio', 'dev_ratio', 'insider_ratio', 'max_price_change'] as const
+      const matchedNewData = addressMap[item.token + item.chain]
+      if (matchedNewData) {
+        const result = {} as Record<string, GetSignalV2ListResponse>
+        updateKeys.forEach(updateKey => {
+          result[updateKey] = matchedNewData[updateKey] as any
+        })
+        return {
+          ...item,
+          ...result
+        }
+      }
+      return item
+    })
+  } catch (e) {
+    console.log('=>(signalList.vue:106) e', e)
+  }
+}
+
+function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
+  if (listStatus.value.finished) {
+    return
+  }
+  if (direction === 'bottom') {
+    fetchSignalList()
+  }
+}
+async function fetchSignalList() {
+  try {
+    listStatus.value.loading = true
+    const res = await getSignalV2List({
+      ...pageParams.value,
+      chain: activeChain.value,
+      fold: true,
+      ...filterParams.value
+    })
+    if (pageParams.value.pageNO === 1) {
+      signalList.value = res || []
+    } else {
+      signalList.value = signalList.value.concat(res || [])
+    }
+    const finished = res?.length < pageParams.value.pageSize
+    listStatus.value.finished = finished
+    if (!finished) {
+      pageParams.value.pageNO++
+    }
+  } catch (e) {
+    console.log('=>(index.vue:224) e', e)
+    listStatus.value.error = true
+    signalList.value = []
+  } finally {
+    listStatus.value.loading = false
+  }
+}
+
+let hideTimer: number | NodeJS.Timeout
+const buttonRef = ref<null | HTMLElement>(null)
+const currentActions = shallowRef<IActionItem[]>([])
+
+// const popVisible = shallowRef(false)
+
+function showPopover(e: MouseEvent, actions: IActionItem[]) {
+  buttonRef.value = e.currentTarget as HTMLElement | null
+  currentActions.value = actions || []
+  // popVisible.value = true
+}
+
+function hidePopover() {
+  buttonRef.value = null
+  // popVisible.value = false
+}
+
+function scheduleHide() {
+  hideTimer = setTimeout(() => {
+    hidePopover()
+  }, 500)
+}
+
+function cancelHide() {
+  clearTimeout(hideTimer)
+}
+
+const isShowDate = ref(true)
+
+</script>
+
+<template>
+  <div
+    class="bg-[--d-111-l-FFF] p-12px relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] cursor-move h-full"
+  >
+    <div
+      class="flex items-center justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5]">
+      <span class="color-[--d-FFF-l-222] text-14px">{{ $t('signal') }}</span>
+      <div class="flex items-center gap-12px">
+        <Filter
+          v-if="isLargeScreen"
+          v-model="shouldAlert"
+          :filter-params="filterParams"
+          @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+          @onReset="resetFilterParams"
+        />
+        <el-select
+          size="small"
+          placeholder=""
+          :suffix-icon="SelectIcon"
+          popper-class="[&&]:[--el-fill-color-light:--d-222-l-F2F2F2] [--el-bg-color-overlay:--d-1A1A1A-l-FFF]"
+          @change="setActiveChain"
+        >
+          <template #prefix>
+            <el-image
+              class="flex items-center rounded-full w-12px h-12px"
+              :src="`${configStore.token_logo_url}chain/${activeChain}.png`"
+            />
+            <span class="text-10px color-[--d-FFF-l-333]">
+              {{ activeChain.slice(0, 3).toUpperCase() }}
+            </span>
+          </template>
+          <el-option
+            v-for="net_name in chainOptions"
+            :key="net_name"
+            :value="net_name"
+            class="[&&]:text-10px flex items-center"
+          >
+            <el-image
+              class="flex items-center rounded-full w-12px h-12px mr-4px"
+              :src="`${configStore.token_logo_url}chain/${net_name}.png`"
+            />
+            {{ net_name.slice(0, 3).toUpperCase() }}
+          </el-option>
+        </el-select>
+        <QuickBuyInput
+          v-if="isLargeScreen"
+          v-model="quickBuyValue"
+          size="small"
+          class="[--el-border-color:transparent]"
+        />
+        <SlippageSet
+          :chain="activeChain"
+          :setting="botSettingStore?.botSettings[activeChain]"
+        />
+        <Icon
+          name="custom:close"
+          class="text-14px shrink-0 cursor-pointer"
+          @click.self="signalStore.signalVisible=false"
+        />
+      </div>
+    </div>
+    <div
+      v-if="!isLargeScreen"
+      class="flex items-center justify-between mb-18px"
+    >
+      <Filter
+        v-model="shouldAlert"
+        :filter-params="filterParams"
+        @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+        @onReset="resetFilterParams"
+      />
+      <QuickBuyInput
+        v-model="quickBuyValue"
+        size="small"
+        class="[--el-border-color:transparent]"
+      />
+    </div>
+    <el-scrollbar
+      v-if="!isLargeScreen"
+      :height="scrollHeight"
+      @endReached="endReached"
+    >
+      <SmallSignalList
+        v-if="isSmallScreen"
+        :signalList="filterSignalList"
+        :quickBuyValue="quickBuyValue"
+      />
+      <MiddleSignalList
+        v-else-if="isMiddleScreen"
+        :quickBuyValue="quickBuyValue"
+        :signalList="filterSignalList"
+        :showPop="showPopover"
+        :hidePop="scheduleHide"
+      />
+      <div
+        v-if="listStatus.loading"
+        class="flex justify-center text-12px text-[#959a9f]"
+      >
+        {{ $t('loading') }}
+      </div>
+    </el-scrollbar>
+    <LargeSignalList
+      v-else
+      v-model="sortParams"
+      :loading="listStatus.loading"
+      :quickBuyValue="quickBuyValue"
+      :signalList="filterSignalList"
+      :showPop="showPopover"
+      :hidePop="scheduleHide"
+      :height="signalStore.signalBoundingRect.height-96"
+      @endReached="endReached"
+    />
+    <audio
+      ref="signalAudio" controls style="display: none"
+      src="/signal.mp3"
+    />
+
+    <!--  actions -->
+    <el-popover
+      :width="390"
+      :virtual-ref="buttonRef"
+      popper-class="[--el-bg-color-overlay:--d-1A1A1A-l-FFF] max-h-200px"
+      virtual-triggering
+      append-to-body
+      trigger="click"
+    >
+      <div
+        @mouseenter="cancelHide"
+        @mouseleave="hidePopover"
+      >
+        <div class="flex color-[--d-666-l-999] text-12px mb-8px">
+          <div class="flex-[3]">
+            {{ $t('wallet') }}
+          </div>
+          <div class="flex-[4]">
+            {{ $t('operate') }}
+          </div>
+          <div class="flex-[2] flex items-center justify-end gap-4px">
+            {{ $t('time') }}
+            <Icon
+              :name="`${isShowDate ? 'custom:calendar' : 'custom:countdown'}`"
+              class="color-[--d-666-l-999] cursor-pointer" @click.self="isShowDate = !isShowDate"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col gap-12px">
+          <div
+            v-for="({
+          wallet_alias,
+          wallet_address,
+          quote_token_amount,
+          quote_token_symbol,
+          quote_token_volume,
+          action_time
+        },idx) in currentActions"
+            :key="idx"
+            class="flex color-[--d-999-l-666] text-12px lh-14px"
+          >
+            <div class="flex-[3] flex items-center">
+              <span class="w-10px h-10px rounded-full bg-#37B270 mr-4px"/>
+              <span class="color-[--d-F5F5F5-l-333] whitespace-nowrap overflow-hidden text-ellipsis max-w-60px">{{
+                  wallet_alias || $t('wallet')
+                }}</span>
+              <span class="color-[--d-999-l-666]">(*{{ wallet_address.slice(-4) }})</span>
+            </div>
+            <div class="flex-[4] color-#12B886">
+              {{ $t('buy') }}{{ localeStore.locale === 'en' ? ' ' : '' }}{{ formatNumber(quote_token_amount, 2) }} {{
+                quote_token_symbol
+              }}<span class="color-[--d-999-l-666]">(${{ formatNumber(quote_token_volume, 0) }})</span>
+            </div>
+            <div class="flex-[2] flex justify-end">
+              <template v-if="isShowDate">
+                {{ formatDate(action_time * 1000, 'MM/DD HH:mm:ss') }}
+              </template>
+              <template v-else>
+                {{ dayjs(action_time * 1000).fromNow() }}
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-popover>
+  </div>
+</template>
+
+<style lang="scss">
+.signal {
+  .el-select {
+    --el-select-width: 60px;
+    --el-fill-color-blank: var(--d-222-l-FFF);
+  }
+
+  .el-select--small .el-select__wrapper {
+    gap: 1px;
+    min-height: 20px;
+    line-height: 14px;
+  }
+}
+</style>

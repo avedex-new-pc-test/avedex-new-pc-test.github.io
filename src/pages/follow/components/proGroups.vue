@@ -89,7 +89,7 @@
       </li>
     </ul>
   </el-popover>
-  <ProPopover ref="proPopoverRef" v-model="addGroupName" :button-ref="addButtonRef || {}" width="248" :label="$t('newGroup')" :placeholder="$t('groupPlaceholder')" prop="name" @onConfirm="handleAddGroup" :title="$t('newGroup')"/>
+  <ProPopover ref="proPopoverRef" v-model="addGroupName" :button-ref="addButtonRef || {}" width="248" :label="$t('newGroup')" :placeholder="$t('groupPlaceholder')" prop="name" :title="$t('newGroup')" @onConfirm="handleAddGroup"/>
 </template>
 
 <script setup lang="ts">
@@ -124,6 +124,9 @@ const $refs = ref({
 //   set: (val) => emit('update:options', val)
 // })
 const sortOptions = ref(props.options)
+watch(() => props.options, (val) => {
+  sortOptions.value = val
+})
 const groupName = ref('')
 const addGroupName = ref('')
 const edits = ref<Record<number, boolean>>({})

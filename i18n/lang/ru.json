@@ -435,6 +435,7 @@
   "mechanism_intro": "Дополнительно",
   "antiWhaleModifiable": "Изменяемый анти-кит",
   "tax": "Налог",
+  "filter": "Фильтры",
   "follow": "Подписаться",
   "customToken": "Свой токен",
   "watchAddress": "Отслеживать адрес",
