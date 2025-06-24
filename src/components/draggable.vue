@@ -61,6 +61,9 @@ function onResizeStop() {
   display: block !important;
 }
 
+.handle-tl, .handle-tr, .handle-br, .handle-bl {
+  opacity: 0;
+}
 .handle-mr, .handle-ml {
   z-index: 1;
   opacity: 0;
