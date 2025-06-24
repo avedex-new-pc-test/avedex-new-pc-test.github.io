@@ -155,9 +155,9 @@ export default defineNuxtConfig({
         include: ['lodash-unified'],
       }
     },
-    // optimizeDeps: {
-    //   include: ['lodash-unified'],
-    // },
+    optimizeDeps: {
+      include: ['lodash-unified'],
+    },
     build: {
       minify: 'terser',
       sourcemap: !isProd,
