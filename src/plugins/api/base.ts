@@ -32,7 +32,7 @@ export function onRequest({ options, request }: MyFetchContext) {
     }
     const currentAccount = localStorage.getItem('currentAccount')
     if (currentAccount) {
-      const signature = useConfigStore().walletSignature?.[currentAccount] || ''
+      const signature = useWalletStore().walletSignature?.[currentAccount] || ''
       if (signature) {
         options.headers.set('signature', signature)
       }

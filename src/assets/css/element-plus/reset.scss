@@ -8,19 +8,15 @@
 
 :root:root.light {
   .el-popper[role="tooltip"]:not(.el-popover) {
-    // --el-bg-color: #ccc;
-    --el-bg-color-overlay: #333;
-    color: #ccc;
-    // --el-text-color-primary: #333;
+    --el-bg-color: #ccc;
+    // --el-bg-color-overlay: #333;
+    // color: #ccc;
+    --el-text-color-primary: #333;
   }
 }
 
 :root:root {
   --el-text-color-regular: var(--d-F5F5F5-l-333);
-  .el-popper[role="tooltip"] {
-    --el-bg-color: #ccc;
-    --el-text-color-primary: #333;
-  }
 }
 
 .el-table {
@@ -29,7 +25,7 @@
     --el-table-border: 0 none;
     --el-table-text-color: var(--d-F2F2F2-l-333);
     --el-table-header-text-color: var(--d-666-l-999);
-    --el-table-row-hover-bg-color: var(--d-222-l-F2F2F2);
+    --el-table-row-hover-bg-color: var(--d-1A1A1A-l-F2F2F2);
     --el-table-tr-bg-color: transparent;
     thead{
       .el-table__cell{
@@ -128,4 +124,8 @@
 
 .el-select--small .el-select__wrapper.el-select__wrapper {
   padding: 4px;
+}
+
+.el-select__wrapper {
+  --el-fill-color-blank: var(--d-333-l-F2F2F2);
 }

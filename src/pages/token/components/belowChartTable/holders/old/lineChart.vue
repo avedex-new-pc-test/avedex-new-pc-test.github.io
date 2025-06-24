@@ -159,7 +159,7 @@
         axisLine: { show: false },
         axisTick: { show: false },
         axisLabel: {
-          color:  mode.value === 'light'? '#666': '#999',
+          color:  mode.value === 'light'? '#999' : '#666',
           fontFamily: 'Outfit-Medium'
         }
       },
@@ -168,7 +168,7 @@
         axisLine: { show: false },
         axisTick: { show: false },
         axisLabel: {
-          color:  mode.value === 'light'? '#666': '#999',
+          color:  mode.value === 'light'? '#999' : '#666',
           fontFamily: 'Outfit-Medium',
           formatter: '{value}%'
         },

@@ -23,8 +23,6 @@ const props = defineProps({
   },
   loadingMyTx: Boolean
 })
-
-const emit = defineEmits(['changeLoadingHead'])
 const { mode } = storeToRefs(useGlobalStore())
 const route= useRoute()
 
@@ -73,11 +71,6 @@ function getAmountUSD(row: any) {
 function goLink(row: any) {
   window.open(formatExplorerUrl(row.network, row.transactionAddress, 'tx'))
 }
-
-function changeLoadingHead(val: boolean) {
-  loadingHead.value = val
-  emit('changeLoadingHead', val)
-}
 </script>
 
 <template>
@@ -85,7 +78,6 @@ function changeLoadingHead(val: boolean) {
     <UserTxsHead
       :tableList="props.tableList"
       :userAddress="props.userAddress"
-      @changeLoadingHead="changeLoadingHead"
     />
 
     <div class="top">

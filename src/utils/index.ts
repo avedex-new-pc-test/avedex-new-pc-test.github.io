@@ -185,9 +185,9 @@ export function formatUrl(url: string) {
   return 'https://' + url
 }
 
-export function getChainInfo(chain: string) {
+export function getChainInfo(chain: string, isChainId = false) {
   const chainConfig = useConfigStore().chainConfig
-  const chainInfo = chainConfig?.find((item) => item.net_name === chain)
+  const chainInfo = chainConfig?.find((item) => (isChainId ? item.chain_id : item.net_name) === chain)
   if (!chainInfo) {
     return {} as Record<string, any>
   }

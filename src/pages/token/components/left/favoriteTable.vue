@@ -239,7 +239,7 @@ function resetListStatus() {
           <NuxtLink
             v-for="(row, $index) in sortedFavList"
             :key="$index"
-            class="px-10px flex items-center h-50px cursor-pointer hover:bg-[var(--d-222-l-F2F2F2)]"
+            class="px-10px flex items-center h-50px cursor-pointer hover:bg-[var(--d-1A1A1A-l-F2F2F2)]"
             :to="`/token/${row.token}-${row.chain}`"
           >
             <div class="flex items-center flex-1">
