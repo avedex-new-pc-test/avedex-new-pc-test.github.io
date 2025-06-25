@@ -113,19 +113,7 @@ const handleRemarkGroup = async (row: any) => {
 }
 
 const tableRowClick = (row: any) => {
-  const containsSpecialString = row?.token
-    ? ['inscription', ':', '('].some(str => row.token.includes(str))
-    : false
-
-  if (
-    row.chain === 'brc20' ||
-    row.chain === 'runes' ||
-    containsSpecialString
-  ) {
-    router.push(`/brc/${row.token}-${row.chain}?from=fav`)
-  } else {
-    router.push(`/token/${row.token}-${row.chain}?from=fav`)
-  }
+  router.push(`/address/${row.user_address}-${row.user_chain}`)
 }
 
 // 处理表格排序
@@ -214,33 +202,30 @@ onMounted(() => {
       </template>
       <el-table-column :label="t('address')" min-width="160" show-overflow-tooltip>
         <template #default="{ row, $index }">
-          <NuxtLink :to="`/token/${row.token}-${row.chain}`" @click.stop.prevent>
-            <div class="flex items-center">
-              <span class="text-[#848E9C] text-12px mr-5px">
-                #{{ (pageData.page - 1) * pageData.pageSize + $index + 1 }}
-              </span>
-              <Icon name="custom:attention"
-                :class="row.is_wallet_address_fav === 1 ? 'color-[#F45469]' : 'color-[#999]'"
-                class="color-var(--d-999-l-666) h-16px w-16px clickable shrink-0" @click.stop.prevent="collect(row)" />
-              <UserAvatar class="mx-8px" :wallet_logo="row.wallet_logo" :address="row.user_address"
-                :chain="row.user_chain" iconSize="24px"></UserAvatar>
-              <div class="ml-5px">
-                <div class="flex items-center">
-                  <span class="text-14px max-w-[60px] truncate">{{ row.remark }}</span>
-                  <!-- 备注 -->
-                  <div ref="buttonRef" @click.stop.prevent='handleRemarkShow(row, $event)'>
-                    <Icon class="text-[--d-666-l-999] w-12px h-12px ml-4px" name="custom:remark" />
-                  </div>
-                </div>
-                <div class="flex items-center mt-2px">
-                  <Icon @click.stop.prevent v-copy="row?.user_address" name="bxs:copy"
-                    class="clickable text-[--d-666-l-999]" />
-                  <Icon name="custom:sun-icon" class="text-12px mx-5px" />
-                  <Icon name="custom:wallet-icon" class="text-12px" />
+          <div class="flex items-center">
+            <span class="text-[#848E9C] text-12px mr-5px">
+              #{{ (pageData.page - 1) * pageData.pageSize + $index + 1 }}
+            </span>
+            <Icon name="custom:attention" :class="row.is_wallet_address_fav === 1 ? 'color-[#F45469]' : 'color-[#999]'"
+              class="color-var(--d-999-l-666) h-16px w-16px clickable shrink-0" @click.stop.prevent="collect(row)" />
+            <UserAvatar class="mx-8px" :wallet_logo="row.wallet_logo" :address="row.user_address"
+              :chain="row.user_chain" iconSize="24px"></UserAvatar>
+            <div class="ml-5px">
+              <div class="flex items-center">
+                <span class="text-14px max-w-[60px] truncate">{{ row.remark }}</span>
+                <!-- 备注 -->
+                <div ref="buttonRef" @click.stop.prevent='handleRemarkShow(row, $event)'>
+                  <Icon class="text-[--d-666-l-999] w-12px h-12px ml-4px" name="custom:remark" />
                 </div>
               </div>
+              <div class="flex items-center mt-2px">
+                <Icon @click.stop.prevent v-copy="row?.user_address" name="bxs:copy"
+                  class="clickable text-[--d-666-l-999]" />
+                <Icon name="custom:sun-icon" class="text-12px mx-5px" />
+                <Icon name="custom:wallet-icon" class="text-12px" />
+              </div>
             </div>
-          </NuxtLink>
+          </div>
         </template>
       </el-table-column>
       <el-table-column :label="t('noteTime')" align="right">
@@ -277,7 +262,7 @@ onMounted(() => {
 
       <el-table-column :label="t('pushTitle')" align="right">
         <template #default="{ row }">
-          <div class="flex flex-row-reverse" @click.stop.prevent>
+          <div class="flex flex-row-reverse" @click.stop>
             <a class="flex items-center"
               :href="`https://t.me/AveSniperBot?start=fs-${row.user_chain}-${row.user_address}`" target="_blank">
               <Icon name="custom:documentary-wallet" class="text-16px mr-2px" />

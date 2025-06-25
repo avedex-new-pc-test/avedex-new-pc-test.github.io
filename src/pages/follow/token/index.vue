@@ -195,9 +195,9 @@ const tableRowClick = (row: any) => {
     row.chain === 'runes' ||
     containsSpecialString
   ) {
-    router.push(`/brc/${row.token}-${row.chain}?from=fav`)
+    router.push(`/brc/${row.token}-${row.chain}?from=/follow/token`)
   } else {
-    router.push(`/token/${row.token}-${row.chain}?from=fav`)
+    router.push(`/token/${row.token}-${row.chain}?from=/follow/token`)
   }
 }
 
