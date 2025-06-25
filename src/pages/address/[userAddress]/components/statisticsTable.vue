@@ -30,12 +30,12 @@
         >
           {{ $t('hideSmallAssets1') + '<1USD' }}
         </el-checkbox>
-        <BlackList
+        <!-- <BlackList
           v-if="isSelfAddress"
           :chain="chain"
           :address="address"
           @addWhite="refreshTokenList"
-        />
+        /> -->
       </div>
       <div v-else-if="isTrend" class="checkbox-container">
         <el-checkbox
@@ -46,13 +46,6 @@
         >
           {{ $t('hideNative') }}
         </el-checkbox>
-        <!--        <a-->
-        <!--          class="font-14 color-999 font_weight_500 ml_30"-->
-        <!--          @click="showTrendPop = true"-->
-        <!--        >-->
-        <!--          <i class="iconfont icon-a-shaixuan-pc"></i>-->
-        <!--          {{ $t('filters') }}-->
-        <!--        </a>-->
       </div>
     </div>
     <div ref="listArea">
@@ -65,7 +58,7 @@
         infinite-scroll-distance="300"
       >
         <loading
-          v-if="tableData.pageNO ===1"
+          v-if="tableData.pageNO === 1"
           v-model:active="tableData.loading"
           :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
           :can-cancel="false"
@@ -73,33 +66,8 @@
           :opacity="0.2"
           color="var(--custom-primary-color)"
           loader="dots"
-        ></loading>
-        <TokenList
-          v-if="isToken"
-          :conditions="conditions_wallet"
-          :handleSortChange="handleSortChange"
-          :loading="tableData.loading"
-          :tableData="filterTableList"
-          :isSelfAddress="isSelfAddress"
-          :address="address"
-          @hideToken="refreshTokenList"
         />
-        <TrendList
-          v-else-if="isTrend"
-          ref="trendList"
-          :handleSortChange="handleSortChange"
-          :tableData="filterTableList"
-          :trendQuery="trendQuery"
-          @refreshWhaleTrendList="refreshWhaleTrendList"
-        />
-        <DeployedTokenList
-          v-else
-          :conditions="deployedTokenQuery"
-          :handleSortChange="handleSortChange"
-          :loading="tableData.loading"
-          :tableData="filterTableList"
-        />
-        <div :style="{color: mode==='light'? '#666' : '#999'}" class="mt_20 font-14 tc">
+        <div :style="{ color: mode === 'light' ? '#666' : '#999' }" class="mt_20 font-14 tc">
           <span v-if="tableData.loading && tableData.pageNO > 1">{{ $t('loading') }}</span>
         </div>
       </div>
@@ -107,406 +75,366 @@
   </div>
 </template>
 
-<script>
-import TokenList from "@/views/wallet/tokenList.vue";
-import TrendList from "@/views/wallet/trendList.vue";
-import DeployedTokenList from "./deployedTokenList.vue";
-import BlackList from "./blackList.vue";
-
-import storage from "good-storage";
-import {mapState} from "vuex";
-import {getDeployedTokens, getWhaleTokenList, getWhaleTrendList} from "@/api";
-
-export default {
-  name: "StatisticsTable",
-  components: {BlackList, DeployedTokenList, TrendList, TokenList},
-  props: {
-    chain: {
-      type: String,
-      default: ""
-    },
-    address: {
-      type: String,
-      default: ""
-    },
-    isSelfAddress: Boolean
+<script setup>
+// import TokenList from '@/views/wallet/tokenList.vue'
+// import TrendList from '@/views/wallet/trendList.vue'
+// import DeployedTokenList from './deployedTokenList.vue'
+// import BlackList from './blackList.vue'
+import storage from 'good-storage'
+import { getDeployedTokens, getWhaleTokenList, getWhaleTrendList } from '@/api/wallet'
+const $t = getGlobalT()
+const props = defineProps({
+  chain: {
+    type: String,
+    default: '',
   },
-  data() {
-    return {
-      activeTab: "trend",
-      tableData: {
-        finished: false,
-        error: false,
-        loading: false,
-        pageNO: 1,
-        pageSize: 40,
-        total: 0,
-        token: [],
-        trend: [],
-        deployedToken: []
-      },
-      max_block_number: 0,
-      max_event_id: 0,
-      // 持仓筛选条件
-      conditions_wallet: storage.get('conditions_wallet') || {
-        hide_sold: 1,
-        hide_small: 1,
-        sort: 'last_txn_time',
-        sort_dir: 'desc'
-      },
-      // 活动筛选条件
-      trendQuery: {
-        event_type: '',
-        volume_min: 0,
-        volume_max: 0,
-        hideNative: 1,
-        checkAll: false,
-        isIndeterminate: true,
-        checkedTrend: ['SWAP', 'ADD_LIQUIDITY/REMOVE_LIQUIDITY'],
-        sort_dir: 'desc',
-        sort: 'block_time'
-      },
-      deployedTokenQuery: {
-        sort: 'market_cap',
-        sort_dir: 'desc'
-      },
-      // showTrendPop: false,
-      statistics: {},
-      deployedTokenNum: 0
-    }
+  address: {
+    type: String,
+    default: '',
   },
-  computed: {
-    ...mapState(['mode']),
-    tabs() {
-      const commonTabs = [
-        {title: this.$t('walletActivity'), id: 'trend'},
-        {title: this.$t('holding'), id: 'token'},
+  isSelfAddress: Boolean,
+})
+
+const store = useStore()
+
+const activeTab = ref('trend')
+const tableData = ref({
+  finished: false,
+  error: false,
+  loading: false,
+  pageNO: 1,
+  pageSize: 40,
+  total: 0,
+  token: [],
+  trend: [],
+  deployedToken: [],
+})
+const max_block_number = ref(0)
+const max_event_id = ref(0)
+const conditions_wallet = ref(
+  storage.get('conditions_wallet') || {
+    hide_sold: 1,
+    hide_small: 1,
+    sort: 'last_txn_time',
+    sort_dir: 'desc',
+  }
+)
+const trendQuery = ref({
+  event_type: '',
+  volume_min: 0,
+  volume_max: 0,
+  hideNative: 1,
+  checkAll: false,
+  isIndeterminate: true,
+  checkedTrend: ['SWAP', 'ADD_LIQUIDITY/REMOVE_LIQUIDITY'],
+  sort_dir: 'desc',
+  sort: 'block_time',
+})
+const deployedTokenQuery = ref({
+  sort: 'market_cap',
+  sort_dir: 'desc',
+})
+
+const deployedTokenNum = ref(0)
+const listArea = ref(null)
+const trendList = ref(null)
+
+const mode = computed(() => store.state.mode)
+
+const tabs = computed(() => {
+  const commonTabs = [
+    { title: $t('walletActivity'), id: 'trend' },
+    { title: $t('holding'), id: 'token' },
+  ]
+  if (deployedTokenNum.value > 0) {
+    commonTabs.push({
+      title: `$t('deployedToken')}(${deployedTokenNum.value})`,
+      id: 'deployedToken',
+    })
+  }
+  return commonTabs
+})
+
+const isToken = computed(() => activeTab.value === 'token')
+const isTrend = computed(() => activeTab.value === 'trend')
+const chainAddress = computed(() => [props.chain, props.address])
+
+const currentApi = computed(() => {
+  const apiMap = {
+    token: getWhaleTokenListApi,
+    trend: getWhaleTrendListApi,
+    deployedToken: getDeployedTokensApi,
+  }
+  return apiMap[activeTab.value] || apiMap.trend
+})
+
+const filterTableList = computed(() => {
+  if (isToken.value) {
+    const list = tableData.value.token.slice()
+    return list || []
+  } else if (isTrend.value) {
+    let trendList = tableData.value.trend.filter(
+      (i) =>
+        (i.is_target && (i.event_type === 'swap_buy' || i.event_type === 'swap_sell')) ||
+        !(i.event_type === 'swap_buy' || i.event_type === 'swap_sell')
+    )
+    if (trendQuery.value.hideNative === 1) {
+      const unSupport_arr = [
+        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+        'So11111111111111111111111111111111111111112',
+        'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+        'Am5hwEp5VBqXoeE5pRU47RTW6gYeFQ6ahi1j4ZVVeL2V',
+        '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
       ]
-      const {deployedTokenNum} = this
-      if (deployedTokenNum > 0) {
-        commonTabs.push(
-          {title: `${this.$t('deployedToken')}(${deployedTokenNum})`, id: 'deployedToken'}
-        )
-      }
-      return commonTabs
-    },
-    isToken() {
-      return this.activeTab === "token"
-    },
-    isTrend() {
-      return this.activeTab === "trend"
-    },
-    currentApi() {
-      const apiMap = {
-        token: this.getWhaleTokenList,
-        trend: this.getWhaleTrendList,
-        deployedToken: this.getDeployedTokens
-      }
-      return apiMap[this.activeTab] || apiMap.trend
-    },
-    filterTableList() {
-      if (this.isToken) {
-        let list = this.tableData.token.slice()
-        return list || []
-      } else if (this.isTrend) {
-        let trendList = this.tableData.trend.filter(
-          i =>
-            (i.is_target && (i.event_type === 'swap_buy' || i.event_type === 'swap_sell')) ||
-            !(i.event_type === 'swap_buy' || i.event_type === 'swap_sell')
-        )
-        if (this.trendQuery.hideNative === 1) {
-          const unSupport_arr = [
-            '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-            'So11111111111111111111111111111111111111112',
-            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-            'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-            'Am5hwEp5VBqXoeE5pRU47RTW6gYeFQ6ahi1j4ZVVeL2V',
-            '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
-          ]
-          trendList = trendList.filter(
-            i => unSupport_arr.findIndex(y => y?.toLowerCase() === i.token?.toLowerCase()) == -1
-          )
-        }
-        return trendList
-      } else {
-        return this.tableData.deployedToken.slice()
-      }
-    },
-    chainAddress() {
-      return [this.chain, this.address]
-    },
-  },
-  watch: {
-    chainAddress() {
-      if (this.address && this.chain) {
-        this.resetPageNOAndLoading()
-        this.currentApi()
-        this.getDeployedTokenNum()
-      }
+      trendList = trendList.filter(
+        (i) => unSupport_arr.findIndex((y) => y?.toLowerCase() === i.token?.toLowerCase()) == -1
+      )
     }
-  },
-  mounted() {
-    if (this.address && this.chain) {
-      this.currentApi()
-      this.getDeployedTokenNum()
-    }
-    // this.$nextTick(() => {
-    //   this.$refs.listArea.addEventListener('scroll', this.handleScroll, true)
-    // })
-  },
-  // beforeUnmount() {
-  //   this.$refs.listArea.removeEventListener('scroll', this.handleScroll)
-  // },
-  beforeRouteLeave() {
-    this.$store.commit('setState', {name: 'token_user', value: {}})
-    this.$store.state.token_user_address = ''
-  },
-  methods: {
-    handleScroll(e) {
-      //滚动条滚动时，距离顶部的距离
-      // console.log('----e-----',e,e.target)
-      const scrollTop = e.target.scrollTop;
-      //可视区的高度
-      const windowHeight = e.target.clientHeight;
-      //滚动条的总高度
-      const scrollHeight = e.target.scrollHeight;
-      //滚动条到底部的条件
-      console.log('scrollTop:', scrollTop, 'windowHeight:', windowHeight, 'scrollHeight', scrollHeight, 'sum', scrollTop + windowHeight)
-      if (scrollHeight - scrollTop - windowHeight >= 0 && scrollHeight - scrollTop - windowHeight < 300) {
-        // 判断数据是否加载完成、是否正在加载
-        if (!this.tableData.finished && !this.tableData.loading && this.address) {
-          // 获取数据方法
-          // 在请求数据方法中，将loading修改为true，防止重复触发
-          // 在情书数据结束后，将loading修改为false
-          // 在所有数据请求完成后，将allLoaded修改为true
-          this.onLoad()
-        }
-      }
-    },
-    onConditionChange() {
-      storage.set('conditions_wallet', this.conditions_wallet)
-      this.tableData.pageNO = 1
-      this.getWhaleTokenList()
-    },
-    onLoad() {
-      if (this.activeTab === 'deployedToken') {
-        return
-      }
-      this.currentApi()
-    },
-    switchTab(item) {
-      this.activeTab = item.id
-      this.onRouteChange()
-    },
-    handleSortChange({prop, order}) {
-      this.resetPageNOAndLoading()
-      const sort_dir = order?.replace?.('ending', '')
-      if (this.isToken) {
-        this.conditions_wallet.sort = prop
-        this.conditions_wallet.sort_dir = sort_dir
-        storage.set('conditions_wallet', this.conditions_wallet)
-      } else if (this.isTrend) {
-        this.trendQuery.sort = prop
-        this.trendQuery.sort_dir = sort_dir
-      } else {
-        this.deployedTokenQuery.sort = prop
-        this.deployedTokenQuery.sort_dir = sort_dir
-      }
-      this.currentApi()
-    },
-    resetPageNOAndLoading() {
-      this.tableData.pageNO = 1
-      this.tableData.finished = false
-      this.tableData.error = false
-      this.tableData.loading = true
-    },
-    getWhaleTokenList() {
-      this.tableData.loading = true
-      let data = {
-        user_address: this.address,
-        chain: this.chain,
-        pageNO: this.tableData.pageNO,
-        pageSize: this.tableData.pageSize,
-        sort_dir: this.conditions_wallet.sort_dir,
-        sort: this.conditions_wallet.sort,
-        is_self: this.isSelfAddress ? 1 : 0
-      }
-      if (this.conditions_wallet.hide_sold === 1) {
-        data.hide_sold = 1
-      }
-      if (this.conditions_wallet.hide_small === 1) {
-        data.hide_small = 1
-      }
-      getWhaleTokenList(data)
-        .then(res => {
-          if (data.pageNO === 1) {
-            this.tableData.token = []
-          }
-          let list = Array.isArray(res) ? res : []
-          if (list?.length > 0) {
-            let a = [...(this.tableData.token || [])]
-            let b = list?.filter?.(i => a.every(j => !(j.token === i.token && j.chain === i.chain))) || []
-            this.tableData.token = [...a, ...b]
-          }
-          this.tableData.finished = list?.length < this.tableData.pageSize
-          if (!this.tableData.finished) {
-            this.tableData.pageNO++
-          }
-        })
-        .catch(err => {
-          this.tableData.token = []
-          this.tableData.error = true
-        })
-        .finally(() => {
-          this.tableData.loading = false
-        })
-    },
-    refreshWhaleTrendList(params) {
-      this.trendQuery = {
-        ...this.trendQuery,
-        ...params
-      }
-      this.tableData.pageNO = 1
-      this.max_block_number = 0
-      this.max_event_id = 0
-      this.getWhaleTrendList()
-    },
-    getWhaleTrendList() {
-      this.tableData.loading = true
-      if (this.trendQuery.volume_min > this.trendQuery.volume_max) {
-        this.$message.error(this.$t('maxGtMin'))
-        return
-      }
-      const params = this.getWhaleTrendParams()
-      getWhaleTrendList(params)
-        .then(res => {
-          if (params.pageNO === 1) {
-            this.tableData.trend = []
-          }
-          let list = Array.isArray(res) ? res : []
-          let arr = list.map(i => {
-            let event_type = i.event_type
-            if (i.event_type === 'SWAP' && i.flow_type === 0) {
-              event_type = 'swap_buy'
-            }
-            if (i.event_type === 'SWAP' && i.flow_type === 1) {
-              event_type = 'swap_sell'
-            }
-            if (i.event_type === 'TRANSFER' && i.flow_type === 0) {
-              event_type = 'transfer_in'
-            }
-            if (i.event_type === 'TRANSFER' && i.flow_type === 1) {
-              event_type = 'transfer_out'
-            }
-            return {
-              ...i,
-              event_type: event_type
-            }
-          })
+    return trendList
+  } else {
+    return tableData.value.deployedToken.slice()
+  }
+})
 
-          if (arr?.length > 0) {
-            let a = [...(this.tableData.trend || [])]
-            let b = arr?.filter?.(i => a.every(j => j.tx_hash !== i.tx_hash)) || []
-            this.tableData.trend = [...a, ...b]
-          }
-          this.tableData.finished = list?.length < this.tableData.pageSize
-          if (!this.tableData.finished) {
-            this.tableData.pageNO++
-          }
-          this.max_block_number = arr[arr?.length - 1]?.block_number
-          this.max_event_id = arr[arr?.length - 1]?.event_id
-        })
-        .catch(err => {
-          this.tableData.trend = []
-          this.tableData.error = true
-        })
-        .finally(() => {
-          this.tableData.loading = false
-        })
-    },
-    getWhaleTrendParams() {
-      let data = {
-        user_address: this.address,
-        chain: this.chain,
-        pageNO: this.tableData.pageNO,
-        pageSize: this.tableData.pageSize,
-        max_block_number: this.max_block_number,
-        max_event_id: this.max_event_id,
-        event_type: '',
-        volume_min: 0,
-        volume_max: 0,
-        block_time_min: this.trendQuery.block_time_min,
-        block_time_max: this.trendQuery.block_time_max,
-        sort_dir: this.trendQuery.sort_dir,
-        sort: this.trendQuery.sort
+watch(chainAddress, () => {
+  if (props.address && props.chain) {
+    resetPageNOAndLoading()
+    currentApi.value()
+    getDeployedTokenNum()
+  }
+})
+
+function onConditionChange() {
+  storage.set('conditions_wallet', conditions_wallet.value)
+  tableData.value.pageNO = 1
+  getWhaleTokenListApi()
+}
+
+function onLoad() {
+  if (activeTab.value === 'deployedToken') {
+    return
+  }
+  currentApi.value()
+}
+
+function switchTab(item) {
+  activeTab.value = item.id
+  onRouteChange()
+}
+
+function handleSortChange({ prop, order }) {
+  resetPageNOAndLoading()
+  const sort_dir = order?.replace?.('ending', '')
+  if (isToken.value) {
+    conditions_wallet.value.sort = prop
+    conditions_wallet.value.sort_dir = sort_dir
+    storage.set('conditions_wallet', conditions_wallet.value)
+  } else if (isTrend.value) {
+    trendQuery.value.sort = prop
+    trendQuery.value.sort_dir = sort_dir
+  } else {
+    deployedTokenQuery.value.sort = prop
+    deployedTokenQuery.value.sort_dir = sort_dir
+  }
+  currentApi.value()
+}
+
+function resetPageNOAndLoading() {
+  tableData.value.pageNO = 1
+  tableData.value.finished = false
+  tableData.value.error = false
+  tableData.value.loading = true
+}
+
+async function getWhaleTokenListApi() {
+  tableData.value.loading = true
+  const data = {
+    user_address: props.address,
+    chain: props.chain,
+    pageNO: tableData.value.pageNO,
+    pageSize: tableData.value.pageSize,
+    sort_dir: conditions_wallet.value.sort_dir,
+    sort: conditions_wallet.value.sort,
+    is_self: props.isSelfAddress ? 1 : 0,
+  }
+  if (conditions_wallet.value.hide_sold === 1) {
+    data.hide_sold = 1
+  }
+  if (conditions_wallet.value.hide_small === 1) {
+    data.hide_small = 1
+  }
+  try {
+    const res = await getWhaleTokenList(data)
+    if (data.pageNO === 1) {
+      tableData.value.token = []
+    }
+    const list = Array.isArray(res) ? res : []
+    if (list?.length > 0) {
+      const a = [...(tableData.value.token || [])]
+      const b =
+        list?.filter?.((i) => a.every((j) => !(j.token === i.token && j.chain === i.chain))) || []
+      tableData.value.token = [...a, ...b]
+    }
+    tableData.value.finished = list?.length < tableData.value.pageSize
+    if (!tableData.value.finished) {
+      tableData.value.pageNO++
+    }
+  } catch (err) {
+    tableData.value.token = []
+    tableData.value.error = true
+  } finally {
+    tableData.value.loading = false
+  }
+}
+
+function refreshWhaleTrendList(params) {
+  trendQuery.value = {
+    ...trendQuery.value,
+    ...params,
+  }
+  tableData.value.pageNO = 1
+  max_block_number.value = 0
+  max_event_id.value = 0
+  getWhaleTrendListApi()
+}
+
+function getWhaleTrendParams() {
+  const data = {
+    user_address: props.address,
+    chain: props.chain,
+    pageNO: tableData.value.pageNO,
+    pageSize: tableData.value.pageSize,
+    max_block_number: max_block_number.value,
+    max_event_id: max_event_id.value,
+    event_type: '',
+    volume_min: 0,
+    volume_max: 0,
+    block_time_min: trendQuery.value.block_time_min,
+    block_time_max: trendQuery.value.block_time_max,
+    sort_dir: trendQuery.value.sort_dir,
+    sort: trendQuery.value.sort,
+  }
+  if (trendQuery.value.volume_min) {
+    data.volume_min = trendQuery.value.volume_min
+  }
+  if (trendQuery.value.volume_max) {
+    data.volume_max = trendQuery.value.volume_max
+  }
+  const trendLen = trendQuery.value.checkedTrend?.length
+  if (trendLen === 0) {
+    data.event_type = ''
+  }
+  if (trendLen > 0 && trendLen <= 5) {
+    let event_type = trendQuery.value.checkedTrend?.filter?.((i) => i !== 'all')
+    event_type = event_type?.map((i) => i.replace('/', ','))
+    data.event_type = event_type?.toString()
+  }
+  return data
+}
+
+async function getWhaleTrendListApi() {
+  tableData.value.loading = true
+  if (trendQuery.value.volume_min > trendQuery.value.volume_max) {
+    store.dispatch('showMessage', {
+      type: 'error',
+      message: $t('maxGtMin'),
+    })
+    return
+  }
+  const params = getWhaleTrendParams()
+  try {
+    const res = await getWhaleTrendList(params)
+    if (params.pageNO === 1) {
+      tableData.value.trend = []
+    }
+    const list = Array.isArray(res) ? res : []
+    const arr = list.map((i) => {
+      let event_type = i.event_type
+      if (i.event_type === 'SWAP' && i.flow_type === 0) {
+        event_type = 'swap_buy'
       }
-      if (this.trendQuery.volume_min) {
-        data.volume_min = this.trendQuery.volume_min
+      if (i.event_type === 'SWAP' && i.flow_type === 1) {
+        event_type = 'swap_sell'
       }
-      if (this.trendQuery.volume_max) {
-        data.volume_max = this.trendQuery.volume_max
+      if (i.event_type === 'TRANSFER' && i.flow_type === 0) {
+        event_type = 'transfer_in'
       }
-      const trendLen = this.trendQuery.checkedTrend?.length
-      if (trendLen === 0) {
-        data.event_type = ''
+      if (i.event_type === 'TRANSFER' && i.flow_type === 1) {
+        event_type = 'transfer_out'
       }
-      if (trendLen > 0 && trendLen <= 5) {
-        let event_type = this.trendQuery.checkedTrend?.filter?.(i => i !== 'all')
-        event_type = event_type?.map(i => i.replace('/', ','))
-        data.event_type = event_type?.toString()
+      return {
+        ...i,
+        event_type: event_type,
       }
-      return data
-    },
-    refreshTokenList() {
-      this.resetPageNOAndLoading()
-      this.getWhaleTokenList()
-    },
-    onRouteChange() {
-      this.resetPageNOAndLoading()
-      if (this.isToken) {
-        this.getWhaleTokenList()
-      } else if (this.isTrend) {
-        this.max_block_number = 0
-        this.max_event_id = 0
-        this.getWhaleTrendList()
-      } else {
-        this.getDeployedTokens()
-      }
-    },
-    getDeployedTokens() {
-      this.tableData.loading = true
-      const params = {
-        user_address: this.address,
-        user_chain: this.chain,
-        ...this.deployedTokenQuery
-      }
-      getDeployedTokens(params).then(res => {
-        this.tableData.deployedToken = res
-      }).catch(() => {
-        this.tableData.deployedToken = []
-        this.tableData.error = true
-      })
-        .finally(() => {
-          this.tableData.loading = false
-        })
-    },
-    getDeployedTokenNum() {
-      const params = {
-        user_address: this.address,
-        user_chain: this.chain,
-        ...this.deployedTokenQuery
-      }
-      getDeployedTokens(params).then(res => {
-        this.deployedTokenNum = res?.length || 0
-      }).catch((err) => {
-        console.log("error", err)
-      })
-    },
-    resetData() {
-      this.statistics = {}
-      this.tableData.token = []
-      this.tableData.trend = []
-    },
+    })
+
+    if (arr?.length > 0) {
+      const a = [...(tableData.value.trend || [])]
+      const b = arr?.filter?.((i) => a.every((j) => j.tx_hash !== i.tx_hash)) || []
+      tableData.value.trend = [...a, ...b]
+    }
+    tableData.value.finished = list?.length < tableData.value.pageSize
+    if (!tableData.value.finished) {
+      tableData.value.pageNO++
+    }
+    max_block_number.value = arr[arr?.length - 1]?.block_number
+    max_event_id.value = arr[arr?.length - 1]?.event_id
+  } catch (err) {
+    tableData.value.trend = []
+    tableData.value.error = true
+  } finally {
+    tableData.value.loading = false
+  }
+}
+
+function refreshTokenList() {
+  resetPageNOAndLoading()
+  getWhaleTokenListApi()
+}
+
+function onRouteChange() {
+  resetPageNOAndLoading()
+  if (isToken.value) {
+    getWhaleTokenListApi()
+  } else if (isTrend.value) {
+    max_block_number.value = 0
+    max_event_id.value = 0
+    getWhaleTrendListApi()
+  } else {
+    getDeployedTokensApi()
+  }
+}
+
+async function getDeployedTokensApi() {
+  tableData.value.loading = true
+  const params = {
+    user_address: props.address,
+    user_chain: props.chain,
+    ...deployedTokenQuery.value,
+  }
+  try {
+    const res = await getDeployedTokens(params)
+    tableData.value.deployedToken = res
+  } catch (err) {
+    tableData.value.deployedToken = []
+    tableData.value.error = true
+  } finally {
+    tableData.value.loading = false
+  }
+}
+
+async function getDeployedTokenNum() {
+  const params = {
+    user_address: props.address,
+    user_chain: props.chain,
+    ...deployedTokenQuery.value,
+  }
+  try {
+    const res = await getDeployedTokens(params)
+    deployedTokenNum.value = res?.length || 0
+  } catch (err) {
+    console.log('error', err)
   }
 }
 </script>
@@ -524,8 +452,8 @@ export default {
       color: #999;
     }
   }
-  :deep(){
-    .el-checkbox{
+  :deep() {
+    .el-checkbox {
       margin-right: 0;
     }
   }
