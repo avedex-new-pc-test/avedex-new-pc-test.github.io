@@ -13,7 +13,7 @@ defineProps<{
   handles: string[]
 }>()
 
-const emit = defineEmits(['onDragStop', 'onResizing'])
+const emit = defineEmits(['onDragStop', 'onResizing', 'onDrag'])
 const klineRef = shallowRef<HTMLElement | null>(null)
 onMounted(() => {
   setTimeout(() => {
@@ -26,12 +26,20 @@ function onDragStop(x: number, y: number) {
 }
 
 const onResizing = useThrottleFn((...args: number[]) => {
-  klineRef.value!.style.pointerEvents = 'none'
+  if (klineRef.value) {
+    klineRef.value.style.pointerEvents = 'none'
+  }
   emit('onResizing', args[2], args[3])
 }, 100, true, true)
 
 function onResizeStop() {
-  klineRef.value!.style.pointerEvents = 'auto'
+  if (klineRef.value) {
+    klineRef.value.style.pointerEvents = 'auto'
+  }
+}
+
+function onDrag(x: number, y: number) {
+  emit('onDrag', x, y)
 }
 </script>
 
@@ -47,6 +55,7 @@ function onResizeStop() {
     :parent="parent"
     :handles="handles"
     @drag-stop="onDragStop"
+    @dragging="onDrag"
     @resizing="onResizing"
     @resizeStop="onResizeStop"
   >
@@ -63,13 +72,40 @@ function onResizeStop() {
 
 .handle-tl, .handle-tr, .handle-br, .handle-bl {
   opacity: 0;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+}
+
+.handle-tl {
+  top: 0;
+  left: 0;
+}
+
+.handle-tr {
+  top: 0;
+  right: 0;
+}
+
+.handle-br {
+  opacity: 1;
+  bottom: 0;
+  right: 0;
+  border-radius: 0 0 8px 0;
+  border: 0 none;
+  background: linear-gradient(135deg, transparent 0%, transparent 50%, var(--d-333-l-CCC) 50%, var(--d-333-l-CCC) 100%);
+}
+
+.handle-bl {
+  bottom: 0;
+  left: 0;
 }
 .handle-mr, .handle-ml {
   z-index: 1;
   opacity: 0;
   margin-top: 0;
-  top: 0;
-  height: 100%;
+  top: 20px;
+  height: calc(100% - 40px);
   user-select: none;
   cursor: col-resize;
 }
@@ -86,8 +122,8 @@ function onResizeStop() {
   z-index: 1;
   opacity: 0;
   margin-left: 0;
-  left: 0;
-  width: 100%;
+  left: 20px;
+  width: calc(100% - 40px);
   user-select: none;
   cursor: row-resize;
 }
