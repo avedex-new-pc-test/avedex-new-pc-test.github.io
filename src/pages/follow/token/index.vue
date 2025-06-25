@@ -63,6 +63,11 @@ const addressValue = computed(() => {
   return botStore.evmAddress || walletStore.address
 })
 
+watch(() => walletStore.walletSignature, () => {
+  getList()
+  getGroupList()
+})
+
 watch(() => botStore.evmAddress, (newVal) => {
   if (newVal) {
     getList()

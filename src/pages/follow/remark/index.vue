@@ -45,6 +45,10 @@ const addressValue = computed(() => {
   return botStore.evmAddress || walletStore.address
 })
 
+watch(() => walletStore.walletSignature, () => {
+  getList()
+})
+
 watch(() => botStore.evmAddress, (newVal) => {
   if (newVal) {
     getList()
@@ -133,7 +137,10 @@ const handleSortChange = ({ prop, order }: any) => {
 }
 
 // 取消收藏
-const collect = (row: any) => {
+const collect = async (row: any) => {
+  if (walletStore.address && !walletStore.walletSignature[walletStore.address]) {
+    await walletStore.signMessageForFavorite()
+  }
   loading.value = true
   const api = row.is_wallet_address_fav === 1 ? deleteAttention : addAttention
   api({
