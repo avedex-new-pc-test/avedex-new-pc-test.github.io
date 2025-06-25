@@ -95,13 +95,13 @@
         <a
           v-if="statistics.is_wallet_address_fav === 1"
           class="statistic-right-attention statistic-right-attention-followed"
-          @click="deleteAttention"
+          @click="_deleteAttention"
         >
           <i class="iconfont icon-yiguanzhu" />
           <span class="statistic-right-attention-text">{{ $t('followed') }}</span>
           <span class="statistic-right-attention-cancel">{{ $t('cancelFollowed') }}</span>
         </a>
-        <a v-else class="statistic-right-attention" @click="addAttention">
+        <a v-else class="statistic-right-attention" @click="_addAttention">
           <i class="iconfont icon-guanzhushu" />{{ $t('follow') }}
         </a>
         <a class="statistic-right-share">
@@ -145,6 +145,7 @@ import ChainToken from '@/components/chainToken.vue'
 import Number from '../components/Number.vue'
 import { verifyLogin, formatRemark } from '@/utils'
 import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
+import {addAttention, deleteAttention} from "~/api/attention";
 
 const props = defineProps({
   chain: {
@@ -390,16 +391,15 @@ async function onGetWalletBasicInfo() {
   // }
 }
 
-function deleteAttention() {
-  if (currentAccount === '' && !botStore?.evmAddress) {
-    $store.commit('changeConnectVisible', true)
+function _deleteAttention() {
+  if (!verifyLogin()) {
     return
   }
-  $store
-    .dispatch('deleteAttention', {
-      address: address.value,
-      chain: chain.value,
-    })
+  deleteAttention({
+    user_chain: chain.value,
+    user_address: address.value,
+    address: botStore.getWalletAddress(chain.value)!
+  })
     .then(() => {
       ElMessage.success($t('attention1Canceled'))
       statistics.value.is_wallet_address_fav = 0
@@ -408,17 +408,16 @@ function deleteAttention() {
       ElMessage.error(err)
     })
 }
-async function addAttention() {
-  if (currentAccount === '' && !botStore?.evmAddress) {
-    $store.commit('changeConnectVisible', true)
+
+async function _addAttention() {
+  if (!verifyLogin()) {
     return
   }
-  const res = await $f.signConfirm()
-  if (!res) {
-    return
-  }
-  $store
-    .dispatch('addAttention', { address: address, chain: chain.value })
+  addAttention({
+    user_chain: chain.value,
+    user_address: address.value,
+    address: botStore.getWalletAddress(chain.value)!
+  })
     .then(() => {
       ElMessage.success($t('attention1Success'))
       statistics.value.is_wallet_address_fav = 1
