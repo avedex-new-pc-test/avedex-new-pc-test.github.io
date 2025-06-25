@@ -163,12 +163,12 @@
             </a>
             <a
               v-tooltip.raw="{
-                content: aiSummary?.headline || aiSummary.summary ? `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>` : `${$t('aiIsAnalyzing')}`,
+                content: aiSummary?.headline || aiSummary?.summary ? `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>` : `${$t('aiIsAnalyzing')}`,
                 props:{
                   placement:'top-start'
                 }
               }"
-              class="media-item bg-btn">
+              class="media-item bg-btn clickable">
               <Icon name="custom:ai" class="text-14px"/>
             </a>
           </div>
