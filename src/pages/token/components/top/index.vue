@@ -161,6 +161,16 @@
                 name="ep:search"
               />
             </a>
+            <a
+              v-tooltip.raw="{
+                content: aiSummary?.headline || aiSummary.summary ? `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>` : `${$t('aiIsAnalyzing')}`,
+                props:{
+                  placement:'top-start'
+                }
+              }"
+              class="media-item bg-btn">
+              <Icon name="custom:ai" class="text-14px"/>
+            </a>
           </div>
           <el-popover
             v-if="collected"
@@ -721,6 +731,7 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
