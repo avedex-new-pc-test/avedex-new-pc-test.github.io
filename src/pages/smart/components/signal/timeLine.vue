@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import dogCoinImg from '@/assets/images/dogcoin.png'
-import {getTimeline, type Gold, type ITimeline} from '@/api/signal'
+import dogCoinImg from 'assets/images/dogcoin.png'
+import {getTimeline, type Gold, type ITimeline} from '~/api/signal'
 
 const emit = defineEmits(['updateFilterToken'])
 const timelineRef = ref()
@@ -135,7 +135,7 @@ function getLevel(value: number) {
         />
         <span
           v-if="el.golds?.length>0"
-          class="absolute top--28px left-50% ml--10px w-24px h-24px border-2px border-solid rounded-full"
+          class="absolute top--28px left-50% ml--10px w-24px h-24px border-2px border-solid rounded-full bg-cover"
           :class="({
             gold:'border-#FFD700',
             silver:'border-#E0E0E0',

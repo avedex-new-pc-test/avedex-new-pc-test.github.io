@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SignalContainer from './signalContainer.vue'
+import SignalContainer from './components/signal/signalContainer.vue'
 
 const configStore = useConfigStore()
 const smartChains = computed(() => {
