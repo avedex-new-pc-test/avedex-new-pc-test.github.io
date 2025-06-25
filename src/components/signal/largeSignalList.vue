@@ -293,7 +293,7 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
             </div>
           </div>
         </div>
-        <AveEmpty v-if="signalList.length===0" class="pt-10px"/>
+        <AveEmpty v-if="signalList.length===0&&!loading" class="pt-10px"/>
       </div>
       <div v-if="loading" class="flex justify-center text-12px text-[#959a9f]">{{ $t('loading') }}</div>
     </el-scrollbar>
