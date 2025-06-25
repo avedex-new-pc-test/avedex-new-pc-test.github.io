@@ -49,7 +49,7 @@
             <div v-copy="address" class="statistic-address">
               <div class="statistic-address-copy flex-center">
                 {{ addressText }}
-                <Icon class="text-[10px] clickable"/>
+                <Icon  name="bxs:copy" class="text-[10px] clickable"/>
               </div>
             </div>
             <div class="statistic-media-left">
