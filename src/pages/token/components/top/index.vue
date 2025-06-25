@@ -161,6 +161,16 @@
                 name="ep:search"
               />
             </a>
+            <a
+              v-tooltip.raw="{
+                content: aiSummary?.headline || aiSummary.summary ? `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>` : `${$t('aiIsAnalyzing')}`,
+                props:{
+                  placement:'top-start'
+                }
+              }"
+              class="media-item bg-btn">
+              <Icon name="custom:ai" class="text-14px"/>
+            </a>
           </div>
           <el-popover
             v-if="collected"
@@ -704,6 +714,7 @@ import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
 import { useEventBus } from '@vueuse/core'
 import { verifyLogin } from '@/utils'
+import type { content } from 'html2canvas/dist/types/css/property-descriptors/content'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = storeToRefs(useBotStore())
@@ -721,6 +732,7 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
@@ -831,19 +843,6 @@ watch(evmAddress, (val) => {
     selectedGroup.value = 0
   }
 })
-watch(
-  () => route.params.id,
-  () => {
-    if (evmAddress.value) {
-      getTokenFavoriteCheck()
-      getTokenUserFavoriteGroups() //获取分组数组
-    }
-    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
-    if (chain.value == 'solana') {
-      getRugPull()
-    }
-  }
-)
 const collected = shallowRef(false)
 const loading = shallowRef(false)
 
@@ -861,7 +860,6 @@ function getTokenFavoriteCheck() {
     })
     .finally(() => {})
 }
-
 function addTokenFavorite() {
   loading.value = true
   addFavorite(id.value, evmAddress.value)

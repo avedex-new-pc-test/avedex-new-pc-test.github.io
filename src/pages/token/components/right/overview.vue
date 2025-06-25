@@ -98,6 +98,14 @@
         <button v-if="intro?.length > 250" class="text-12px color-#3F80F7 bg-transparent outline-none border-none clickable" @click.stop="showAll = !showAll" >{{ !showAll ? $t('more') : $t('expand') }}</button>
       </div>
     </div>
+    <div>
+      <div class="text-14px mt-12px mb-2px color-[--d-666-l-999]">
+        <Icon name="custom:ai" class="text-12px"/> {{ $t('aiSummary') }}
+      </div>
+      <div class="text-12px color-[--d-999-l-666] token-description">
+         {{aiSummary?.summary || aiSummary?.headline ? aiSummary.summary || aiSummary.headline: $t('aiIsAnalyzing')}}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -105,6 +113,7 @@
 import { formatDate, formatExplorerUrl, isJSON } from '@/utils/index'
 import { useTokenStore } from '~/stores/token'
 import BigNumber from 'bignumber.js'
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const tokenStore = useTokenStore()
 const checkStore = useCheckStore()
 const pair = computed(() => tokenStore.pair)
