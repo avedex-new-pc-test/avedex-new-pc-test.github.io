@@ -163,9 +163,11 @@
             </a>
             <a
               v-tooltip="{
-                content: aiSummary.headline ? `<div class='w-[400px]'>${aiSummary.headline}</div>` : `${$t('aiIsAnalyzing')}`,
+                raw:true,
+                content: aiSummary.headline ? `<div class='max-w-[400px]'>${aiSummary.headline}</div>` : `${$t('aiIsAnalyzing')}`,
                 props:{
-                  placement:'top-start'
+                  placement:'top-start',
+                  'raw-content' :true
                 }
               }"
               class="media-item bg-btn">
