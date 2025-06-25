@@ -9,6 +9,7 @@ import { useLocalStorage } from '@vueuse/core'
 import { BrowserProvider } from 'ethers'
 import { decodeUTF8 } from 'tweetnacl-util'
 import bs58 from 'bs58'
+import type { Wallet as SuiWallet } from '~/utils/wallet/sui'
 type TronWalletAdapter = ReturnType<typeof getTronWalletAdapters>[number]
 
 export const useWalletStore = defineStore('wallet', () => {
@@ -16,11 +17,11 @@ export const useWalletStore = defineStore('wallet', () => {
   const chain = useLocalStorage('walletChain', '')
   const walletName = useLocalStorage('walletName', '')
   const walletSignature = useLocalStorage('walletSignature', {} as Record<string, string>)
-  const provider = shallowRef<(EIP6963ProviderDetail<any>['provider'] | Wallet | TronWalletAdapter) & {disconnect?: () => void} | null>(null)
+  const provider = shallowRef<(EIP6963ProviderDetail<any>['provider'] | Wallet | TronWalletAdapter | SuiWallet) & {disconnect?: () => void} | null>(null)
   const evmWalletMap = shallowRef<EIP6963ProviderResponse>(new Map())
   const solanaWallets = shallowRef<Wallet[]>([])
   const tronWalletAdapters = shallowRef<TronWalletAdapter[]>([])
-  const suiWallets = shallowRef<Wallet[]>([])
+  const suiWallets = shallowRef<SuiWallet[]>([])
 
 
   async function getEvmWalletList() {
@@ -151,7 +152,7 @@ export const useWalletStore = defineStore('wallet', () => {
       if (!(address.value && chain.value && isEvmChain(chain.value) && walletName.value)) {
         return
       }
-      if (walletName.value && provider.value) {
+      if (walletName.value && provider.value && isEvmChain(chain.value)) {
         if (walletName.value.startsWith('wc:')) {
           // walletConnect(chain.value, walletName.value)
           connectEvmWallet(walletName.value, chain.value)
@@ -199,7 +200,6 @@ export const useWalletStore = defineStore('wallet', () => {
       }
     }
   }
-
 
   return {
     address,

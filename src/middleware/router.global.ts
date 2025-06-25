@@ -28,7 +28,6 @@ export default defineNuxtRouteMiddleware((to) => {
   }
   if (!to.fullPath?.includes('/token')) {
     useHead({ title: 'Ave.ai' })
-    console.log('to',to)
   } else if (to.fullPath?.includes(NATIVE_TOKEN)) {
     const {chain} = getAddressAndChainFromId(to.params.id as string)
     const mainUrl = getChainInfo(chain)?.wmain_wrapper

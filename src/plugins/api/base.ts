@@ -50,18 +50,34 @@ export function onRequest({ options, request }: MyFetchContext) {
       options.headers.set('Authorization', `Bearer ${accessToken}`)
     }
   }
+  if (url?.includes('/aveswap/v1/sui')) {
+    const ave_token = localStorage.ave_token
+    if (ave_token) {
+      options.headers.set('X-Auth', ave_token)
+      options.headers.delete('lang')
+    }
+  }
 }
 
-export function onResponse({ response }: MyFetchContext) {
+export function onResponse({ response, request }: MyFetchContext) {
   // 全局响应处理
   if (!response) {
     return
   }
   const data = response._data
-  if (data?.status === 0) {
-    // return Promise.reject(data?.msg)
-    throw new Error(data?.msg)
+  if ((request as string)?.includes('/aveswap/v1/sui/')) {
+    if (data?.status === 0) {
+      response._data = data?.data || data
+    } else {
+       throw new Error(data?.msg)
+    }
+  } else {
+    if (data?.status === 0) {
+      // return Promise.reject(data?.msg)
+      throw new Error(data?.msg)
+    }
   }
+
   if (data?.data_type === 1 && typeof(data?.data) === 'string' && data?.data) {
     response._data = JSON.parse(data?.data)
     return

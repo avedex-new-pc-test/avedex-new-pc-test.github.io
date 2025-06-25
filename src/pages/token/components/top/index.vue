@@ -1171,7 +1171,6 @@ function getRugPull() {
         ...i,
         rate: Number(i.rate?.toFixed(1) || 0),
       }))
-      console.log('-----getRugPull------', rugPull.value)
     })
     .catch((err) => {
       console.log(err)

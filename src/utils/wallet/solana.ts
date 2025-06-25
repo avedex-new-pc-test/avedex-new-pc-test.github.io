@@ -1,4 +1,14 @@
 import { getWallets, type Wallets } from '@wallet-standard/app'
+// import { WalletAccount } from '@wallet-standard/base'
+import { Connection, PublicKey, VersionedTransaction, AddressLookupTableAccount, TransactionMessage } from '@solana/web3.js'
+import { getBestApiDomain } from '~/plugins/api/getApiDomain'
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { getTokensPrice } from '@/api/token'
+import { getRaydiumReferralTokenAccountPubKey, getSolanaPumpSwapTx, getSolanaMoonshotSwapQuote, quoteSolanaRaydiumSwap, getReferralTokenAccountPubKey } from './utils/solana'
+import { getSolanaSwapQuote, getSolanaSwapTransaction } from '@/api/swap/solana'
+import BigNumber from 'bignumber.js'
+import bs58 from 'bs58'
+
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 type Features = {
   'standard:connect': {
@@ -9,14 +19,28 @@ type Features = {
   },
   'standard:disconnect': {
     disconnect: () => Promise<void>
+  },
+  'solana:signAndSendTransaction': {
+    signAndSendTransaction: (data: {transaction: any, account?: any, chain?: string}) => Promise<[{
+      signature: Uint8Array | string
+    }] | {
+      signature: Uint8Array | string
+    }>
+  },
+  'solana:signTransaction': {
+    signTransaction: (data: {transaction: any}) => Promise<string>
   }
 }
+
 export type Wallet = MakeOptional<ReturnType<Wallets['get']>[number], 'features' | 'accounts'> & {
   url?: string
   features?: Features
   signMessage?: (msg: {
     message: Uint8Array
   }) => Promise<{
+    signature: Uint8Array
+  }>
+  signAndSendTransaction?: (data: {transaction: any, account?: any, chain?: string}) => Promise<{
     signature: Uint8Array
   }>
 
@@ -74,6 +98,7 @@ export function getSolanaWallets() {
   return wallets
 }
 
+
 function onEvent(features: Features) {
   if ('standard:events' in features) {
     // 监听账户变化
@@ -100,7 +125,6 @@ export function connectSolanaWallet(wallet: Wallet) {
 
     const walletStore = useWalletStore()
     return features['standard:connect'].connect().then((res) => {
-      console.log('connect', res)
       walletStore.address = res.accounts?.[0].address
       walletStore.chain = 'solana'
       walletStore.provider = wallet
@@ -112,3 +136,334 @@ export function connectSolanaWallet(wallet: Wallet) {
   }
   return Promise.resolve(false)
 }
+
+export const getSolanaConnection = () => {
+  return new Connection(`${getBestApiDomain()}/ave_nodes/rpc/solana/sendFastSwapTx`, { commitment: 'confirmed', wsEndpoint: 'wss://solana.twnodes.com' })
+}
+
+// export const connection = new Connection(`${getBestApiDomain()}/ave_nodes/rpc/solana/sendFastSwapTx`, { commitment: 'confirmed', wsEndpoint: 'wss://solana.twnodes.com' })
+
+export async function getSolanaTokensBalance(user1 = useWalletStore().address): Promise<Array<{
+  symbol: string
+  decimals: number
+  balance: number
+  value: number
+  address: string
+  token: string
+  chain: string
+  id: string
+  price: number
+  logo_url: string
+}>> {
+  if (!user1) {
+    return []
+  }
+  const user = typeof user1 === 'string' ? new PublicKey(user1) : user1
+  const connection = getSolanaConnection()
+  const solBalance = await connection.getBalance(user)
+  // getTokensPrice
+  const tokenDetails = await connection.getParsedTokenAccountsByOwner(user, { programId: TOKEN_PROGRAM_ID })
+  const tokens = (tokenDetails?.value || [])?.map(i => i?.account?.data?.parsed?.info)?.filter?.(i => Number(i?.tokenAmount.uiAmount) > 0 && i?.mint !== 'So11111111111111111111111111111111111111112')
+  const tokenIds = tokens?.map?.(i => i?.mint + '-solana')
+  // let symbolObj = await getTokensSymbol(tokenIds)
+  const prices = await getTokensPrice([...tokenIds, 'So11111111111111111111111111111111111111112-solana'])
+  const configStore = useConfigStore()
+  let tokenList = tokens?.map((i, k) => {
+    const symbolInfo = prices[k]
+    return {
+      symbol: symbolInfo?.symbol || '',
+      decimals: i?.tokenAmount?.decimals || symbolInfo?.decimals || 0,
+      balance: i?.tokenAmount?.uiAmount,
+      value: i?.tokenAmount?.uiAmount,
+      address: i?.mint,
+      token: i?.mint,
+      chain: 'solana',
+      id: i?.mint + '-solana',
+      price: symbolInfo?.current_price_usd || 0,
+      // logo_url: `token_icon/solana/${i?.mint}.png`,
+      logo_url: symbolInfo?.logo_url || '',
+      logoURI: `${configStore.token_logo_url || 'https://www.logofacade.com/'}token_icon/solana/${i?.mint}.png`,
+      current_price_usd: symbolInfo?.current_price_usd
+    }
+  })
+  tokenList = tokenList?.slice?.().sort?.((a, b) => b.price * b.balance - a.price * a.balance)
+  const balance = formatUnits(solBalance.toString(), 9)
+  const SOL = {
+    symbol: 'SOL',
+    decimals: 9,
+    balance: balance,
+    address: 'So11111111111111111111111111111111111111112',
+    token: 'So11111111111111111111111111111111111111112',
+    chain: 'solana',
+    id: 'So11111111111111111111111111111111111111112-solana',
+    price: prices?.[prices.length - 1]?.current_price_usd || 0,
+    logo_url: 'token_icon/solana/So11111111111111111111111111111111111111112.png',
+    logoURI: `${configStore.token_logo_url || 'https://www.logofacade.com/'}token_icon/solana/So11111111111111111111111111111111111111112.png`,
+    value: balance,
+    current_price_usd: prices?.[prices.length - 1]?.current_price_usd
+  }
+  return [SOL, ...(tokenList?.filter(i => i?.symbol) || [])]
+}
+
+
+
+export async function configureAndSendCurrentTransaction (
+  transaction: any,
+  baseSinger?: any
+) {
+  const walletStore = useWalletStore()
+  if (!(walletStore.chain === 'solana' && walletStore.provider)) {
+    return ''
+  }
+
+  // const { signAndSendTransaction } = walletStore.provider as Wallet
+
+  const connection = new Connection(`${getBestApiDomain()}/ave_nodes/rpc/solana/sendFastSwapTx`, { commitment: 'confirmed'})
+
+  // const blockHash = await getLatestBlockhash(connections)
+  const blockHash = await connection.getLatestBlockhash('max')
+  console.log('blockHash', blockHash)
+  transaction.feePayer = new PublicKey(walletStore.address)
+  transaction.recentBlockhash = blockHash.blockhash
+  if (transaction?.message && blockHash.blockhash) {
+    transaction.message.recentBlockhash = blockHash.blockhash
+  }
+  if (baseSinger && baseSinger !== 'swap') {
+    transaction.sign([baseSinger])
+  }
+  return signAndSend(transaction)
+}
+
+export async function quoteSolanaPumpSwap(params: { inputMint: string; outputMint: any; swapMode: string; amount: any; slippageBps: any; inputDecimals: any; outputDecimals: any }) {
+  const walletStore = useWalletStore()
+  const connection = getSolanaConnection()
+  const publicKey = new PublicKey(walletStore.address)
+  const { referralTokenAccount, transactionInstruction } = await getRaydiumReferralTokenAccountPubKey('So11111111111111111111111111111111111111112')
+  const feeConfig = {
+    feeBps: '50',
+    feeAccount: referralTokenAccount
+  }
+  const feeConfigObj = referralTokenAccount ? {feeConfig} : {}
+  const mint = [params.inputMint, params.outputMint].find(m => m !== 'So11111111111111111111111111111111111111112')
+  const isExactOut =  params?.swapMode === 'ExactOut'
+  const swapTransaction = await getSolanaPumpSwapTx({
+    mint,
+    amount: params.amount,
+    denominatedInSol: !isExactOut && params.inputMint === 'So11111111111111111111111111111111111111112',
+    tipLamports: localStorage.solanaProtection === 'true' ? '2000000' : '0',
+    priorityFeeLimitInLamports: '1000000',
+    action: params.inputMint === 'So11111111111111111111111111111111111111112' ? 'BUY' : 'SELL',
+    walletPublicKey: walletStore.address || publicKey.toString(),
+    slippageBps: new BigNumber(params.slippageBps || 200).toFixed(0),
+    ...feeConfigObj
+  })
+
+  if (swapTransaction?.transactionsToSend?.length > 1) {
+    // 交易包含两笔子交易操作，尚未支持
+    // i18n.global.t('swapTwoTransactionsNotSupported')
+    return Promise.reject('Swap too large')
+  }
+
+  const swapTransactionBuf = Buffer.from(swapTransaction?.transactionsToSend?.[0], 'base64')
+  const transaction = VersionedTransaction.deserialize(swapTransactionBuf)
+  console.log('swapTransaction', transaction)
+  if (transactionInstruction && referralTokenAccount) {
+    const addressLookupTableAccounts = await Promise.all(
+      transaction.message.addressTableLookups.map(async (lookup) => {
+        return new AddressLookupTableAccount({
+          key: lookup.accountKey,
+          state: AddressLookupTableAccount.deserialize(await connection.getAccountInfo(lookup.accountKey).then((res: any) => res?.data)),
+        })
+      }))
+    const message = TransactionMessage.decompile(transaction.message,{addressLookupTableAccounts: addressLookupTableAccounts})
+    message.instructions.unshift(transactionInstruction)
+    transaction.message = message.compileToV0Message(addressLookupTableAccounts)
+  }
+
+  const inputDecimals = params?.inputDecimals
+  const outputDecimals = params?.outputDecimals
+  const decimals = !isExactOut ? outputDecimals : inputDecimals
+  return {
+    routeInfo: {
+      amountOut: {amount: new BigNumber(swapTransaction?.amountOut).div(10 ** decimals)},
+      minAmountOut: {amount: new BigNumber(swapTransaction?.amountOut).times(new BigNumber(params.slippageBps || 200).plus(10000)).div(100000).div(10 ** decimals)},
+      priceImpact: new BigNumber(swapTransaction?.priceImpact || 0).div(100).toFixed(4),
+      isExactOut: isExactOut
+    },
+    priceImpact: new BigNumber(swapTransaction?.priceImpact || 0).div(100).toFixed(4),
+    transaction,
+    configureAndSendCurrentTransaction: async () => (configureAndSendCurrentTransaction(
+      transaction,
+      'swap'
+    ).then(async hash => ({
+      hash: hash,
+      wait: () => confirmTransaction(hash)
+    })))
+  }
+
+}
+
+export async function getSolanaSwapQuoteTransaction(params: any) {
+  // return quoteSolanaRaydiumSwap(params)
+  if (params?.isPump) {
+    return quoteSolanaPumpSwap(params)
+  }
+
+  if (params?.isMoonshot) {
+    return getSolanaMoonshotSwapQuote(params)
+  }
+
+  if (params?.inputMint === '74SBV4zDXxTRgv1pEMoECskKBkZHc2yGPnc7GYVepump' && params?.outputMint === 'So11111111111111111111111111111111111111112') {
+    return quoteSolanaRaydiumSwap(params)
+  }
+
+  const mint = params?.swapMode !== 'ExactIn' ? params.inputMint : params.outputMint
+  const { referralTokenAccount } = await getReferralTokenAccountPubKey(mint)
+  const newParams = {
+    ...params
+  }
+  if (referralTokenAccount) {
+    newParams.platformFeeBps = 30
+  } else {
+    delete newParams.platformFeeBps
+  }
+  console.log('newParams', newParams)
+  return getSolanaSwapQuote(newParams).catch(err => {
+    const errorMsg = ['No route found', 'not tradable', 'Could not find any route', 'The route plan does not consume all the amount']
+    const isError = errorMsg.some(item => err?.error?.includes(item))
+    if (isError && params?.swapMode === 'ExactIn') {
+      return quoteSolanaRaydiumSwap(params)
+    } else {
+      return Promise.reject(err)
+    }
+  })
+}
+
+function connectionGetParsedTransaction(hash: string) {
+  const connection1 = new Connection('https://aveai-main841-0dae.mainnet.rpcpool.com/4cc401ba-89fd-4546-bac5-478b919e05ae', { commitment: 'confirmed'})
+  return connection1.getParsedTransaction(hash, {maxSupportedTransactionVersion: 10}).catch(() => {
+    return getSolanaConnection().getParsedTransaction(hash, {maxSupportedTransactionVersion: 10})
+  })
+}
+
+export async function confirmTransaction(hash: string | undefined) {
+  let Timer: string | number | NodeJS.Timeout | null | undefined = null
+  let time = 0
+  function getParsedTransaction(hash: any) {
+    return new Promise((resolve, reject) => {
+      if (time >= 60) {
+        if (Timer) {
+          clearTimeout(Timer)
+          Timer = null
+        }
+        reject('Timeout')
+        return
+      }
+      try {
+        connectionGetParsedTransaction(hash).then(res => {
+          console.log(hash, res)
+          if (res) {
+            if ((res?.meta as any)?.status?.Ok !== undefined) {
+              resolve(res)
+            } else {
+              if (Timer) {
+                clearTimeout(Timer)
+                Timer = null
+              }
+              reject('Swap fail')
+            }
+          } else {
+            if (Timer) {
+              clearTimeout(Timer)
+              Timer = null
+            }
+            Timer = setTimeout(async () => {
+              time += 3
+              try {
+                const res = await getParsedTransaction(hash)
+                resolve(res)
+              } catch (err) {
+                if (Timer) {
+                  clearTimeout(Timer)
+                  Timer = null
+                }
+                reject(err)
+              }
+            }, 3000)
+          }
+        })
+      } catch (err) {
+        if (Timer) {
+          clearTimeout(Timer)
+          Timer = null
+        }
+        reject(err)
+      }
+    })
+  }
+  await sleep(3000)
+  return getParsedTransaction(hash)
+}
+
+
+export async function sendSolanaSwapTransaction(quoteResponse: { transaction?: any; configureAndSendCurrentTransaction?: () => any; swapMode: string; inputMint: any; outputMint: any }) {
+  // let Wallet = useWallet()
+  const currentAccount = useWalletStore().address
+  if (!currentAccount) {
+    return ''
+  }
+  if (quoteResponse?.transaction && quoteResponse?.configureAndSendCurrentTransaction) {
+    return quoteResponse?.configureAndSendCurrentTransaction()
+  }
+  const fromPubkey = new PublicKey(currentAccount)
+  const mint = quoteResponse?.swapMode !== 'ExactIn' ? quoteResponse.inputMint : quoteResponse.outputMint
+  const { referralTokenAccountPubKey, referralTokenAccount } = await getReferralTokenAccountPubKey(mint)
+  const params: any = {userPublicKey: fromPubkey.toString(), quoteResponse, dynamicComputeUnitLimit: true,
+    prioritizationFeeLamports: {
+      autoMultiplier: 80,
+      // priorityLevelWithMaxLamports: {"priorityLevel": "veryHigh", "maxLamports": 2123423}
+    }
+  }
+  if (referralTokenAccount) {
+    params.feeAccount = referralTokenAccountPubKey.toString()
+  }
+  const { swapTransaction } = await getSolanaSwapTransaction(params)
+  console.log('swapTransaction', swapTransaction)
+  const swapTransactionBuf = Buffer.from(swapTransaction, 'base64')
+  console.log('swapTransactionBuf', swapTransactionBuf)
+  const transaction = VersionedTransaction.deserialize(swapTransactionBuf)
+  // console.log('Wallet', Wallet)
+  const hash = await configureAndSendCurrentTransaction(transaction)
+  return {
+    hash: hash,
+    wait: () => confirmTransaction(hash)
+  }
+}
+
+
+async function signAndSend(tx: any): Promise<string> {
+  const walletStore = useWalletStore()
+  const wallet = walletStore.solanaWallets?.find(i => i?.name === walletStore.walletName) as Wallet
+  if (!wallet) {
+    return ''
+  }
+  const serialized = tx.serialize({
+    requireAllSignatures: false,
+    verifySignatures: false,
+  })
+
+  const result = await wallet?.features?.['solana:signAndSendTransaction']?.signAndSendTransaction({
+    transaction: serialized,
+    account: wallet?.accounts?.[0] || '',
+    chain: 'solana:mainnet'
+  })
+
+  const signature = Array.isArray(result) ? result?.[0]?.signature : result?.signature
+  // 👇 统一转换为 base58 哈希
+  const signatureStr = typeof signature === 'string'
+    ? signature
+    : bs58.encode(signature as Uint8Array)
+
+  return signatureStr
+}
+

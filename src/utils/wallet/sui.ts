@@ -1,4 +1,9 @@
 import { getWallets, type Wallets } from '@mysten/wallet-standard'
+import { getFullnodeUrl, SuiClient } from '@mysten/sui/client'
+import type { Transaction } from '@mysten/sui/transactions'
+import { getTokensPrice } from '@/api/token'
+import { sui_waitForTransaction } from '~/api/swap'
+
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 type Features = {
   'standard:connect': {
@@ -9,6 +14,13 @@ type Features = {
   },
   'standard:disconnect': {
     disconnect: () => Promise<void>
+  },
+  'sui:signAndExecuteTransactionBlock': {
+    signAndExecuteTransactionBlock: (tx: {
+      transactionBlock: Transaction
+      chain: string
+      account?: any
+    }) => Promise<{ digest: string }>
   }
 }
 export type Wallet = MakeOptional<ReturnType<Wallets['get']>[number], 'features' | 'accounts'> & {
@@ -90,4 +102,89 @@ export function connectSuiWallet(wallet: Wallet) {
     window.open(wallet.url, '_blank')
   }
   return Promise.resolve(false)
+}
+
+
+
+let time = 0
+type SuiClientMethodName = {
+  [K in keyof SuiClient]: SuiClient[K] extends (...args: any[]) => any ? K : never;
+}[keyof SuiClient];
+
+type SuiClientMethodParams<M extends SuiClientMethodName> = Parameters<SuiClient[M]>[0];
+type SuiClientMethodReturn<M extends SuiClientMethodName> = Awaited<ReturnType<SuiClient[M]>>;
+
+export async function getSuiMethods<
+  M extends SuiClientMethodName
+>(options: {
+  method: M;
+  params: SuiClientMethodParams<M>;
+}): Promise<SuiClientMethodReturn<M> | null> {
+  const client = new SuiClient({ url: getFullnodeUrl('mainnet') })
+
+  // 限频逻辑
+  if (Date.now() - time < 1000) {
+    const offset = Date.now() - time
+    const waitTime = offset < 0 ? 1000 - offset : 1000
+    time = Date.now() + waitTime
+    await sleep(waitTime)
+  }
+
+  try {
+    // const method = client[options.method] as (...args: any[]) => Promise<any>
+    const result = await (client as any)?.[options.method]?.(options.params)
+    return result
+  } catch (error) {
+    console.error(error)
+  }
+
+  return null
+}
+
+export async function getSuiTokensBalance(user = useWalletStore().address) {
+  const tokens = await getSuiMethods({
+    method: 'getAllBalances',
+    params: {
+      owner: user
+    }
+  })
+  const tokenIds = tokens?.map?.(i => i?.coinType + '-sui') || []
+  const prices = await getTokensPrice([...tokenIds])
+  const configStore = useConfigStore()
+  const nativeLogoUrl = `${configStore.token_logo_url || 'https://www.logofacade.com/'}token_icon/sui/0x2::sui::SUI_1700879589.png`
+  let tokenList = tokens?.map((i, k) => {
+    const symbolInfo = prices[k]
+    const decimals = symbolInfo?.decimal || symbolInfo?.decimals || 0
+    const isNative = i?.coinType === '0x2::sui::SUI'
+    return {
+      symbol: symbolInfo?.symbol || '',
+      decimals: decimals,
+      balance: formatUnits(i?.totalBalance || 0, decimals),
+      value: formatUnits(i?.totalBalance || 0, decimals),
+      address: isNative ? NATIVE_TOKEN : i?.coinType,
+      token: isNative ? NATIVE_TOKEN : i?.coinType,
+      chain: 'sui',
+      id: (isNative ? NATIVE_TOKEN : i?.coinType) + '-sui',
+      price: symbolInfo?.current_price_usd || 0,
+      logo_url: isNative ? nativeLogoUrl : (symbolInfo?.logo_url || ''),
+    }
+  })
+  tokenList = tokenList?.slice?.().sort?.((a, b) => b.price * Number(b.balance || 0) - a.price * Number(a.balance || 0))
+  return tokenList?.filter?.(i => i?.symbol) || []
+}
+
+export async function sui_signAndExecuteTransactionBlock(tx: any) {
+  // const walletStore = useWalletStore()
+  const wallets = getSuiWallets()
+  const suiWallet = wallets?.find?.(i => i.name === localStorage.walletName)
+  return suiWallet?.features?.['sui:signAndExecuteTransactionBlock'].signAndExecuteTransactionBlock({
+    transactionBlock: tx,
+    chain: 'sui:mainnet',
+    account: localStorage.walletName !== 'OKX Wallet' ? (suiWallet?.accounts?.[0] || null) : undefined
+  }).then(async (res: { digest: any }) => {
+    return {
+      ...res,
+      wait: () => sui_waitForTransaction(res.digest)
+    }
+  })
 }

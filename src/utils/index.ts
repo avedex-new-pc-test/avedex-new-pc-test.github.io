@@ -8,11 +8,13 @@ import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
-import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
+import { JsonRpcProvider, formatUnits as ethersFormatUnits, parseUnits as ethersParseUnits, FixedNumber, Interface, type JsonFragment } from 'ethers'
 import type {GetHotTokensResponse} from '~/api/token'
 import BigNumber from 'bignumber.js'
 import type {SearchHot} from '~/api/types/search'
 import type {ConfigType} from 'dayjs'
+import FingerprintJs from '@fingerprintjs/fingerprintjs'
+export * from './wallet/utils/index'
 
 export function isJSON(str: string) {
   try {
@@ -642,7 +644,7 @@ export const evm_utils = {
     if (!decimals) {
       return arg?.[0] || 0
     }
-    return formatUnits(...arg)
+    return ethersFormatUnits(...arg)
   },
   parseUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
     const decimals = Number(arg?.[1])
@@ -650,7 +652,7 @@ export const evm_utils = {
       return FixedNumber.fromString(String(arg?.[0] ?? '0')).value
     }
     const valueStr = String(arg?.[0] ?? '')
-    return parseUnits(valueStr, decimals)
+    return ethersParseUnits(valueStr, decimals)
   }
 }
 export function filterGas(num: number, chain?: string) {
@@ -794,4 +796,42 @@ export function formatCountdown(time: ConfigType) {
     const years = Math.floor(seconds / 31536000)
     return `${years}y`
   }
+}
+
+export function sleep(time: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true)
+    }, time)
+  })
+}
+
+export function formatUnits(n: number | string, decimals = 0) {
+  return new BigNumber(n).div(new BigNumber(10).pow(new BigNumber(decimals || 0))).toFixed()
+}
+
+export function parseUnits(n: number | string, decimals = 0) {
+  return new BigNumber(new BigNumber(n).times(new BigNumber(10).pow(new BigNumber(decimals || 0))).toFixed(0))
+}
+
+export function getTronWeb(account: string) {
+  const tronWeb = new TronWeb({
+    fullHost: 'https://api.trongrid.io'
+  })
+  tronWeb.setAddress(account)
+  return tronWeb
+}
+
+export function abiToJson(abi: string | string[]): JsonFragment[] {
+  const iface = new Interface(abi)
+  return JSON.parse(iface.formatJson()) // 使用字符串字面量 "json"
+}
+
+export async function getDeviceId() {
+  if (localStorage.getItem('device_id')) {
+    return Promise.resolve(localStorage.getItem('device_id'))
+  }
+  const deviceId = await FingerprintJs.load().then((fp: any) => fp.get()).then(async (data: { visitorId: string }) => data.visitorId)
+  localStorage.setItem('device_id', deviceId)
+  return deviceId
 }
