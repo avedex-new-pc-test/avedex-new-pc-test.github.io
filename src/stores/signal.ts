@@ -36,10 +36,10 @@ export const useSignalStore = defineStore('signalStore', () => {
   const translateStyle = shallowRef('')
   const onDrag = useThrottleFn((x: number) => {
     if (x <= 0) {
-      translateStyle.value = 'translate-x-12px'
+      translateStyle.value = 'transform:translateX(12px)'
     } else {
       translateStyle.value =
-        x + signalBoundingRect.value.width >= winWidth.value ? 'translate-x--12px' : ''
+        x + signalBoundingRect.value.width >= winWidth.value ? 'transform:translateX(-12px)' : ''
     }
   }, 100, true, true)
 
