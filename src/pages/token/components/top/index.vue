@@ -842,6 +842,19 @@ watch(evmAddress, (val) => {
     selectedGroup.value = 0
   }
 })
+watch(
+  () => route.params.id,
+  () => {
+    if (evmAddress.value) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    }
+    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
+    if (chain.value == 'solana') {
+      getRugPull()
+    }
+  }
+)
 const collected = shallowRef(false)
 const loading = shallowRef(false)
 
@@ -859,6 +872,7 @@ function getTokenFavoriteCheck() {
     })
     .finally(() => {})
 }
+
 function addTokenFavorite() {
   loading.value = true
   addFavorite(id.value, evmAddress.value)
