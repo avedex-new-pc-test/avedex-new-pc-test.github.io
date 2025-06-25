@@ -365,7 +365,7 @@ const isShowDate = ref(true)
           :showPop="showPopover"
           :hidePop="scheduleHide"
         />
-        <AveEmpty v-if="signalList.length===0" class="pt-10px"/>
+        <AveEmpty v-if="signalList.length===0&&!listStatus.loading" class="pt-10px"/>
         <div
           v-if="listStatus.loading"
           class="flex justify-center text-12px text-[#959a9f]"
