@@ -162,12 +162,10 @@
               />
             </a>
             <a
-              v-tooltip="{
-                raw:true,
-                content: aiSummary.headline ? `<div class='max-w-[400px]'>${aiSummary.headline}</div>` : `${$t('aiIsAnalyzing')}`,
+              v-tooltip.raw="{
+                content: aiSummary?.headline ? `<div class='max-w-[400px]'>${aiSummary.headline}</div>` : `${$t('aiIsAnalyzing')}`,
                 props:{
-                  placement:'top-start',
-                  'raw-content' :true
+                  placement:'top-start'
                 }
               }"
               class="media-item bg-btn">
@@ -703,8 +701,6 @@ import {
   moveFavoriteGroup,
   editTokenFavRemark,
 } from '@/api/fav'
-
-import  { getAiSummary } from '@/api/token'
 import { _getRugPull, type ResultRugPull } from '@/api/run'
 import type { Token, Pair } from '@/api/types/token'
 import {
@@ -736,7 +732,7 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
-const aiSummary = shallowRef({summary:'', headline:''})
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
@@ -864,36 +860,6 @@ function getTokenFavoriteCheck() {
     })
     .finally(() => {})
 }
-
-function onGetAiSummary() {
-  getAiSummary(id.value)
-    .then((res) => {
-      aiSummary.value = res ?? { summary: '', headline: '' }
-    })
-    .catch((err: any) => {
-      console.log(err)
-    })
-    .finally(() => {})
-}
-
-onMounted(() => {
-  onGetAiSummary()
-})
-watch(
-  () => route.params.id,
-  () => {
-    onGetAiSummary()
-    if (evmAddress.value) {
-      getTokenFavoriteCheck()
-      getTokenUserFavoriteGroups() //获取分组数组
-    }
-    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
-    if (chain.value == 'solana') {
-      getRugPull()
-    }
-  }
-)
-
 function addTokenFavorite() {
   loading.value = true
   addFavorite(id.value, evmAddress.value)

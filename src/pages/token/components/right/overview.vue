@@ -103,7 +103,7 @@
         <Icon name="custom:ai" class="text-12px"/> {{ $t('aiSummary') }}
       </div>
       <div class="text-12px color-[--d-999-l-666] token-description">
-         {{aiSummary.summary ? aiSummary.summary: $t('aiIsAnalyzing')}}
+         {{aiSummary?.summary ? aiSummary.summary: $t('aiIsAnalyzing')}}
       </div>
     </div>
   </div>
@@ -113,33 +113,12 @@
 import { formatDate, formatExplorerUrl, isJSON } from '@/utils/index'
 import { useTokenStore } from '~/stores/token'
 import BigNumber from 'bignumber.js'
-import  { getAiSummary } from '@/api/token'
-
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const tokenStore = useTokenStore()
 const checkStore = useCheckStore()
 const pair = computed(() => tokenStore.pair)
 const token = computed(() => tokenStore.token)
 const localeStore = useLocaleStore()
-const aiSummary = shallowRef({summary:'', headline:''})
-function onGetAiSummary() {
-  const id = `${token.value?.token}-${token.value?.chain}`
-  getAiSummary(id)
-    .then((res) => {
-      aiSummary.value = res ?? { summary: '', headline: '' }
-    })
-    .catch((err: any) => {
-      console.log(err)
-    })
-    .finally(() => {})
-}
-
-onMounted(() => {
-  onGetAiSummary()
-})
-watch(token,() => {
-    onGetAiSummary()
-  }
-)
 // const { t } = useI18n()
 const showAll = ref(false)
 const owner = computed(() => {
