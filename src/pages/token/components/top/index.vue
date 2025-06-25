@@ -1038,11 +1038,11 @@ function getTags(i: Pair) {
     signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
     normal_str = tag_arr.filter((i: string) => !i?.startsWith('signal'))
   }
-  if (i?.tag) {
-    const tag = i.tag?.split(',') || []
-    const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
-    normal_str = tag1.concat(normal_str)
-  }
+  // if (i?.tag) {
+  //   const tag = i.tag?.split(',') || []
+  //   const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
+  //   normal_str = tag1.concat(normal_str)
+  // }
   normal_tag =
     normal_str?.map((i) => ({
       tag: i,

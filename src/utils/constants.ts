@@ -81,7 +81,7 @@ export interface IFavDialogEventArgs {
 export const BusEventType = {
   TOP_FAV_CHANGE: 'top-favorite-change',
   FAV_DIALOG: 'fav-dialog',
-  LEFT_DRAG: 'left-drag',
+  // LEFT_DRAG: 'left-drag',
 }
 
 export const ProvideType = {
@@ -98,6 +98,6 @@ export const defaultPaginationParams = {
 
 // 设置默认高度，有多个地方需要用到
 export const DefaultHeight = {
-  TOPLEFT: 370,
-  KLINE: 475
+  TOPLEFT: window.innerHeight / 2,
+  KLINE: window.innerHeight / 2
 }
