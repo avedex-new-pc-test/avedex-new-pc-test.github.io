@@ -48,6 +48,7 @@ const themeStore = useThemeStore()
     >
       <template #reference>
         <Icon
+          id="custom-filter"
           name="custom:filter"
           class="mr-8px text-12px cursor-pointer"
         />
@@ -61,6 +62,7 @@ const themeStore = useThemeStore()
           <el-input
             v-model="tempFilterParams.token"
             size="large"
+            clearable
             :placeholder="$t('searchPlaceholder')"
             class="[&&]:[--el-input-bg-color:--d-333-l-F2F2F2] [&&]:[--el-input-border-color:transparent] [&&]:[--el-input-hover-border-color:--primary-color] [&&]:text-12px"
           />
