@@ -42,6 +42,7 @@ import TokenRight from './components/right/index.vue'
 import {Left} from './components/left'
 import {BelowChartTable} from './components/belowChartTable'
 import KLine from '~/pages/token/components/kLine/index.vue'
+import  { getAiSummary } from '@/api/token'
 
 definePageMeta({
   name: 'token-id',
@@ -69,6 +70,31 @@ const addresses = computed(() => {
 })
 const wsStore = useWSStore()
 
+const aiSummary = shallowRef({summary:'', headline:''})
+
+ function _getAiSummary() {
+  const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+  getAiSummary(id)
+    .then((res) => {
+      aiSummary.value = res ?? { summary: '', headline: '' }
+    })
+    .catch((err: any) => {
+      console.log(err)
+    })
+    .finally(() => {})
+}
+
+onMounted(() => {
+  _getAiSummary()
+})
+watch(
+  () => route.params.id,
+  () => {
+    _getAiSummary()
+  }
+)
+//顶层提供aisummary数据，给子组件top和right使用
+provide('aiSummary', aiSummary)
 
 const documentVisible = shallowRef(true)
 provide('documentVisible', documentVisible)

@@ -900,3 +900,27 @@ export function getAllTags(): Promise<IGetAllTagsResponse[]> {
   })
 }
 
+export interface AiSummaryResponse{
+  summary:string;
+  headline:string;
+}
+
+export function getAiSummary(id: string): Promise<null |AiSummaryResponse> {
+  const { address, chain } = getAddressAndChainFromId(id)
+  if (!address || !chain) {
+    return Promise.resolve(null)
+  }
+  let id1 = id
+  if (address === NATIVE_TOKEN) {
+    const address1 = getChainInfo(chain)?.wmain_wrapper
+    id1 = address1 + '-' + chain
+  }
+  const { $api } = useNuxtApp()
+  return $api('/v2api/token/v1/summary', {
+    method: 'get',
+    query: {
+      token_id: id1,
+      cache_use: false
+    }
+  })
+}

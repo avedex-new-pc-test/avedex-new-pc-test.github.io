@@ -663,6 +663,8 @@
   "antiWhaleModifiable": "Anti whale modifiable",
   "check2": "Check",
   "tax": "Tax",
+  "aiSummary":"AI summary",
+  "aiIsAnalyzing":"AI is analyzing...",
   "times": " times",
   "MaximumIncrease": "Max Increase",
   "CurrentMC": "Current MC",
