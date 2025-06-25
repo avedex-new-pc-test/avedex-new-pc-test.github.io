@@ -51,6 +51,7 @@ definePageMeta({
   },
 })
 const route = useRoute()
+const localeStore  = useLocaleStore()
 const tagStore = useTagStore()
 const tokenStore = useTokenStore()
 const scrollbarHeight = computed(() => {
@@ -87,8 +88,7 @@ const aiSummary = shallowRef({summary:'', headline:''})
 onMounted(() => {
   _getAiSummary()
 })
-watch(
-  () => route.params.id,
+watch([() => route.params.id, () => localeStore.locale],
   () => {
     _getAiSummary()
   }
@@ -123,7 +123,6 @@ function subBalanceChange() {
     id: 1,
   })
 }
-
 
 function _getTokenInfo() {
   const id = route.params.id as string
