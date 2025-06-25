@@ -4,7 +4,7 @@
       <TheHeader />
       <div
         class="flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px transition-transform transition-duration-300"
-        :class="signalStore.translateStyle"
+        :style="signalStore.translateStyle"
       >
         <Draggable
           v-if="signalStore.isLeftFixed&&signalStore.signalVisible"
