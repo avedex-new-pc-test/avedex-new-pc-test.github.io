@@ -714,7 +714,6 @@ import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
 import { useEventBus } from '@vueuse/core'
 import { verifyLogin } from '@/utils'
-import type { content } from 'html2canvas/dist/types/css/property-descriptors/content'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = storeToRefs(useBotStore())
