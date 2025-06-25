@@ -54,7 +54,7 @@ const loading = ref(false)
 const pageData = ref({
   total: 10,
   page: 1,
-  pageSize: 10
+  pageSize: 50
 })
 const tableList = ref<any[]>([])
 const { mode } = storeToRefs(useGlobalStore())
