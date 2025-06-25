@@ -69,11 +69,18 @@
       :chain="chain"
       @change="changeTrendQuery"
     />
+    <StatisticsTable
+      ref="statisticsTable"
+      :address="address"
+      :chain="chain"
+      :isSelfAddress="isSelfAddress"
+    />
   </div>
 </template>
 <script setup>
 import Statistic from './components/Statistic.vue'
 import TradeData from './components/TradeData.vue'
+import StatisticsTable from './components/StatisticsTable.vue'
 import ActivityCharts from './components/activityCharts.vue'
 import { getChainInfo } from '@/utils'
 
@@ -84,6 +91,7 @@ const chain = route.params.chain
 const address = route.params.userAddress
 const $t = getGlobalT()
 const statisticRef = ref(null)
+const statisticsTable = ref(null)
 const themeStore = useThemeStore()
 
 const options = [

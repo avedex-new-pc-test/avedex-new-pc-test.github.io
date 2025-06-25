@@ -46,10 +46,10 @@
             </a>
           </div>
           <div class="statistic-media">
-            <div class="statistic-address" v-copy="address">
+            <div v-copy="address" class="statistic-address">
               <div class="statistic-address-copy flex-center">
                 {{ addressText }}
-                <i class="iconfont icon-copy" />
+                <Icon class="text-[10px] clickable"/>
               </div>
             </div>
             <div class="statistic-media-left">
@@ -609,7 +609,7 @@ defineExpose({
       gap: 4px;
       font-size: 12px;
       color: var(--d-999-l-18181B);
-      background-color: #15171c;
+      background-color: #222;
 
       > i {
         font-size: 10px;

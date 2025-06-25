@@ -40,7 +40,7 @@
           <div class="flex-start" style="min-width: 110%" @click.stop="() => {}">
             <span class="token-address">
               {{ row.token.slice(0, 4) + '...' + row.token.slice(-6) }}
-              <i v-copy="row.token" class="iconfont icon-copy" />
+              <Icon v-copy="row.token" name="bxs:copy" class="mb--1px text-[10px] clickable"/>
             </span>
           </div>
         </div>
