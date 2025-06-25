@@ -54,13 +54,20 @@ const loading = ref(false)
 const pageData = ref({
   total: 10,
   page: 1,
-  pageSize: 10
+  pageSize: 50
 })
 const tableList = ref<any[]>([])
 const { mode } = storeToRefs(useGlobalStore())
 
 const addressValue = computed(() => {
   return botStore.evmAddress || walletStore.address
+})
+
+watch(() => walletStore.walletSignature[walletStore.address], (newValue) => {
+  if (newValue) {
+    getList()
+    getGroupList()
+  }
 })
 
 watch(() => botStore.evmAddress, (newVal) => {
@@ -188,9 +195,9 @@ const tableRowClick = (row: any) => {
     row.chain === 'runes' ||
     containsSpecialString
   ) {
-    router.push(`/brc/${row.token}-${row.chain}?from=fav`)
+    router.push(`/brc/${row.token}-${row.chain}?from=/follow/token`)
   } else {
-    router.push(`/token/${row.token}-${row.chain}?from=fav`)
+    router.push(`/token/${row.token}-${row.chain}?from=/follow/token`)
   }
 }
 

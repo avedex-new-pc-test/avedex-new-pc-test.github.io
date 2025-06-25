@@ -30,7 +30,7 @@ export function onRequest({ options, request }: MyFetchContext) {
     if (analogDeviceId) {
       options.headers.set('ave-udid', analogDeviceId)
     }
-    const currentAccount = localStorage.getItem('currentAccount')
+    const currentAccount = localStorage.getItem('walletAddress')
     if (currentAccount) {
       const signature = useWalletStore().walletSignature?.[currentAccount] || ''
       if (signature) {
