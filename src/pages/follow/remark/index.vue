@@ -45,9 +45,12 @@ const addressValue = computed(() => {
   return botStore.evmAddress || walletStore.address
 })
 
-watch(() => walletStore.walletSignature, () => {
-  getList()
+watch(() => walletStore.walletSignature[walletStore.address], (newValue) => {
+  if (newValue) {
+    getList()
+  }
 })
+
 
 watch(() => botStore.evmAddress, (newVal) => {
   if (newVal) {

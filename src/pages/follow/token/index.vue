@@ -63,17 +63,8 @@ const addressValue = computed(() => {
   return botStore.evmAddress || walletStore.address
 })
 
-// watch(() => walletStore.walletSignature, () => {
-//   // console.log('walletStore.walletSignature', walletStore.walletSignature)
-//   alert('walletStore.walletSignature')
-//   getList()
-//   getGroupList()
-// }, { deep: true })
-
-watch(() => walletStore.walletSignature[addressValue.value], (newSignature) => {
-  console.log('Current address signature changed:', newSignature)
-  if (newSignature) {
-    alert('walletStore.walletSignature')
+watch(() => walletStore.walletSignature[walletStore.address], (newValue) => {
+  if (newValue) {
     getList()
     getGroupList()
   }
