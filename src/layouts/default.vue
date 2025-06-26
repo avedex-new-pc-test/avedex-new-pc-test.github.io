@@ -3,7 +3,7 @@
     <div :style="botStore.connectVisible&&[{filter: 'url(#blur)'}]">
       <TheHeader />
       <div
-        class="flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px transition-transform transition-duration-300"
+        class="relative flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px transition-transform transition-duration-300"
         :style="signalStore.translateStyle"
       >
         <Draggable
@@ -39,6 +39,7 @@
           :handles="[
           'ml',
           ]"
+          parent
           drag-cancel="#drag-disabled"
           @onDragStop="signalStore.onRightDragStop"
           @onResizing="signalStore.onFixedResizing"

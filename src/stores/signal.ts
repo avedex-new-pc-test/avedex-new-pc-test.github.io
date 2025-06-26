@@ -51,8 +51,12 @@ export const useSignalStore = defineStore('signalStore', () => {
     signalBoundingRect.value.height = height
   }
 
-  function onLeftDragStop(x: number) {
+  function onLeftDragStop(x: number, y: number) {
     isLeftFixed.value = Math.abs(x) < 1
+    if (!isLeftFixed.value) {
+      signalBoundingRect.value.x = x
+      signalBoundingRect.value.y = y
+    }
   }
 
   function onRightDragStop(x: number) {

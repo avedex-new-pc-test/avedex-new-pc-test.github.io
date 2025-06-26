@@ -30,8 +30,10 @@ const loadingSwap = shallowRef(false)
 const visible = shallowRef(false)
 const message = shallowRef('')
 const noReminderQuickBuy = useStorage('noReminderQuickBuy', false)
+const emit = defineEmits(['submitSwap'])
 
 function submitBotSwap() {
+  emit('submitSwap')
   if (!verifyLogin()) {
     return
   }
