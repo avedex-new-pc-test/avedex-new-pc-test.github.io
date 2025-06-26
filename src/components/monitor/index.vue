@@ -158,7 +158,6 @@ import Column from './components/columns.vue'
 import { defaultPaginationParams, downColor, upColor } from '@/utils/constants'
 import type {RowEventHandlers} from 'element-plus'
 import type {AveTable} from '#components'
-import { NULL } from 'sass'
 const { t } = useI18n()
 const {monitorVisible} = storeToRefs(useFollowStore())
 const { mode } = storeToRefs(useGlobalStore())
