@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-20px">
     <el-scrollbar v-loading="loading" height="calc(100vh - 180px)">
       <ul class="pump-item_list" v-if="tableList?.length >0">
         <li
@@ -222,30 +222,6 @@
                   </span>
                 </div>
               </template>
-              <div
-                v-if="row?.state === 'migrating'"
-                style="
-                  margin-left: auto;
-                  color: #ffa622;
-                  background: #ffa6221a;
-                  font-size: 12px;
-                  font-weight: 400;
-                  border-radius: 4px;
-                  padding: 6px 8px;
-                  display: flex;
-                  align-items: center;
-                "
-              >
-                <img
-                  src="@/assets/images/pump/migrating.svg"
-                  height="12"
-                  class="mr-5"
-                  alt=""
-                  srcset=""
-                />
-                <span>Migrating...</span>
-              </div>
-
               <div
                 style="margin-left: auto; flex-wrap: wrap"
                 class="flex-end text-12px"
@@ -505,7 +481,32 @@
                   }}%</span
                 >
               </div>
-              <!-- <QuickSwap v-else-if="!(!$store.state.bot?.userInfo?.evmAddress && $store.state.currentAccount)" style="margin-left: auto;" :quickBuyValue="quickBuyValue" :row="row"></QuickSwap> -->
+              <div class="flex-1" />
+
+              <div
+                v-if="row?.state === 'migrating'"
+                style="
+                  margin-left: auto;
+                  color: #ffa622;
+                  background: #ffa6221a;
+                  font-size: 12px;
+                  font-weight: 400;
+                  border-radius: 4px;
+                  padding: 6px 8px;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                <img
+                  src="@/assets/images/pump/migrating.svg"
+                  height="12"
+                  class="mr-5px"
+                  alt=""
+                  srcset=""
+                />
+                <span>Migrating...</span>
+              </div>
+              <QuickSwap :quickBuyValue="quickBuyValue" :row="row" />
             </div>
           </div>
         </li>

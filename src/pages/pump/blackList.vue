@@ -4,7 +4,7 @@
     style="margin-left: 0"
     @click="visible = !visible"
   >
-    <Icon name="custom:black" class="text-16px mr-8px" />
+    <Icon name="custom:black" class="text-16px" />
   </el-button>
   <el-dialog
     v-model="visible"

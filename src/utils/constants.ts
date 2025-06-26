@@ -1,4 +1,11 @@
 export const NATIVE_TOKEN = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+
+export function getNativeToken(chain: string) {
+  return ({
+    solana: 'sol',
+    ton: 'TON',
+  } as any)[chain] || NATIVE_TOKEN
+}
 export const MAIN_COIN: {
   [key: string]: string
 } = {

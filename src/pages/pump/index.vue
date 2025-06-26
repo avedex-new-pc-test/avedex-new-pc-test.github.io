@@ -1,5 +1,5 @@
 <template>
-  <div class="pump">
+  <div class="pump w-full mt-20px">
     <div class="flex-start p-x-17px">
       <el-popover
         v-model:visible="visible_platforms"
@@ -20,7 +20,6 @@
                 i.platform_show
               }}</span>
             </template>
-            {{}}
             <Icon
               :name="
                 isRotate
@@ -63,9 +62,9 @@
               </div>
 
               <el-checkbox-group
-                v-else-if="item.chain === 'solana'"
+                v-else
                 v-model="pump_solana_platforms"
-                class="ml-20px pump-platforms"
+                class="pump-platforms"
               >
                 <el-checkbox
                   v-for="i in item.platforms"
@@ -122,15 +121,21 @@
     </div>
     <el-row :gutter="pumpSetting.isGutter ? 20 : 10" class="mt-20px w-full">
       <el-col :span="8">
-        <div class="pump-item">
+        <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
           <div class="pump-item_header flex-start px-10px">
             <img
               class="mr-5px"
               src="@/assets/images/pump/new.svg"
               width="24"
               alt=""
-            />
+            >
             <span style="margin-right: auto">{{ $t('new1') }}</span>
+            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer hover:opacity-80" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.new } "  @click="pump_notice[activeChain].new = !pump_notice[activeChain].new">
+              <Icon
+              name="icon-park-solid:volume-notice"
+              class="text-12px"
+              />
+            </span>
             <PumpFilter
               :storage="`pumpFilter_${activeChain}_new`"
               @update:filterData="handlerFilterConfirm"
@@ -146,7 +151,7 @@
         </div>
       </el-col>
       <el-col :span="8">
-        <div class="pump-item">
+        <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
           <div class="pump-item_header flex-start px-10px">
             <img
               class="mr-5px"
@@ -155,6 +160,12 @@
               alt=""
             />
             <span style="margin-right: auto">{{ $t('soon') }}</span>
+            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer hover:opacity-80" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.soon } "  @click="pump_notice[activeChain].soon = !pump_notice[activeChain].soon">
+              <Icon
+              name="icon-park-solid:volume-notice"
+              class="text-12px"
+              />
+            </span>
             <PumpFilter
               :storage="`pumpFilter_${activeChain}_soon`"
               @update:filterData="handlerFilterConfirm"
@@ -169,7 +180,7 @@
         </div>
       </el-col>
       <el-col :span="8">
-        <div class="pump-item">
+        <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
           <div class="pump-item_header flex-start px-10px">
             <img
               class="mr-5px"
@@ -178,6 +189,12 @@
               alt=""
             />
             <span style="margin-right: auto">{{ $t('graduated') }}</span>
+            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer hover:opacity-80" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.graduated } "  @click="pump_notice[activeChain].graduated = !pump_notice[activeChain].graduated">
+              <Icon
+              name="icon-park-solid:volume-notice"
+              class="text-12px"
+              />
+            </span>
             <PumpFilter
               :storage="`pumpFilter_${activeChain}_graduated`"
               @update:filterData="handlerFilterConfirm"
@@ -193,6 +210,10 @@
         </div>
       </el-col>
     </el-row>
+    <audio
+      ref="pumpAudio" controls style="display: none"
+      src="/signal.mp3"
+    />
   </div>
 </template>
 
@@ -226,6 +247,9 @@ const { pumpSetting, token_logo_url, pumpBlackList } = storeToRefs(globalStore)
 const pumpConfig = shallowRef<PumpConfig[]>()
 const isRotate = ref(false)
 
+
+
+
 const pumpFilter_bsc_new = usePumpTableDataFetching('pumpFilter_bsc_new')
 const pumpFilter_bsc_soon = usePumpTableDataFetching('pumpFilter_bsc_soon')
 const pumpFilter_bsc_graduated = usePumpTableDataFetching(
@@ -243,6 +267,25 @@ const pump_solana_platforms = useStorage(
   ['pump', 'moonshot', 'raydium'],
   localStorage
 )
+
+const pump_notice = useStorage(
+  'pump_notice',
+  {
+    solana: {
+      new: false,
+      soon: false,
+      graduated: false
+    }
+    ,
+    bsc: {
+      new: false,
+      soon: false,
+      graduated: false
+    }
+  },
+  localStorage
+)
+const pumpAudio = useTemplateRef('pumpAudio')
 
 const visible_platforms = shallowRef(false)
 const fourmemeListObj = reactive<
@@ -286,7 +329,10 @@ const platformsList = computed(() => {
   )
 })
 const platforms = computed(() => {
-  return pump_solana_platforms?.value?.join(',')
+  if (activeChain.value == 'solana') {
+    return pump_solana_platforms?.value?.join(',')
+  } else {
+  return 'fourmeme'}
 })
 const list1 = computed(() => {
   let list = fourmemeListObj?.[activeChain.value]?.new || []
@@ -307,6 +353,9 @@ const list1 = computed(() => {
   )
   const wsList = getFilterData(list1, pumpFilter_new)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
+  if(pump_notice.value[activeChain.value].new && pumpAudio.value && wsList1.length >0) {
+    pumpAudio.value.play()
+  }
   return [...wsList1, ...list]
 })
 const list2 = computed(() => {
@@ -328,6 +377,9 @@ const list2 = computed(() => {
   )
   const wsList = getFilterData(list1, pumpFilter_new)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
+  if(pump_notice.value[activeChain.value].soon && pumpAudio.value && wsList1.length >0) {
+    pumpAudio.value.play()
+  }
   return [...wsList1, ...list]
 })
 const list3 = computed(() => {
@@ -349,6 +401,9 @@ const list3 = computed(() => {
   )
   const wsList = getFilterData(list1, pumpFilter_new)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
+  if(pump_notice.value[activeChain.value].graduated && pumpAudio.value && wsList1.length >0) {
+    pumpAudio.value.play()
+  }
   return [...wsList1, ...list]
 })
 watch(pump_solana_platforms, () => {
@@ -421,7 +476,6 @@ function wsUpdateTableList(wsList: WSPump[]) {
       : i?.pair.token1_logo_url,
 
   }))
-
       const wsTableList1 = wsTableListCache?.value?.filter?.(i => !list?.some?.(j => j.pump_pair_address === i.pump_pair_address) && rTime - (i.rTime || 0) <= 15000)
       wsTableListCache.value = [...list, ...(wsTableList1 || [])]
       // let wsTime = this.wsTableListCache?.time || 0

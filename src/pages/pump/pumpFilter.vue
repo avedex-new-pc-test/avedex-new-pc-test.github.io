@@ -9,14 +9,13 @@
     >
       <template #reference>
         <div :class="['filter-btn', { active: visible }]">
-          <img
-            src="@/assets/images/pump/filter-filled.svg"
-            alt=""
-            width="12"
-            height="12"
+          <Icon
+            id="custom-filter"
+            name="custom:filter"
+            class="mr-3px text-12px cursor-pointer color-[--d-666-l-999]"
           />
           {{ $t('filters') }}
-          <span class="filter-number" v-if="filterNumber > 0">{{ filterNumber }}</span>
+          <span v-if="filterNumber > 0" class="filter-number">{{ filterNumber }}</span>
         </div>
       </template>
 
@@ -353,19 +352,18 @@ let tableFilter = usePumpTableDataFetching(props.storage)
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 8px;
+  padding: 5px 8px;
   cursor: pointer;
-  color: var(--d-999-l-666);
-  background: var(--d-333333-l-DDDDDD);
+  color: var(--d-666-l-999);
+  background: var(--d-222-l-F2F2F2);
   border-radius: 4px;
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0;
   font-weight: 500;
   box-sizing: border-box;
-  height: 28px;
+  height: 26px;
   position: relative;
-  font-family: IBM Plex Sans;
 
   img {
     margin-right: 2px;
