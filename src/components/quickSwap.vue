@@ -126,7 +126,8 @@ async function submitSwap(amount: string) {
     swapType: 1,
     isPrivate: currentBotSetting?.mev || false,
     slippage: slippage !== 'auto'
-      ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900
+      ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900,
+    autoSell: currentBotSetting?.autoSell || false
   }
   const tx = isSolana ? bot_createSolTx(data) : bot_createSwapEvmTx(data)
   tx.then(res => handleTxSuccess(res, data.batchId))

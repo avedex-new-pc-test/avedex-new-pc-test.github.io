@@ -1,5 +1,5 @@
 import {useStorage, useThrottleFn, useWindowSize} from '@vueuse/core'
-import type {GetSignalV2ListResponse} from "~/api/signal";
+import type {GetSignalV2ListResponse} from '~/api/signal'
 
 export const useSignalStore = defineStore('signalStore', () => {
   const signalVisible = useStorage('signalVisible', false)
@@ -25,6 +25,15 @@ export const useSignalStore = defineStore('signalStore', () => {
   //   }
   // })
 
+  const translateStyle = shallowRef('')
+  const onDrag = useThrottleFn((x: number) => {
+    if (x <= 0) {
+      translateStyle.value = 'transform:translateX(12px)'
+    } else {
+      translateStyle.value =
+          x + signalBoundingRect.value.width >= winWidth.value ? 'transform:translateX(-12px)' : ''
+    }
+  }, 100, false, true)
   function onDragStop(x: number, y: number) {
     signalBoundingRect.value.x = x
     signalBoundingRect.value.y = y
@@ -32,17 +41,10 @@ export const useSignalStore = defineStore('signalStore', () => {
     if (x > 0) {
       isRightFixed.value = x + signalBoundingRect.value.width >= winWidth.value
     }
+    setTimeout(() => {
+      translateStyle.value = ''
+    })
   }
-
-  const translateStyle = shallowRef('')
-  const onDrag = useThrottleFn((x: number) => {
-    if (x <= 0) {
-      translateStyle.value = 'transform:translateX(12px)'
-    } else {
-      translateStyle.value =
-        x + signalBoundingRect.value.width >= winWidth.value ? 'transform:translateX(-12px)' : ''
-    }
-  }, 100, true, true)
 
   function onResizing(width: number, height: number) {
     signalBoundingRect.value.width = width
