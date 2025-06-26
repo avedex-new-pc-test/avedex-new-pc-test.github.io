@@ -17,15 +17,9 @@ const props = defineProps<{
 const configStore = useConfigStore()
 const botSettingStore = useBotSettingStore()
 const localeStore = useLocaleStore()
-const signalList = shallowRef<GetSignalV2ListResponse[]>([])
-const pageParams = shallowRef({
-  pageNO: 1,
-  pageSize: 20,
-})
 const chainOptions = shallowRef(['solana', 'bsc'])
-const activeChain = shallowRef('solana')
 function setActiveChain(chain: string) {
-  activeChain.value = chain
+  signalStore.activeChain = chain
   resetAndGet()
 }
 
@@ -33,19 +27,10 @@ const sortParams = shallowRef({
   sortBy: undefined,
   activeSort: 0
 })
-// token: 筛选 token
-// history_count：筛选信号数，对应值2, 5, 15
-// 市值：mc_curr，市值过滤，
-// 市值方向：mc_curr_sign， 默认 > 大于号，可选 <
-const filterParams = useStorage('signalParams', {
-  token: '',
-  history_count: undefined as undefined | number,
-  mc_curr: undefined as undefined | number,
-  mc_curr_sign: '<'
-})
+
 const filterSignalList = computed(() => {
   const {sortBy, activeSort} = sortParams.value
-  return signalList.value.filter(filterCallback).toSorted((a, b) => {
+  return signalStore.signalList.filter(filterCallback).toSorted((a, b) => {
     if (sortBy) {
       return (Number((b[sortBy] || 0)) - Number((a[sortBy] || 0))) * activeSort
     }
@@ -54,7 +39,7 @@ const filterSignalList = computed(() => {
 })
 
 function filterCallback(el: GetSignalV2ListResponse) {
-  const {token, history_count, mc_curr} = filterParams.value
+  const {token, history_count, mc_curr} = signalStore.filterParams
   const tokenMatched = !token || el.token === token
   const countMatched = el.history_count > (history_count || 0)
   const mcMatched = !mc_curr || Number(el.mc_cur) < mc_curr
@@ -62,21 +47,30 @@ function filterCallback(el: GetSignalV2ListResponse) {
 }
 
 function resetFilterParams() {
-  filterParams.value.token = ''
-  filterParams.value.history_count = undefined
-  filterParams.value.mc_curr = undefined
+  signalStore.$patch({
+    filterParams: {
+      token: '',
+      history_count: undefined,
+      mc_curr: undefined,
+      mc_curr_sign: '<'
+    }
+  })
   resetAndGet()
 }
-const listStatus = ref({
-  loading: false,
-  finished: false,
-  error: false
-})
 
 function resetAndGet() {
-  listStatus.value.finished = false
-  listStatus.value.error = false
-  pageParams.value.pageNO = 1
+  signalStore.$patch({
+    listStatus: {
+      finished: false,
+      error: false,
+      loading: true
+    },
+    pageParams: {
+      pageNO: 1,
+      pageSize: 20
+    },
+    signalList: []
+  })
   fetchSignalList()
 }
 
@@ -93,13 +87,16 @@ const isLargeScreen = computed(() => {
   return props.containerWidth >= 760
 })
 onMounted(() => {
-  fetchSignalList()
+  if (signalStore.pageParams.pageNO === 1) {
+    fetchSignalList()
+  }
   initTimer()
   initWs()
 })
 let timer: number
-watch(activeChain, () => {
-  pageParams.value.pageNO = 1
+watch(() => signalStore.activeChain, () => {
+  signalStore.signalList = []
+  signalStore.pageParams.pageNO = 1
   fetchSignalList()
   initWs()
 })
@@ -112,7 +109,7 @@ function initWs() {
     method: 'unsubscribe',
     'params': [
       'signalsv2_public_monitor',
-      activeChain.value
+      signalStore.activeChain
     ],
     'id': 1
   })
@@ -122,7 +119,7 @@ function initWs() {
     method: 'subscribe',
     'params': [
       'signalsv2_public_monitor',
-      activeChain.value
+      signalStore.activeChain
     ],
     'id': 1
   })
@@ -150,16 +147,14 @@ watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData
     signalAudio.value.currentTime = 0
     signalAudio.value.play()
   }
-  const matchIndex = signalList.value.findIndex((p) =>
+  const matchIndex = signalStore.signalList.findIndex((p) =>
     p.token === _signalData.token && p.chain === _signalData.chain
   )
   if (matchIndex !== -1) {
-    signalList.value.splice(matchIndex, 1)
-    signalList.value.unshift(_signalData)
-    triggerRef(signalList)
+    signalStore.signalList.splice(matchIndex, 1)
+    signalStore.signalList.unshift(_signalData)
   } else if (_signalData.history_count === 1) {
-    signalList.value.unshift(_signalData)
-    triggerRef(signalList)
+    signalStore.signalList.unshift(_signalData)
   }
 })
 
@@ -169,7 +164,7 @@ watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData
 async function updateListData() {
   try {
     const res = await getSignalV2List({
-      chain: activeChain.value,
+      chain: signalStore.activeChain,
       pageNO: 1,
       pageSize: 50,
       fold: true
@@ -180,7 +175,7 @@ async function updateListData() {
         addressMap[item.token + item.chain] = item
       }
     })
-    signalList.value = signalList.value.map(item => {
+    signalStore.signalList = signalStore.signalList.map(item => {
       const updateKeys = ['mc_cur', 'holders_cur', 'top10_ratio', 'dev_ratio', 'insider_ratio', 'max_price_change'] as const
       const matchedNewData = addressMap[item.token + item.chain]
       if (matchedNewData) {
@@ -201,7 +196,7 @@ async function updateListData() {
 }
 
 function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
-  if (listStatus.value.finished) {
+  if (signalStore.listStatus.finished) {
     return
   }
   if (direction === 'bottom') {
@@ -210,29 +205,29 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
 }
 async function fetchSignalList() {
   try {
-    listStatus.value.loading = true
+    signalStore.listStatus.loading = true
     const res = await getSignalV2List({
-      ...pageParams.value,
-      chain: activeChain.value,
+      ...signalStore.pageParams,
+      chain: signalStore.activeChain,
       fold: true,
-      ...filterParams.value
+      ...signalStore.filterParams
     })
-    if (pageParams.value.pageNO === 1) {
-      signalList.value = res || []
+    if (signalStore.pageParams.pageNO === 1) {
+      signalStore.signalList = res || []
     } else {
-      signalList.value = signalList.value.concat(res || [])
+      signalStore.signalList = signalStore.signalList.concat(res || [])
     }
-    const finished = res?.length < pageParams.value.pageSize
-    listStatus.value.finished = finished
+    const finished = res?.length < signalStore.pageParams.pageSize
+    signalStore.listStatus.finished = finished
     if (!finished) {
-      pageParams.value.pageNO++
+      signalStore.pageParams.pageNO++
     }
   } catch (e) {
     console.log('=>(index.vue:224) e', e)
-    listStatus.value.error = true
-    signalList.value = []
+    signalStore.listStatus.error = true
+    signalStore.signalList.length = 0
   } finally {
-    listStatus.value.loading = false
+    signalStore.listStatus.loading = false
   }
 }
 
@@ -278,24 +273,24 @@ const isShowDate = ref(true)
         <Filter
           v-if="isLargeScreen"
           v-model="shouldAlert"
-          :filter-params="filterParams"
-          @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+          :filter-params="signalStore.filterParams"
+          @onConfirm="val=>{signalStore.filterParams={...val};resetAndGet();}"
           @onReset="resetFilterParams"
         />
         <el-select
           size="small"
           placeholder=""
           :suffix-icon="SelectIcon"
-          popper-class="[&&]:[--el-fill-color-light:--d-222-l-F2F2F2] [--el-bg-color-overlay:--d-1A1A1A-l-FFF]"
+          popper-class="[&&]:[--el-fill-color-light:--d-333-l-F2F2F2] [--el-bg-color-overlay:--d-1A1A1A-l-FFF]"
           @change="setActiveChain"
         >
           <template #prefix>
             <el-image
               class="flex items-center rounded-full w-12px h-12px"
-              :src="`${configStore.token_logo_url}chain/${activeChain}.png`"
+              :src="`${configStore.token_logo_url}chain/${signalStore.activeChain}.png`"
             />
             <span class="text-10px color-[--d-FFF-l-333]">
-              {{ activeChain.slice(0, 3).toUpperCase() }}
+              {{ signalStore.activeChain.slice(0, 3).toUpperCase() }}
             </span>
           </template>
           <el-option
@@ -320,8 +315,8 @@ const isShowDate = ref(true)
         <SlippageSet
           id="drag-settings"
           :showQuickAmount="false"
-          :chain="activeChain"
-          :setting="botSettingStore?.botSettings[activeChain]"
+          :chain="signalStore.activeChain"
+          :setting="botSettingStore?.botSettings[signalStore.activeChain]"
         />
         <Icon
           name="custom:close"
@@ -337,8 +332,8 @@ const isShowDate = ref(true)
       >
         <Filter
           v-model="shouldAlert"
-          :filter-params="filterParams"
-          @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+          :filter-params="signalStore.filterParams"
+          @onConfirm="val=>{signalStore.filterParams={...val};resetAndGet();}"
           @onReset="resetFilterParams"
         />
         <QuickBuyInput
@@ -365,9 +360,9 @@ const isShowDate = ref(true)
           :showPop="showPopover"
           :hidePop="scheduleHide"
         />
-        <AveEmpty v-if="signalList.length===0&&!listStatus.loading" class="pt-10px"/>
+        <AveEmpty v-if="signalStore.signalList.length===0&&!signalStore.listStatus.loading" class="pt-10px"/>
         <div
-          v-if="listStatus.loading"
+          v-if="signalStore.listStatus.loading"
           class="flex justify-center text-12px text-[#959a9f]"
         >
           {{ $t('loading') }}
@@ -376,7 +371,7 @@ const isShowDate = ref(true)
       <LargeSignalList
         v-else
         v-model="sortParams"
-        :loading="listStatus.loading"
+        :loading="signalStore.listStatus.loading"
         :quickBuyValue="quickBuyValue"
         :signalList="filterSignalList"
         :showPop="showPopover"

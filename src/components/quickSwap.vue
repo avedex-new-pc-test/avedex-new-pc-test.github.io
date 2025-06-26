@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
   classNames?: string
 }>(), {
   appendTo: '#__nuxt',
-  buttonBg: '#12B8861A',
+  buttonBg: 'rgba(18, 184, 134, 0.15)',
   classNames: '',
 })
 const botStore = useBotStore()
@@ -193,7 +193,7 @@ async function getTokenBalance(chain: string) {
     :color="buttonBg"
     class="flex items-center [&&]:px-12px"
     :class="classNames"
-    style="--el-color-black: #12B886; --el-button-border-color: transparent; --el-button-hover-border-color: transparent;--el-button-disabled-text-color: #12B886;--el-button-disabled-border-color: transparent;--el-button-disabled-bg-color: #12B8861A;"
+    style="--el-button-hover-bg-color:rgba(18, 184, 134, 0.3);--el-color-black: #12B886; --el-button-border-color: transparent; --el-button-hover-border-color: transparent;--el-button-disabled-text-color: #12B886;--el-button-disabled-border-color: transparent;--el-button-disabled-bg-color: #12B8861A;"
     @click="submitBotSwap"
   >
     <Icon
