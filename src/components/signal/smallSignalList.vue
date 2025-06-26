@@ -34,7 +34,9 @@ const botStore = useBotStore()
             />
           </NuxtLink>
           <div class="flex flex-col gap-4px">
-            <span class="font-500 color-[--d-F5F5F5-l-333] text-16px">{{ symbol }}</span>
+            <span class="font-500 color-[--d-F5F5F5-l-333] text-16px cursor-pointer"
+                  @click="navigateTo(`/token/${token}-${chain}`)"
+            >{{ symbol }}</span>
             <div class="color-[--d-666-l-999] flex items-center gap-8px">
               <Icon v-copy="token" name="bxs:copy" class="clickable text-10px"/>
               <a
