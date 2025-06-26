@@ -708,5 +708,7 @@
   "openMonitor": "Enable monitoring",
   "monitored": "monitored",
   "noBotWalletTip": "Please connect your bot wallet to use this function",
-  "monitorError": "Please pay attention to this address before using the monitoring function"
+  "monitorError": "Please pay attention to this address before using the monitoring function",
+  "groupExistT": "Group already exists",
+  "pause": "Pause"
 }
