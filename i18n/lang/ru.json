@@ -453,5 +453,7 @@
   "plsImportCorrect": "Введите правильный код",
   "bulkProcess": "Массовый импорт/экспорт",
   "monitorList": "Список мониторинга",
-  "walletMonitor": "Кошелек"
+  "walletMonitor": "Кошелек",
+  "addWallet": "Добавьте кошелек",
+  "bulkImport": "Массовый импорт"
 }

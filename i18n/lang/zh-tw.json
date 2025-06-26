@@ -661,8 +661,8 @@
   "antiWhaleModifiable": "可修改大額交易限制",
   "check2": "安全檢測",
   "tax": "稅",
-  "aiSummary":"AI敘事",
-  "aiIsAnalyzing":"AI分析進行中...",
+  "aiSummary": "AI敘事",
+  "aiIsAnalyzing": "AI分析進行中...",
   "times": "次",
   "MaximumIncrease": "最大漲幅",
   "CurrentMC": "當前市值",
@@ -699,5 +699,7 @@
   "createPosition": "建倉",
   "addPosition": "加倉",
   "reducePosition": "減倉",
-  "walletMonitor": "錢包監控"
+  "walletMonitor": "錢包監控",
+  "addWallet": "添加錢包",
+  "bulkImport": "批量導入"
 }

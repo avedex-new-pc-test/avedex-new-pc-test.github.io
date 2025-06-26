@@ -280,5 +280,7 @@
   "remarkLib": "Dirección de alias biblioteca",
   "bulkProcess": "Importación masiva / Exportación masiva",
   "monitorList": "Lista de monitoreo",
-  "walletMonitor": "Monitor de billetera"
+  "walletMonitor": "Monitor de billetera",
+  "addWallet": "Agregar una billetera",
+  "bulkImport": "Importación Masiva"
 }

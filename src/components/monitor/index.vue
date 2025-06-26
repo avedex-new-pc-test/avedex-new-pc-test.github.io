@@ -1,20 +1,38 @@
 <template>
   <el-popover ref="popoverRef" :visible="monitorVisible" :width="720" placement="top" :persistent="true" :teleported="true" popper-class="" popper-style="">
-    <div class="">
+    <div class="w-content">
+      <div class="m-op flex-start gap-8px">
+        <FilterType v-model="txType" :options="txTypeList" />
+        <Icon name="icon-park-solid:volume-notice"/>
+        <el-switch
+          v-model="hasRing"
+          size="small"
+          active-value="1"
+          inactive-value="0"/>
+        <pro-tag size="small" class="cursor-pointer" @click="toggleMc=!toggleMc">Vol/MC <Icon name="lsicon:switch-filled" class="ml-4px text-12px"/></pro-tag>
+        <el-button size="small" @click="addWallet" style="height: 20px;color: var(--d-999-l-222) !important;" :color="isDark?'#333':'#F2F2F2'" :dark="isDark" >
+          <Icon name="ic:baseline-person-add-alt-1" class="text-12px  mr-5px"/>
+          {{ $t('addWallet') }}
+        </el-button>
+        <el-button size="small" @click="bulkImport" style="height: 20px;color: var(--d-999-l-222) !important;" :color="isDark?'#333':'#F2F2F2'" :dark="isDark" >
+          <Icon name="mingcute:new-folder-fill" class="text-12px  mr-5px"/>
+          {{ $t('bulkImport') }}
+        </el-button>
+      </div>
+      <div
+      v-loading="loading" class="text-12px" element-loading-background="transparent">
       <AveTable
         ref="aveTableRef"
         rowKey="id"
-        fixed 
         :data="dataSource"
         :columns="columns"
+        fixed
         :style="{
           height:'365px'
         }"
         row-class='cursor-pointer'
         :rowEventHandlers="{
-        // onMouseenter:()=>isHoverTable=true,
-        // onMouseleave:()=>isHoverTable=false,
-        onClick: (row)=>jumpToken(row)
+        onClick: (row:any)=>jumpToken(row)
       }"> 
         <template #header-wallet>
           <span>{{ $t('wallet') }}</span>
@@ -35,11 +53,11 @@
           <pro-tag :type="row._marker.isBuy?'success':'danger'"> {{ getTxType(row) }}</pro-tag>
         </template>
         <template #header-amount>
-          <span>{{ $t('amount') }}</span>
+          <span>{{ $t('value') }}</span>
         </template>
         <template #cell-amount="{ row }">
-          <span>
-            {{ row?._main_Token?.amount+row?._main_Token?.symbol }}
+          <span :class="getIsBuy(row)?`color-${upColor[0]}`:`color-${downColor[0]}`">
+            {{ toggleMc? row?._main_Token?.amount+row?._main_Token?.symbol: row?._main_Token.total}}
           </span>
         </template>
         <template #header-mc>
@@ -80,94 +98,58 @@
             <span>{{ row?._target_Token?.symbol }}</span>
             <img v-if="row?.amm=='pump'"  src="https://www.iconaves.com/signals/pump_king.png" style="width:12px;height:12px">
         </template>
-        <!-- <template #header-operate>
-          <span></span>
+        <template #header-operate>
+          <span/>
         </template>
         <template #cell-operate="{ row }">
-
-        </template> -->
+          <span>操作</span>
+        </template>
       </AveTable>
-      <div
-        v-loading="loading" class="text-12px" element-loading-background="transparent">
       </div>
-      <!-- <el-table
-        v-loading="loading" class='m-table' :data="dataSource" style="width: 100%" fit
-        size="large" @row-click="jumpToken" :height="365">
-      <template #empty>
-        <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
-          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
-          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
-          <span>{{ t('emptyNoData') }}</span>
-        </div>
-        <span v-else />
-      </template>
-        <el-table-column
-          v-for="col in columns" :key="col.prop" :label="col.label" :width="col.width" :prop="col.prop" :min-width="col.minWidth" 
-          :align="col.align" :show-overflow-tooltip="col?.showOverflowTooltip || false" >
-          <template #default="{ row }">
-              <Column :row="row" :col="col" :customKeys="['wallet', 'time', 'symbol','operate','type']" >
-                <div v-if="col?.prop === 'wallet'" class="flex-start">
-                  <UserRemark :key="row._marker.maker_address" :address="row._marker.maker_address" :chain="row.chain" :remark="row.maker_alias || ''" :showIcon="true" :teleported="true" @updateRemark="init" :wallet_logo="row.wallet_logo" @click="(e) => jumpBalance(row, e)"
-                  iconSize="24px"
-                  :formatAddress="
-                      (address) =>
-                        address?.slice(0, 4) + '...' + address?.slice(-4)
-                  " />
-                </div>
-                <div v-else-if="col?.prop === 'type'" class="flex-end">
-                <pro-tag :type="row._marker.isBuy?'success':'danger'"> {{ getTxType(row) }}</pro-tag>
-                </div>
-                <div v-else-if="col?.prop === 'time'" class="flex-end">
-                  <TimerCount
-                    v-if="row?.time && Number(formatTimeFromNow(row?.time, true)) < 60"
-                    :key="row?.time" :timestamp="row?.time" :end-time="60">
-                    <template #default="{ seconds }">
-                  <span v-if="seconds < 60" class="color-#FFA622 text-12px">
-                    {{ seconds }}s
-                  </span>
-                      <span v-else class="color-[--d-999-l-666] text-12px">
-                    {{ formatTimeFromNow(row?.time) }}
-                  </span>
-                    </template>
-                  </TimerCount>
-                  <div v-else class="color-[--d-999-l-666] text-12px">
-                    {{ formatTimeFromNow(row?.time) }}
-                  </div>
-                </div>
-                <div v-else-if="col?.prop === 'symbol'" class="flex-end">
-                  <TokenImg
-                    :row="{
-                      logo_url: row?._target_Token?.logo_url,
-                      chain: row?.chain
-                    }" token-class="w-16px h-16px [&&]:mr-4px" />
-                    <span>{{ row?._target_Token?.symbol }}</span>
-                    <img v-if="row?.amm=='pump'"  src="https://www.iconaves.com/signals/pump_king.png" style="width:12px;height:12px">
-                </div>
-              </Column>
-          </template>
-        </el-table-column>
-      </el-table> -->
     </div>
   </el-popover>
 </template>
 
 <script setup lang="ts">
+import { throttle } from 'lodash-es'
 import BigNumber from 'bignumber.js'
 import { getHistoryMonitor} from '~/api/attention'
-import Column from './components/columns.vue'
+import FilterType from './components/filterType.vue'
 import { defaultPaginationParams, downColor, upColor } from '@/utils/constants'
-import type {RowEventHandlers} from 'element-plus'
 import type {AveTable} from '#components'
 const { t } = useI18n()
+const hasRing=ref(false)
 const {monitorVisible} = storeToRefs(useFollowStore())
-const { mode } = storeToRefs(useGlobalStore())
+const { isDark } = storeToRefs(useGlobalStore())
 const dataSource = ref<any[]>([])
+const dataSourceCache = ref<any[]>([])
 const loading=ref(false)
 const botStore = useBotStore()
-
+const wsStore = useWSStore()
 const aveTableRef = ref<InstanceType<typeof AveTable> | null>(null)
+const firstActivated = ref(true)
+const txType = ref([1,2])
+const toggleMc = ref(false)
+const txTypeList=computed(() => {
+  return [
+    // { label: t('all'), value: 0 },
+    { label: t('buy'), value: 1 },
+    { label: t('sell'), value: 2 },
+  ]
+})
 onMounted(async () => {
+  console.log('monitor mounted')
   init()
+})
+watch(() => monitorVisible.value, (val) => {
+  if(!val) return
+  updateDateSource()
+  nextTick(() => {
+    if (!firstActivated.value && aveTableRef.value) {
+      aveTableRef.value.scrollToTop(0)
+    }
+    firstActivated.value = false
+  })
 })
 const columns = computed(() => {
   return [
@@ -176,34 +158,21 @@ const columns = computed(() => {
       dataKey: 'wallet',
       key: 'wallet',
       align: 'left',
-      minWidth: 110,
+      minWidth: 125,
     },
     {
       title: t('type'),
       dataKey: 'type',
       key: 'type',
-      // minWidth: ,
+      minWidth: 110,
       align: 'right',
-      // sortable: false,
-      // style: (row) => {
-      //   return row._marker.isBuy?`{color:${upColor[0]}}`:`{color:${downColor[0]}}`
-      // },
-      // customFormatter: (row: any) => {
-      //   return row?._type
-      // }
     },
     {
       title: t('value'),
       dataKey: 'amount',
       key: 'amount',
       align: 'right',
-      minWidth: 100,
-      // style: (row) => {
-      //   return row._marker.isBuy?`{color:${upColor[0]}}`:`{color:${downColor[0]}}`
-      // },
-      // customFormatter: (row: any) => {
-      //   return row?._main_Token?.amount+row?._main_Token?.symbol
-      // }
+      minWidth: 80,
     },
     {
       title: t('token'),
@@ -211,46 +180,70 @@ const columns = computed(() => {
       key: 'symbol',
       align: 'right',
       minWidth: 150,
-      // customClassName: () => { },
-      // customFormatter: (row: any) => {
-      //   return row?._target_Token?.symbol
-      // }
     },
     {
       title: t('mcap'),
       dataKey: 'mc',
       key: 'mc',
       align: 'right',
-      // minWidth: 100,
-      // sortable: false,
-      // customClassName: () => { },
-      // customFormatter: (row: any) => {
-      //   return row?._mc
-      // }
+      minWidth: 70,
     },
     {
       title: t('time'),
       dataKey: 'time',
       key: 'time',
       align: 'right',
-      // minWidth: 100,
+      minWidth: 40,
     },
-    // {
-    //   title: '',
-    //   dataKey: 'operate',
-    //   key: 'operate',
-    //   align: 'right',
-    //   minWidth: 100,
-    // }
+    {
+      title: '',
+      dataKey: 'operate',
+      key: 'operate',
+      align: 'right',
+      minWidth: 100,
+    }
   ]
 })
-// const filterDataSource = computed(() => {
-//   return dataSource.value.filter((item: any) => {
-//     return item?.msg_content && item?.msg_content !== '{}'
-//   })
-// })
+watch(() => wsStore.wsResult[WSEventType.MONITOR], (val) => {
+  console.log('ws monitor', val)
+  mergeDataSource(val)
+})
 
+const mergeDataSource = (msg:any) => {
+  if(msg?.length>0){
+    const data = dataSourceCache?.value || []
+    const wsData = msg?.filter?.((i: { id: any }) => {
+      return !data.some(j => j.id === i.id)
+    })?.map?.(i => {
+      return {
+        ...i,
+        ...formateTxInfo(i)
+      }
+    }) || []
+    const list = [...wsData, ...data]
+    if (list.length > 100) {
+      list?.splice?.(50)
+    }
+    dataSourceCache.value.splice(0, dataSourceCache.value?.length, ...list)
+    updateDateSource()
+  }
+}
 
+const updateDateSource = throttle(function() {
+  if(!monitorVisible.value) return
+  dataSource.value.splice(0, dataSource.value?.length, ...dataSourceCache.value)
+}, 500)
+
+    // watch(()=>props.data, (val) => {
+    // })
+
+watch(()=>botStore.evmAddress, (val) => {
+  if(!val){
+    dataSource.value=[]
+  }else{
+    init()
+  }
+})
 function init() {
   if(!botStore.evmAddress) return
   loading.value = true
@@ -270,7 +263,8 @@ function init() {
       }
     })
     console.log('list', list)
-    dataSource.value = list
+    dataSourceCache.value = list
+    updateDateSource()
   }).catch((err) => {
     console.error(err)
   }).finally(() => {
@@ -286,9 +280,7 @@ function getIsBuy(item) {
   }
 }
 function getTxType(item) {
-  // console.log('item', item)
   if (item.position_type !== undefined) {
-    // let p = [t('buy'), t('sell')]
     const types = [t('createPosition'), t('addPosition'), t('reducePosition'), t('closePosition')]
     return types?.[item?.position_type] || ''
   } else {

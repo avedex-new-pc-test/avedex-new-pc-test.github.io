@@ -453,5 +453,7 @@
   "plsImportCorrect": "Nhập mã chính xác",
   "bulkProcess": "Nhập/Xuất hàng loạt",
   "monitorList": "Danh sách giám sát",
-  "walletMonitor": "Màn hình ví"
+  "walletMonitor": "Màn hình ví",
+  "addWallet": "Thêm một ví",
+  "bulkImport": "Nhập hàng loạt"
 }
