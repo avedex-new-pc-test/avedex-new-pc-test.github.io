@@ -11,13 +11,11 @@
           class="[&&]:relative shrink-0"
           :min-width="240"
           :max-width="360"
-          :x="0"
           :initial-width="signalStore.fixedWidth"
           :initial-height="signalStore.winHeight-150"
           :handles="[
           'mr',
           ]"
-          parent
           drag-cancel="#drag-disabled"
           @onDragStop="signalStore.onLeftDragStop"
           @onResizing="signalStore.onFixedResizing"
