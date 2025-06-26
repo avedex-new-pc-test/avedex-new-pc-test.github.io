@@ -3,7 +3,7 @@
     <div :style="botStore.connectVisible&&[{filter: 'url(#blur)'}]">
       <TheHeader />
       <div
-        class="relative flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px transition-transform transition-duration-300"
+        class="relative flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px transition-transform transition-duration-300 overflow-hidden"
         :style="signalStore.translateStyle"
       >
         <Draggable
@@ -12,7 +12,7 @@
           :min-width="240"
           :max-width="360"
           :initial-width="signalStore.fixedWidth"
-          :initial-height="signalStore.winHeight-150"
+          :initial-height="signalStore.winHeight-95"
           :handles="[
           'mr',
           ]"
@@ -33,7 +33,7 @@
           :max-width="360"
           :x="0"
           :initial-width="signalStore.fixedWidth"
-          :initial-height="signalStore.winHeight-150"
+          :initial-height="signalStore.winHeight-95"
           :handles="[
           'ml',
           ]"
@@ -83,7 +83,7 @@
       <Signal
         :container-width="signalStore.signalBoundingRect.width"
         :scroll-height="signalStore.signalBoundingRect.height-117"
-        class="border-1px border-solid border-[--d-1A1A1A-l-F2F2F2]"
+        class="border-1px border-solid border-[--d-1A1A1A-l-F2F2F2] shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)]"
       />
     </Draggable>
   </div>
