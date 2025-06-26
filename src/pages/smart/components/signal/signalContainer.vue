@@ -114,15 +114,22 @@ async function setDialogVisible() {
         :class="`[--el-message-close-size:24px]`"
     >
       <el-table :data="dialogValues.list">
-        <el-table-column type="index" :title="$t('排名')">
+        <el-table-column
+            type="index"
+            :label="$t('排名')"
+            label-class-name="text-12px color-[--d-666-l-999]"
+        >
           <template #default="{$index}">
             <img v-if="$index+1===1" src="@/assets/images/111.svg"/>
             <img v-else-if="$index+1===2" src="@/assets/images/222.svg"/>
             <img v-else-if="$index+1===3" src="@/assets/images/333.svg"/>
-            <span v-else>{{ $index + 1 }}</span>
+            <div v-else class="text-12px color-[--d-666-l-999] text-center">{{ $index + 1 }}</div>
           </template>
         </el-table-column>
-        <el-table-column :title="$t('币种')">
+        <el-table-column
+            :label="$t('币种')"
+            label-class-name="text-12px color-[--d-666-l-999]"
+        >
           <template #default="{row}">
             <div class="flex items-center">
               <TokenImg
@@ -137,17 +144,26 @@ async function setDialogVisible() {
             </div>
           </template>
         </el-table-column>
-        <el-table-column :title="$t('首告时间')">
+        <el-table-column
+            :label="$t('首告时间')"
+            label-class-name="text-12px color-[--d-666-l-999]"
+        >
           <template #default="{row}">
-            {{ formatDate(row.first_signal_time, 'HH:mm:ss') }}
+            <span class="color-[--d-FFF-l-222] text-12px">{{ formatDate(row.first_signal_time, 'HH:mm:ss') }}</span>
           </template>
         </el-table-column>
-        <el-table-column :title="$t('首告市值')">
+        <el-table-column
+            :label="$t('首告市值')"
+            label-class-name="text-12px color-[--d-666-l-999]"
+        >
           <template #default="{row}">
-            ${{ formatNumber(row.first_signal_mc, 2) }}
+            <span class="color-[--d-FFF-l-222] text-12px"> ${{ formatNumber(row.first_signal_mc, 2) }}</span>
           </template>
         </el-table-column>
-        <el-table-column :title="$t('首告后最大涨幅(倍)')">
+        <el-table-column
+            :label="$t('首告后最大涨幅(倍)')"
+            label-class-name="text-12px color-[--d-666-l-999]"
+        >
           <template #default="{row}">
             {{ parseInt(row.max_price_change) }}x
           </template>
