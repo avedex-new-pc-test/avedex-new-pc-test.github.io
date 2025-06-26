@@ -3,8 +3,9 @@ import THead from '~/pages/token/components/left/tHead.vue'
 import type {GetSignalV2ListResponse} from '~/api/signal'
 import dayjs from 'dayjs'
 import BigNumber from 'bignumber.js'
+import {useThrottleFn} from "@vueuse/core";
 
-defineProps<{
+const props = defineProps<{
   signalList: Array<GetSignalV2ListResponse>
   showPop: (...args: any[]) => void
   hidePop: () => void
@@ -59,9 +60,16 @@ function sortChange() {
   emit('update:modelValue', sort.value)
 }
 
-function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
-  emit('endReached', direction)
-}
+const scrollbar = useTemplateRef('scrollbar')
+
+const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
+  if (scrollbar.value) {
+    const scrollElement = scrollbar.value.wrapRef
+    if (scrollElement && scrollElement.scrollHeight - scrollTop - props.height < 30) {
+      emit('endReached', 'bottom')
+    }
+  }
+}, 100, true, false)
 </script>
 
 <template>
@@ -73,9 +81,10 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
       @update:sort="sortChange"
     />
     <el-scrollbar
+        ref="scrollbar"
       style="margin-right: -12px;padding-right: 12px;"
       :height="height"
-      @end-reached="endReached"
+        @scroll="onScroll"
     >
       <div class="flex flex-col gap-12px pb-2px">
         <div
@@ -250,6 +259,7 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
                 :quickBuyValue="quickBuyValue"
                 :row="signalList[index]"
                 classNames="min-w-70px"
+                @submitSwap="navigateTo(`/token/${token}-${chain}`)"
               />
             </div>
           </div>

@@ -204,6 +204,7 @@ const botStore = useBotStore()
           :quickBuyValue="quickBuyValue"
           :row="signalList[index]"
           classNames="min-w-70px"
+          @submitSwap="navigateTo(`/token/${token}-${chain}`)"
         />
       </div>
       <div v-if="headline" class="flex items-center gap-8px mt-12px">

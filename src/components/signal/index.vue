@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useStorage} from '@vueuse/core'
+import {useStorage, useThrottleFn} from '@vueuse/core'
 import {getSignalV2List, type GetSignalV2ListResponse, type IActionItem} from '~/api/signal'
 import SlippageSet from '~/pages/token/components/right/botSwap/slippageSet.vue'
 import Filter from '~/components/signal/filter.vue'
@@ -195,6 +195,17 @@ async function updateListData() {
   }
 }
 
+const scrollbar = useTemplateRef('scrollbar')
+
+const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
+  if (scrollbar.value) {
+    const scrollElement = scrollbar.value.wrapRef
+    if (scrollElement && scrollElement.scrollHeight - scrollTop - props.scrollHeight < 30) {
+      endReached('bottom')
+    }
+  }
+}, 100, true, false)
+
 function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
   if (signalStore.listStatus.finished || signalStore.listStatus.loading) {
     return
@@ -268,7 +279,7 @@ const isShowDate = ref(true)
   >
     <Icon
         name="custom:drag2"
-        class="absolute top-3px left-50% ml--6px text-6px bg-[--d-222-l-F2F2F2]"
+        class="absolute top-3px left-50% ml--6px text-6px bg-[--d-333-l-F2F2F2]"
     />
     <div
         class="flex items-center pt-12px justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5] cursor-move">
@@ -347,10 +358,11 @@ const isShowDate = ref(true)
         />
       </div>
       <el-scrollbar
+          ref="scrollbar"
         v-if="!isLargeScreen"
         style="margin-right: -12px;padding-right: 12px;"
         :height="scrollHeight"
-        @endReached="endReached"
+          @scroll="onScroll"
       >
         <SmallSignalList
           v-if="isSmallScreen"

@@ -23,6 +23,9 @@ onMounted(() => {
 
 function onDragStop(x: number, y: number) {
   emit('onDragStop', x, y)
+  if (klineRef.value) {
+    klineRef.value.style.pointerEvents = 'auto'
+  }
 }
 
 const onResizing = useThrottleFn((...args: number[]) => {
