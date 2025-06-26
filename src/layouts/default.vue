@@ -39,7 +39,6 @@
           :handles="[
           'ml',
           ]"
-          parent
           drag-cancel="#drag-disabled"
           @onDragStop="signalStore.onRightDragStop"
           @onResizing="signalStore.onFixedResizing"
