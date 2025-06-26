@@ -26,3 +26,25 @@ export function getTimeline(chain: string): Promise<ITimeline[]> {
         query: {chain}
     })
 }
+
+export interface ITopSignal {
+  first_signal_time: number;
+  last_signal_time: number;
+  max_price_change: string;
+  history_count: number;
+  token: string;
+  chain: string;
+  day_high_price: string;
+  first_signal_price: string;
+  first_signal_mc: string;
+}
+
+/**
+ * top 榜单
+ */
+export function getTopSignal(): Promise<ITopSignal[]> {
+  const {$api} = useNuxtApp()
+  return $api('https://0ftrfsdb.xyz/v2api/signals/v2/top_signal', {
+    method: 'get'
+  })
+}

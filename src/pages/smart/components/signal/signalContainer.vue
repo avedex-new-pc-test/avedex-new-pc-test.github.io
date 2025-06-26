@@ -2,6 +2,7 @@
 import TimeLine from './timeLine.vue'
 import {useStorage} from '@vueuse/core'
 import Filter from '~/pages/smart/components/signal/filter.vue'
+import {getTopSignal, type ITopSignal} from '~/api/signal'
 
 defineProps<{
   activeChain: string
@@ -18,6 +19,30 @@ const filterParams = useStorage('signalParams', {
 })
 const shouldAlert = useStorage('shouldAlert', '1')
 const showResetBtn = shallowRef(false)
+const quickBuyValue = useStorage('quickBuyValue', '0.01')
+const dialogValues = shallowRef<{
+  visible: boolean
+  loading: boolean
+  list: ITopSignal[]
+}>({
+  visible: false,
+  loading: false,
+  list: []
+})
+
+async function setDialogVisible() {
+  dialogValues.value.visible = true
+  dialogValues.value.loading = true
+  triggerRef(dialogValues)
+  try {
+    const res = await getTopSignal()
+    dialogValues.value.list = res || []
+    triggerRef(dialogValues)
+  } finally {
+    dialogValues.value.loading = false
+    triggerRef(dialogValues)
+  }
+}
 </script>
 
 <template>
@@ -68,11 +93,67 @@ const showResetBtn = shallowRef(false)
         </a>
       </div>
     </div>
-    <QuickSwapSet
-      v-model:quickBuyValue="quickBuyValue"
-      :chain="activeChain"
-      style="margin-left: 24px;"
-    />
+    <div class="flex items-center">
+      <span
+          class="transition-all transition-duration-300 px-8px py-6px  rounded-4px bg-#FFA6221A text-12px color-#FFA622 cursor-pointer hover:bg-#FFA622 hover:color-#333"
+          @click="setDialogVisible"
+      >{{
+          $t('今日潜力金狗榜单')
+        }}</span>
+      <QuickSwapSet
+          v-model:quickBuyValue="quickBuyValue"
+          :chain="activeChain"
+          style="margin-left: 20px;"
+      />
+    </div>
+    <el-dialog
+        v-model="dialogValues.visible"
+        :title="$t('今日潜力榜单')"
+        append-to-body
+        width="540px"
+        :class="`[--el-message-close-size:24px]`"
+    >
+      <el-table :data="dialogValues.list">
+        <el-table-column type="index" :title="$t('排名')">
+          <template #default="{$index}">
+            <img v-if="$index+1===1" src="@/assets/images/111.svg"/>
+            <img v-else-if="$index+1===2" src="@/assets/images/222.svg"/>
+            <img v-else-if="$index+1===3" src="@/assets/images/333.svg"/>
+            <span v-else>{{ $index + 1 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :title="$t('币种')">
+          <template #default="{row}">
+            <div class="flex items-center">
+              <TokenImg
+                  chain-class="hidden"
+                  :row="{
+                     chain:row.chain,
+                     symbol:row.symbol,
+                     logo_url:row.logo_url,
+                  }"
+              />
+              {{ row.symbol }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column :title="$t('首告时间')">
+          <template #default="{row}">
+            {{ formatDate(row.first_signal_time, 'HH:mm:ss') }}
+          </template>
+        </el-table-column>
+        <el-table-column :title="$t('首告市值')">
+          <template #default="{row}">
+            ${{ formatNumber(row.first_signal_mc, 2) }}
+          </template>
+        </el-table-column>
+        <el-table-column :title="$t('首告后最大涨幅(倍)')">
+          <template #default="{row}">
+            {{ parseInt(row.max_price_change) }}x
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
