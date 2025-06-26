@@ -693,5 +693,9 @@
   "plsImport": "請導入App設定裡面的自選Code，自動同步app自選數據",
   "plsImportCorrect": "請輸入正確的code",
   "bulkProcess": "批量導入/導出",
-  "monitorList": "監控列表"
+  "monitorList": "監控列表",
+  "createPosition": "建倉",
+  "addPosition": "加倉",
+  "reducePosition": "減倉",
+  "walletMonitor": "錢包監控"
 }

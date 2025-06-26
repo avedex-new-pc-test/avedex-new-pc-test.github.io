@@ -1,5 +1,5 @@
 <template>
-  <div class="w-address mt-12px">
+  <div class="w-address mt-12px flex-1 overflow-auto">
     <div class="m-header flex-between px-12px items-start">
       <pro-groups v-model="conditions.group" :options="addressGroups" @onConfirm="handleConfirmEdit" @onDelete="handleDelGroup" @onAdd="handleAddGroup"/>
       <ul class="w-operate">
@@ -21,12 +21,14 @@
       <!-- <el-table :data="tableData" style="width: 100%">
 
       </el-table> -->
+      <!-- <Monitor/> -->
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
+// import Monitor from '@/components/monitor/index.vue'
 import ProGroups from '../components/proGroups.vue'
 import { getFavoriteList2, getAttentionPageList, getUserFavoriteGroups2, changeFavoriteGroupName2 ,addFavoriteGroup2,removeFavoriteGroup2} from '~/api/attention'
 const { mode, lang, isDark } = storeToRefs(useGlobalStore())

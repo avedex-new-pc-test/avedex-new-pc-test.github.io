@@ -277,6 +277,17 @@ export function getFavUserRemarks2({ address, pageNO, pageSize, user_chain, time
   })
 }
 
+// Get user monitorAddress
+export function getHistoryMonitor({pageNo=1,pageSize=50}) {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_users/v1/user/historyMonitor',{
+    method: 'get',
+    params: {
+      pageNo,
+      pageSize
+    }
+  })
+}
 
 
 
@@ -299,3 +310,4 @@ export async function getAttentionPageList({ group = 0, user_chain, sort = '', s
     // cancelToken: source.token,
   })
 }
+

@@ -279,5 +279,6 @@
   "plsImport": "",
   "plsImportCorrect": "Por favor, insira o código correto",
   "bulkProcess": "Importação em massa / Exportação em massa",
-  "monitorList": "Lista de monitoramento"
+  "monitorList": "Lista de monitoramento",
+  "walletMonitor": "Monitor da carteira"
 }

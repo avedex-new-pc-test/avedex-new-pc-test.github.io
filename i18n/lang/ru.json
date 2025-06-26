@@ -452,5 +452,6 @@
   "plsImport": "Импортируйте код настроек",
   "plsImportCorrect": "Введите правильный код",
   "bulkProcess": "Массовый импорт/экспорт",
-  "monitorList": "Список мониторинга"
+  "monitorList": "Список мониторинга",
+  "walletMonitor": "Кошелек"
 }

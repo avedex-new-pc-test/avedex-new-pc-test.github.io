@@ -274,5 +274,6 @@
   "plsImport": "Lütfen kodu girin",
   "plsImportCorrect": "Lütfen doğru kodu girin",
   "bulkProcess": "Toplu İçe Aktarma / Toplu Dışa Aktarma",
-  "monitorList": "İzleme Listesi"
+  "monitorList": "İzleme Listesi",
+  "walletMonitor": "Cüzdan monitörü"
 }

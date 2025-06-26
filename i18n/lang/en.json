@@ -701,5 +701,9 @@
   "monitorList": "Monitoring List",
   "noteTime": "Note time",
   "pushTitle": "Push",
-  "documentation":"documentation"
+  "documentation": "documentation",
+  "createPosition": "Open Position",
+  "addPosition": "Increase Position",
+  "reducePosition": "Reduce Position",
+  "walletMonitor": "Wallet Monitor"
 }
