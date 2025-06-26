@@ -264,10 +264,14 @@ const isShowDate = ref(true)
 
 <template>
   <div
-    class="bg-[--d-111-l-FFF] p-12px relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] h-full"
+      class="bg-[--d-111-l-FFF] p-12px pt-0 relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] h-full"
   >
+    <Icon
+        name="custom:drag2"
+        class="absolute top-3px left-50% ml--6px text-6px bg-[--d-222-l-F2F2F2]"
+    />
     <div
-      class="flex items-center justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5] cursor-move">
+        class="flex items-center pt-12px justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5] cursor-move">
       <span class="color-[--d-FFF-l-222] text-14px">{{ $t('signal') }}</span>
       <div class="flex items-center gap-12px">
         <Filter
