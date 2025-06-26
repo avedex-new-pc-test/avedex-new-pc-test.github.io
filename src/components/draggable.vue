@@ -139,4 +139,8 @@ function onDrag(x: number, y: number) {
 .handle-tm {
   top: -8px;
 }
+
+.vdr {
+  border: 0 none;
+}
 </style>

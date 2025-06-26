@@ -275,7 +275,7 @@ const isShowDate = ref(true)
 
 <template>
   <div
-      class="bg-[--d-111-l-FFF] p-12px pt-0 relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] h-full"
+      class="bg-[--d-111-l-FFF] p-12px pt-0 relative shrink-0 signal h-full"
   >
     <Icon
         name="custom:drag2"

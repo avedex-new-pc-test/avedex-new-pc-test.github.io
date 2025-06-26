@@ -59,8 +59,13 @@ export const useSignalStore = defineStore('signalStore', () => {
     }
   }
 
-  function onRightDragStop(x: number) {
+  function onRightDragStop(x: number, y: number) {
     isRightFixed.value = Math.abs(x) < 1
+    const _x = winWidth.value - fixedWidth.value + x
+    if (!isRightFixed.value) {
+      signalBoundingRect.value.x = _x
+      signalBoundingRect.value.y = y
+    }
   }
 
   function onFixedResizing(width: number) {
