@@ -73,6 +73,7 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
       @update:sort="sortChange"
     />
     <el-scrollbar
+      style="margin-right: -12px;padding-right: 12px;"
       :height="height"
       @end-reached="endReached"
     >
@@ -243,7 +244,6 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
             </div>
             <div class="w-90px justify-end flex items-center">
               <QuickSwap
-                v-if="(botStore.evmAddress || !botStore.currentAccount)"
                 :quickBuyValue="quickBuyValue"
                 :row="signalList[index]"
                 classNames="min-w-70px"
@@ -293,6 +293,7 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
             </div>
           </div>
         </div>
+        <AveEmpty v-if="signalList.length===0&&!loading" class="pt-10px"/>
       </div>
       <div v-if="loading" class="flex justify-center text-12px text-[#959a9f]">{{ $t('loading') }}</div>
     </el-scrollbar>

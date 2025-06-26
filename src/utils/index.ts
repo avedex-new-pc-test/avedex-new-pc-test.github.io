@@ -238,6 +238,30 @@ export function getTagTooltip(i: {
   return tips?.[i.tag] || $t(i.tag)
 }
 
+export function getAi(i: {
+  tag?: string
+  smart_money_buy_count_24h?: number
+  smart_money_sell_count_24h?: number
+}) {
+  const $t = getGlobalT()
+  if (!i.tag) {
+    if ((i.smart_money_buy_count_24h??0) > 0 || (i.smart_money_sell_count_24h??0) > 0) {
+      return $t('smart_money_tips', {
+        b: i.smart_money_buy_count_24h,
+        s: i.smart_money_sell_count_24h,
+      })
+    }
+    return ''
+  }
+  const tips: Record<string, string> = {
+    kol_sell: $t('kol_sell_tips'),
+    kol_buy: $t('kol_buy_tips'),
+    smarter_buy: $t('smarter_buy_tips'),
+    smarter_sell: $t('smarter_sell_tips'),
+  }
+  return tips?.[i.tag] || $t(i.tag)
+}
+
 // 根据字符串生成头像
 export function generateAvatarIcon(string: string) {
   const hashBuffer = sha1(string)

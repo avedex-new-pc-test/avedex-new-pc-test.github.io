@@ -10,7 +10,6 @@ import { getNewFavoriteList, getUserFavoriteGroups, removeFavorite, removeFavori
 const botStore = useBotStore()
 const walletStore = useWalletStore()
 const configStore = useConfigStore()
-const currentAccount = localStorage.getItem('currentAccount')
 const router = useRouter()
 const { t } = useI18n()
 const activeTab = ref(0)
@@ -55,10 +54,21 @@ const loading = ref(false)
 const pageData = ref({
   total: 10,
   page: 1,
-  pageSize: 10
+  pageSize: 50
 })
 const tableList = ref<any[]>([])
 const { mode } = storeToRefs(useGlobalStore())
+
+const addressValue = computed(() => {
+  return botStore.evmAddress || walletStore.address
+})
+
+watch(() => walletStore.walletSignature[walletStore.address], (newValue) => {
+  if (newValue) {
+    getList()
+    getGroupList()
+  }
+})
 
 watch(() => botStore.evmAddress, (newVal) => {
   if (newVal) {
@@ -102,7 +112,7 @@ const handleDeleteGroup = async (groupId: number) => {
     dangerouslyUseHTMLString: true,
     customClass: '',
   })
-  await removeFavoriteGroup(groupId, botStore.evmAddress)
+  await removeFavoriteGroup(groupId, addressValue.value)
   ElMessage.success(t('success'))
   getGroupList()
   if (activeTab.value === groupId) {
@@ -114,7 +124,7 @@ const handleDeleteGroup = async (groupId: number) => {
 const handleAddGroup = async () => {
   if (!groupValue.value.trim()) return ElMessage.error(t('enterGroupName'))
   if (groupValue.value.length > 20) return ElMessage.error(t('maximum10characters'))
-  await addFavoriteGroup(groupValue.value, botStore.evmAddress)
+  await addFavoriteGroup(groupValue.value, addressValue.value)
   ElMessage.success(t('success'))
   addGroupPopoverRef.value?.hide()
   getGroupList()
@@ -135,7 +145,7 @@ const editHide = () => {
 const handleUpdateGroupConfirm = async (item: any, index: number) => {
   if (!groupValue.value.trim()) return ElMessage.error(t('enterGroupName'))
   if (groupValue.value.length > 20) return ElMessage.error(t('maximum10characters'))
-  await changeFavoriteGroupName(groupValue.value, item.value, botStore.evmAddress)
+  await changeFavoriteGroupName(groupValue.value, item.value, addressValue.value)
   ElMessage.success(t('success'))
   editGroupPopoverRef.value[index]?.hide()
   getGroupList()
@@ -169,7 +179,7 @@ const handleRemarkGroup = async (row: any) => {
   if (!remarkValue.value.trim()) return ElMessage.error(t('enterRemark'))
   if (remarkValue.value.length > 50) return ElMessage.error(t('remarkError'))
   const tokenId = row.token + '-' + row.chain
-  await editTokenFavRemark(tokenId, remarkValue.value, botStore.evmAddress)
+  await editTokenFavRemark(tokenId, remarkValue.value, addressValue.value)
   ElMessage.success(t('success'))
   visibleShow.value = false
   getList()
@@ -185,9 +195,9 @@ const tableRowClick = (row: any) => {
     row.chain === 'runes' ||
     containsSpecialString
   ) {
-    router.push(`/brc/${row.token}-${row.chain}?from=fav`)
+    router.push(`/brc/${row.token}-${row.chain}?from=/follow/token`)
   } else {
-    router.push(`/token/${row.token}-${row.chain}?from=fav`)
+    router.push(`/token/${row.token}-${row.chain}?from=/follow/token`)
   }
 }
 
@@ -204,11 +214,8 @@ const handleSortChange = ({ prop, order }: any) => {
 
 // 取消收藏
 const collect = (row: any) => {
-  if (!verifyLogin()) {
-    return
-  }
   loading.value = true
-  removeFavorite(`${row.token}-${row.chain}`, botStore.evmAddress)
+  removeFavorite(`${row.token}-${row.chain}`, addressValue.value)
     .then(() => {
       getList()
     })
@@ -222,14 +229,14 @@ const collect = (row: any) => {
 
 const getRowGroupChange = async (val: number, row: any) => {
   const tokenId = row.token + '-' + row.chain
-  await moveFavoriteGroup(tokenId, val, botStore.evmAddress)
+  await moveFavoriteGroup(tokenId, val, addressValue.value)
   getList()
 }
 
 // 获取列表
 const getList = async () => {
   const res = await getNewFavoriteList({
-    address: botStore.evmAddress,
+    address: addressValue.value,
     group: activeTab.value,
     pageNO: pageData.value.page,
     pageSize: pageData.value.pageSize
@@ -250,7 +257,7 @@ const getList = async () => {
 
 // 获取分组列表
 const getGroupList = async () => {
-  const res = await getUserFavoriteGroups(botStore.evmAddress)
+  const res = await getUserFavoriteGroups(addressValue.value)
   tabsGroup.value = (res || []).filter(el => !!el.name).map((item) => ({
     ...item,
     label: item.name,
@@ -277,8 +284,7 @@ onMounted(() => {
         <el-popover trigger="click" @hide="editHide" ref="editGroupPopoverRef" :width="editId ? 250 : 100"
           popper-style="min-width: 86px;">
           <template #reference>
-            <img v-if="item.value > 0" @click.stop class="w-12px h-12px ml-2px" src="@/assets/icons/set_up.svg"
-              alt="" />
+            <Icon @click.stop v-if="item.value > 0" name="custom:set-up" class="text-12px ml-2px" />
           </template>
           <div>
             <div v-if="!editId">
@@ -314,7 +320,7 @@ onMounted(() => {
           <!-- 新增 -->
           <div style="background: rgba(63, 128, 247, 0.10);" @click="editId = undefined"
             class="cursor-pointer text-12px color-[#3F80F7] px-12px py-4px rounded-4px shrink-0 flex items-center">
-            <img class="w-12px h-12px mr-2px" src="@/assets/icons/add_icon.svg" alt="" />
+            <Icon name="custom:add-icon" class="text-12px mr-2px" />
             {{ t('newGroup') }}
           </div>
         </template>
@@ -337,7 +343,7 @@ onMounted(() => {
         <template #reference>
           <div style="background: rgba(63, 128, 247, 0.10);" @click="handleMoveGroup"
             class="cursor-pointer text-12px color-[#3F80F7] px-12px py-4px rounded-4px shrink-0 flex items-center">
-            <img class="w-12px h-12px mr-2px" src="@/assets/icons/list_icon.svg" alt="" />
+            <Icon name="custom:list-icon" class="text-12px mr-2px" />
             {{ t('groupManage') }}
           </div>
         </template>
@@ -348,7 +354,7 @@ onMounted(() => {
             <div class="py-12px px-8px flex justify-between items-center hover:bg-[--d-2A2A2A-l-F2F2F2] cursor-move"
               v-for="item in moveList.filter(item => item.label.includes(moveValue))" :key="item.value">
               {{ item.label }}
-              <img class="w-16px h-16px" src="@/assets/icons/move_icon.svg" alt="" />
+              <Icon name="custom:move-icon" class="text-16px" />
             </div>
           </VueDraggableNext>
           <div class="flex items-center justify-between mt-12px gap-12px">
@@ -383,7 +389,7 @@ onMounted(() => {
               <span class="text-[#848E9C] text-12px mr-5px">
                 #{{ (pageData.page - 1) * pageData.pageSize + $index + 1 }}
               </span>
-              <Icon v-if="botStore.evmAddress || currentAccount" name="material-symbols:kid-star"
+              <Icon v-if="addressValue" name="material-symbols:kid-star"
                 class="color-var(--d-999-l-666) h-16px w-16px clickable shrink-0 color-#ffbb19"
                 @click.stop.prevent="collect(row)" />
               <div class="relative ml-3px">
@@ -425,7 +431,8 @@ onMounted(() => {
                   <div class="text-8px text-[--d-666-l-999]">
                     {{ row?.token?.replace(new RegExp('(.{4})(.+)(.{4}$)'), '$1...$3') }}
                   </div>
-                  <Icon @click.stop.prevent v-copy="row?.token" name="bxs:copy" class="ml-5px clickable text-[--d-666-l-999]" />
+                  <Icon @click.stop.prevent v-copy="row?.token" name="bxs:copy"
+                    class="ml-5px clickable text-[--d-666-l-999]" />
                   <a class="flex items-center" v-tooltip="appendix(row)?.twitter" :href="appendix(row)?.twitter"
                     target="_blank" @click.stop>
                     <Icon :name="`custom:twitter`" class="text-[--d-666-l-999] h-14px w-14px" />

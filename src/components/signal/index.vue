@@ -24,7 +24,6 @@ const pageParams = shallowRef({
 })
 const chainOptions = shallowRef(['solana', 'bsc'])
 const activeChain = shallowRef('solana')
-
 function setActiveChain(chain: string) {
   activeChain.value = chain
   resetAndGet()
@@ -270,10 +269,10 @@ const isShowDate = ref(true)
 
 <template>
   <div
-    class="bg-[--d-111-l-FFF] p-12px relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] cursor-move h-full"
+    class="bg-[--d-111-l-FFF] p-12px relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] h-full"
   >
     <div
-      class="flex items-center justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5]">
+      class="flex items-center justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5] cursor-move">
       <span class="color-[--d-FFF-l-222] text-14px">{{ $t('signal') }}</span>
       <div class="flex items-center gap-12px">
         <Filter
@@ -319,6 +318,8 @@ const isShowDate = ref(true)
           class="[--el-border-color:transparent]"
         />
         <SlippageSet
+          id="drag-settings"
+          :showQuickAmount="false"
           :chain="activeChain"
           :setting="botSettingStore?.botSettings[activeChain]"
         />
@@ -329,57 +330,61 @@ const isShowDate = ref(true)
         />
       </div>
     </div>
-    <div
-      v-if="!isLargeScreen"
-      class="flex items-center justify-between mb-18px"
-    >
-      <Filter
-        v-model="shouldAlert"
-        :filter-params="filterParams"
-        @onConfirm="val=>{filterParams={...val};resetAndGet();}"
-        @onReset="resetFilterParams"
-      />
-      <QuickBuyInput
-        v-model="quickBuyValue"
-        size="small"
-        class="[--el-border-color:transparent]"
-      />
-    </div>
-    <el-scrollbar
-      v-if="!isLargeScreen"
-      :height="scrollHeight"
-      @endReached="endReached"
-    >
-      <SmallSignalList
-        v-if="isSmallScreen"
-        :signalList="filterSignalList"
-        :quickBuyValue="quickBuyValue"
-      />
-      <MiddleSignalList
-        v-else-if="isMiddleScreen"
+    <div id="drag-disabled">
+      <div
+        v-if="!isLargeScreen"
+        class="flex items-center justify-between mb-18px"
+      >
+        <Filter
+          v-model="shouldAlert"
+          :filter-params="filterParams"
+          @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+          @onReset="resetFilterParams"
+        />
+        <QuickBuyInput
+          v-model="quickBuyValue"
+          size="small"
+          class="[--el-border-color:transparent]"
+        />
+      </div>
+      <el-scrollbar
+        v-if="!isLargeScreen"
+        style="margin-right: -12px;padding-right: 12px;"
+        :height="scrollHeight"
+        @endReached="endReached"
+      >
+        <SmallSignalList
+          v-if="isSmallScreen"
+          :signalList="filterSignalList"
+          :quickBuyValue="quickBuyValue"
+        />
+        <MiddleSignalList
+          v-else-if="isMiddleScreen"
+          :quickBuyValue="quickBuyValue"
+          :signalList="filterSignalList"
+          :showPop="showPopover"
+          :hidePop="scheduleHide"
+        />
+        <AveEmpty v-if="signalList.length===0&&!listStatus.loading" class="pt-10px"/>
+        <div
+          v-if="listStatus.loading"
+          class="flex justify-center text-12px text-[#959a9f]"
+        >
+          {{ $t('loading') }}
+        </div>
+      </el-scrollbar>
+      <LargeSignalList
+        v-else
+        v-model="sortParams"
+        :loading="listStatus.loading"
         :quickBuyValue="quickBuyValue"
         :signalList="filterSignalList"
         :showPop="showPopover"
         :hidePop="scheduleHide"
+        :height="signalStore.signalBoundingRect.height-96"
+        @endReached="endReached"
       />
-      <div
-        v-if="listStatus.loading"
-        class="flex justify-center text-12px text-[#959a9f]"
-      >
-        {{ $t('loading') }}
-      </div>
-    </el-scrollbar>
-    <LargeSignalList
-      v-else
-      v-model="sortParams"
-      :loading="listStatus.loading"
-      :quickBuyValue="quickBuyValue"
-      :signalList="filterSignalList"
-      :showPop="showPopover"
-      :hidePop="scheduleHide"
-      :height="signalStore.signalBoundingRect.height-96"
-      @endReached="endReached"
-    />
+    </div>
     <audio
       ref="signalAudio" controls style="display: none"
       src="/signal.mp3"
@@ -457,7 +462,8 @@ const isShowDate = ref(true)
 .signal {
   .el-select {
     --el-select-width: 60px;
-    --el-fill-color-blank: var(--d-222-l-FFF);
+    --el-fill-color-blank: var(--d-222-l-F2F2F2);
+    --el-bg-color-overlay: var(--d-222-l-F2F2F2);
   }
 
   .el-select--small .el-select__wrapper {

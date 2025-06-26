@@ -661,6 +661,8 @@
   "antiWhaleModifiable": "可修改大額交易限制",
   "check2": "安全檢測",
   "tax": "稅",
+  "aiSummary":"AI敘事",
+  "aiIsAnalyzing":"AI分析進行中...",
   "times": "次",
   "MaximumIncrease": "最大漲幅",
   "CurrentMC": "當前市值",

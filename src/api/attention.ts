@@ -311,3 +311,11 @@ export async function getAttentionPageList({ group = 0, user_chain, sort = '', s
   })
 }
 
+export function favUsersAddMonitor(data: any) {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_users/v1/user/addMonitor', {
+    method: 'post',
+    body: data,
+  })
+}
+

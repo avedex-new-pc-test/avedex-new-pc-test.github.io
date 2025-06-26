@@ -38,7 +38,7 @@ definePageMeta({
 transition: {
     name: 'follow',
   },
-  keepalive: true,
+  keepalive: false,
   middleware: defineNuxtRouteMiddleware((to) => {
     if(to.path === '/follow') {
       return navigateTo('/follow/token', { replace: true })
