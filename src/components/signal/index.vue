@@ -196,7 +196,7 @@ async function updateListData() {
 }
 
 function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
-  if (signalStore.listStatus.finished) {
+  if (signalStore.listStatus.finished || signalStore.listStatus.loading) {
     return
   }
   if (direction === 'bottom') {
@@ -380,7 +380,7 @@ const isShowDate = ref(true)
         :signalList="filterSignalList"
         :showPop="showPopover"
         :hidePop="scheduleHide"
-        :height="signalStore.signalBoundingRect.height-96"
+        :height="signalStore.signalBoundingRect.height-100"
         @endReached="endReached"
       />
     </div>
