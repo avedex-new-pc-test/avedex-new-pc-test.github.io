@@ -14,7 +14,7 @@
           <Icon name="ic:baseline-person-add-alt-1" class="text-12px  mr-5px"/>
           {{ $t('addWallet') }}
         </el-button>
-        <el-button size="small" @click="bulkImport" style="height: 20px;color: var(--d-999-l-222) !important;" :color="isDark?'#333':'#F2F2F2'" :dark="isDark" >
+        <el-button size="small" @click.stop.prevent="showBatchAddressDetails=true" style="height: 20px;color: var(--d-999-l-222) !important;" :color="isDark?'#333':'#F2F2F2'" :dark="isDark" >
           <Icon name="mingcute:new-folder-fill" class="text-12px  mr-5px"/>
           {{ $t('bulkImport') }}
         </el-button>
@@ -108,6 +108,7 @@
       </div>
     </div>
   </el-popover>
+   <Batch @refresh="()=>{}"/>
 </template>
 
 <script setup lang="ts">
@@ -119,7 +120,7 @@ import { defaultPaginationParams, downColor, upColor } from '@/utils/constants'
 import type {AveTable} from '#components'
 const { t } = useI18n()
 const hasRing=ref(false)
-const {monitorVisible} = storeToRefs(useFollowStore())
+const {monitorVisible,currentAddress ,showBatchAddressDetails} = storeToRefs(useFollowStore())
 const { isDark } = storeToRefs(useGlobalStore())
 const dataSource = ref<any[]>([])
 const dataSourceCache = ref<any[]>([])

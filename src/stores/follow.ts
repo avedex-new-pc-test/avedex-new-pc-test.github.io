@@ -40,6 +40,7 @@ export const useFollowStore = defineStore('follow', () => {
   // const { getUserInfo } = botStore
   // const email = useLocalStorage('email', '')
   const monitorVisible = ref(false)
+  const showBatchAddressDetails = ref(false)
   const botStore = useBotStore()
   const walletStore = useWalletStore()
   const addressGroups = useLocalStorage<{ group_id: number; name: string; show_index: number; }[]>('addressGroups', [])
@@ -62,6 +63,8 @@ export const useFollowStore = defineStore('follow', () => {
     },
     initAddressGroups() {
       this.getUserFavoriteGroups2(currentAddress.value)
-    }
+    },
+    currentAddress,
+    showBatchAddressDetails
   }
 })
