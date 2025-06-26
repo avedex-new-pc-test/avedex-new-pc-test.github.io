@@ -97,6 +97,10 @@ export const useSignalStore = defineStore('signalStore', () => {
     pageSize: 20,
   })
 
+  function updateList() {
+    triggerRef(signalList)
+  }
+
   return {
     signalVisible,
     signalBoundingRect,
@@ -117,5 +121,6 @@ export const useSignalStore = defineStore('signalStore', () => {
     signalList,
     listStatus,
     pageParams,
+    updateList
   }
 })

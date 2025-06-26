@@ -142,7 +142,9 @@ onUnmounted(() => {
 })
 
 const signalAudio = useTemplateRef('signalAudio')
-watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData: GetSignalV2ListResponse) => {
+watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], ({msg: _signalData}: {
+  msg: GetSignalV2ListResponse
+}) => {
   if (shouldAlert.value === '1' && signalAudio.value && filterCallback(_signalData)) {
     signalAudio.value.currentTime = 0
     signalAudio.value.play()
@@ -156,6 +158,7 @@ watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData
   } else if (_signalData.history_count === 1) {
     signalStore.signalList.unshift(_signalData)
   }
+  signalStore.updateList()
 })
 
 /**
