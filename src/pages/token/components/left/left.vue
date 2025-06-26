@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import TopLeftTable from './topLeftTable.vue'
 import BottomLeftTable from '~/pages/token/components/left/bottomLeftTable.vue'
-import {useEventBus} from '@vueuse/core'
+import {useStorage, useWindowSize} from '@vueuse/core'
 import {DefaultHeight} from '~/utils/constants'
 
-const topLeftHeight = shallowRef(DefaultHeight.TOPLEFT)
+const topLeftHeight = useStorage('topLeftHeight', DefaultHeight.TOPLEFT)
 const canDrag = shallowRef(false)
 const globalStore = useGlobalStore()
-const leftDragEvent = useEventBus(BusEventType.LEFT_DRAG)
+const {height} = useWindowSize()
+
+// const leftDragEvent = useEventBus(BusEventType.LEFT_DRAG)
 
 function drag(e: MouseEvent) {
   let dy = e.clientY
@@ -18,10 +20,11 @@ function drag(e: MouseEvent) {
     }
     const {clientY} = e
 
-    if (clientY < dy) {
-      topLeftHeight.value -= dy - clientY
-    } else {
-      topLeftHeight.value += clientY - dy
+    const _topLeftHeight = clientY < dy
+      ? topLeftHeight.value - (dy - clientY)
+      : topLeftHeight.value + clientY - dy
+    if (_topLeftHeight <= height.value - 164) {
+      topLeftHeight.value = _topLeftHeight
     }
     dy = clientY
   }
@@ -30,7 +33,7 @@ function drag(e: MouseEvent) {
     canDrag.value = false
     document.onmousemove = null
     document.onmouseup = null
-    leftDragEvent.emit(topLeftHeight.value)
+    // leftDragEvent.emit(topLeftHeight.value)
   }
   return false
 }

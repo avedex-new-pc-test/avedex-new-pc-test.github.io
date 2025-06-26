@@ -161,6 +161,16 @@
                 name="ep:search"
               />
             </a>
+            <a
+              v-tooltip.raw="{
+                content: aiSummary?.headline || aiSummary?.summary ? `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>` : `${$t('aiIsAnalyzing')}`,
+                props:{
+                  placement:'top-start'
+                }
+              }"
+              class="media-item bg-btn clickable">
+              <Icon name="custom:ai" class="text-14px"/>
+            </a>
           </div>
           <el-popover
             v-if="collected"
@@ -721,6 +731,7 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
@@ -1038,11 +1049,11 @@ function getTags(i: Pair) {
     signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
     normal_str = tag_arr.filter((i: string) => !i?.startsWith('signal'))
   }
-  if (i?.tag) {
-    const tag = i.tag?.split(',') || []
-    const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
-    normal_str = tag1.concat(normal_str)
-  }
+  // if (i?.tag) {
+  //   const tag = i.tag?.split(',') || []
+  //   const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
+  //   normal_str = tag1.concat(normal_str)
+  // }
   normal_tag =
     normal_str?.map((i) => ({
       tag: i,
