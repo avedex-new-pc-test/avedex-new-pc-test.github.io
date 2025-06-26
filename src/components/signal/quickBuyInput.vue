@@ -7,7 +7,7 @@ const props = defineProps({
     default: '0.01'
   },
   size: {
-    type: String as '' | 'default' | 'small' | 'large',
+    type: String,
     default: ''
   }
 })
