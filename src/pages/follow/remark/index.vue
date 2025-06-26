@@ -244,7 +244,7 @@ onMounted(() => {
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('walletTotalBalance')" align="right">
+      <el-table-column :label="t('tokenBalance')" align="right">
         <template #default="{ row }">
           <div>
             <div v-if="row?.main_token_balance_amount > 0">

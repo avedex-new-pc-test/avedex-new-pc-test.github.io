@@ -473,6 +473,7 @@
   "BALANCE_CHANGE": "Balance Change",
   "THAW": "Thaw",
   "walletTotalBalance": "Total Balance",
+  "tokenBalance": "Token Balance",
   "walletDetail": "Wallet Detail",
   "noWalletTip": "Please connect your wallet to use this function",
   "profit": "Profit",
