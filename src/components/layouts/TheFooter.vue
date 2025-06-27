@@ -17,7 +17,15 @@
         </template>
       </NuxtLink>
       <el-badge :is-dot="isDoted">
-      </div>
+        <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
+             @click="signalStore.signalVisible=!signalStore.signalVisible"
+        >
+          <Icon
+            name="ri:signal-tower-fill"
+          />
+          {{ $t('signal') }}
+        </div>
+      </el-badge>
     <!-- <div
       id="monitor"
       class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
@@ -28,15 +36,6 @@
       />
       {{ $t('walletMonitor') }}
     </div> -->
-    <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
-             @click="signalStore.signalVisible=!signalStore.signalVisible"
-        >
-          <Icon
-            name="ri:signal-tower-fill"
-          />
-          {{ $t('signal') }}
-        </el-badge>
-    </div>
     <ul class="right">
       <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a class="border-left" target="_blank" href="https://eco.ave.ai">{{ $t('ecosystem') }}</a>
