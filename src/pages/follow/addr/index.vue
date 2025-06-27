@@ -1,5 +1,5 @@
 <template>
-  <div class="w-address mt-12px flex-1 overflow-auto">
+  <div class="w-address mt-12px flex-1">
     <div v-if="currentAddress" class="m-header flex-between px-12px items-start">
       <pro-groups v-model="conditions.group" :options="addressGroups" @onConfirm="handleConfirmEdit" @onDelete="handleDelGroup" @onAdd="handleAddGroup"/>
       <ul class="w-operate">

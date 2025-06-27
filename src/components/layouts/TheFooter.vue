@@ -17,7 +17,7 @@
         </template>
       </NuxtLink>
     </div>
-    <div
+    <!-- <div
       id="monitor"
       class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
       @click="monitorVisible=!monitorVisible"
@@ -26,7 +26,7 @@
         name="mingcute:wallet-fill"
       />
       {{ $t('walletMonitor') }}
-    </div>
+    </div> -->
     <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
            @click="signalStore.signalVisible=!signalStore.signalVisible"
       >
