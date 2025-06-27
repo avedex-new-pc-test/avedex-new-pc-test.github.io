@@ -3,6 +3,8 @@ import TimeLine from './timeLine.vue'
 import {useStorage} from '@vueuse/core'
 import Filter from '~/pages/smart/components/signal/filter.vue'
 import {getTopSignal, type ITopSignal} from '~/api/signal'
+import SignalLeftList from "~/pages/smart/components/signal/signalLeftList.vue";
+import SignalRightList from "~/pages/smart/components/signal/signalRightList.vue";
 
 defineProps<{
   activeChain: string
@@ -20,7 +22,7 @@ const filterParams = useStorage('signalParams', {
 const shouldAlert = useStorage('shouldAlert', '1')
 const showResetBtn = shallowRef(false)
 const quickBuyValue = useStorage('quickBuyValue', '0.01')
-const dialogValues = shallowRef<{
+const dialogValues = ref<{
   visible: boolean
   loading: boolean
   list: ITopSignal[]
@@ -33,14 +35,11 @@ const dialogValues = shallowRef<{
 async function setDialogVisible() {
   dialogValues.value.visible = true
   dialogValues.value.loading = true
-  triggerRef(dialogValues)
   try {
     const res = await getTopSignal()
     dialogValues.value.list = res || []
-    triggerRef(dialogValues)
   } finally {
     dialogValues.value.loading = false
-    triggerRef(dialogValues)
   }
 }
 </script>
@@ -106,71 +105,79 @@ async function setDialogVisible() {
           style="margin-left: 20px;"
       />
     </div>
-    <el-dialog
-        v-model="dialogValues.visible"
-        :title="$t('今日潜力榜单')"
-        append-to-body
-        width="540px"
-        :class="`[--el-message-close-size:24px]`"
-    >
-      <el-table :data="dialogValues.list">
-        <el-table-column
-            type="index"
-            :label="$t('排名')"
-            label-class-name="text-12px color-[--d-666-l-999]"
-        >
-          <template #default="{$index}">
-            <img v-if="$index+1===1" src="@/assets/images/111.svg"/>
-            <img v-else-if="$index+1===2" src="@/assets/images/222.svg"/>
-            <img v-else-if="$index+1===3" src="@/assets/images/333.svg"/>
-            <div v-else class="text-12px color-[--d-666-l-999] text-center">{{ $index + 1 }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column
-            :label="$t('币种')"
-            label-class-name="text-12px color-[--d-666-l-999]"
-        >
-          <template #default="{row}">
-            <div class="flex items-center">
-              <TokenImg
-                  chain-class="hidden"
-                  :row="{
+  </div>
+  <div class="flex">
+    <SignalLeftList/>
+    <SignalRightList/>
+  </div>
+  <el-dialog
+      v-model="dialogValues.visible"
+      :title="$t('今日潜力榜单')"
+      append-to-body
+      width="540px"
+      :class="`[--el-message-close-size:24px]`"
+  >
+    <el-table :data="dialogValues.list" :height="400">
+      <el-table-column
+          type="index"
+          :label="$t('排名')"
+          label-class-name="text-12px color-[--d-666-l-999]"
+      >
+        <template #default="{$index}">
+          <img v-if="$index+1===1" src="@/assets/images/111.svg"/>
+          <img v-else-if="$index+1===2" src="@/assets/images/222.svg"/>
+          <img v-else-if="$index+1===3" src="@/assets/images/333.svg"/>
+          <div v-else class="text-12px color-[--d-666-l-999] text-center">{{ $index + 1 }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column
+          :label="$t('币种')"
+          label-class-name="text-12px color-[--d-666-l-999]"
+      >
+        <template #default="{row}">
+          <div class="flex items-center text-12px gap-8px">
+            <TokenImg
+                chain-class="hidden"
+                :row="{
                      chain:row.chain,
                      symbol:row.symbol,
                      logo_url:row.logo_url,
                   }"
-              />
-              {{ row.symbol }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-            :label="$t('首告时间')"
-            label-class-name="text-12px color-[--d-666-l-999]"
-        >
-          <template #default="{row}">
-            <span class="color-[--d-FFF-l-222] text-12px">{{ formatDate(row.first_signal_time, 'HH:mm:ss') }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-            :label="$t('首告市值')"
-            label-class-name="text-12px color-[--d-666-l-999]"
-        >
-          <template #default="{row}">
-            <span class="color-[--d-FFF-l-222] text-12px"> ${{ formatNumber(row.first_signal_mc, 2) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-            :label="$t('首告后最大涨幅(倍)')"
-            label-class-name="text-12px color-[--d-666-l-999]"
-        >
-          <template #default="{row}">
-            {{ parseInt(row.max_price_change) }}x
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
-  </div>
+            />
+            <span class="shrink-0 whitespace-nowrap text-ellipsis overflow-hidden max-w-80px">{{ row.symbol }}</span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+          width="80"
+          :label="$t('首告时间')"
+          label-class-name="text-12px color-[--d-666-l-999]"
+      >
+        <template #default="{row}">
+          <span class="color-[--d-FFF-l-222] text-12px">{{ formatDate(row.first_signal_time, 'HH:mm:ss') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+          width="110"
+          :label="$t('首告市值')"
+          label-class-name="text-12px color-[--d-666-l-999]"
+      >
+        <template #default="{row}">
+          <span class="color-[--d-FFF-l-222] text-12px"> ${{ formatNumber(row.first_signal_mc, 2) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+          width="130"
+          align="right"
+          :label="$t('首告后最大涨幅(倍)')"
+          label-class-name="text-12px color-[--d-666-l-999]"
+      >
+        <template #default="{row}">
+          <div class="text-20px text-right color-#12B886">{{ parseInt(row.max_price_change) }}x</div>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-dialog>
 </template>
 
 <style scoped lang="scss">

@@ -33,7 +33,8 @@
       v-if="chain && botStore.isSupportChains.includes(chain)"
       class="ml-20px flex justify-end items-center text-12px">
       <span class="color-[--d-999-l-666] mr-5px">{{ $t('default') }}</span>
-      <div class="flex items-center justify-between p-1px rounded-4px text-12px h-28px bg-[--d-333-l-F2F2F2]">
+      <div
+        class="flex items-center justify-between p-1px rounded-4px text-12px h-28px bg-[--d-333-l-F2F2F2] px-2px py-2px">
         <button
           v-for="item in ['s1', 's2', 's3']" :key="item"
           class="color-[--d-999-l-666] cursor-pointer border-none font-400 rounded-4px min-w-36px py-5px px-10px text-center"

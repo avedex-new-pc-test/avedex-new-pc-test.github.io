@@ -5,9 +5,14 @@
     <a :href="homeUrl" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
-        <a :href="item.src" :target="item.target" :class="{ active: item.id == route?.name }">
+        <a
+          v-if="item.target==='_blank'" :href="item.src" :target="item.target"
+          :class="{ active: item.id == route?.name }">
           {{ item.name }}
         </a>
+        <NuxtLink v-else :to="item.src">
+          {{ item.name }}
+        </NuxtLink>
       </li>
     </ul>
     <div class="flex-1" />
