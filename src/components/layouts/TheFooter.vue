@@ -166,7 +166,7 @@ watch(()=>globalStore.footerTokensPrice, (newVal) => {
 })
 
 const wsStore = useWSStore()
-const isDoted = shallowRef(true)
+const isDoted = shallowRef(!signalStore.signalVisible)
 // 点击信号广场，悬浮窗打开状态，小红点消失
 watch(() => signalStore.signalVisible, val => {
   if (val) {
