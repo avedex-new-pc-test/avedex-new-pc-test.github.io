@@ -1,17 +1,14 @@
 <script setup lang="ts">
+import type {ISignalFilter} from '~/api/signal'
+
 const props = defineProps<{
-  filterParams: {
-    token: string
-    history_count: undefined | number
-    mc_curr: undefined | number
-    mc_curr_sign: string
-  }
+  filterParams: ISignalFilter
 }>()
 const emit = defineEmits(['update:filterParams', 'onConfirm', 'onReset'])
 const tempFilterParams = ref({
   token: '',
-  history_count: undefined as undefined | number,
-  mc_curr: undefined as undefined | number,
+  history_count: undefined,
+  mc_curr: undefined,
   mc_curr_sign: '<'
 })
 
@@ -29,23 +26,31 @@ const mcOptions = shallowRef([
 const themeStore = useThemeStore()
 
 const currentFilterNum = shallowRef(0)
+onMounted(() => {
+  tempFilterParams.value = {...props.filterParams}
+  updateCurrentNum()
+})
 
 function onConfirm() {
   filterVisible.value = false
   emit('onConfirm', tempFilterParams.value)
-  currentFilterNum.value = Object.keys(tempFilterParams.value).reduce((prev, curKey) => {
-    if (curKey === 'mc_curr_sign') {
-      return prev
-    } else if (!tempFilterParams.value[curKey]) {
-      return prev + 1
-    }
-  }, 0)
+  updateCurrentNum()
 }
 
 function onReset() {
   filterVisible.value = false
   emit('onReset')
   currentFilterNum.value = 0
+}
+
+function updateCurrentNum() {
+  currentFilterNum.value = Object.keys(tempFilterParams.value)
+    .reduce((prev, curKey: keyof ISignalFilter) => {
+      if (curKey !== 'mc_curr_sign' && tempFilterParams.value[curKey]) {
+        return prev + 1
+      }
+      return prev
+    }, 0)
 }
 </script>
 

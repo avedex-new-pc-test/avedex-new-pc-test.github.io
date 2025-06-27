@@ -6,7 +6,7 @@ import {getTopSignal, type ITopSignal} from '~/api/signal'
 import SignalLeftList from './signalLeftList.vue'
 import SignalRightList from './signalRightList.vue'
 
-defineProps<{
+const props = defineProps<{
   activeChain: string
 }>()
 const localeStore = useLocaleStore()
@@ -14,11 +14,14 @@ const localeStore = useLocaleStore()
 // history_count：筛选信号数，对应值2, 5, 15
 // 市值：mc_curr，市值过滤，
 // 市值方向：mc_curr_sign， 默认 > 大于号，可选 <
-const filterParams = useStorage('signalParams', {
+const defaultFilterParams = {
   token: '',
   history_count: undefined as undefined | number,
   mc_curr: undefined as undefined | number,
   mc_curr_sign: '<'
+}
+const filterParams = useStorage('signalParams', {
+  ...defaultFilterParams
 })
 const shouldAlert = useStorage('shouldAlert', '1')
 const showResetBtn = shallowRef(false)
@@ -43,13 +46,42 @@ async function setDialogVisible() {
     dialogValues.value.loading = false
   }
 }
+
+const signalLeftList = useTemplateRef<InstanceType<typeof SignalLeftList>>('signalLeftList')
+const signalRightList = useTemplateRef<InstanceType<typeof SignalRightList>>('signalRightList')
+
+onMounted(() => {
+  updateLeftList()
+})
+
+function onReset() {
+  filterParams.value = {...defaultFilterParams}
+  if (signalLeftList.value) {
+    signalLeftList.value.fetchSignalList()
+  }
+}
+
+function onConfirm(_filterParams: typeof defaultFilterParams) {
+  filterParams.value = {..._filterParams}
+  updateLeftList()
+}
+
+function updateLeftList() {
+  if (signalLeftList.value) {
+    signalLeftList.value.fetchSignalList(filterParams.value)
+  }
+}
 </script>
 
 <template>
   <TimeLine :activeChain="activeChain"/>
   <div class="pt-24px pb-10px px-10px flex justify-between">
     <div class="flex items-center">
-      <Filter :filter-params="filterParams"/>
+      <Filter
+        :filter-params="filterParams"
+        @onReset="onReset"
+        @onConfirm="onConfirm"
+      />
       <div class="flex items-center text-12px ml-20px color-[--d-F5F5F5-l-333]">
         {{ $t('NewSignalAlert') }}
         <el-switch
@@ -62,7 +94,7 @@ async function setDialogVisible() {
       <div
         v-show="showResetBtn"
         class="flex items-center text-12px gap-2px cursor-pointer ml-5px color-[--d-F5F5F5-l-333]"
-        @click="signalListRef.updateTokenFilter('')"
+        @click="signalRightList.updateTokenFilter('')"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path
@@ -108,9 +140,14 @@ async function setDialogVisible() {
       />
     </div>
   </div>
-  <div class="flex">
-    <SignalLeftList/>
-    <SignalRightList/>
+  <div class="flex pt-4px bg-[--d-222-l-F2F2F2]">
+    <SignalLeftList
+      ref="signalLeftList"
+      :activeChain="activeChain"
+    />
+    <SignalRightList
+      ref="signalRightList"
+    />
   </div>
   <el-dialog
       v-model="dialogValues.visible"

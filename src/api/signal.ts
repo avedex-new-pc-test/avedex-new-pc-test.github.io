@@ -44,6 +44,13 @@ export interface IActionItem {
   action_time: number
 }
 
+export interface ISignalFilter {
+  token?: string
+  history_count?: number | undefined
+  mc_curr?: number | undefined
+  mc_curr_sign?: string
+}
+
 /**
  * 信号广场列表
  */
@@ -51,6 +58,9 @@ export function getSignalV2List(query: {
   pageNO: number
   pageSize: number
   token?: string
+  history_count?: number | undefined
+  mc_curr?: number | undefined
+  mc_curr_sign?: string
   chain: string,
   fold?: boolean
 }): Promise<GetSignalV2ListResponse[]> {
