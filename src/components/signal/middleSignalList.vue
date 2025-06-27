@@ -38,7 +38,7 @@ const botStore = useBotStore()
         token_create_time
       },index) in signalList"
       :key="id"
-      class="pb-12px border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2] cursor-pointer"
+      class="pb-12px border-b-1px border-b-solid border-b-[--d-222-l-F2F2F2] cursor-pointer"
       @click="navigateTo(`/token/${token}-${chain}`)"
     >
       <div class="flex justify-between">
@@ -162,12 +162,12 @@ const botStore = useBotStore()
                 <span v-if="seconds < 60" class="color-#FFA622">
                   {{ seconds }}s
                 </span>
-                <span v-else>
+                <span v-else class="color-[--d-999-l-666]">
                 {{ formatTimeFromNow(first_signal_time) }}
               </span>
               </template>
             </TimerCount>
-            <span v-else>
+            <span v-else class="color-[--d-999-l-666]">
             {{ formatTimeFromNow(first_signal_time) }}
             </span>
           </el-col>
@@ -203,11 +203,11 @@ const botStore = useBotStore()
       </div>
       <div v-if="headline" class="flex items-center gap-8px mt-12px">
         <Icon name="custom:ai"/>
-        <div class="color-[--d-666-l-999] text-12px whitespace-nowrap overflow-hidden text-ellipsis">
+        <div class="color-[--d-F5F5F5-l-333] text-12px whitespace-nowrap overflow-hidden text-ellipsis">
           {{ headline }}
         </div>
       </div>
-      <div class="mt-12px px-8px py-4px lh-14px bg-[--d-1A1A1A-l-F2F2F2] flex items-center text-12px rounded-4px">
+      <div class="mt-12px px-8px py-4px lh-14px bg-[--d-222-l-F2F2F2] flex items-center text-12px rounded-4px">
         <img :src="formatIconTag(tag)" alt="" class="w-12px h-12px mr-4px">
         <TimerCount
           v-if="signal_time && Number(formatTimeFromNow(signal_time, true)) < 60"
@@ -216,16 +216,16 @@ const botStore = useBotStore()
             <div v-if="seconds < 60" class="color-#FFA622 text-12px">
               {{ seconds }}s
             </div>
-            <div v-else class="color-[--d-999-l-666] text-12px">
+            <div v-else class="color-#999 text-12px">
               {{ dayjs(signal_time * 1000).fromNow() }}
             </div>
           </template>
         </TimerCount>
-        <div v-else class="color-[--d-666-l-999] text-12px flex">
+        <div v-else class="color-#999 text-12px flex">
           {{ dayjs(signal_time * 1000).fromNow() }}
         </div>
         <div
-          class="color-[--d-666-l-999] mx-4px cursor-pointer decoration-underline decoration-dotted"
+          class="color-#999 mx-4px cursor-pointer decoration-underline decoration-dotted"
           @mouseenter.stop="showPop($event,signalList[index].actions)"
           @mouseleave.stop="hidePop"
         >
