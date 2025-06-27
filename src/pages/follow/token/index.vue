@@ -23,6 +23,7 @@ const allTabsGroup = computed(() => {
 const moveList = ref<any[]>([])
 const moveValue = ref('')
 
+const addGroupInputRef = ref()
 const addGroupPopoverRef = ref()
 const editGroupPopoverRef = ref()
 const moveGroupPopoverRef = ref()
@@ -124,6 +125,7 @@ const handleDeleteGroup = async (groupId: number) => {
 const handleAddGroup = async () => {
   if (!groupValue.value.trim()) return ElMessage.error(t('enterGroupName'))
   if (groupValue.value.length > 20) return ElMessage.error(t('maximum10characters'))
+  if (tabsGroup.value.some(item => item.label === groupValue.value)) return ElMessage.error(t('groupExistT'))
   await addFavoriteGroup(groupValue.value, addressValue.value)
   ElMessage.success(t('success'))
   addGroupPopoverRef.value?.hide()
@@ -315,7 +317,8 @@ onMounted(() => {
         </el-popover>
       </div>
 
-      <el-popover trigger="click" @hide="groupValue = ''" ref="addGroupPopoverRef" :width="250">
+      <el-popover trigger="click" @show="addGroupInputRef.focus()" @hide="groupValue = ''" ref="addGroupPopoverRef"
+        :width="250">
         <template #reference>
           <!-- 新增 -->
           <div style="background: rgba(63, 128, 247, 0.10);" @click="editId = undefined"
@@ -326,7 +329,8 @@ onMounted(() => {
         </template>
         <div>
           <div>{{ t('newGroup') }}</div>
-          <el-input v-model="groupValue" :placeholder="t('enterGroupName')" class="mt-8px w-200px" />
+          <el-input ref="addGroupInputRef" v-model="groupValue" :placeholder="t('enterGroupName')"
+            class="mt-8px w-200px" />
           <div class="flex items-center justify-between mt-12px gap-12px">
             <div @click="addGroupPopoverRef?.hide()"
               class="flex-1 text-center cursor-pointer text-14px color-[#F5F5F5] bg-[--d-333-l-0A0B0C] px-12px py-8px rounded-4px">
@@ -371,8 +375,8 @@ onMounted(() => {
       </el-popover>
     </div>
 
-    <el-table class='mt-12px' v-loading="loading" :data="tableList" stripe fit @sort-change="handleSortChange"
-      @row-click="tableRowClick">
+    <el-table class='mt-12px' v-loading="loading" height="calc(100vh - 250px)" :data="tableList" fit
+      @sort-change="handleSortChange" @row-click="tableRowClick">
       <template #empty>
         <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
           <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
@@ -504,7 +508,7 @@ onMounted(() => {
       </el-table-column>
     </el-table>
 
-    <el-pagination class="mt-20px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
+    <el-pagination class="mt-15px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
       layout="prev, pager, next, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" />
 
     <el-popover :visible="visibleShow" :virtual-ref="virtualRef" virtual-triggering trigger="click" :width="250">
@@ -548,5 +552,9 @@ onMounted(() => {
 
 :deep(.el-pager li) {
   border-radius: 6px;
+}
+
+:deep(.el-table .caret-wrapper) {
+  width: 16px;
 }
 </style>

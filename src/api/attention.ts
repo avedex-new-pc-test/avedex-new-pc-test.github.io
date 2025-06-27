@@ -307,3 +307,12 @@ export function favUsersAddMonitor(data: any) {
     body: data,
   })
 }
+
+export function favUsersPauseMonitor(data: any) {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_users/v1/user/pauseMonitor', {
+    method: 'post',
+    body: data,
+  })
+}
+
