@@ -472,6 +472,7 @@
   "BALANCE_CHANGE": "餘額變動",
   "THAW": "解凍",
   "walletTotalBalance": "錢包總餘額",
+  "tokenBalance": "主幣餘額",
   "walletDetail": "錢包詳情",
   "noWalletTip": "需要連接錢包才能使用該功能",
   "profit": "盈虧",
