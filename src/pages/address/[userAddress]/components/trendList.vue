@@ -40,8 +40,9 @@
             v-model:visible="filterForm.time.visible"
           >
             <template #reference>
-              <i
-                class="iconfont icon-guolv1 text-10px ml-3"
+              <Icon
+                name="custom:filter"
+                class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
                 :style="{
                   color:
                     trendQuery.block_time_min && trendQuery.block_time_max
@@ -49,20 +50,20 @@
                       : '',
                 }"
                 @click.stop
-              ></i>
+              />
             </template>
             <template #default>
               <div class="filter-box" :class="mode">
                 <div class="text-14px font-400" style="color: var(--a-text-1-color)">
                   {{ $t('filterByDate') }}
                 </div>
-                <div class="flex text-12px mt-10" style="color: var(--a-text-2-color)">
+                <div class="flex text-12px mt-10px" style="color: var(--a-text-2-color)">
                   <span style="flex: 1.2">{{ $t('startTime') }}</span>
                   <span class="flex-1">{{ $t('endTime2') }}</span>
                 </div>
                 <el-date-picker
                   style="--el-date-editor-width: 100%"
-                  class="mt-5"
+                  class="mt-5px"
                   v-model="filterForm.time.value"
                   type="datetimerange"
                   range-separator="To"
@@ -73,7 +74,7 @@
                   prefix-icon="Calendar"
                   :teleported="false"
                 />
-                <div class="flex mt-20">
+                <div class="flex mt-20px">
                   <div class="flex clickable" style="cursor: pointer">
                     <span class="filter-title">{{ $t('sort') }}</span>
                     <div class="chain-icon-sort-container">
@@ -134,10 +135,11 @@
             v-model:visible="filterForm.type.visible"
           >
             <template #reference>
-              <i
-                class="iconfont icon-guolv1 text-10px ml-3"
+              <Icon
+                name="custom:filter"
                 :style="{ color: !trendQuery.checkAll ? 'var(--custom-primary-color)' : '' }"
-              ></i>
+                class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
+              />
             </template>
             <template #default>
               <div class="checkbox-container">
@@ -238,15 +240,16 @@
             v-model:visible="filterForm.price.visible"
           >
             <template #reference>
-              <i
-                class="iconfont icon-guolv1 text-10px ml-3"
+              <Icon
+                name="custom:filter"
+                class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
                 :style="{
                   color:
                     trendQuery.volume_min && trendQuery.volume_max
                       ? 'var(--custom-primary-color)'
                       : '',
                 }"
-              ></i>
+              />
             </template>
             <template #default>
               <span class="text-12px font-400 filter-title">{{ $t('value') }}($)</span>
@@ -256,14 +259,14 @@
                   v-model.trim.number="filterForm.price.volume_min"
                   :placeholder="$t('minor')"
                   clearable
-                ></el-input>
+                />
                 <span class="ml-10 mr-10">~</span>
                 <el-input
                   class="height_36"
                   v-model.trim.number="filterForm.price.volume_max"
                   :placeholder="$t('max1')"
                   clearable
-                ></el-input>
+                />
               </div>
               <div class="mt-10">
                 <el-button
@@ -292,7 +295,11 @@
       <el-table-column align="right" label="TXN">
         <template #default="{ row }">
           <a class="ml-5 a-gray font-16" href="" @click.stop.prevent="goLink(row)">
-            <i class="iconfont icon-qukuailianliulanqi-baitian font-16 color-999"></i>
+            <Icon
+              name="custom:browser"
+              class="text-16px color-[--d-666-l-999] cursor-pointer"
+              @click.stop.self="goBrowser(row)"
+            />
           </a>
         </template>
       </el-table-column>
@@ -579,7 +586,7 @@ function localSortChange(sort, sort_dir) {
     }
   }
 
-  tr th{
+  tr th {
     background: #0a0b0d !important;
   }
 

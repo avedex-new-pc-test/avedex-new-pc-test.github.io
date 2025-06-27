@@ -106,7 +106,7 @@
         </a>
         <a class="statistic-right-share">
           {{ $t('share') }}
-          <Share :statistics="statistics" :address="address" :chain="chain" />
+        <Share :statistics="statistics" :address="address" :chain="chain" />
         </a>
       </div>
       <div>

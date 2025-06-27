@@ -89,8 +89,9 @@
         <template #header>
           <span
             >{{ $t('balance1') }}
-            <i
-              class="iconfont icon-qiehuan font-12 ml-3"
+            <Icon
+              name="custom:price"
+              :class="`${isVolUSDT?'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
               @click.stop.prevent="switch_amount_3 = !switch_amount_3"
             />
           </span>
@@ -105,7 +106,7 @@
                   ? 0
                   : formatNumber2(row?.balance_usd / row?.main_token_price || 0, 2, 4, 4)
               }}
-              <span class="font-12 color-999 ml-3">{{ row?.main_token_symbol }}</span>
+              <span class="font-12 color-999 ml-3px">{{ row?.main_token_symbol }}</span>
             </template>
             <template v-else>
               {{ '$' + formatNumber2(row?.balance_usd || 0, 2, 4, 4) }}
@@ -232,10 +233,7 @@
       </el-table-column>
       <el-table-column :label="$t('share')" align="right">
         <template #default="{ row }">
-          <i
-            class="iconfont icon-fenxiangtubiao font-12 color-999"
-            @click.stop.prevent="openDialog(row)"
-          />
+          <Share :statistics="row" :type="'topHolder'" :address="row.token" :chain="row.chain" />
         </template>
       </el-table-column>
     </el-table>
@@ -253,7 +251,7 @@ import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
 // import HideTokenDialog from './walletDetail/components/hideTokenDialog.vue'
 import TokenColumn from '@/components/tokenColumn.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
-
+import Share from '@/components/share.vue'
 const props = defineProps({
   tableData: {
     type: Array,
@@ -293,9 +291,6 @@ const props = defineProps({
 
 const emit = defineEmits(['hideToken'])
 
-const dialogVisible = ref(false)
-const loadingCopy = ref(false)
-const shareItem = ref({})
 const switch_amount_3 = ref(false)
 const hideTokenVisible = ref(false)
 const currentHideToken = ref({})
@@ -319,17 +314,6 @@ function jumpBalance(row) {
   //   address: '',
   //   remark: '',
   // }
-}
-
-function openDialog(item) {
-  loadingCopy.value = false
-  dialogVisible.value = true
-  shareItem.value = item
-  getQRCode()
-  getRandomBg(item?.total_profit_ratio > 0)
-  setTimeout(() => {
-    getShareImg()
-  }, 100)
 }
 
 function hideToken(row) {
