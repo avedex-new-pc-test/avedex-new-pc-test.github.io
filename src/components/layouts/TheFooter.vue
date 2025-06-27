@@ -16,7 +16,7 @@
           <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
         </template>
       </NuxtLink>
-      <el-badge :is-dot="!signalStore.signalVisible">
+      <el-badge :is-dot="isDoted">
         <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
              @click="signalStore.signalVisible=!signalStore.signalVisible"
         >
@@ -162,6 +162,20 @@ watch(()=>globalStore.footerTokensPrice, (newVal) => {
         item.color = newItem?.price_change>=0?upColor[0]:downColor[0]
       }
     }
+  }
+})
+
+const wsStore = useWSStore()
+const isDoted = shallowRef(true)
+// 点击信号广场，悬浮窗打开状态，小红点消失
+watch(() => signalStore.signalVisible, val => {
+  if (val) {
+    isDoted.value = false
+  }
+})
+watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], () => {
+  if (!signalStore.signalVisible) {
+    isDoted.value = true
   }
 })
 </script>
