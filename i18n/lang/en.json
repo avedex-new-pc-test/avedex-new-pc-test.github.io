@@ -721,5 +721,16 @@
   "totalLose": "Profit",
   "public": "Public",
   "tokenFilters": "Token Filters",
-  "filter": "Filters"
+  "filter": "Filters",
+  "hideNative": "Hide Native",
+  "total_win_ratio": "Ratio",
+  "wallet_age": "Wallet Age",
+  "total_unrealized_profit": "Unrealized PnL",
+  "total_realized_profit": "Realized PnL",
+  "hide_sell": "Hide Sold",
+  "recentlyTrade": "Recently Trade",
+  "wallet_detail_total_buy_avg": "Total Buy/Avg",
+  "wallet_detail_total_sell_avg": "Total Sell/Avg",
+  "viewWallet": "View Wallet",
+  "marketCap2": "Mkt Cap",
 }

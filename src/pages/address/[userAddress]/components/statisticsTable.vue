@@ -30,12 +30,6 @@
         >
           {{ $t('hideSmallAssets1') + '<1USD' }}
         </el-checkbox>
-        <!-- <BlackList
-          v-if="isSelfAddress"
-          :chain="chain"
-          :address="address"
-          @addWhite="refreshTokenList"
-        /> -->
       </div>
       <div v-else-if="isTrend" class="checkbox-container">
         <el-checkbox
@@ -67,6 +61,31 @@
           color="var(--custom-primary-color)"
           loader="dots"
         />
+        <TokenList
+          v-else-if="isToken"
+          :conditions="conditions_wallet"
+          :handleSortChange="handleSortChange"
+          :loading="tableData.loading"
+          :tableData="filterTableList"
+          :isSelfAddress="isSelfAddress"
+          :address="address"
+          @hideToken="refreshTokenList"
+        />
+        <TrendList
+          v-else-if="isTrend"
+          ref="trendList"
+          :handleSortChange="handleSortChange"
+          :tableData="filterTableList"
+          :trendQuery="trendQuery"
+          @refreshWhaleTrendList="refreshWhaleTrendList"
+        />
+          <!-- <DeployedTokenList
+          v-else
+          :conditions="deployedTokenQuery"
+          :handleSortChange="handleSortChange"
+          :loading="tableData.loading"
+          :tableData="filterTableList"
+        /> -->
         <div :style="{ color: mode === 'light' ? '#666' : '#999' }" class="mt_20 font-14 tc">
           <span v-if="tableData.loading && tableData.pageNO > 1">{{ $t('loading') }}</span>
         </div>
@@ -76,8 +95,8 @@
 </template>
 
 <script setup>
-// import TokenList from '@/views/wallet/tokenList.vue'
-// import TrendList from '@/views/wallet/trendList.vue'
+import TokenList from './tokenList.vue'
+import TrendList from './trendList.vue'
 // import DeployedTokenList from './deployedTokenList.vue'
 // import BlackList from './blackList.vue'
 import storage from 'good-storage'
@@ -94,8 +113,6 @@ const props = defineProps({
   },
   isSelfAddress: Boolean,
 })
-
-const store = useStore()
 
 const activeTab = ref('trend')
 const tableData = ref({
@@ -139,7 +156,11 @@ const deployedTokenNum = ref(0)
 const listArea = ref(null)
 const trendList = ref(null)
 
-const mode = computed(() => store.state.mode)
+const themeStore = useThemeStore()
+
+const mode = computed(() => {
+  return themeStore.isDark ? 'dark' : 'light'
+})
 
 const tabs = computed(() => {
   const commonTabs = [
@@ -148,7 +169,7 @@ const tabs = computed(() => {
   ]
   if (deployedTokenNum.value > 0) {
     commonTabs.push({
-      title: `$t('deployedToken')}(${deployedTokenNum.value})`,
+      title: `${$t('deployedToken')}(${deployedTokenNum.value})`,
       id: 'deployedToken',
     })
   }
@@ -158,20 +179,9 @@ const tabs = computed(() => {
 const isToken = computed(() => activeTab.value === 'token')
 const isTrend = computed(() => activeTab.value === 'trend')
 const chainAddress = computed(() => [props.chain, props.address])
-
-const currentApi = computed(() => {
-  const apiMap = {
-    token: getWhaleTokenListApi,
-    trend: getWhaleTrendListApi,
-    deployedToken: getDeployedTokensApi,
-  }
-  return apiMap[activeTab.value] || apiMap.trend
-})
-
 const filterTableList = computed(() => {
   if (isToken.value) {
-    const list = tableData.value.token.slice()
-    return list || []
+    return [...tableData.value.token]
   } else if (isTrend.value) {
     let trendList = tableData.value.trend.filter(
       (i) =>
@@ -188,42 +198,35 @@ const filterTableList = computed(() => {
         '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
       ]
       trendList = trendList.filter(
-        (i) => unSupport_arr.findIndex((y) => y?.toLowerCase() === i.token?.toLowerCase()) == -1
+        (i) => unSupport_arr.findIndex((y) => y?.toLowerCase() === i.token?.toLowerCase()) === -1
       )
     }
     return trendList
   } else {
-    return tableData.value.deployedToken.slice()
+    return [...tableData.value.deployedToken]
   }
 })
 
-watch(chainAddress, () => {
-  if (props.address && props.chain) {
-    resetPageNOAndLoading()
-    currentApi.value()
-    getDeployedTokenNum()
-  }
-})
-
-function onConditionChange() {
+// Methods
+const onConditionChange = (type) => {
   storage.set('conditions_wallet', conditions_wallet.value)
   tableData.value.pageNO = 1
-  getWhaleTokenListApi()
+  _getWhaleTokenList()
 }
 
-function onLoad() {
-  if (activeTab.value === 'deployedToken') {
-    return
-  }
-  currentApi.value()
+const onLoad = () => {
+  if (activeTab.value === 'deployedToken') return
+  if (isToken.value) _getWhaleTokenList()
+  else if (isTrend.value) _getWhaleTrendList()
+  else _getDeployedTokens()
 }
 
-function switchTab(item) {
+const switchTab = (item) => {
   activeTab.value = item.id
   onRouteChange()
 }
 
-function handleSortChange({ prop, order }) {
+const handleSortChange = ({ prop, order }) => {
   resetPageNOAndLoading()
   const sort_dir = order?.replace?.('ending', '')
   if (isToken.value) {
@@ -237,17 +240,17 @@ function handleSortChange({ prop, order }) {
     deployedTokenQuery.value.sort = prop
     deployedTokenQuery.value.sort_dir = sort_dir
   }
-  currentApi.value()
+  onLoad()
 }
 
-function resetPageNOAndLoading() {
+const resetPageNOAndLoading = () => {
   tableData.value.pageNO = 1
   tableData.value.finished = false
   tableData.value.error = false
   tableData.value.loading = true
 }
 
-async function getWhaleTokenListApi() {
+const _getWhaleTokenList = async () => {
   tableData.value.loading = true
   const data = {
     user_address: props.address,
@@ -257,13 +260,10 @@ async function getWhaleTokenListApi() {
     sort_dir: conditions_wallet.value.sort_dir,
     sort: conditions_wallet.value.sort,
     is_self: props.isSelfAddress ? 1 : 0,
+    ...(conditions_wallet.value.hide_sold === 1 && { hide_sold: 1 }),
+    ...(conditions_wallet.value.hide_small === 1 && { hide_small: 1 }),
   }
-  if (conditions_wallet.value.hide_sold === 1) {
-    data.hide_sold = 1
-  }
-  if (conditions_wallet.value.hide_small === 1) {
-    data.hide_small = 1
-  }
+
   try {
     const res = await getWhaleTokenList(data)
     if (data.pageNO === 1) {
@@ -271,9 +271,8 @@ async function getWhaleTokenListApi() {
     }
     const list = Array.isArray(res) ? res : []
     if (list?.length > 0) {
-      const a = [...(tableData.value.token || [])]
-      const b =
-        list?.filter?.((i) => a.every((j) => !(j.token === i.token && j.chain === i.chain))) || []
+      const a = [...tableData.value.token]
+      const b = list.filter((i) => a.every((j) => !(j.token === i.token && j.chain === i.chain)))
       tableData.value.token = [...a, ...b]
     }
     tableData.value.finished = list?.length < tableData.value.pageSize
@@ -288,18 +287,15 @@ async function getWhaleTokenListApi() {
   }
 }
 
-function refreshWhaleTrendList(params) {
-  trendQuery.value = {
-    ...trendQuery.value,
-    ...params,
-  }
+const refreshWhaleTrendList = (params) => {
+  trendQuery.value = { ...trendQuery.value, ...params }
   tableData.value.pageNO = 1
   max_block_number.value = 0
   max_event_id.value = 0
-  getWhaleTrendListApi()
+  _getWhaleTrendList()
 }
 
-function getWhaleTrendParams() {
+const getWhaleTrendParams = () => {
   const data = {
     user_address: props.address,
     chain: props.chain,
@@ -314,26 +310,21 @@ function getWhaleTrendParams() {
     block_time_max: trendQuery.value.block_time_max,
     sort_dir: trendQuery.value.sort_dir,
     sort: trendQuery.value.sort,
+    ...(trendQuery.value.volume_min && { volume_min: trendQuery.value.volume_min }),
+    ...(trendQuery.value.volume_max && { volume_max: trendQuery.value.volume_max }),
   }
-  if (trendQuery.value.volume_min) {
-    data.volume_min = trendQuery.value.volume_min
-  }
-  if (trendQuery.value.volume_max) {
-    data.volume_max = trendQuery.value.volume_max
-  }
+
   const trendLen = trendQuery.value.checkedTrend?.length
-  if (trendLen === 0) {
-    data.event_type = ''
-  }
   if (trendLen > 0 && trendLen <= 5) {
-    let event_type = trendQuery.value.checkedTrend?.filter?.((i) => i !== 'all')
-    event_type = event_type?.map((i) => i.replace('/', ','))
-    data.event_type = event_type?.toString()
+    let event_type = trendQuery.value.checkedTrend
+      .filter((i) => i !== 'all')
+      .map((i) => i.replace('/', ','))
+    data.event_type = event_type.toString()
   }
   return data
 }
 
-async function getWhaleTrendListApi() {
+const _getWhaleTrendList = async () => {
   tableData.value.loading = true
   if (trendQuery.value.volume_min > trendQuery.value.volume_max) {
     store.dispatch('showMessage', {
@@ -342,6 +333,7 @@ async function getWhaleTrendListApi() {
     })
     return
   }
+
   const params = getWhaleTrendParams()
   try {
     const res = await getWhaleTrendList(params)
@@ -351,27 +343,17 @@ async function getWhaleTrendListApi() {
     const list = Array.isArray(res) ? res : []
     const arr = list.map((i) => {
       let event_type = i.event_type
-      if (i.event_type === 'SWAP' && i.flow_type === 0) {
-        event_type = 'swap_buy'
+      if (i.event_type === 'SWAP') {
+        event_type = i.flow_type === 0 ? 'swap_buy' : 'swap_sell'
+      } else if (i.event_type === 'TRANSFER') {
+        event_type = i.flow_type === 0 ? 'transfer_in' : 'transfer_out'
       }
-      if (i.event_type === 'SWAP' && i.flow_type === 1) {
-        event_type = 'swap_sell'
-      }
-      if (i.event_type === 'TRANSFER' && i.flow_type === 0) {
-        event_type = 'transfer_in'
-      }
-      if (i.event_type === 'TRANSFER' && i.flow_type === 1) {
-        event_type = 'transfer_out'
-      }
-      return {
-        ...i,
-        event_type: event_type,
-      }
+      return { ...i, event_type }
     })
 
     if (arr?.length > 0) {
-      const a = [...(tableData.value.trend || [])]
-      const b = arr?.filter?.((i) => a.every((j) => j.tx_hash !== i.tx_hash)) || []
+      const a = [...tableData.value.trend]
+      const b = arr.filter((i) => a.every((j) => j.tx_hash !== i.tx_hash))
       tableData.value.trend = [...a, ...b]
     }
     tableData.value.finished = list?.length < tableData.value.pageSize
@@ -388,25 +370,25 @@ async function getWhaleTrendListApi() {
   }
 }
 
-function refreshTokenList() {
+const refreshTokenList = () => {
   resetPageNOAndLoading()
-  getWhaleTokenListApi()
+  _getWhaleTokenList()
 }
 
-function onRouteChange() {
+const onRouteChange = () => {
   resetPageNOAndLoading()
   if (isToken.value) {
-    getWhaleTokenListApi()
+    _getWhaleTokenList()
   } else if (isTrend.value) {
     max_block_number.value = 0
     max_event_id.value = 0
-    getWhaleTrendListApi()
+    _getWhaleTrendList()
   } else {
-    getDeployedTokensApi()
+    _getDeployedTokens()
   }
 }
 
-async function getDeployedTokensApi() {
+const _getDeployedTokens = async () => {
   tableData.value.loading = true
   const params = {
     user_address: props.address,
@@ -424,7 +406,7 @@ async function getDeployedTokensApi() {
   }
 }
 
-async function getDeployedTokenNum() {
+const getDeployedTokenNum = async () => {
   const params = {
     user_address: props.address,
     user_chain: props.chain,
@@ -437,6 +419,29 @@ async function getDeployedTokenNum() {
     console.log('error', err)
   }
 }
+
+const resetData = () => {
+  statistics.value = {}
+  tableData.value.token = []
+  tableData.value.trend = []
+}
+
+// Watchers
+watch(chainAddress, () => {
+  if (props.address && props.chain) {
+    resetPageNOAndLoading()
+    onLoad()
+    getDeployedTokenNum()
+  }
+})
+
+// Lifecycle hooks
+onMounted(() => {
+  if (props.address && props.chain) {
+    onLoad()
+    getDeployedTokenNum()
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -504,13 +509,6 @@ async function getDeployedTokenNum() {
     .el-scrollbar__wrap {
       overflow-y: hidden;
     }
-
-    .el-table__header-wrapper {
-      position: sticky;
-      top: 47px;
-      z-index: 3;
-    }
-
     .sort-caret {
       &.ascending {
         border-bottom-color: var(--custom-font-8-color);
