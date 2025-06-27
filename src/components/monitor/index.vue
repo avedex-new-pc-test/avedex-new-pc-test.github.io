@@ -108,7 +108,6 @@
       </div>
     </div>
   </el-popover>
-   <Batch @refresh="()=>{}"/>
 </template>
 
 <script setup lang="ts">

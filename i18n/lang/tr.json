@@ -296,5 +296,9 @@
   "7dTrades": "7d İşlem Sayısı",
   "30dTrades": "30d İşlem Sayısı",
   "7dVolume": "7d İşlem Hacmi",
-  "30dVolume": "30d İşlem Hacmi"
+  "30dVolume": "30d İşlem Hacmi",
+  "addrGroup": "Adres grubu",
+  "push": "İtmek",
+  "pauseMonitor": "Duraklat İzleme",
+  "enableMonitor": "İzlemeyi aç"
 }

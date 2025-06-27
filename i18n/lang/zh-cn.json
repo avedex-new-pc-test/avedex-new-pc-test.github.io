@@ -665,8 +665,8 @@
   "antiWhaleModifiable": "可修改大额交易限制",
   "check2": "安全检测",
   "tax": "税",
-  "aiSummary":  "AI叙事",
-  "aiIsAnalyzing":  "AI正在分析中...",
+  "aiSummary": "AI叙事",
+  "aiIsAnalyzing": "AI正在分析中...",
   "times": "次",
   "MaximumIncrease": "最大涨幅",
   "CurrentMC": "当前市值",
@@ -749,5 +749,10 @@
   "7dTrades": "7天 交易数",
   "30dTrades": "30天 交易数",
   "7dVolume": "7天 交易额",
-  "30dVolume": "30天 交易额"
+  "30dVolume": "30天 交易额",
+  "addrGroup": "地址分组",
+  "push": "推送",
+  "copyTrade": "跟单",
+  "pauseMonitor": "暂停监控",
+  "enableMonitor": "开启监控"
 }

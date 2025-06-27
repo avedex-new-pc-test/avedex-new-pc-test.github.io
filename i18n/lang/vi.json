@@ -475,5 +475,10 @@
   "7dTrades": "Giao dịch 7 ngày",
   "30dTrades": "Số giao dịch 30 ngày",
   "7dVolume": "Khối lượng 7 ngày",
-  "30dVolume": "Khối lượng 30 ngày"
+  "30dVolume": "Khối lượng 30 ngày",
+  "addrGroup": "Nhóm địa chỉ",
+  "push": "Xô",
+  "copyTrade": "Copy giao dịch",
+  "pauseMonitor": "Tạm dừng giám sát",
+  "enableMonitor": "Bật giám sát"
 }

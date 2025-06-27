@@ -301,5 +301,9 @@
   "7dTrades": "Número de transacciones 7d",
   "30dTrades": "Número de transacciones 30d",
   "7dVolume": "Volumen de transacciones 7d",
-  "30dVolume": "Volumen de transacciones 30d"
+  "30dVolume": "Volumen de transacciones 30d",
+  "addrGroup": "Grupo de direcciones",
+  "push": "Empujar",
+  "pauseMonitor": "Monitoreo de pausa",
+  "enableMonitor": "Encender el monitoreo"
 }

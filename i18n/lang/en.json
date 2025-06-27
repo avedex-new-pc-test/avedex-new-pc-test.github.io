@@ -747,5 +747,10 @@
   "7dTrades": "7d Txs",
   "30dTrades": "30d Count",
   "7dVolume": "7d Volume",
-  "30dVolume": "30d Volume"
+  "30dVolume": "30d Volume",
+  "addrGroup": "Address Group",
+  "push": "Push",
+  "copyTrade": "Copy Trade",
+  "pauseMonitor": "Pause Monitor",
+  "enableMonitor": "Turn on monitoring"
 }

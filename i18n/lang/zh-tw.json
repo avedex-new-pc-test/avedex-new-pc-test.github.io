@@ -732,5 +732,10 @@
   "7dTrades": "7d 交易數",
   "30dTrades": "30d 交易數",
   "7dVolume": "7d 交易額",
-  "30dVolume": "30d 交易額"
+  "30dVolume": "30d 交易額",
+  "addrGroup": "地址分組",
+  "push": "推送",
+  "copyTrade": "跟單",
+  "pauseMonitor": "暫停監控",
+  "enableMonitor": "開啟監控"
 }

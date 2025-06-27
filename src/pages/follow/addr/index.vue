@@ -37,9 +37,9 @@
                 id="custom-filter"
                 name="custom:filter"
                    :style="{
-                  color: conditions.keyword ? 'var(--a-btn-bg-2-color)' : 'var(--custom-font-8-color)'
+                  color: conditions.keyword ? 'var(--d-F5F5F5-l-333)' : 'var(--custom-font-8-color)'
                 }"
-                class="text-12px cursor-pointer ml-3"
+                class="text-10px cursor-pointer ml-2px"
                 @click.stop.prevent="handleFilterQuery()"
               />
             <el-popover
@@ -47,7 +47,7 @@
               placement="bottom-start"
               popper-class="chains-table-filter"
               title=""
-              :width="350"
+              :width="320"
               trigger="click"
               v-model:visible="visible"
             >
@@ -55,14 +55,14 @@
                  <Icon
                   id="custom-filter"
                   name="custom:filter"
-                  class="text-12px cursor-pointer ml-3"
+                  class="text-10px cursor-pointer ml-2px"
                   @click.stop.prevent="handleFilterQuery()"
                 />
               </template>
               <template #default>
                 <div class="filter-box" :class="mode">
                   <div>{{ $t('attentionSearch') }}</div>
-                  <div class="flex mt-10">
+                  <div class="flex mt-10px">
                     <el-input
                       v-model.trim="searchKeyword"
                       :placeholder="$t('attentionSearch')"
@@ -70,11 +70,20 @@
                       @clear="handleFilterQuery()"
                     ></el-input>
                   </div>
-                  <div class="mt-20">
+                  <div class="mt-20px flex">
                     <el-button
-                      class="width_100"
+                      class="flex-1"
                       size="default"
                       :color="mode !== 'dark' ? '#222222' : '#f5f5f5'"
+                      style="height: 30px; min-width: 70px; --el-button-font-weight: 400"
+                      @click.stop="searchKeyword='';visible=false"
+                    >
+                      {{ $t('cancel') }}
+                    </el-button>
+                    <el-button
+                      class="flex-1"
+                      size="default"
+                      color="#3F80F7"
                       style="height: 30px; min-width: 70px; --el-button-font-weight: 400"
                       @click.stop="handleFilterQuery(searchKeyword)"
                     >
@@ -273,7 +282,7 @@
         sortable="custom"
         :sort-orders="['descending', 'ascending', null]"
         prop="tx_volume"
-        min-width="120px"
+        min-width="130px"
       >
         <template #default="{ row }">
           <div style="padding: 0 5px">
@@ -325,7 +334,8 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="right" width="100">
+      <el-table-column align="right" width="120"  sortable="custom"
+        :sort-orders="['descending', 'ascending', null]" prop="last_tx_time">
         <template #header>
           <span>{{ $t('lastTxsTime1') }}</span>
           <el-popover
@@ -334,41 +344,40 @@
             title=""
             :width="300"
             trigger="click"
-            v-model:visible="filterForm.visible"
+            v-model:visible="visible2"
           >
             <template #reference>
-              <Icon name="iconamoon:sorting-center-bold" class="ext-10px ml-3"  :style="{
-                  color: (conditions?.last_trade_time || conditions.sort === 'last_tx_time') ? '#286DFF' : ''
-              }"/>
+              <Icon name="custom:filter" class="text-10px ml-2px"  :style="{
+                  color: (conditions?.last_trade_time || conditions.sort === 'last_tx_time') ? 'var(--d-F5F5F5-l-333)' : ''
+              }" @click.stop.prevent/>
             </template>
             <template #default>
               <div class="filter-box" :class="mode">
-                <div class="text-12px font-400 filter-title">{{ $t('lastTxsTime1') }}</div>
-                <div class="flex mt-10">
-                  <ul class="openTime">
-                    <li v-for="(item, index) in openTimeList" :key="index">
-                      <a
-                        href
-                        @click.stop.prevent="
-                          filterForm.last_trade_time = item.value
-                        "
-                      >
-                        <span>{{ item.text }}</span>
-                        <div class="flex-1"/>
-                        <Icon name="iconamoon:sorting-center-bold" class="text-12px"/>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="mt-40 flex">
+                <div class="text-12px font-500 text-[--d-FFF-l-333]">{{ $t('lastTxsTime1') }}</div>
+               <ul class="flex flex-col font-500 text-14px text-#666666">
+                  <li v-for="(item, index) in openTimeList"  class="flex-between py-11.5px hover:bg-[--d-2A2A2A-l-F2F2F2] cursor-pointer" :key="index"  @click.stop.prevent="
+                        filterForm.last_trade_time = item.value"
+                   >
+                    <span :class="[filterForm.last_trade_time == item.value?'text-[--d-F5F5F5-l-333]':'']">{{ item.text }}</span>
+                    <div class="flex-1"/>
+                    <Icon v-if="filterForm.last_trade_time == item.value" name="material-symbols:check" class="text-12px"/>
+                  </li>
+                </ul>
+                <div class="mt-11px flex-between">
                   <div
-                    class="flex clickable"
+                    class="flex items-center clickable"
                     style="cursor: pointer"
-                    @click="handleSort(filterForm[`last_trade_time`])"
+                    @click="handleSort(filterForm)"
                   >
                     <span class="filter-title">{{ $t('sort') }}</span>
-                    <div class="chain-icon-sort-container">
-                      <svg
+                    <div class="sort-container">
+                      <i :class="['sort-caret ascending',filterForm.sort_dir === 'asc' ? 'active' : '']"
+                        @click.stop="handleSort(filterForm, 'asc')" />
+                      <i :class="['sort-caret descending',filterForm.sort_dir === 'desc' ? 'active' : '']"
+                        @click.stop="handleSort(filterForm, 'desc')" />
+                      <!-- <i name="material-symbols:arrow-drop-down"  :class="filterForm.sort_dir === 'desc' ? 'active' : ''"
+                        @click.stop="handleSort(filterForm, 'desc')"/> -->
+                      <!-- <svg
                         class="icon-svg"
                         aria-hidden="true"
                         :class="filterForm.sort_dir === 'asc' ? 'active' : ''"
@@ -383,7 +392,7 @@
                         @click.stop="handleSort(filterForm, 'desc')"
                       >
                         <use xlink:href="#icon-sort-down"></use>
-                      </svg>
+                      </svg> -->
                     </div>
                   </div>
                   <el-button
@@ -448,6 +457,28 @@
           </div>
         </template>
       </el-table-column>
+      <el-table-column :label="t('addrGroup')" align="right" width="120">
+        <template #default="{ row }">
+          <el-select v-model="row.group_id" @click.stop @change="(val) => getRowGroupChange(val, row)">
+            <el-option :key="0" :value="0" :label="$t('defaultGroup')"/>
+            <el-option v-for="item in addressGroups" :key="item.group_id" :label="item.name" :value="item.group_id" />
+          </el-select>
+        </template>
+      </el-table-column>
+       <el-table-column :label="t('push')" align="right" width="120">
+        <template #default="{ row }">
+          <div @click.stop>
+            <!-- <div>
+              <Icon name="material-symbols-light:notifications-rounded"/> 
+              <span>{{ $t('pauseMonitor') }}{{ $t('enableMonitor') }}</span>
+            </div> -->
+            <a class="decoration-none flex-end gap-4px" style="text-decoration: none;" :href="`https://t.me/AveSniperBot?start=fs-${row.user_chain}-${row.user_address}`"  target="_blank">
+                <Icon name="mingcute:wallet-fill" class="text-12px"/> 
+                <span>{{ $t('copyTrade') }}</span>
+            </a>
+          </div>
+        </template>
+      </el-table-column>
       </el-table>
       <el-pagination class="mt-20px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
       layout="prev, pager, next, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" />
@@ -473,15 +504,17 @@ import {
   getTagTooltip,
 } from '@/utils/index'
 import { throttle, update } from 'lodash-es'
-import { getFavoriteList2, getAttentionPageList, getUserFavoriteGroups2, changeFavoriteGroupName2 ,addFavoriteGroup2,removeFavoriteGroup2 ,addAttention,deleteAttention} from '~/api/attention'
+import { getFavoriteList2, getAttentionPageList, getUserFavoriteGroups2, changeFavoriteGroupName2 ,addFavoriteGroup2,removeFavoriteGroup2 ,moveFavoriteGroup2,deleteAttention} from '~/api/attention'
 import { watchOnce } from '@vueuse/core'
 const { mode, lang, isDark } = storeToRefs(useGlobalStore())
 const followStore = useFollowStore()
 const { currentAddress} = storeToRefs(useFollowStore())
+const $router = useRouter()
 const { t } = useI18n()
 const { addressGroups } = storeToRefs(useFollowStore())
 // const addressGroups = ref([{ "group_id": 3763, "name": "base", "show_index": -1 }, { "group_id": 37632, "name": "base1", "show_index": 0 }, { "group_id": 37631, "name": "base2", "show_index": 1 }])
 const visible = ref(false)  
+const visible2 = ref(false)  
 const searchKeyword= ref('')
 const buttonTagRef = ref(null)
 const toolTipTagVisible = ref(false)
@@ -516,12 +549,12 @@ const openTimeList =computed(() => [
   { text: '≤14D', value: String(60 * 24 * 14 * 60) },
   { text: '≤30D', value: String(60 * 24 * 30 * 60) }
 ])
-const filterForm = computed(() => ({
+const filterForm = ref({
   visible: false,
   type: 'last_trade_time',
   last_trade_time: conditions?.last_trade_time || '',
   sort_dir: conditions?.sort === 'last_trade_time' ? conditions?.sort_dir || null : null
-}))
+})
 const loading = ref(false)
 const dataSource = ref([])
 onMounted(async () => {
@@ -584,27 +617,41 @@ function handleDelGroup(groupId: number) {
 
 const getTableList = throttle(function() {
    loading.value = true
-  getAttentionPageList({...conditions, pageNO: pageData.value.page, pageSize: pageData.value.pageSize}).then((res) => {
+  const max = Math.floor(new Date().getTime() / 1000)
+  const min = safeBigNumber(max).minus(safeBigNumber(filterForm.value.last_trade_time)).toString()
+  const last_trade_time= filterForm.value.last_trade_time ?{
+    last_tx_time_max: max + 3600,
+     last_tx_time_min: min
+  }:{}
+  getAttentionPageList({...conditions, pageNO: pageData.value.page, pageSize: pageData.value.pageSize, ...last_trade_time}).then((res) => {
     console.log('=>(favoriteTable.vue:64) res', res)
     dataSource.value = ( res.data || []).
     map((i:any) => {
       return {
         ...i,
+        group_id:conditions.group,
         total_txs: safeBigNumber(i.total_sold).plus(safeBigNumber(i.total_purchase)).toString(),
         total_txs_usd: safeBigNumber(i.total_sold_usd).plus(safeBigNumber(i.total_purchase_usd)).toString()
       }
     })
-    pageData.value.total = res.total
-    pageData.value.page = res.pageNO
-    pageData.value.pageSize = res.pageSize
-  }).finally(() => {
+    pageData.value.total = res.total || 10
+    pageData.value.page = res.pageNO || 1
+    pageData.value.pageSize = res.pageSize || 10
+  }).finally(() => { 
     loading.value = false
   })
 }, 500)
 
 // Add missing tableRowClick method
-function tableRowClick(row: any, column: any, event: Event) {
-  // Implement row click logic here if needed
+function tableRowClick(row: { user_address: string; user_chain: string }) {
+  // $router.push({
+  //   name: 'Balance',
+  //   params: { userAddress: row.wallet_address, chain: row.chain },
+  // })
+
+  $router.push({
+    path: `/address/${row.user_address}/${row.user_chain}`,
+  })
 }
  function safeBigNumber(value) {
   try {
@@ -637,7 +684,10 @@ function handleDeleteAttention(item) {
     ElMessage.error(String(e))
   })
 }
-
+const getRowGroupChange = async (val: number, row: any) => {
+  await moveFavoriteGroup2({user_chain:row.user_chain, user_address:row.user_address, group:val})
+  getTableList()
+}
 
 function  handleFilterConfirm(data) {
   console.log('-------attentionHandleFilterConfirm--------', data)
@@ -646,21 +696,21 @@ function  handleFilterConfirm(data) {
   }
   conditions.sort = 'last_tx_time'
   conditions.sort_dir = data.sort_dir || ''
-  data.visible = false
+  visible2.value = false
   // this.getAttentionList()
 }
  function attentionHandleReset(data) {
   console.log('-------attentionHandleReset--------', data)
   conditions.sort_dir = ''
   conditions.sort = ''
-  conditions.last_tx_time_max = ''
-  conditions.last_tx_time_min = ''
   conditions.last_trade_time = ''
-  data.visible = false
+  filterForm.value.last_trade_time = ''
+  visible2.value = false
   // this.getAttentionList()
 }
 
 function handleSort(val, dir='') {
+    console.log('handleSort', val, dir)
       // let filterFormObj = this.filterFormObj[this.activeChain]
       // if (val.type === 'profit_percent_num') {
       //   let profit_obj = filterFormObj?.['profit_percent_num']?.profit_obj
@@ -685,22 +735,25 @@ function handleSort(val, dir='') {
     // console.log('filterFormObj111', filterFormObj)
 }
  function handleSortChange(data) {
-      console.log('-------HandleSortChange--------', data)
-      if (data.order === null) {
-        conditions.sort_dir = ''
-        conditions.sort = ''
-      } else {
-        conditions.sort = data.prop
-        if (data.order === 'ascending') {
-          conditions.sort_dir = 'asc'
-        } else {
-          conditions.sort_dir = 'desc'
-        }
-      }
+  console.log('-------HandleSortChange--------', data)
+  if (data.order === null) {
+    conditions.sort_dir = ''
+    conditions.sort = ''
+  } else {
+    conditions.sort = data.prop
+    if (data.order === 'ascending') {
+      conditions.sort_dir = 'asc'
+    } else {
+      conditions.sort_dir = 'desc'
+    }
+  }
 }
 </script>
 
 <style scoped lang="scss">
+.el-table{
+  font-size: 12px;
+}
 .w-operate{
   display: flex;
   flex-direction: row;
@@ -871,27 +924,6 @@ function handleSort(val, dir='') {
       }
     }
   }
-  .chain-icon-sort-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-left: 5px;
-    .icon-svg {
-      font-size: 10px;
-      padding: 0;
-      cursor: pointer;
-      color: var(--a-text-2-color);
-      width: 12px;
-      height: 10px;
-      & + .icon-svg {
-        margin-top: 1px;
-      }
-      &.active {
-        color: var(--custom-primary-color);
-      }
-    }
-  }
   .icon-filter-sort {
     font-size: 12px;
     opacity: 0.3;
@@ -1054,4 +1086,36 @@ a.trade {
     }
   }
   }
+.sort-container{
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  height: 14px;
+  width: 24px;
+  vertical-align: middle;
+  cursor: pointer;
+  overflow: initial;
+  position: relative;
+  .sort-caret {
+    width: 0;
+    height: 0;
+    border: solid 5px transparent;
+    position: absolute;
+    left: 7px;
+    &.ascending {
+      border-bottom-color: var(--el-text-color-placeholder);
+      top: -5px;
+      &.active {
+        border-bottom-color: var(--d-F5F5F5-l-333);
+      }
+    }
+    &.descending {
+      border-top-color: var(--el-text-color-placeholder);
+      bottom: -3px;
+      &.active {
+        border-top-color: var(--d-F5F5F5-l-333);
+      }
+    }
+  }
+}
 </style>
