@@ -1,5 +1,5 @@
 <template>
-  <div class="flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px w-100%" style="min-height: calc(100vh - 92px);">
+  <div class="flex bg-[--d-000-l-F6F6F6] gap-1px flex min-w-0 w-full" style="min-height: calc(100vh - 92px);">
     <div class="flex-1 min-w-0">
       <Top/>
       <div class="flex gap-1px">
@@ -171,11 +171,5 @@ onBeforeRouteLeave(() => {
 </script>
 
 <style>
-.hide-scrollbar {
-  > .el-scrollbar {
-    > .el-scrollbar__bar {
-      --at-apply: hidden;
-    }
-  }
-}
+
 </style>
