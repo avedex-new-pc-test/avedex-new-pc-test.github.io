@@ -249,17 +249,17 @@ let hideTimer: number | NodeJS.Timeout
 const buttonRef = ref<null | HTMLElement>(null)
 const currentActions = shallowRef<IActionItem[]>([])
 
-// const popVisible = shallowRef(false)
+const popVisible = shallowRef(false)
 
 function showPopover(e: MouseEvent, actions: IActionItem[]) {
   buttonRef.value = e.currentTarget as HTMLElement | null
   currentActions.value = actions || []
-  // popVisible.value = true
+  popVisible.value = true
 }
 
 function hidePopover() {
   buttonRef.value = null
-  // popVisible.value = false
+  popVisible.value = false
 }
 
 function scheduleHide() {
@@ -408,10 +408,10 @@ const isShowDate = ref(true)
     <el-popover
       :width="390"
       :virtual-ref="buttonRef"
+      :visible="popVisible"
       popper-class="[--el-bg-color-overlay:--d-1A1A1A-l-FFF] max-h-200px"
       virtual-triggering
       append-to-body
-      trigger="click"
     >
       <div
         @mouseenter="cancelHide"
