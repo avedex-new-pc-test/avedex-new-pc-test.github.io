@@ -39,7 +39,7 @@ export const useGlobalStore = defineStore('global', () => {
   ])
   const pumpSetting = useStorage<{
     fontSize_mc: string
-    fontSize_swap: string
+    size_swap: string
     Progress_isCircle: string
     avatar_isCircle: string
     isGutter: boolean
@@ -48,7 +48,7 @@ export const useGlobalStore = defineStore('global', () => {
     define: string[]
   }>('pumpSetting', {
     fontSize_mc: '12px',
-    fontSize_swap: '12px',
+    size_swap: '12px',
     Progress_isCircle: 'circle',
     avatar_isCircle: 'circle',
     isGutter: false,

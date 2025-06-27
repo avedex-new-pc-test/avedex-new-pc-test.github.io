@@ -4,13 +4,18 @@
       <ul class="pump-item_list" v-if="tableList?.length >0">
         <li
           v-for="row in tableList"
+          :id="row?.target_token + '-' + row?.chain"
+          :ref="setBtnRef"
           :key="row?.pair + '-' + row?.chain"
           class="pump-item_item relative"
           @click.stop="tableRowClick(row)"
+          @contextmenu="handleContextMenu($event, row)"
+          @mouseenter="showPopover(row)"
+          @mouseleave="showPop = false"
         >
           <div>
-            <Icon  v-if="pumpBlackList?.findIndex(i=> i.address == row.token || new RegExp(i.address).test( row.symbol) || new RegExp(i.address).test( row.name)) !==-1"  name="custom:key-invisible" class="text-8px eye"/>
-            <Icon v-else name="custom:key-visible" class="text-8px eye"/>
+            <Icon  v-if="pumpBlackList?.findIndex(i=> i.address == row.token || i.address == row.symbol) !==-1"  name="custom:key-invisible" class="text-8px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
+            <Icon v-else name="custom:key-visible" class="text-8px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
             <div class="token-logo">
               <el-image class="token-icon" :src="getSymbolDefaultIcon(row, pumpSetting.avatar_isCircle=='rect'? 'rect' :'circle')" :style="{ 'border-radius': pumpSetting.avatar_isCircle=='circle' ? '100%' : '0'}">
                 <template #error>
@@ -32,7 +37,7 @@
                 :class="pumpSetting.Progress_isCircle=='horizontal' ? 'horizontal' :'circle'"
                 :progress="row.progress"
               />
-              <el-tooltip popper-class="tooltip-pd-0" placement="bottom-start">
+              <el-tooltip popper-class="tooltip-pd-0" placement="bottom-start" :show-arrow="false">
                 <template #content>
                   <el-image
                     class="token-icon h-228px w-228px items-center"
@@ -74,7 +79,7 @@
               </el-tooltip>
               <el-image
                 v-if="row.amm"
-                class="mr-5px rounded-100%"
+                class="mr-5px rounded-100% bg-[--d-1A1A1A-l-FFF] px-2px py-2px"
                 style="
                   position: absolute;
                   width: 18px;
@@ -117,6 +122,23 @@
                   </template>
                 </template>
               </van-count-down> -->
+              <TimerCount
+                v-else-if="(row?.created_at || row?.time) && Number(formatTimeFromNow(row?.created_at || row?.time, true) ) < 60"
+                :key="`${row.created_at}`"
+                :timestamp="row.created_at"
+                :end-time="60"
+              >
+                <template #default="{ seconds }">
+                  <span class="color-#FFA622">
+                    <template v-if="seconds < 60">
+                      {{ seconds }}s
+                    </template>
+                    <template v-else>
+                      {{ formatTimeFromNow(row.created_at) }}
+                    </template>
+                  </span>
+                </template>
+              </TimerCount>
             </div>
           </div>
 
@@ -506,13 +528,25 @@
                 />
                 <span>Migrating...</span>
               </div>
-              <QuickSwap :quickBuyValue="quickBuyValue" :row="row" />
+              <QuickSwap :quickBuyValue="quickBuyValue" :row="row" :size="pumpSetting.size_swap"/>
             </div>
           </div>
         </li>
       </ul>
       <AveEmpty class="mt-200px" v-else/>
     </el-scrollbar>
+    <el-popover
+      v-model:visible="showPop"
+      :virtual-ref="currentBtnRef"
+      virtual-triggering
+      trigger="hover"
+      placement="top"
+      popper-class="text-center"
+    >
+
+      {{ $t('progress') }}:{{ formatNumber(selected,2)}}%
+    </el-popover>
+
   </div>
 </template>
 
@@ -550,6 +584,12 @@ const props = defineProps({
     default: () => false,
   },
 })
+
+
+const showPop = ref(false)
+const selected = ref('')
+const btnRefs = ref<Record<string, HTMLElement | null>>({})
+const currentBtnRef = ref<HTMLElement | null>(null)
 const { tableList, quickBuyValue, isPaused, loading, isOut } = toRefs(props)
 const router = useRouter()
 const { token_logo_url } = useConfigStore()
@@ -557,11 +597,53 @@ const globalStore = useGlobalStore()
 const { isDark, pumpSetting, pumpBlackList } = storeToRefs(globalStore)
 
 
-function tableRowClick(row) {
-  router.push({
-    name: 'Token',
-    params: { id: row.target_token + '-' + row.chain },
+const allowRightClick = ref(false)
+
+
+function handleContextMenu(e: MouseEvent, row: { target_token: string, chain: string }) {
+  if (pumpSetting.value.isRight) {
+    e.preventDefault()
+    const url = router.resolve({
+      name: 'token-id',
+      params: { id: row.target_token + '-' + row.chain }
+    }).href
+    window.open(url, '_blank')
+  }
+}
+
+function tableRowClick(row: { target_token: string, chain: string }) {
+    router.push({
+    name: 'token-id',
+    params: { id: row.target_token + '-' + row.chain  }
   })
+}
+function addOrRemoveBlaclList(item: {token: string},type:  'ca' | 'dev' | 'keyword') {
+  if (pumpBlackList.value) {
+    const findIndex = pumpBlackList.value?.findIndex(
+      (i) => item.token == i.address
+    )
+    if (findIndex !== -1) {
+      pumpBlackList.value.splice(findIndex, 1)
+    } else {
+      pumpBlackList.value.push({ address: item.token, type: type })
+    }
+  } else {
+    pumpBlackList.value = [{ address: item.token, type: type }]
+  }
+}
+
+function setBtnRef(el: HTMLElement | null) {
+  if (el && el?.id) {
+    btnRefs.value[el?.id] = el
+  }
+
+}
+function showPopover(item: {progress: string, id: string}) {
+  if (!isOut.value) {
+    selected.value = item.progress
+    currentBtnRef.value = btnRefs.value[item.id] || null
+    showPop.value = true
+  }
 }
 </script>
 

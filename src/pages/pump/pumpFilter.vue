@@ -1,20 +1,20 @@
 <template>
-    <el-popover
+  <el-popover
+      v-model:visible="visible"
       placement="bottom"
       popper-class="w-pumpFilter"
       title=""
       :width="398"
       trigger="click"
-      v-model:visible="visible"
     >
       <template #reference>
-        <div :class="['filter-btn', { active: visible }]">
+        <div :class="['filter-btn', { active: visible }, filterNumber > 0 ? 'hight': '']">
           <Icon
             id="custom-filter"
             name="custom:filter"
-            class="mr-3px text-12px cursor-pointer color-[--d-666-l-999]"
+            class="mr-3px text-12px cursor-pointer"
           />
-          {{ $t('filters') }}
+          <span >{{ $t('filters') }}</span>
           <span v-if="filterNumber > 0" class="filter-number">{{ filterNumber }}</span>
         </div>
       </template>
@@ -364,6 +364,9 @@ let tableFilter = usePumpTableDataFetching(props.storage)
   box-sizing: border-box;
   height: 26px;
   position: relative;
+  &.hight{
+    color: var(--d-999-l-666)
+  }
 
   img {
     margin-right: 2px;
@@ -376,14 +379,18 @@ let tableFilter = usePumpTableDataFetching(props.storage)
     width: 14px;
     height: 14px;
     text-align: center;
-    background-color: var(--a-bg-9-color);
-    color: var(--a-bg-10-color);
+    background-color: var(--d-666-l-999);
+    color: var(--d-F5F5F5-l-333);
     margin-left: 4px;
+    font-size: 10px;
   }
 
   &:hover {
     cursor: pointer;
-    opacity: 0.8;
+    color: var(--d-F5F5F5-l-333);
+    .iconify {
+      color: var(--d-F5F5F5-l-333);
+    }
   }
 
   /* &.active {

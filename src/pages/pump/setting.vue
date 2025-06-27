@@ -4,10 +4,11 @@
     placement="bottom-start"
     :width="320"
     trigger="click"
+    :teleported="false"
   >
     <template #reference>
-      <el-button class="btn mr-8px">
-        <Icon name="custom:customized" class="text-16px mr-4px" /> 定制
+      <el-button class="btn mr-8px h-28px" :class="{active: isExit}">
+        <Icon name="custom:customized" class="text-13px mr-4px" /> 定制
         <Icon
           :name="
             isRotate ? 'radix-icons:triangle-up' : 'radix-icons:triangle-down'
@@ -40,12 +41,27 @@
           <button
             v-for="item in list_swap"
             :key="item.size"
-            class="flex-1"
-            :class="{ active: item.size === pumpSetting.fontSize_swap }"
+            class="flex-1 small"
+            :class="{ active: item.size === pumpSetting.size_swap }"
             type="button"
-            @click.stop="pumpSetting.fontSize_swap = item.size"
+            @click.stop="switchSwap(item)"
           >
-            <div class="swap" :style="{ 'font-size': item.size }">0.01</div>
+            <div class="swap flex-start" :style="{ 'font-size': getSwapSize(item.size as Size).text }"  >
+              <Icon
+                class="mr-4px "
+                :style="{ 'font-size': getSwapSize(item.size as Size).flash }"
+                name="mynaui:lightning-solid"
+              />
+              <el-image
+                style="
+                  border-radius: 50%;
+                  margin-right: 5px;
+                "
+                :style="{width: getSwapSize(item.size as Size).amm }"
+                :src="`${token_logo_url}chain/${props.chain}.png`"
+              />
+              0.01
+            </div>
 
             <span class="block text-12px mt-8px">{{ item.name || '' }}</span>
           </button>
@@ -122,11 +138,18 @@
 </template>
 
 <script setup lang="ts">
+import { getSwapSize } from '@/utils/index'
+import type { Size } from '~/api/types/pump'
+const props = withDefaults(defineProps<{
+  chain: string
+}>(), {
+
+})
 
 const visible = shallowRef(false)
 const isRotate = shallowRef(false)
 const globalStore = useGlobalStore()
-const { pumpSetting } = storeToRefs(globalStore)
+const { pumpSetting, token_logo_url } = storeToRefs(globalStore)
 const list_mc = computed(() => {
   return [
     {
@@ -142,15 +165,15 @@ const list_mc = computed(() => {
 const list_swap = computed(() => {
   return [
     {
-      size: '12px',
+      size: 'small',
       name: '常规',
     },
     {
-      size: '14px',
+      size: 'medium',
       name: '大号',
     },
     {
-      size: '16px',
+      size: 'large',
       name: '超大号',
     },
   ]
@@ -175,6 +198,7 @@ const defineList = computed(() => {
     { name: '阴谋', id: '44' },
   ]
 })
+
 function switchAvatar() {
   if (pumpSetting.value.avatar_isCircle == 'circle') {
     pumpSetting.value.avatar_isCircle = 'rect'
@@ -182,6 +206,10 @@ function switchAvatar() {
     pumpSetting.value.avatar_isCircle = 'circle'
   }
 }
+const isExit = computed(() => {
+  console.log('------111--------------',localStorage.getItem('pumpSetting'))
+  return localStorage.getItem('pumpSetting') !== undefined  || false
+})
 function switchProgress() {
   if (pumpSetting.value.Progress_isCircle == 'circle') {
     pumpSetting.value.Progress_isCircle = 'horizontal'
@@ -203,6 +231,10 @@ function dealDefine(item: { id: string }) {
   }
   console.log(pumpSetting.value)
 }
+function switchSwap(item: { size: string }) {
+  pumpSetting.value.size_swap = item.size
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -235,6 +267,9 @@ function dealDefine(item: { id: string }) {
     background: transparent;
     padding: 14px;
     text-align: center;
+    &.small{
+      padding: 8px;
+    }
     & + button {
       margin-left: 8px;
     }
@@ -253,7 +288,7 @@ function dealDefine(item: { id: string }) {
 .btn {
   border: none;
   background: var(--d-222-l-F2F2F2);
-  padding: 7px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -261,6 +296,9 @@ function dealDefine(item: { id: string }) {
   font-size: 12px;
   font-weight: 500;
   color: var(--d-999-l-666);
+  &.active,&:hover {
+    color: var(--d-F5F5F5-l-333);
+  }
 }
 .item {
   li {

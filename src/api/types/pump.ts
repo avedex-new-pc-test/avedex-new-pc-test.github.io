@@ -56,7 +56,7 @@ export interface PumpObj {
   token1_name: string
   token0_price_usd: number
   token1_price_usd: number
-  created_at: string
+  created_at: number
   time: string
   target_opening_at: number | string
   state: string
@@ -103,4 +103,11 @@ export type CategoryKey = 'new' | 'soon' | 'graduated'
 export type pumpBlack = {
   address: string,
   type: 'ca'|'dev'| 'keyword'
+}
+export type Size = 'small' | 'medium' | 'large'
+
+export interface SizeObj {
+  flash: string
+  amm: string
+  text: string
 }

@@ -14,6 +14,7 @@ import BigNumber from 'bignumber.js'
 import type {SearchHot} from '~/api/types/search'
 import type { ConfigType } from 'dayjs'
 import { useStorage } from '@vueuse/core'
+import type { Size, SizeObj } from '~/api/types/pump'
 
 export function isJSON(str: string) {
   try {
@@ -843,4 +844,26 @@ export function _isString(val) {
 
 export function _isArray(val) {
   return getValueType(val) === '[object Array]'
+}
+
+
+export function getSwapSize(type: Size):SizeObj {
+  const obj:Record<Size, SizeObj> = {
+    small: {
+      flash:'6px',
+      amm: '10px',
+      text: '10px'
+    },
+    medium: {
+      flash:'10px',
+      amm: '12px',
+      text: '12px'
+    },
+    large: {
+      flash:'12px',
+      amm: '16px',
+      text: '16px'
+    }
+  }
+  return obj[type] || ''
 }

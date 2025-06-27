@@ -475,6 +475,7 @@
   "BALANCE_CHANGE": "余额变动",
   "THAW": "解冻",
   "walletTotalBalance": "钱包总余额",
+  "tokenBalance": "主币余额",
   "walletDetail": "钱包详情",
   "noWalletTip": "需要连接钱包才能使用该功能",
   "profit": "盈亏",
@@ -681,7 +682,7 @@
   "holders4": "持有人",
   "smarterTxs": "聪明钱交易数",
   "aiSummary":"AI叙事",
-  "aiIsAnalyzing":"AI正在分析中...",
+  "aiIsAnalyzing": "AI正在分析中...",
   "times": "次",
   "MaximumIncrease": "最大涨幅",
   "CurrentMC": "当前市值",
@@ -726,5 +727,7 @@
   "openMonitor": "开启监控",
   "monitored": "已监控",
   "noBotWalletTip": "需要连接Bot钱包才能使用该功能",
-  "monitorError": "请先关注该地址，才能使用监控功能"
+  "monitorError": "请先关注该地址，才能使用监控功能",
+  "groupExistT": "分组已存在",
+  "pause": "暂停"
 }

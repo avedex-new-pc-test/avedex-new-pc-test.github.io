@@ -3,7 +3,9 @@ import BigNumber from 'bignumber.js'
 import {ElNotification} from 'element-plus'
 import {useStorage} from '@vueuse/core'
 import {bot_createSolTx, bot_createSwapEvmTx, bot_getTokenBalance} from '~/api/bot'
-import {formatBotGasTips} from '~/utils/bot'
+import { formatBotGasTips } from '~/utils/bot'
+import type { Size } from '~/api/types/pump'
+import { getSwapSize } from '@/utils/index'
 
 const {t} = useI18n()
 const props = withDefaults(defineProps<{
@@ -19,19 +21,23 @@ const props = withDefaults(defineProps<{
   appendTo?: string
   buttonBg?: string,
   mainNameVisible?: boolean
-  classNames?: string
+  classNames?: string,
+  size?: Size
 }>(), {
   appendTo: '#__nuxt',
-  buttonBg: '#12B8861A',
+  buttonBg: 'rgba(18, 184, 134, 0.15)',
   classNames: '',
+  size: 'medium'
 })
 const botStore = useBotStore()
 const loadingSwap = shallowRef(false)
 const visible = shallowRef(false)
 const message = shallowRef('')
 const noReminderQuickBuy = useStorage('noReminderQuickBuy', false)
+const emit = defineEmits(['submitSwap'])
 
 function submitBotSwap() {
+  emit('submitSwap')
   if (!verifyLogin()) {
     return
   }
@@ -126,7 +132,8 @@ async function submitSwap(amount: string) {
     swapType: 1,
     isPrivate: currentBotSetting?.mev || false,
     slippage: slippage !== 'auto'
-      ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900
+      ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900,
+    autoSell: currentBotSetting?.autoSell || false
   }
   const tx = isSolana ? bot_createSolTx(data) : bot_createSwapEvmTx(data)
   tx.then(res => handleTxSuccess(res, data.batchId))
@@ -193,15 +200,17 @@ async function getTokenBalance(chain: string) {
     :color="buttonBg"
     class="flex items-center [&&]:px-12px"
     :class="classNames"
-    style="--el-color-black: #12B886; --el-button-border-color: transparent; --el-button-hover-border-color: transparent;--el-button-disabled-text-color: #12B886;--el-button-disabled-border-color: transparent;--el-button-disabled-bg-color: #12B8861A;"
+    style="--el-button-hover-bg-color:rgba(18, 184, 134, 0.3);--el-color-black: #12B886; --el-button-border-color: transparent; --el-button-hover-border-color: transparent;--el-button-disabled-text-color: #12B886;--el-button-disabled-border-color: transparent;--el-button-disabled-bg-color: #12B8861A;"
+    :style="{ 'font-size': getSwapSize(size as Size).text }"
     @click="submitBotSwap"
   >
     <Icon
+    :style="{ 'font-size': getSwapSize(size as Size).flash }"
       class="mr-4px"
       name="mynaui:lightning-solid"
     />
     {{ quickBuyValue || 0 }}
-    <span v-if="mainNameVisible" class="ml-5px">{{ getChainInfo(row.chain)?.main_name || '' }}</span>
+    <span v-if="mainNameVisible" class="ml-5px" >{{ getChainInfo(row.chain)?.main_name || '' }}</span>
   </el-button>
   <el-dialog
     v-if="visible" v-model="visible" :title="$t('buy')"

@@ -1,6 +1,6 @@
 <template>
-  <div class="pump w-full mt-20px">
-    <div class="flex-start p-x-17px">
+  <div class="pump w-full">
+    <div class="flex-start p-x-17px border border-solid border-1 border-[--d-1A1A1A-l-FFF] py-12px">
       <el-popover
         v-model:visible="visible_platforms"
         placement="bottom-start"
@@ -95,7 +95,7 @@
         :chain="activeChain"
       />
       <div class="flex-1" />
-      <Setting />
+      <Setting :chain="activeChain"/>
       <BlackList />
       <div class="tabs">
         <button
@@ -119,9 +119,9 @@
         </button>
       </div>
     </div>
-    <el-row :gutter="pumpSetting.isGutter ? 20 : 10" class="mt-20px w-full">
+    <el-row :gutter="pumpSetting.isGutter ? 10 : 2" class="w-full bg-[--d-1A1A1A-l-FFF] pt-1px">
       <el-col :span="8">
-        <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
+        <div class="pump-item bg-[--d-111-l-FFF]  rounded-4px" style="padding-top: 15px;">
           <div class="pump-item_header flex-start px-10px">
             <img
               class="mr-5px"
@@ -129,12 +129,16 @@
               width="24"
               alt=""
             >
-            <span style="margin-right: auto">{{ $t('new1') }}</span>
-            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer hover:opacity-80" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.new } "  @click="pump_notice[activeChain].new = !pump_notice[activeChain].new">
-              <Icon
-              name="icon-park-solid:volume-notice"
-              class="text-12px"
-              />
+            <span>{{ $t('new1') }}</span>
+            <span  v-show="isPausedObj.new" class=" mr-auto bg-#FFA6221A px-4px py-4px rounded-4px ml-5px flex items-center justify-center w-26px h-26px">
+              <Icon name="custom:stop" class="color-#FFA622 text-12px"/>
+            </span>
+
+            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer ml-auto hover:color-[--d-F5F5F5-l-333]" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.new } "  @click="pump_notice[activeChain].new = !pump_notice[activeChain].new">
+            <Icon
+            name="icon-park-solid:volume-notice"
+            class="text-12px"
+            />
             </span>
             <PumpFilter
               :storage="`pumpFilter_${activeChain}_new`"
@@ -152,15 +156,18 @@
       </el-col>
       <el-col :span="8">
         <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
-          <div class="pump-item_header flex-start px-10px">
+          <div class="pump-item_header flex-start px-10px rounded-4px">
             <img
               class="mr-5px"
               src="@/assets/images/pump/soon.svg"
               width="24"
               alt=""
             />
-            <span style="margin-right: auto">{{ $t('soon') }}</span>
-            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer hover:opacity-80" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.soon } "  @click="pump_notice[activeChain].soon = !pump_notice[activeChain].soon">
+            <span>{{ $t('soon') }}</span>
+            <span  v-show="isPausedObj.soon" class=" mr-auto bg-#FFA6221A px-4px py-4px rounded-4px ml-5px flex items-center justify-center w-26px h-26px">
+              <Icon name="custom:stop" class="color-#FFA622 text-12px"/>
+            </span>
+            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer ml-auto hover:color-[--d-F5F5F5-l-333]" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.soon } "  @click="pump_notice[activeChain].soon = !pump_notice[activeChain].soon">
               <Icon
               name="icon-park-solid:volume-notice"
               class="text-12px"
@@ -181,15 +188,18 @@
       </el-col>
       <el-col :span="8">
         <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
-          <div class="pump-item_header flex-start px-10px">
+          <div class="pump-item_header flex-start px-10px rounded-4px">
             <img
               class="mr-5px"
               src="@/assets/images/pump/graduated.svg"
               width="24"
               alt=""
             />
-            <span style="margin-right: auto">{{ $t('graduated') }}</span>
-            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer hover:opacity-80" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.graduated } "  @click="pump_notice[activeChain].graduated = !pump_notice[activeChain].graduated">
+            <span>{{ $t('graduated') }}</span>
+            <span  v-show="isPausedObj.graduated" class=" mr-auto bg-#FFA6221A px-4px py-4px rounded-4px ml-5px flex items-center justify-center w-26px h-26px">
+              <Icon name="custom:stop" class="color-#FFA622 text-12px"/>
+            </span>
+            <span class="bg-[--d-222-l-F2F2F2] py-4px px-10px rounded-4px mr-4px color-[--d-666-l-999] cursor-pointer ml-auto hover:color-[--d-F5F5F5-l-333]" :class="{ 'color-[--d-F5F5F5-l-333]': pump_notice[activeChain]?.graduated } "  @click="pump_notice[activeChain].graduated = !pump_notice[activeChain].graduated">
               <Icon
               name="icon-park-solid:volume-notice"
               class="text-12px"
@@ -219,7 +229,7 @@
 
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import QuickSwapSet from './quickSwapSet.vue'
+import QuickSwapSet from '@/components/quickSwap/quickSwapSet.vue'
 import PumpList from './pumpList.vue'
 import Setting from './setting.vue'
 import BlackList from './blackList.vue'
@@ -232,6 +242,7 @@ import type {
   CategoryKey,
   WSPump
 } from '@/api/types/pump'
+import { throttle } from 'lodash-es'
 import { isJSON, formatUrl, usePumpTableDataFetching } from '@/utils/index'
 const { t } = useI18n()
 const wsStore = useWSStore()
@@ -342,8 +353,7 @@ const list1 = computed(() => {
         !pumpBlackList.value?.some(
           (i) =>
             i.address == item.token ||
-            new RegExp(i.address).test(item.symbol) ||
-            new RegExp(i.address).test(item.name)
+            i.address == item.symbol
         )
     )
   }
@@ -366,8 +376,7 @@ const list2 = computed(() => {
         !pumpBlackList.value?.some(
           (i) =>
             i.address == item.token ||
-            new RegExp(i.address).test(item.symbol) ||
-            new RegExp(i.address).test(item.name)
+            i.address == item.symbol
         )
     )
   }
@@ -389,9 +398,8 @@ const list3 = computed(() => {
       (item) =>
         !pumpBlackList.value?.some(
           (i) =>
-            i.address == item.token ||
-            new RegExp(i.address).test(item.symbol) ||
-            new RegExp(i.address).test(item.name)
+          i.address == item.token ||
+          i.address == item.symbol
         )
     )
   }
@@ -434,6 +442,7 @@ watch(() => wsStore.wsResult[WSEventType.PUMPSTATE], (val) => {
   }
 })
 onMounted(() => {
+  document.addEventListener('mousemove', mouseInsideTxs)
   getPumpConfig()
   getPumpList()
   wsTableListCache.value = []
@@ -454,6 +463,42 @@ onMounted(() => {
   }, 500)
 })
 
+onUnmounted(()=>{
+  document.removeEventListener('mousemove', mouseInsideTxs)
+})
+
+const mouseInsideTxs = throttle(function (event) {
+    const element1 = document.querySelector('.pump-item_list-new')
+    const element2 = document.querySelector('.pump-item_list-soon')
+    const element3 = document.querySelector('.pump-item_list-graduated')
+    if (!element1 && !element2 && !element3) return
+    if (element1) {
+    isPausedObj.value.new = getMouseInsideElement(event, element1)
+    }
+    if (element2) {
+      isPausedObj.value.soon = getMouseInsideElement(event, element2)
+    }
+    if (element3) {
+      isPausedObj.value.graduated = getMouseInsideElement(
+        event,
+        element3
+      )
+    }
+
+}, 100, { leading: true, trailing: true })
+function getMouseInsideElement(event:any, element:any) {
+    // 获取鼠标位置
+    const mouseX = event.clientX
+    const mouseY = event.clientY
+    // 获取元素的边界矩形
+    const rect = element.getBoundingClientRect()
+    return (
+      mouseX >= rect.left &&
+      mouseX <= rect.right &&
+      mouseY >= rect.top &&
+      mouseY <= rect.bottom
+    )
+}
 function wsUpdateTableList(wsList: WSPump[]) {
       const c = ['new', 'soon', 'graduated']
       if (!wsList?.length) return
@@ -730,7 +775,7 @@ function getPump(params, isFilter = false) {
           created_at:
             i?.created_at !== '1970-01-01T00:00:00Z' &&
             i?.created_at !== '0001-01-01T00:00:00Z'
-              ? i?.created_at
+              ? new Date(i?.created_at).getTime()/1000
               : '0',
           liq:
             i.target_token !== i.token0_address

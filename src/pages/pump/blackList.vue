@@ -1,11 +1,22 @@
 <template>
-  <el-button
-    class="btn mr-8px ml-0 gray"
-    style="margin-left: 0"
-    @click="visible = !visible"
-  >
-    <Icon name="custom:black" class="text-16px" />
-  </el-button>
+  <el-popover
+      trigger="hover"
+      placement="top"
+      content="黑名单列表(CA、DEV 、关键词)"
+      :width="230"
+      popper-class="text-center"
+    >
+    <template #reference>
+      <el-button
+        class="btn mr-8px ml-0 gray"
+        :class="{active: pumpBlackList?.length >0}"
+        style="margin-left: 0"
+        @click="visible = !visible"
+      >
+        <Icon name="custom:black" class="text-16px"/>
+      </el-button>
+    </template>
+  </el-popover>
   <el-dialog
     v-model="visible"
     width="780"
@@ -28,7 +39,6 @@
           clearable
           autofocus
           size="large"
-          @keydown.enter="tokenSearch"
         >
           <template #prefix>
             <Icon
@@ -174,7 +184,6 @@ const list = computed(() => {
 })
 
 function openDialog() {}
-function tokenSearch() {}
 function switchItem(item: { value: string }) {
   active.value = item.value
 }
@@ -262,6 +271,9 @@ function restore(item: { address: string }) {
   height: 28px;
   &.gray {
     color: var(--d-999-l-666);
+    &.active,&:hover {
+      color: var(--d-F5F5F5-l-333);
+    }
   }
   &.restore {
     background: var(--d-333333-l-DDDDDD);
