@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { formatNumber2 } from '~/utils/formatNumber'
 import { getRemarksDetail } from '~/api/fav'
-import { deleteAttention, updateWhaleRemark, addAttention, favUsersAddMonitor } from '~/api/attention'
+import { deleteAttention, updateWhaleRemark, addAttention, favUsersAddMonitor, favUsersPauseMonitor } from '~/api/attention'
 
 const botStore = useBotStore()
 const walletStore = useWalletStore()
@@ -69,18 +69,25 @@ watch(() => walletStore.address, (newVal) => {
 })
 
 const handleMonitor = async (row: any) => {
-  if (!botStore.evmAddress) return ElMessage.error(t('noBotWalletTip'))
-  if (row.is_wallet_address_fav === 0) return ElMessage.error(t('monitorError'))
-  await favUsersAddMonitor({
-    address: row.user_address,
-    app: 0,
-    buy: 1,
-    chain: row.user_chain,
-    sell: 1,
-    telegram: 0,
-    user_address: addressValue.value,
-    website: 1
-  })
+  if (!botStore.evmAddress) return ElMessage.warning(t('noBotWalletTip'))
+  if (row.is_wallet_address_fav === 0) return ElMessage.warning(t('monitorError'))
+  if (row?.is_monitored === 0) {
+    await favUsersAddMonitor({
+      address: row.user_address,
+      app: 0,
+      buy: 1,
+      chain: row.user_chain,
+      sell: 1,
+      telegram: 0,
+      user_address: addressValue.value,
+      website: 1
+    })
+  } else {
+    await favUsersPauseMonitor({
+      address: row.address,
+      uid: row.id
+    })
+  }
   ElMessage.success(t('success'))
   getList()
 }
@@ -153,7 +160,9 @@ const getList = async () => {
   const res: any = await getRemarksDetail({
     address: addressValue.value,
     pageNO: pageData.value.page,
-    pageSize: pageData.value.pageSize
+    pageSize: pageData.value.pageSize,
+    time_interval: '7d',
+    sort_dir: 'desc'
   })
   const tableData =
     (res.data &&
@@ -190,8 +199,8 @@ onMounted(() => {
 
 <template>
   <div>
-    <el-table class='mt-12px' v-loading="loading" :data="tableList" stripe fit @sort-change="handleSortChange"
-      @row-click="tableRowClick">
+    <el-table class='mt-12px' height="calc(100vh - 210px)" v-loading="loading" :data="tableList" fit
+      @sort-change="handleSortChange" @row-click="tableRowClick">
       <template #empty>
         <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
           <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
@@ -230,14 +239,14 @@ onMounted(() => {
       </el-table-column>
       <el-table-column :label="t('noteTime')" align="right">
         <template #default="{ row }">
-          <div class="px-5px">
+          <div>
             {{ dayjs(row.create_time).format('YYYY-MM-DD HH:mm:ss') }}
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('walletTotalBalance')" align="right">
+      <el-table-column :label="t('tokenBalance')" align="right">
         <template #default="{ row }">
-          <div class="px-5px">
+          <div>
             <div v-if="row?.main_token_balance_amount > 0">
               {{ formatNumber2(row?.main_token_balance_amount || 0, 2) }}&nbsp;{{ row.main_token_symbol }}
             </div>
@@ -249,7 +258,7 @@ onMounted(() => {
       </el-table-column>
       <el-table-column :label="t('walletTotalBalance')" align="right">
         <template #default="{ row }">
-          <div class="px-5px">
+          <div>
             <div v-if="row?.total_balance > 0">
               ${{ formatNumber2(row?.total_balance || 0, 1) }}
             </div>
@@ -268,31 +277,24 @@ onMounted(() => {
               <Icon name="custom:documentary-wallet" class="text-16px mr-2px" />
               {{ t('documentation') }}
             </a>
-            <div class="flex items-center mr-12px cursor-pointer" v-if="!botStore.evmAddress"
-              @click="handleMonitor(row)">
+            <!-- 监控 -->
+            <div class="flex items-center mr-12px cursor-pointer group color-[#666] hover:color-[var(--d-F2F2F2-l-333)]"
+              @click="handleMonitor(row)" v-if="row?.user_chain === 'solana' || row?.user_chain === 'bsc'">
               <Icon name="custom:monitor-icon" class="text-16px mr-2px" />
-              <div>{{ t('monitor') }}</div>
-            </div>
-            <div class="flex items-center mr-12px cursor-pointer" @click="handleMonitor(row)"
-              v-else-if="row?.is_monitored === 0 && (row?.user_chain === 'solana' || row?.user_chain === 'bsc')">
-              <Icon name="custom:monitor-icon" class="text-16px mr-2px " />
-              {{ t('openMonitor') }}
-            </div>
-            <div class="flex items-center mr-12px color-[#666] cursor-not-allowed"
-              v-else-if="row?.is_monitored === 1 && (row?.user_chain === 'solana' || row?.user_chain === 'bsc')">
-              <Icon name="custom:monitor-icon" class="text-16px mr-2px " />
-              {{ t('monitored') }}
+              <span
+                class="overflow-hidden whitespace-nowrap max-w-0 group-hover:max-w-[100px] transition-all duration-500 ease-in-out">
+                {{ row?.is_monitored === 1 ? t('pause') : t('openMonitor') }}
+              </span>
             </div>
             <div class="flex items-center mr-12px color-[#666] cursor-not-allowed" v-else>
               <Icon name="custom:monitor-icon" class="text-16px mr-2px " />
-              {{ t('monitor') }}
             </div>
           </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-pagination class="mt-20px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
+    <el-pagination class="mt-15px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
       layout="prev, pager, next, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" />
 
     <el-popover :visible="visibleShow" :virtual-ref="virtualRef" virtual-triggering trigger="click" :width="250">

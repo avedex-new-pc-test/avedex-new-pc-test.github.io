@@ -3,8 +3,9 @@ import THead from '~/pages/token/components/left/tHead.vue'
 import type {GetSignalV2ListResponse} from '~/api/signal'
 import dayjs from 'dayjs'
 import BigNumber from 'bignumber.js'
+import {useThrottleFn} from "@vueuse/core";
 
-defineProps<{
+const props = defineProps<{
   signalList: Array<GetSignalV2ListResponse>
   showPop: (...args: any[]) => void
   hidePop: () => void
@@ -59,9 +60,16 @@ function sortChange() {
   emit('update:modelValue', sort.value)
 }
 
-function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
-  emit('endReached', direction)
-}
+const scrollbar = useTemplateRef('scrollbar')
+
+const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
+  if (scrollbar.value) {
+    const scrollElement = scrollbar.value.wrapRef
+    if (scrollElement && scrollElement.scrollHeight - scrollTop - props.height < 30) {
+      emit('endReached', 'bottom')
+    }
+  }
+}, 100, true, false)
 </script>
 
 <template>
@@ -73,9 +81,10 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
       @update:sort="sortChange"
     />
     <el-scrollbar
+        ref="scrollbar"
       style="margin-right: -12px;padding-right: 12px;"
       :height="height"
-      @end-reached="endReached"
+        @scroll="onScroll"
     >
       <div class="flex flex-col gap-12px pb-2px">
         <div
@@ -112,15 +121,17 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
                 <TokenImg
                   token-class="w-32px h-32px"
                   :row="{
-              chain,
-              logo_url:logo,
-              symbol
-           }"
+                      chain,
+                      logo_url:logo,
+                      symbol
+                   }"
                 />
               </NuxtLink>
               <div class="flex flex-col gap-4px">
                 <div class="flex items-center gap-8px">
-              <span class="font-500 color-[--d-F5F5F5-l-333] text-16px overflow-hidden text-ellipsis">{{
+              <span class="font-500 color-[--d-F5F5F5-l-333] text-16px overflow-hidden text-ellipsis cursor-pointer"
+                    @click="navigateTo(`/token/${token}-${chain}`)"
+              >{{
                   symbol
                 }}</span>
                   <div class="flex items-center gap-4px text-10px color-[--d-666-l-999]">
@@ -237,7 +248,8 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
             </div>
             <div class="flex-1 flex justify-end items-center">
               <div
-                class="min-w-49px h-32px flex items-center p-4px justify-center rounded-tl-2 rounded-br-[10px] text-[18px] leading-[24px] text-white font-500 bg-[linear-gradient(73.74deg,_#8B4FDD_9.69%,_#12B886_91.69%)]"
+                class="min-w-49px h-32px cursor-pointer flex items-center p-4px justify-center rounded-tl-2 rounded-br-[10px] text-[18px] leading-[24px] text-white font-500 bg-[linear-gradient(73.74deg,_#8B4FDD_9.69%,_#12B886_91.69%)]"
+                @click="navigateTo(`/token/${token}-${chain}`)"
               >
                 {{ Number(max_price_change) < 1 ? '<1' : Math.ceil(Number(max_price_change)) + 'X' }}
               </div>
@@ -247,6 +259,7 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
                 :quickBuyValue="quickBuyValue"
                 :row="signalList[index]"
                 classNames="min-w-70px"
+                @submitSwap="navigateTo(`/token/${token}-${chain}`)"
               />
             </div>
           </div>

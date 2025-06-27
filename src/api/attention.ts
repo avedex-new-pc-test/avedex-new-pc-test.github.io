@@ -391,3 +391,12 @@ export function batchDeleteAddresses(body: Array<{ address: string; user_chain: 
   })
 }
 
+
+export function favUsersPauseMonitor(data: any) {
+  const { $api } = useNuxtApp()
+  return $api('/v2api/fav_users/v1/user/pauseMonitor', {
+    method: 'post',
+    body: data,
+  })
+}
+

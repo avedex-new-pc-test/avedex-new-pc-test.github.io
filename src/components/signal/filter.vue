@@ -77,7 +77,13 @@ const themeStore = useThemeStore()
               :class="{
                 'color-#3f80f7 border-color-#3f80f7':tempFilterParams.history_count === item
               }"
-              @click="tempFilterParams.history_count = item"
+              @click="()=>{
+                if(tempFilterParams.history_count !== item){
+                  tempFilterParams.history_count = item
+                } else {
+                  tempFilterParams.history_count = undefined
+                }
+              }"
             >
               >{{ item }}
             </div>
@@ -93,7 +99,13 @@ const themeStore = useThemeStore()
               :class="{
                 'color-#3f80f7 border-color-#3f80f7':tempFilterParams.mc_curr === item.value
               }"
-              @click="tempFilterParams.mc_curr = item.value"
+              @click="()=>{
+                if(tempFilterParams.mc_curr !== item.value){
+                  tempFilterParams.mc_curr = item.value
+                } else {
+                  tempFilterParams.mc_curr = undefined
+                }
+              }"
             >
               {{ item.label }}
             </div>

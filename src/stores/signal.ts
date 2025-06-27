@@ -1,10 +1,11 @@
 import {useStorage, useThrottleFn, useWindowSize} from '@vueuse/core'
+import type {GetSignalV2ListResponse} from '~/api/signal'
 
 export const useSignalStore = defineStore('signalStore', () => {
   const signalVisible = useStorage('signalVisible', false)
   const signalBoundingRect = useStorage('signalBoundingRect', {
     width: 360,
-    height: 200,
+    height: 500,
     x: 100,
     y: 100
   })
@@ -24,6 +25,15 @@ export const useSignalStore = defineStore('signalStore', () => {
   //   }
   // })
 
+  const translateStyle = shallowRef('')
+  const onDrag = useThrottleFn((x: number) => {
+    if (x <= 0) {
+      translateStyle.value = 'transform:translateX(12px)'
+    } else {
+      translateStyle.value =
+          x + signalBoundingRect.value.width >= winWidth.value ? 'transform:translateX(-12px)' : ''
+    }
+  }, 100, false, true)
   function onDragStop(x: number, y: number) {
     signalBoundingRect.value.x = x
     signalBoundingRect.value.y = y
@@ -31,33 +41,64 @@ export const useSignalStore = defineStore('signalStore', () => {
     if (x > 0) {
       isRightFixed.value = x + signalBoundingRect.value.width >= winWidth.value
     }
+    setTimeout(() => {
+      translateStyle.value = ''
+    })
   }
-
-  const translateStyle = shallowRef('')
-  const onDrag = useThrottleFn((x: number) => {
-    if (x <= 0) {
-      translateStyle.value = 'transform:translateX(12px)'
-    } else {
-      translateStyle.value =
-        x + signalBoundingRect.value.width >= winWidth.value ? 'transform:translateX(-12px)' : ''
-    }
-  }, 100, true, true)
 
   function onResizing(width: number, height: number) {
     signalBoundingRect.value.width = width
     signalBoundingRect.value.height = height
   }
 
-  function onLeftDragStop(x: number) {
+  function onLeftDragStop(x: number, y: number) {
     isLeftFixed.value = Math.abs(x) < 1
+    if (!isLeftFixed.value) {
+      signalBoundingRect.value.x = x
+      signalBoundingRect.value.y = y
+    }
   }
 
-  function onRightDragStop(x: number) {
+  function onRightDragStop(x: number, y: number) {
     isRightFixed.value = Math.abs(x) < 1
+    const _x = winWidth.value - fixedWidth.value + x
+    if (!isRightFixed.value) {
+      signalBoundingRect.value.x = _x
+      signalBoundingRect.value.y = y
+    }
   }
 
   function onFixedResizing(width: number) {
     fixedWidth.value = width
+  }
+
+  const activeChain = shallowRef('solana')
+
+  // token: 筛选 token
+  // history_count：筛选信号数，对应值2, 5, 15
+  // 市值：mc_curr，市值过滤，
+  // 市值方向：mc_curr_sign， 默认 > 大于号，可选 <
+  const filterParams = useStorage('signalParams', {
+    token: '',
+    history_count: undefined as undefined | number,
+    mc_curr: undefined as undefined | number,
+    mc_curr_sign: '<'
+  })
+
+  const signalList = shallowRef<GetSignalV2ListResponse[]>([])
+  const listStatus = ref({
+    loading: false,
+    finished: false,
+    error: false
+  })
+
+  const pageParams = shallowRef({
+    pageNO: 1,
+    pageSize: 20,
+  })
+
+  function updateList() {
+    triggerRef(signalList)
   }
 
   return {
@@ -74,6 +115,12 @@ export const useSignalStore = defineStore('signalStore', () => {
     onResizing,
     onFixedResizing,
     onDrag,
-    translateStyle
+    translateStyle,
+    activeChain,
+    filterParams,
+    signalList,
+    listStatus,
+    pageParams,
+    updateList
   }
 })

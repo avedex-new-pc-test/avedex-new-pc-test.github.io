@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
   classNames?: string
 }>(), {
   appendTo: '#__nuxt',
-  buttonBg: '#12B8861A',
+  buttonBg: 'rgba(18, 184, 134, 0.15)',
   classNames: '',
 })
 const botStore = useBotStore()
@@ -30,8 +30,10 @@ const loadingSwap = shallowRef(false)
 const visible = shallowRef(false)
 const message = shallowRef('')
 const noReminderQuickBuy = useStorage('noReminderQuickBuy', false)
+const emit = defineEmits(['submitSwap'])
 
 function submitBotSwap() {
+  emit('submitSwap')
   if (!verifyLogin()) {
     return
   }
@@ -126,7 +128,8 @@ async function submitSwap(amount: string) {
     swapType: 1,
     isPrivate: currentBotSetting?.mev || false,
     slippage: slippage !== 'auto'
-      ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900
+      ? Number(new BigNumber(slippage || '9').times(100).toFixed(0)) : 900,
+    autoSell: currentBotSetting?.autoSell || false
   }
   const tx = isSolana ? bot_createSolTx(data) : bot_createSwapEvmTx(data)
   tx.then(res => handleTxSuccess(res, data.batchId))
@@ -193,7 +196,7 @@ async function getTokenBalance(chain: string) {
     :color="buttonBg"
     class="flex items-center [&&]:px-12px"
     :class="classNames"
-    style="--el-color-black: #12B886; --el-button-border-color: transparent; --el-button-hover-border-color: transparent;--el-button-disabled-text-color: #12B886;--el-button-disabled-border-color: transparent;--el-button-disabled-bg-color: #12B8861A;"
+    style="--el-button-hover-bg-color:rgba(18, 184, 134, 0.3);--el-color-black: #12B886; --el-button-border-color: transparent; --el-button-hover-border-color: transparent;--el-button-disabled-text-color: #12B886;--el-button-disabled-border-color: transparent;--el-button-disabled-bg-color: #12B8861A;"
     @click="submitBotSwap"
   >
     <Icon
