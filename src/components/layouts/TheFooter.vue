@@ -16,7 +16,7 @@
           <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
         </template>
       </NuxtLink>
-      <el-badge is-dot>
+      <el-badge :is-dot="!signalStore.signalVisible">
         <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
              @click="signalStore.signalVisible=!signalStore.signalVisible"
         >
