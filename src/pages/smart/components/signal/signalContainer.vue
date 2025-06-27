@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import TimeLine from './timeLine.vue'
 import {useStorage} from '@vueuse/core'
-import Filter from '~/pages/smart/components/signal/filter.vue'
+import Filter from './filter.vue'
 import {getTopSignal, type ITopSignal} from '~/api/signal'
-import SignalLeftList from "~/pages/smart/components/signal/signalLeftList.vue";
-import SignalRightList from "~/pages/smart/components/signal/signalRightList.vue";
+import SignalLeftList from './signalLeftList.vue'
+import SignalRightList from './signalRightList.vue'
 
 defineProps<{
   activeChain: string
 }>()
+const localeStore = useLocaleStore()
 // token: 筛选 token
 // history_count：筛选信号数，对应值2, 5, 15
 // 市值：mc_curr，市值过滤，
@@ -78,16 +79,17 @@ async function setDialogVisible() {
             fill="white"/>
         </svg>
         <a
+            v-if="localeStore.locale!=='zh-cn'"
           href="https://t.me/AveSignalMonitor"
           target="_blank"
           class="ml-1 underline">
           {{ $t('EnSubscription') }}
         </a>
-        ｜
         <a
+            v-else
           href="https://t.me/AveSignalMonitorCN"
           target="_blank"
-          class="underline">
+            class="underline ml-1">
           {{ $t('CnSubscription') }}
         </a>
       </div>
@@ -124,9 +126,9 @@ async function setDialogVisible() {
           label-class-name="text-12px color-[--d-666-l-999]"
       >
         <template #default="{$index}">
-          <img v-if="$index+1===1" src="@/assets/images/111.svg"/>
-          <img v-else-if="$index+1===2" src="@/assets/images/222.svg"/>
-          <img v-else-if="$index+1===3" src="@/assets/images/333.svg"/>
+          <img v-if="$index+1===1" src="@/assets/images/111.svg">
+          <img v-else-if="$index+1===2" src="@/assets/images/222.svg">
+          <img v-else-if="$index+1===3" src="@/assets/images/333.svg">
           <div v-else class="text-12px color-[--d-666-l-999] text-center">{{ $index + 1 }}</div>
         </template>
       </el-table-column>
