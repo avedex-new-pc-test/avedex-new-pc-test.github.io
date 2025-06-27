@@ -30,7 +30,7 @@
               <div v-if="col.prop == 'mark'" class="flex-start gap-2px hover:color-[--d-FFF-l-000] cursor-pointer" @click.stop="tableRowClick(row)">
                 <Icon v-if="formatLock(row)" color="#B3920E" name="material-symbols:lock" />
                 <Icon v-if="row.is_contract == 1" name="iconamoon:file-document-thin"  />
-                <tag v-if="Number(row?.analysis_show_creator) === 1">{{ $t('contractCreator') }}</tag>
+                <pro-tab v-if="Number(row?.analysis_show_creator) === 1">{{ $t('contractCreator') }}</pro-tab>
                 <div v-tooltip="row?.mark||row?.address" class="max-w-140px whitespace-nowrap overflow-hidden text-ellipsis">{{ col.customFormatter ? col.customFormatter(row) : row[col.prop] }}</div>
               </div>
               <div v-else-if="col.prop == 'addAmt'" class="flex flex-col">
@@ -96,7 +96,6 @@
 import BigNumber from 'bignumber.js'
 import type { GetLPHoldersResponse, GetPairLiqNewResponse, IHolder, LockType } from '~/api/token'
 import { getLPHolders, getPairLiqNew } from '~/api/token'
-import tag from './components/tag.vue'
 // import type {IColumn}  from './components/columns.vue'
 import { downColor, upColor } from '@/utils/constants'
 import type { Token } from '~/api/types/token'
