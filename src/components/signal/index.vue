@@ -338,7 +338,7 @@ const isShowDate = ref(true)
         />
         <Icon
           name="custom:close"
-          class="text-14px shrink-0 cursor-pointer"
+          class="text-14px shrink-0 cursor-pointer color-[--d-FFF-l-333]"
           @click.self="signalStore.signalVisible=false"
         />
       </div>
