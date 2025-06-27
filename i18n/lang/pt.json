@@ -261,5 +261,6 @@
   "tm_start_trade_at_block": "Iniciar Negociação no Bloco",
   "mechanism_intro": "Adicional",
   "antiWhaleModifiable": "Anti-baleia modificável",
-  "tax": "Imposto"
+  "tax": "Imposto",
+  "filter": "Filtros"
 }
