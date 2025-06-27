@@ -145,3 +145,11 @@
 .search-input .el-input__clear {
   display: none !important;
 }
+
+.hide-scrollbar {
+  > .el-scrollbar {
+    > .el-scrollbar__bar {
+      --at-apply: hidden;
+    }
+  }
+}
