@@ -26,6 +26,7 @@
           {{ $t('signal') }}
         </div>
       </el-badge>
+    </div>
     <!-- <div
       id="monitor"
       class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
