@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {getSignalV2List} from '~/api/signal'
+import {getSignalV2List, type GetSignalV2ListResponse} from '~/api/signal'
 
-const listData = shallowRef([])
+const listData = shallowRef<GetSignalV2ListResponse[]>([])
 const listStatus = ref({
   loading: false,
   finished: false,
@@ -12,26 +12,34 @@ const pageParams = shallowRef({
   pageSize: 20,
 })
 
-async function fetchSignalList(queryParams: Parameters<typeof getSignalV2List>) {
+defineExpose({
+  fetchSignalList: (queryParams: Parameters<typeof fetchSignalList>[0]) => {
+    pageParams.value.pageNO = 1
+    fetchSignalList(queryParams)
+  }
+})
+
+async function fetchSignalList(queryParams: Exclude<Exclude<Parameters<typeof getSignalV2List>[0], 'pageNO'>, 'pageSize'>) {
   try {
     listStatus.value.loading = true
     const res = await getSignalV2List({
       ...queryParams,
       ...pageParams.value
     })
-    if (queryParams.value.pageNO === 1) {
-      signalList.value = res || []
+    if (pageParams.value.pageNO === 1) {
+      listData.value = res || []
     } else {
-      signalList.value = signalList.value.concat(res || [])
+      listData.value = listData.value.concat(res || [])
     }
-    const finished = res?.length < queryParams.value.pageSize
+    const finished = res?.length < pageParams.value.pageSize
     listStatus.value.finished = finished
     if (!finished) {
-      queryParams.value.pageNO++
+      pageParams.value.pageNO++
     }
   } catch (e) {
+    console.log(e, 'error')
     listStatus.value.error = true
-    signalList.value = []
+    listData.value = []
   } finally {
     listStatus.value.loading = false
   }
