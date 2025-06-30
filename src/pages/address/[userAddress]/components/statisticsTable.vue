@@ -6,7 +6,7 @@
           v-for="(item, index) in tabs"
           :key="index"
           :class="{ active: activeTab === item.id }"
-          @click="switchTab(item)"
+          @click.stop.prevent="switchTab(item)"
         >
           {{ item.title }}
         </a>
@@ -30,6 +30,12 @@
         >
           {{ $t('hideSmallAssets1') + '<1USD' }}
         </el-checkbox>
+        <BlackList
+          v-if="isSelfAddress"
+          :chain="chain"
+          :address="address"
+          @addWhite="refreshTokenList"
+        />
       </div>
       <div v-else-if="isTrend" class="checkbox-container">
         <el-checkbox
@@ -42,7 +48,7 @@
         </el-checkbox>
       </div>
     </div>
-    <div ref="listArea">
+    <div ref="listArea" class="mb-32px">
       <div
         v-infinite-scroll="onLoad"
         :infinite-scroll-delay="200"
@@ -51,7 +57,7 @@
         class="tableBox card relative"
         infinite-scroll-distance="300"
       >
-        <loading
+        <!-- <loading
           v-if="tableData.pageNO === 1"
           v-model:active="tableData.loading"
           :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
@@ -60,9 +66,9 @@
           :opacity="0.2"
           color="var(--custom-primary-color)"
           loader="dots"
-        />
+        /> -->
         <TokenList
-          v-else-if="isToken"
+          v-if="isToken"
           :conditions="conditions_wallet"
           :handleSortChange="handleSortChange"
           :loading="tableData.loading"
@@ -79,14 +85,17 @@
           :trendQuery="trendQuery"
           @refreshWhaleTrendList="refreshWhaleTrendList"
         />
-          <!-- <DeployedTokenList
+        <DeployedTokenList
           v-else
           :conditions="deployedTokenQuery"
           :handleSortChange="handleSortChange"
           :loading="tableData.loading"
           :tableData="filterTableList"
-        /> -->
-        <div :style="{ color: mode === 'light' ? '#666' : '#999' }" class="mt_20 font-14 tc">
+        />
+        <div
+          :style="{ color: mode === 'light' ? '#666' : '#999' }"
+          class="mt-[5px] mb-[5px] text-[12px] text-center"
+        >
           <span v-if="tableData.loading && tableData.pageNO > 1">{{ $t('loading') }}</span>
         </div>
       </div>
@@ -97,8 +106,8 @@
 <script setup>
 import TokenList from './tokenList.vue'
 import TrendList from './trendList.vue'
-// import DeployedTokenList from './deployedTokenList.vue'
-// import BlackList from './blackList.vue'
+import DeployedTokenList from './deployedTokenList.vue'
+import BlackList from './blackList.vue'
 import storage from 'good-storage'
 import { getDeployedTokens, getWhaleTokenList, getWhaleTrendList } from '@/api/wallet'
 const $t = getGlobalT()
@@ -215,7 +224,6 @@ const onConditionChange = (type) => {
 }
 
 const onLoad = () => {
-  if (activeTab.value === 'deployedToken') return
   if (isToken.value) _getWhaleTokenList()
   else if (isTrend.value) _getWhaleTrendList()
   else _getDeployedTokens()
@@ -279,7 +287,7 @@ const _getWhaleTokenList = async () => {
     if (!tableData.value.finished) {
       tableData.value.pageNO++
     }
-  } catch (err) {
+  } catch {
     tableData.value.token = []
     tableData.value.error = true
   } finally {
@@ -316,7 +324,7 @@ const getWhaleTrendParams = () => {
 
   const trendLen = trendQuery.value.checkedTrend?.length
   if (trendLen > 0 && trendLen <= 5) {
-    let event_type = trendQuery.value.checkedTrend
+    const event_type = trendQuery.value.checkedTrend
       .filter((i) => i !== 'all')
       .map((i) => i.replace('/', ','))
     data.event_type = event_type.toString()

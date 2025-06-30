@@ -144,3 +144,21 @@ export function bindTwitter(params) {
 }
 
 
+
+// 修改钱包备注
+export function setUserTokenStatus(
+  { token, type }: { token: string; type: string },
+  address: string,
+  chain: string
+) {
+  const {$api} = useNuxtApp()
+  return $api('/v1api/v3/users/balance/tokenfilter/add', {
+    method: 'post',
+    body: {
+      token,
+      type,
+      address,
+      chain,
+    }
+  })
+}

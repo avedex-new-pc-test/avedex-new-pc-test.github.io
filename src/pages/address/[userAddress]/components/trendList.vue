@@ -9,19 +9,7 @@
       class="table-container"
       @row-click="jumpBalance"
     >
-      <template #empty>
-        <div class="table-empty" v-if="!loading">
-          <img
-            :src="
-              mode === 'light'
-                ? require('@/assets/images/empty-white.svg')
-                : require('@/assets/images/empty-black.svg')
-            "
-          />
-          <span>{{ $t('emptyNoData') }}</span>
-        </div>
-        <span v-else></span>
-      </template>
+      <AveEmpty/>
       <TokenColumn
         :column-props="{
           label: $t('walletToken'),
@@ -308,7 +296,8 @@
 </template>
 
 <script setup>
-import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
+import AveEmpty from '@/components/aveEmpty.vue'
+import { formatNumber2 } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import TokenColumn from '@/components/tokenColumn.vue'
 const props = defineProps({
@@ -373,8 +362,7 @@ const themeStore = useThemeStore()
 const mode = computed(() => {
   return themeStore.isDark ? 'dark' : 'light'
 })
-const upColor = 'green'
-const downColor = 'red'
+import { downColor, upColor } from '@/utils/constants'
 
 const trendTypeList = computed(() => [
   { id: 'SWAP', name: $t('swap_buy') + '/' + $t('swap_sell') },

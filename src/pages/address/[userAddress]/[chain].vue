@@ -113,6 +113,14 @@ const currentBot = computed(() => {
   return getBot(chain || 'solana')
 })
 
+const isSelfAddress = computed(() => {
+  return true
+  return (
+    !this.paramsAddress ||
+    this.paramsAddress === this.currentBot.address ||
+    this.paramsAddress === this.currentAccount
+  )
+})
 const intervalText = computed(() => {
   return options.find((item) => interval.value === item.id)?.name
 })
@@ -157,18 +165,22 @@ function txAnalysisChange(data) {
 // chain.value = paramsChain.value || currentBot.value.chain || netId.value
 
 // Watchers
-watch(route, (to) => {
-  if (to.name === 'Balance') {
-    if (to.params?.chain && to.params?.userAddress) {
-      address = to.params.userAddress
-      chain = to.params.chain
-    } else if (currentAccount.value) {
-      address = currentAccount.value
-      chain.value = netId.value
+watch(
+  route,
+  (to) => {
+    if (to.name === 'Balance') {
+      if (to.params?.chain && to.params?.userAddress) {
+        address = to.params.userAddress
+        chain = to.params.chain
+      } else if (currentAccount.value) {
+        address = currentAccount.value
+        chain.value = netId.value
+      }
+      statisticsTable.value?.onRouteChange()
     }
-    statisticsTable.value?.onRouteChange()
-  }
-}, { deep: true })
+  },
+  { deep: true }
+)
 
 watch(currentAccount, (val) => {
   if (val) {
