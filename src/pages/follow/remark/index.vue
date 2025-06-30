@@ -106,7 +106,7 @@ const handleRemarkShow = (row: any, event: any) => {
 
 // 备注
 const handleRemarkGroup = async (row: any) => {
-  if (!remarkValue.value.trim()) return ElMessage.error(t('enterRemark'))
+  // if (!remarkValue.value.trim()) return ElMessage.error(t('enterRemark'))
   if (remarkValue.value.length > 50) return ElMessage.error(t('remarkError'))
   await updateWhaleRemark({
     remark: remarkValue.value,
