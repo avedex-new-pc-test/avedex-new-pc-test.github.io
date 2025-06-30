@@ -111,26 +111,22 @@ const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
             token_create_time
            },index) in signalList"
           :key="id"
-          class="text-12px pb-12px border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2]"
+          class="text-12px pb-12px border-b-1px border-b-solid border-b-[--d-222-l-F2F2F2] cursor-pointer"
+          @click="navigateTo(`/token/${token}-${chain}`)"
         >
           <div class="flex">
             <div class="flex-[2.5] flex items-center gap-8px">
-              <NuxtLink
-                :to="`/token/${token}-${chain}`"
-              >
-                <TokenImg
-                  token-class="w-32px h-32px"
-                  :row="{
+              <TokenImg
+                token-class="w-32px h-32px"
+                :row="{
                       chain,
                       logo_url:logo,
                       symbol
                    }"
-                />
-              </NuxtLink>
+              />
               <div class="flex flex-col gap-4px">
                 <div class="flex items-center gap-8px">
               <span class="font-500 color-[--d-F5F5F5-l-333] text-16px overflow-hidden text-ellipsis cursor-pointer"
-                    @click="navigateTo(`/token/${token}-${chain}`)"
               >{{
                   symbol
                 }}</span>
@@ -249,7 +245,6 @@ const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
             <div class="flex-1 flex justify-end items-center">
               <div
                 class="min-w-49px h-32px cursor-pointer flex items-center p-4px justify-center rounded-tl-2 rounded-br-[10px] text-[18px] leading-[24px] text-white font-500 bg-[linear-gradient(73.74deg,_#8B4FDD_9.69%,_#12B886_91.69%)]"
-                @click="navigateTo(`/token/${token}-${chain}`)"
               >
                 {{ Number(max_price_change) < 1 ? '<1' : Math.ceil(Number(max_price_change)) + 'X' }}
               </div>
@@ -259,13 +254,12 @@ const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
                 :quickBuyValue="quickBuyValue"
                 :row="signalList[index]"
                 classNames="min-w-70px"
-                @submitSwap="navigateTo(`/token/${token}-${chain}`)"
               />
             </div>
           </div>
           <div class="flex gap-24px">
             <div
-              class="flex-[3.5] mt-12px px-8px py-4px lh-14px bg-[--d-1A1A1A-l-F2F2F2] flex items-center text-12px rounded-4px"
+              class="flex-[3.5] mt-12px px-8px py-4px lh-14px bg-[--d-222-l-F2F2F2] flex items-center text-12px rounded-4px"
             >
               <img :src="formatIconTag(tag)" alt="" class="w-12px h-12px mr-4px">
               <TimerCount
@@ -275,16 +269,16 @@ const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
                   <div v-if="seconds < 60" class="color-#FFA622 text-12px">
                     {{ seconds }}s
                   </div>
-                  <div v-else class="color-[--d-999-l-666] text-12px">
+                  <div v-else class="color-#999 text-12px">
                     {{ dayjs(signal_time * 1000).fromNow() }}
                   </div>
                 </template>
               </TimerCount>
-              <div v-else class="color-[--d-999-l-666] text-12px flex">
+              <div v-else class="color-#999 text-12px flex">
                 {{ dayjs(signal_time * 1000).fromNow() }}
               </div>
               <div
-                class="color-[--d-F5F5F5-l-333] mx-4px cursor-pointer decoration-underline decoration-dotted"
+                class="color-#999 mx-4px cursor-pointer decoration-underline decoration-dotted"
                 @mouseenter.stop="showPop($event,signalList[index].actions)"
                 @mouseleave.stop="hidePop"
               >
@@ -300,7 +294,7 @@ const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
             </div>
             <div v-if="headline" class="flex-[4] flex items-center gap-8px mt-12px">
               <Icon name="custom:ai"/>
-              <div class="color-[--d-666-l-999] text-12px whitespace-nowrap overflow-hidden text-ellipsis">
+              <div class="color-[--d-F5F5F5-l-333] text-12px whitespace-nowrap overflow-hidden text-ellipsis">
                 {{ headline }}
               </div>
             </div>

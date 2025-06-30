@@ -2,7 +2,7 @@
   <el-popover
       trigger="hover"
       placement="top"
-      content="黑名单列表(CA、DEV 、关键词)"
+      :content="t('backlist')"
       :width="230"
       popper-class="text-center"
     >
@@ -27,10 +27,10 @@
     @opened="openDialog"
   >
     <template #header>
-      <span class="px-20px text-20px"> 黑名单 </span>
+      <span class="px-20px text-20px"> {{ $t('black') }} </span>
     </template>
     <div class="content">
-      <div class="px-20px">
+      <div class="px-20px mt-20px">
         <el-input
           ref="inputSearch"
           v-model.trim="query"
@@ -61,7 +61,7 @@
             >
               <template #reference>
                 <el-button class="btn mr-8px"
-                  >添加
+                  >{{ $t('add') }}
                   <Icon
                     :name="
                       isRotate
@@ -107,8 +107,8 @@
             </el-button>
           </div>
 
-          <span>类型</span>
-          <span>操作</span>
+          <span>{{ $t('type') }}</span>
+          <span>{{ $t('operate') }}</span>
         </div>
 
         <el-scrollbar v-if="list?.length > 0" height="500px" min-height="400px">
@@ -117,14 +117,14 @@
               <a href="" class="flex no-underline h-50px" @click.stop.prevent>
                 <div>{{ row.address }}</div>
                 <div>
-                  <template v-if="row.type == 'dev'">开发者地址</template>
-                  <template v-else-if="row.type == 'ca'">合约地址</template>
-                  <template v-else-if="row.type == 'keyword'">关键词</template>
+                  <template v-if="row.type == 'dev'">{{ $t('dev') }}</template>
+                  <template v-else-if="row.type == 'ca'">{{ $t('ca') }}</template>
+                  <template v-else-if="row.type == 'keyword'">{{ $t('keywords') }}</template>
                   <template v-else>{{ row.type }}</template>
                 </div>
                 <div class="flex-end">
                   <el-button class="btn restore" @click.stop.prevent="restore(row)"
-                    >恢复
+                    >{{ $t('remove') }}
                   </el-button>
                 </div>
               </a>
@@ -133,7 +133,7 @@
         </el-scrollbar>
         <AveEmpty v-else class="mt-150px" />
         <div class="text-14px count color-[--d-666-l-999]">
-          总计<span
+          {{ $t('total') }}<span
             class="ml-5px"
             :class="list?.length > 0 ? 'color-[--d-F5F5F5-l-333]' : ''"
             >{{ list.length }}</span
@@ -162,19 +162,19 @@ const active = shallowRef('all')
 const typeList = computed(() => {
   return [
     {
-      name: '全部',
+      name: t('all'),
       value: 'all',
     },
     {
-      name: '开发者地址',
+      name: t('dev'),
       value: 'dev',
     },
     {
-      name: '合约地址',
+      name: t('ca'),
       value: 'ca',
     },
     {
-      name: '关键词',
+      name: t('keywords'),
       value: 'keyword',
     },
   ]
@@ -189,14 +189,14 @@ function switchItem(item: { value: string }) {
 }
 function add(item: { value: 'ca' | 'dev' | 'keyword' }) {
   if (!query.value) {
-    ElMessage.error('请输入查询参数')
+    ElMessage.error(t('plsSearchTip'))
   }
   if (item.value == 'ca' || item.value == 'dev') {
     if (
       !isValidAddress(query.value, 'solana') &&
       !isValidAddress(query.value, 'bsc')
     ) {
-      ElMessage.error('请输入正确的地址')
+      ElMessage.error(t('plsCorrectCa'))
       return
     }
   }
@@ -206,7 +206,7 @@ function add(item: { value: 'ca' | 'dev' | 'keyword' }) {
       (i) => query.value == i.address
     )
     if (findIndex !== -1) {
-      ElMessage.success(t('黑名单已存在'))
+      ElMessage.success(t('blacklistExists'))
     } else {
       pumpBlackList.value.push({ address: query.value, type: item.value })
     }
@@ -221,7 +221,7 @@ function restore(item: { address: string }) {
   if (findIndex !== -1) {
     pumpBlackList.value.splice(findIndex, 1)
   }
-  ElMessage.success(t('已从黑名单删除'))
+  ElMessage.success(t('removedBacklist'))
 }
 </script>
 

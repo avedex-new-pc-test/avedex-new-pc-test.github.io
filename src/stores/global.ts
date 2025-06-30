@@ -54,7 +54,7 @@ export const useGlobalStore = defineStore('global', () => {
     isGutter: false,
     isRight: false,
     isBlacklist: false,
-    define: [],
+    define: ['name', 'txs', 'vol', 'holder', 'mcap', 'media', 'smart', 'top','dev','cabal','insider', 'sniper', 'rug', 'kol'],
   })
 
 

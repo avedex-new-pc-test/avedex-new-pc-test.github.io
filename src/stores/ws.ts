@@ -49,6 +49,8 @@ export const useWSStore = defineStore('ws', () => {
       const { event, data } = msg
       if (event === WSEventType.TGBOT) {
         wsResult[event] = data?.msg
+      } else if (event === WSEventType.MONITOR) {
+        wsResult[event] = data?.msg
       } else if (event === WSEventType.TX) {
         const tx: WSTx = data?.tx
         // 更新价格 交易数和交易额

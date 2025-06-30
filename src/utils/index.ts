@@ -810,26 +810,39 @@ export function usePumpTableDataFetching(key = '') {
   return useStorage(
     key,
     {
+      q: '',
       dev_sale_out: 0,
       platforms: 'pump,moonshot',
-      market_cap_min: '', // 市值
-      market_cap_max: '',
       progress_min: '', //进度
       progress_max: '',
-      volume_u_24h_min: '', //交易额
-      volume_u_24h_max: '',
+
+      lage: '', //代币时长
+      rage: '',
       dev_balance_ratio_cur_min: '', //dev 持仓%
       dev_balance_ratio_cur_max: '',
-      holders_top10_ratio_min: '', //top10 持仓%
-      holders_top10_ratio_max: '',
-      tvl_min: '',
-      tvl_max: '',
       holder_min: '', //持有人
       holder_max: '',
-      tx_24h_count_min: '',
-      tx_24h_count_max: '',
+      holders_top10_ratio_min: '', //top10 持仓%
+      holders_top10_ratio_max: '',
+      lsnip: '', //狙击人数
+      rsnip: '',
       smart_money_tx_count_24h_min: '', // 聪明钱交易数 （买入数+卖出数）
       smart_money_tx_count_24h_max: '',
+      lins: '', //老鼠仓
+      rins: '',
+      lkol: '', //KOL交易人数
+      rkol: '',
+      lrug: '', //跑路概率
+      rrug: '',
+
+      market_cap_min: '', // 市值
+      market_cap_max: '',
+      volume_u_24h_min: '', //交易额
+      volume_u_24h_max: '',
+      lbtx: '', //买入交易数
+      rbtx: '',
+      lstx: '', //卖出交易数
+      rstx: '',
     },
     localStorage,
     { mergeDefaults: true }

@@ -81,12 +81,12 @@
         </li>
         <li class="text-14px mt-4px mb-4px flex-start">
           <span class="mr-4px color-[--d-666-l-999] text-12px">{{ $t('autoSellHalf') }}</span>
-          {{  botSettingStore.botSettings?.[chain]?.[selected]?.autoSell ? '开' : '关'}}
+          {{  botSettingStore.botSettings?.[chain]?.[selected]?.autoSell ? $t('on') : $t('off') }}
         </li>
 
         <li class="text-14px mt-4px mb-4px flex-start">
           <span class="mr-4px color-[--d-666-l-999] text-12px">{{ $t('mev') }}</span>
-          {{  botSettingStore.botSettings?.[chain]?.[selected]?.mev ? '开' : '关'}}
+          {{  botSettingStore.botSettings?.[chain]?.[selected]?.mev ? $t('on')  : $t('off') }}
         </li>
 
       </ul>
