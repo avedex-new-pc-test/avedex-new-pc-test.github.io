@@ -41,6 +41,7 @@ watch(() => [props.activeChain, filterToken.value], () => {
   listData.value = []
   pageParams.value.pageNO = 1
   listStatus.value.finished = false
+  listStatus.value.loading = false
   listStatus.value.error = false
   fetchSignalList()
 })
@@ -49,7 +50,7 @@ watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], ({msg: _sign
   msg: GetSignalV2ListResponse
 }) => {
   const rel = listData.value.find(el => el.token === _signalData.token && el.chain === _signalData.chain)
-  if (!rel) {
+  if (!rel && (!filterToken.value || filterToken.value === _signalData.token)) {
     listData.value.unshift(_signalData)
   }
 })

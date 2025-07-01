@@ -145,7 +145,7 @@ async function updateListData() {
   try {
     const res = await getSignalV3List({
       pageNO: 1,
-      pageSize: 50,
+      pageSize: 20,
       chain: props.activeChain,
       wallet_address: botStore.getWalletAddress(props.activeChain)
     })
@@ -237,7 +237,7 @@ onUnmounted(() => {
             fill="white"/>
         </svg>
         <a
-            v-if="localeStore.locale!=='zh-cn'"
+          v-if="!['zh-cn','zh-tw'].includes(localeStore.locale)"
           href="https://t.me/AveSignalMonitor"
           target="_blank"
           class="ml-1 underline">
@@ -263,6 +263,7 @@ onUnmounted(() => {
           v-model:quickBuyValue="quickBuyValue"
           :chain="activeChain"
           style="margin-left: 20px;"
+          :showQuickAmount="false"
       />
     </div>
   </div>

@@ -783,5 +783,7 @@
   "SignalDetail": "Signal Detail",
   "SignalTopList": "Today's Potential List",
   "ranking": "Ranking",
-  "FirstAlert": "First Alert"
+  "quick": "Quick Buy",
+  "FirstAlert": "First Alert",
+  "FilterTips": "Filter content to the real-time stream on the left"
 }

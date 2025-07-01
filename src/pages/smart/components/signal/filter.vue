@@ -63,7 +63,9 @@ function updateCurrentNum() {
       :width="308"
     >
       <template #reference>
-        <div class="flex items-center cursor-pointer text-12px gap-4px">
+        <div class="flex items-center cursor-pointer text-12px gap-4px"
+             v-tooltip="$t('FilterTips')"
+        >
           <Icon
             name="custom:filter"
             class="text-12px cursor-pointer"
