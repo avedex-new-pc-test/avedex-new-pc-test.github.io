@@ -488,5 +488,6 @@
   "push": "Толкать",
   "copyTrade": "Копитрейдинг",
   "pauseMonitor": "Пауза мониторинг",
-  "enableMonitor": "Включите мониторинг"
+  "enableMonitor": "Включите мониторинг",
+  "ranking": "Рейтинг"
 }
