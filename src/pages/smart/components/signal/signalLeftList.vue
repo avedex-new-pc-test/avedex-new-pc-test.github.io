@@ -300,6 +300,7 @@ function selectSignal(id: number, token: string) {
                     class="text-10px flex items-center justify-center"
                     :href="`https://x.com/search?q=($${symbol} OR ${token})&src=typed_query&f=live`"
                     target="_blank"
+                    @click.stop
                   >
                     <Icon
                       name="hugeicons:search-01"
@@ -316,20 +317,22 @@ function selectSignal(id: number, token: string) {
                   >
                 </div>
                 <div class="flex items-center gap-8px">
-                  <TimerCount
-                    v-if="token_create_time && Number(formatTimeFromNow(token_create_time, true)) < 60"
-                    :key="token_create_time" :timestamp="token_create_time" :end-time="60">
-                    <template #default="{ seconds }">
-                  <span v-if="seconds < 60" class="color-#FFA622 text-12px">
-                    {{ seconds }}s
-                  </span>
-                      <span v-else class="color-[--d-999-l-666] text-12px">
-                    {{ formatTimeFromNow(token_create_time) }}
-                  </span>
-                    </template>
-                  </TimerCount>
-                  <div v-else class="color-[--d-999-l-666] text-12px">
-                    {{ formatTimeFromNow(token_create_time) }}
+                  <div v-tooltip="formatDate(token_create_time,'MM/DD HH:mm:ss')">
+                    <TimerCount
+                      v-if="token_create_time && Number(formatTimeFromNow(token_create_time, true)) < 60"
+                      :key="token_create_time" :timestamp="token_create_time" :end-time="60">
+                      <template #default="{ seconds }">
+                    <span v-if="seconds < 60" class="color-#FFA622 text-12px">
+                      {{ seconds }}s
+                    </span>
+                        <span v-else class="color-[--d-999-l-666] text-12px">
+                      {{ formatTimeFromNow(token_create_time) }}
+                    </span>
+                      </template>
+                    </TimerCount>
+                    <div v-else class="color-[--d-999-l-666] text-12px">
+                      {{ formatTimeFromNow(token_create_time) }}
+                    </div>
                   </div>
                   <div
                     v-if="Number(top10_ratio) > 0"
@@ -406,7 +409,7 @@ function selectSignal(id: number, token: string) {
                     ${{ formatNumber(mc, 1) }}
                     <Icon
                       name="material-symbols:arrow-right-alt"
-                      class="mx-8px color-#999"
+                      class="mx-12px color-#999"
                     />
                   </div>
                 </div>

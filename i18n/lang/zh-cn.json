@@ -728,5 +728,6 @@
   "SignalTopList": "今日潛力榜單",
   "ranking": "排名",
   "quick": "快速买入",
-  "FirstAlert": "首次信号警报"
+  "FirstAlert": "首次信号警报",
+  "FilterTips": "过滤内容为左侧实时流"
 }

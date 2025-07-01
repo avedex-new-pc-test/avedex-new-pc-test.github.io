@@ -23,11 +23,11 @@ const localeStore = useLocaleStore()
 const themeStore = useThemeStore()
 
 function getGradientBackground(history_count: number) {
-  if (history_count >= 10) {
+  if (history_count >= 5) {
     if (themeStore.isDark) {
-      return 'bg-[linear-gradient(273.55deg, rgba(18, 184, 134, 0.2)_1.62%, rgba(18, 184, 134, 0.6)_99.73%)]'
+      return 'bg-[linear-gradient(273.55deg,#12B88633_1.62%,#12B88699_99.73%)]'
     }
-    return 'bg-[linear-gradient(273.55deg, #12B886_1.62%, rgba(18, 184, 134, 0.6)_99.73%)]'
+    return 'bg-[linear-gradient(273.55deg,#12B886_1.62%,#12B88699_99.73%)] color-#FFF'
   }
   return 'bg-[--d-12B8861A-l-12B8862A]'
 }
@@ -38,6 +38,30 @@ const increasedOrDecreased = computed(() => {
     decrease: Number(props.item.mc_cur) < Number(props.item.mc)
   }
 })
+
+const tokenDetailSStore = useTokenDetailsStore()
+
+function openTokenDetail(el: IActionItem | IActionV3Item) {
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: props.item.token + '-' + props.activeChain,
+      symbol: props.item.symbol,
+      logo_url: props.item.logo,
+      chain: props.activeChain,
+      address: props.item.token,
+      remark: ''
+    },
+    pairInfo: {
+      target_token: props.item.token,
+      token0_address: el.quote_token_address,
+      token0_symbol: el.quote_token_symbol,
+      token1_symbol: props.item.symbol,
+      pairAddress: ''
+    },
+    user_address: el.wallet_address
+  })
+}
 </script>
 
 <template>
@@ -88,20 +112,22 @@ const increasedOrDecreased = computed(() => {
               </a>
             </div>
             <div class="flex items-center color-[--d-666-l-999] gap-4px">
-              <TimerCount
-                v-if="item.token_create_time && Number(formatTimeFromNow(item.token_create_time, true)) < 60"
-                :key="item.token_create_time" :timestamp="item.token_create_time" :end-time="60">
-                <template #default="{ seconds }">
+              <div v-tooltip="formatDate(item.token_create_time,'MM/DD HH:mm:ss')">
+                <TimerCount
+                  v-if="item.token_create_time && Number(formatTimeFromNow(item.token_create_time, true)) < 60"
+                  :key="item.token_create_time" :timestamp="item.token_create_time" :end-time="60">
+                  <template #default="{ seconds }">
                   <span v-if="seconds < 60" class="color-#FFA622 text-12px">
                     {{ seconds }}s
                   </span>
-                  <span v-else class="color-[--d-999-l-666] text-12px">
+                    <span v-else class="color-[--d-999-l-666] text-12px">
                     {{ formatTimeFromNow(item.token_create_time) }}
                   </span>
-                </template>
-              </TimerCount>
-              <div v-else class="color-[--d-999-l-666] text-12px">
-                {{ formatTimeFromNow(item.token_create_time) }}
+                  </template>
+                </TimerCount>
+                <div v-else class="color-[--d-999-l-666] text-12px">
+                  {{ formatTimeFromNow(item.token_create_time) }}
+                </div>
               </div>
               <span
                 v-copy="item.token"
@@ -138,7 +164,7 @@ const increasedOrDecreased = computed(() => {
                 ${{ formatNumber(item.mc, 1) }}
                 <Icon
                   name="material-symbols:arrow-right-alt"
-                  class="mx-8px color-#999"
+                  class="mx-12px color-#999"
                 />
               </div>
             </div>
@@ -183,7 +209,7 @@ const increasedOrDecreased = computed(() => {
           {{ formatDate(item.signal_time) }}
         </div>
         <div
-          class="flex items-center lh-24px py-4px px-8px"
+          class="flex items-center lh-24px py-4px px-8px rounded-4px"
           :class="getGradientBackground(item.history_count)"
         >
           <Icon name="custom:alert" class="mr-3px"/>
@@ -196,11 +222,11 @@ const increasedOrDecreased = computed(() => {
             <Icon name="ic:baseline-people-alt" class="mr-4px color-#12B886"/>
             {{ item.holders_cur }}
           </div>
-          <!--<div-->
-          <!--  class="px-4px py-2px text-12px rounded-2px bg-[&#45;&#45;d-1A1A1A-l-F2F2F2] flex items-center justify-center color-[&#45;&#45;d-F5F5F5-l-333]">-->
-          <!--  <img src="@/assets/images/whale.svg" class="mr-4px" alt="">-->
-          <!--  {{ item.holders_cur }}-->
-          <!--</div>-->
+          <div
+            class="px-4px py-2px text-12px rounded-2px bg-[--d-1A1A1A-l-F2F2F2] flex items-center justify-center color-[--d-F5F5F5-l-333]">
+            <img :src="formatIconTag(item.tag)" class="mr-4px w-12px h-12px" alt="">
+            {{ item.actions.length }}
+          </div>
           <!--<div-->
           <!--  class="px-4px py-2px text-12px rounded-2px bg-[&#45;&#45;d-1A1A1A-l-F2F2F2] flex items-center justify-center color-[&#45;&#45;d-F5F5F5-l-333]">-->
           <!--  <img :src="formatIconTag('kol_buy')" class="mr-4px w-12px h-12px" alt="">-->
@@ -222,7 +248,7 @@ const increasedOrDecreased = computed(() => {
       <div class="flex-[2] text-right">
         {{ $t('operate') }}
       </div>
-      <div class="flex-1 text-right">
+      <div class="flex-1 text-right" v-if="!filterToken">
         {{ $t('positions') }}
       </div>
       <div class="flex-1 text-right">
@@ -242,7 +268,8 @@ const increasedOrDecreased = computed(() => {
               wallet_logo
             },$index) in (isWalletAll? item.actions : item.actions.slice(0,3))"
         :key="$index"
-        class="flex color-[--d-999-l-666] text-12px h-40px items-center"
+        class="flex color-[--d-999-l-666] text-12px h-40px items-center cursor-pointer"
+        @click="openTokenDetail(item.actions[$index])"
       >
         <div class="flex-[2] flex items-center">
           <UserAvatar
@@ -260,7 +287,7 @@ const increasedOrDecreased = computed(() => {
             quote_token_symbol
           }}<span class="color-[--d-999-l-666]">(${{ formatNumber(quote_token_volume, 0) }})</span>
         </div>
-        <div class="flex-1 text-right">
+        <div class="flex-1 text-right" v-if="!filterToken">
             <span
               v-if="Number(token_balance_usd)===0"
               class="color-#F6465D"
@@ -296,35 +323,37 @@ const increasedOrDecreased = computed(() => {
       class="flex justify-between"
     >
       <div class="flex-1 flex items-center color-[--d-666-l-999] gap-16px">
-        {{ $t('mySwap') }}
-        <el-row class="text-12px flex-1 text-center">
-          <el-col :span="8">
-            <div class="color-[--d-666-l-999] mb-4px">{{ $t('bought') }}</div>
-            <div class="color-#12B886">
-              ${{ formatNumber(item.self_wallet_info?.total_purchase_usd || 0, 1) }}
-            </div>
-          </el-col>
-          <el-col
-            :span="8"
-          >
-            <div class="color-[--d-666-l-999] mb-4px">
-              {{ $t('sold') }}
-            </div>
-            <div class="color-#F6465D">
-              ${{ formatNumber(item.self_wallet_info?.total_sold_usd || 0, 1) }}
-            </div>
-          </el-col>
-          <el-col
-            :span="8"
-          >
-            <div class="color-[--d-666-l-999] mb-4px">
-              {{ $t('holding') }}
-            </div>
-            <div class="color-[--d-F5F5F5-l-333]">
-              ${{ formatNumber(item.self_wallet_info?.balance || 0, 1) }}
-            </div>
-          </el-col>
-        </el-row>
+        <template v-if="item.self_wallet_info?.total_purchase_usd">
+          {{ $t('mySwap') }}
+          <el-row class="text-12px flex-1 text-center">
+            <el-col :span="8">
+              <div class="color-[--d-666-l-999] mb-4px">{{ $t('bought') }}</div>
+              <div class="color-#12B886">
+                ${{ formatNumber(item.self_wallet_info?.total_purchase_usd || 0, 1) }}
+              </div>
+            </el-col>
+            <el-col
+              :span="8"
+            >
+              <div class="color-[--d-666-l-999] mb-4px">
+                {{ $t('sold') }}
+              </div>
+              <div class="color-#F6465D">
+                ${{ formatNumber(item.self_wallet_info?.total_sold_usd || 0, 1) }}
+              </div>
+            </el-col>
+            <el-col
+              :span="8"
+            >
+              <div class="color-[--d-666-l-999] mb-4px">
+                {{ $t('holding') }}
+              </div>
+              <div class="color-[--d-F5F5F5-l-333]">
+                ${{ formatNumber(item.self_wallet_info?.balance || 0, 1) }}
+              </div>
+            </el-col>
+          </el-row>
+        </template>
       </div>
       <QuickSwapButton
         :quick-buy-value="quickBuyValue"

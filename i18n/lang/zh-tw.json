@@ -2,6 +2,7 @@
   "noData": "無復制內容",
   "connectWallet": "連接錢包",
   "kol_buy_tips": "最近有KOL買入",
+  "kol_sell_tips": "最近有KOL卖出",
   "smarter_buy_tips": "最近有聰明錢買入",
   "smarter_sell_tips": "最近有聰明錢賣出",
   "favorites": "自選",
@@ -713,5 +714,6 @@
   "SignalTopList": "今日潛力榜單",
   "ranking": "排名",
   "quick": "快速買入",
-  "FirstAlert": "首次信號警報"
+  "FirstAlert": "首次信號警報",
+  "FilterTips": "篩選內容為左側即時流"
 }
