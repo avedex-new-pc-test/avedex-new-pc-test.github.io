@@ -44,6 +44,15 @@ watch(() => [props.activeChain, filterToken.value], () => {
   listStatus.value.error = false
   fetchSignalList()
 })
+const wsStore = useWSStore()
+watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], ({msg: _signalData}: {
+  msg: GetSignalV2ListResponse
+}) => {
+  const rel = listData.value.find(el => el.token === _signalData.token && el.chain === _signalData.chain)
+  if (!rel) {
+    listData.value.unshift(_signalData)
+  }
+})
 
 const botStore = useBotStore()
 
@@ -88,63 +97,16 @@ async function fetchSignalList() {
   }
 }
 
-let timer: number
-
-function initTimer() {
-  let lastFetchSignalTime = 0
-  const callback = () => {
-    if (Date.now() - lastFetchSignalTime >= 5000) {
-      updateListData()
-      lastFetchSignalTime = Date.now()
-    }
-    timer = requestAnimationFrame(callback)
-  }
-  timer = requestAnimationFrame(callback)
-}
-
-/**
- * 作为推送接口使用，只更新数据
- */
-async function updateListData() {
-  try {
-    const res = await getListApi()
-    const addressMap: Record<string, GetSignalV2ListResponse> = {}
-    ;(res || []).forEach((item) => {
-      if (!addressMap[item.token + item.chain]) {
-        addressMap[item.token + item.chain] = item
-      }
-    })
-    listData.value = listData.value.map(item => {
-      const updateKeys = ['mc_cur', 'holders_cur', 'top10_ratio', 'dev_ratio', 'insider_ratio', 'max_price_change'] as const
-      const matchedNewData = addressMap[item.token + item.chain]
-      if (matchedNewData) {
-        const result = {} as Record<string, GetSignalV2ListResponse>
-        updateKeys.forEach(updateKey => {
-          result[updateKey] = matchedNewData[updateKey] as any
-        })
-        return {
-          ...item,
-          ...result
-        }
-      }
-      return item
-    })
-  } catch (e) {
-    console.log('=>(signalList.vue:106) e', e)
-  }
-}
-
 onMounted(() => {
   fetchSignalList()
-  initTimer()
-})
-onUnmounted(() => {
-  cancelAnimationFrame(timer)
 })
 
 defineExpose({
   setToken: (val: string) => {
     filterToken.value = val
+  },
+  updateListData(callback: (p: GetSignalV2ListResponse<IActionItem | IActionV3Item>[]) => GetSignalV2ListResponse<IActionItem | IActionV3Item>[]) {
+    listData.value = callback(listData.value)
   }
 })
 
@@ -174,6 +136,7 @@ function openDrawer(item: GetSignalV2ListResponse<IActionItem | IActionV3Item>) 
     <div class="flex flex-wrap gap-4px">
       <SignalRightItem
         v-for="(item,index) in listData"
+        :class="item.actions.length > 3 ? 'border-1px border-solid border-#3F80F7':''"
         :key="index"
         :item="item"
         :filterToken="filterToken"

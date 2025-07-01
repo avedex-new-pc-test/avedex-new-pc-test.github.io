@@ -32,7 +32,8 @@ const message = shallowRef('')
 const noReminderQuickBuy = useStorage('noReminderQuickBuy', false)
 const emit = defineEmits(['submitSwap'])
 
-function submitBotSwap() {
+function submitBotSwap(e: MouseEvent) {
+  e.stopPropagation()
   emit('submitSwap')
   if (!verifyLogin()) {
     return

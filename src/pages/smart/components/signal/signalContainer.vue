@@ -2,7 +2,13 @@
 import TimeLine from './timeLine.vue'
 import {useStorage} from '@vueuse/core'
 import Filter from './filter.vue'
-import {getTopSignal, type ITopSignal} from '~/api/signal'
+import {
+  type GetSignalV2ListResponse,
+  getSignalV3List,
+  getTopSignal,
+  type IActionItem, type IActionV3Item,
+  type ITopSignal
+} from '~/api/signal'
 import SignalLeftList from './signalLeftList.vue'
 import SignalRightList from './signalRightList.vue'
 
@@ -115,6 +121,79 @@ function setResetBtn(val: boolean) {
     signalLeftList.value.setSelectId(undefined)
   }
 }
+
+let timer: number
+
+function initTimer() {
+  let lastFetchSignalTime = 0
+  const callback = () => {
+    if (Date.now() - lastFetchSignalTime >= 5000) {
+      updateListData()
+      lastFetchSignalTime = Date.now()
+    }
+    timer = requestAnimationFrame(callback)
+  }
+  timer = requestAnimationFrame(callback)
+}
+
+const botStore = useBotStore()
+
+/**
+ * 作为推送接口使用，只更新数据
+ */
+async function updateListData() {
+  try {
+    const res = await getSignalV3List({
+      pageNO: 1,
+      pageSize: 50,
+      chain: props.activeChain,
+      wallet_address: botStore.getWalletAddress(props.activeChain)
+    })
+    const addressMap: Record<string, GetSignalV2ListResponse> = {}
+    ;(res || []).forEach((item) => {
+      if (!addressMap[item.token + item.chain]) {
+        addressMap[item.token + item.chain] = item
+      }
+    })
+    if (signalRightList.value) {
+      signalRightList.value.updateListData(listData => updateDataCallback(listData, addressMap, ['actions', 'self_wallet_info']))
+    }
+    if (signalLeftList.value) {
+      signalLeftList.value.updateListData(listData => updateDataCallback(listData, addressMap))
+    }
+  } catch (e) {
+    console.log('=>(signalList.vue:106) e', e)
+  }
+}
+
+function updateDataCallback(
+  listData: GetSignalV2ListResponse<IActionItem | IActionV3Item>[],
+  addressMap: Record<string, GetSignalV2ListResponse>,
+  extraKeys?: ['actions', 'self_wallet_info']
+) {
+  return listData.map(item => {
+    const updateKeys = ['mc_cur', 'holders_cur', 'top10_ratio', 'dev_ratio', 'insider_ratio', 'max_price_change', ...(extraKeys || [])] as const
+    const matchedNewData = addressMap[item.token + item.chain]
+    if (matchedNewData) {
+      const result = {} as Record<string, GetSignalV2ListResponse>
+      updateKeys.forEach(updateKey => {
+        result[updateKey] = matchedNewData[updateKey] as any
+      })
+      return {
+        ...item,
+        ...result
+      }
+    }
+    return item
+  })
+}
+
+onMounted(() => {
+  initTimer()
+})
+onUnmounted(() => {
+  cancelAnimationFrame(timer)
+})
 </script>
 
 <template>

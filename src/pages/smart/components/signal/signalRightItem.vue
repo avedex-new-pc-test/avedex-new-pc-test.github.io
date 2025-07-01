@@ -3,7 +3,7 @@ import type {GetSignalV2ListResponse, IActionItem, IActionV3Item} from '~/api/si
 import QuickSwapButton from '~/components/quickSwap/quickSwapButton.vue'
 import UserAvatar from '~/components/userAvatar.vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   footer?: boolean,
   item: GetSignalV2ListResponse<IActionItem | IActionV3Item>,
   isWalletAll?: boolean
@@ -31,6 +31,13 @@ function getGradientBackground(history_count: number) {
   }
   return 'bg-[--d-12B8861A-l-12B8862A]'
 }
+
+const increasedOrDecreased = computed(() => {
+  return {
+    increase: Number(props.item.mc_cur) > Number(props.item.mc),
+    decrease: Number(props.item.mc_cur) < Number(props.item.mc)
+  }
+})
 </script>
 
 <template>
@@ -38,18 +45,26 @@ function getGradientBackground(history_count: number) {
     <div class="flex justify-between">
       <div class="flex flex-1 flex-col gap-12px">
         <div class="flex items-center gap-8px">
-          <TokenImg
-            token-class="w-36px h-36px"
-            chain-class="w-14px h-14px"
-            :row="{
+          <div
+            class="cursor-pointer"
+            @click="navigateTo(`/token/${item.token}-${item.chain}`)"
+          >
+            <TokenImg
+              token-class="w-36px h-36px"
+              chain-class="w-14px h-14px"
+              :row="{
                   symbol:item.symbol,
                    chain:item.chain,
                    logo_url:item.logo
                 }"
-          />
+            />
+          </div>
           <div>
             <div class="flex mb-2px items-center">
-              <span class="text-16px font-500 color-[--d-F5F5F5-l-333] mr-8px">{{ item.symbol }}</span>
+              <span
+                class="text-16px font-500 color-[--d-F5F5F5-l-333] mr-8px cursor-pointer"
+                @click="navigateTo(`/token/${item.token}-${item.chain}`)"
+              >{{ item.symbol }}</span>
               <div
                 class="mr-4px w-12px h-12px rounded-2px bg-[--d-1A1A1A-l-F2F2F2] flex items-center justify-center">
                 <img
@@ -134,16 +149,16 @@ function getGradientBackground(history_count: number) {
               <div class="flex items-center gap-4px color-[--d-F5F5F5-l-333]">
               <span
                 :class="{
-                'color-#12B886':item.mc_cur>item.mc,
-                'color-#F6465D':item.mc_cur<item.mc,
+                'color-#12B886':increasedOrDecreased.increase,
+                'color-#F6465D':increasedOrDecreased.decrease,
               }">${{ formatNumber(item.mc_cur, 1) }}</span>
                 <img
-                  v-if="item.mc_cur>item.mc"
+                  v-if="increasedOrDecreased.increase"
                   src="@/assets/images/increase.svg"
                   alt=""
                 >
                 <img
-                  v-else-if="item.mc_cur<item.mc"
+                  v-else-if="increasedOrDecreased.decrease"
                   src="@/assets/images/decrease.svg"
                   alt=""
                 >

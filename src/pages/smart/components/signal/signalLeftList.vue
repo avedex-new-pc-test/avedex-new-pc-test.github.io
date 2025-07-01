@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import {getSignalV2List, type GetSignalV2ListResponse, type IActionItem, type ISignalFilter} from '~/api/signal'
+import {
+  getSignalV2List,
+  type GetSignalV2ListResponse,
+  type IActionItem,
+  type IActionV3Item,
+  type ISignalFilter
+} from '~/api/signal'
 import {useStorage, useThrottleFn, useWindowSize} from '@vueuse/core'
 import QuickSwapButton from '~/components/quickSwap/quickSwapButton.vue'
 
@@ -34,11 +40,16 @@ defineExpose({
   },
   setSelectId: (val: undefined) => {
     selectId.value = val
+  },
+  updateListData(callback: (p: GetSignalV2ListResponse<IActionItem | IActionV3Item>[]) => GetSignalV2ListResponse<IActionItem | IActionV3Item>[]) {
+    listData.value = callback(listData.value)
   }
 })
 watch(() => props.activeChain, () => {
   listData.value = []
   pageParams.value.pageNO = 1
+  listStatus.value.finished = false
+  listStatus.value.error = false
   fetchSignalList()
 })
 
@@ -72,64 +83,6 @@ async function fetchSignalList() {
     listStatus.value.loading = false
   }
 }
-
-let timer: number
-
-function initTimer() {
-  let lastFetchSignalTime = 0
-  const callback = () => {
-    if (Date.now() - lastFetchSignalTime >= 5000) {
-      updateListData()
-      lastFetchSignalTime = Date.now()
-    }
-    timer = requestAnimationFrame(callback)
-  }
-  timer = requestAnimationFrame(callback)
-}
-
-/**
- * 作为推送接口使用，只更新数据
- */
-async function updateListData() {
-  try {
-    const res = await getSignalV2List({
-      chain: props.activeChain,
-      pageNO: 1,
-      pageSize: 50,
-      fold: false
-    })
-    const addressMap: Record<string, GetSignalV2ListResponse> = {}
-    ;(res || []).forEach((item) => {
-      if (!addressMap[item.token + item.chain]) {
-        addressMap[item.token + item.chain] = item
-      }
-    })
-    listData.value = listData.value.map(item => {
-      const updateKeys = ['mc_cur', 'holders_cur', 'top10_ratio', 'dev_ratio', 'insider_ratio', 'max_price_change'] as const
-      const matchedNewData = addressMap[item.token + item.chain]
-      if (matchedNewData) {
-        const result = {} as Record<string, GetSignalV2ListResponse>
-        updateKeys.forEach(updateKey => {
-          result[updateKey] = matchedNewData[updateKey] as any
-        })
-        return {
-          ...item,
-          ...result
-        }
-      }
-      return item
-    })
-  } catch (e) {
-    console.log('=>(signalList.vue:106) e', e)
-  }
-}
-
-onMounted(() => {
-  initTimer()
-})
-onUnmounted(() => {
-  cancelAnimationFrame(timer)
-})
 
 let hideTimer: number | NodeJS.Timeout
 const buttonRef = ref<null | HTMLElement>(null)
@@ -319,18 +272,25 @@ function selectSignal(id: number, token: string) {
           </div>
           <div class="flex justify-between mb-18px">
             <div class="flex items-center gap-8px">
-              <TokenImg
-                token-class="w-36px h-36px"
-                chain-class="w-14px h-14px"
-                :row="{
-              symbol,
-               chain,
-               logo_url:logo
-            }"
-              />
+              <div
+                @click.stop="navigateTo(`/token/${token}-${chain}`)"
+              >
+                <TokenImg
+                  token-class="w-36px h-36px"
+                  chain-class="w-14px h-14px"
+                  :row="{
+                   symbol,
+                   chain,
+                   logo_url:logo
+                  }"
+                />
+              </div>
               <div>
                 <div class="mb-4px flex items-center gap-4px color-[--d-666-l-999]">
-                  <span class="text-16px font-500 color-[--d-F5F5F5-l-333]">{{ symbol }}</span><span
+                  <span
+                    class="text-16px font-500 color-[--d-F5F5F5-l-333]"
+                    @click.stop="navigateTo(`/token/${token}-${chain}`)"
+                  >{{ symbol }}</span><span
                   v-copy="token"
                   class="text-12px cursor-pointer">{{
                     token.slice(0, 4)
@@ -457,16 +417,16 @@ function selectSignal(id: number, token: string) {
                   <div class="flex items-center gap-4px color-[--d-F5F5F5-l-333]">
               <span
                 :class="{
-                'color-#12B886':mc_cur>mc,
-                'color-#F6465D':mc_cur<mc,
+                'color-#12B886':Number(mc_cur)>Number(mc),
+                'color-#F6465D':Number(mc_cur)<Number(mc),
               }">${{ formatNumber(mc_cur, 1) }}</span>
                     <img
-                      v-if="mc_cur>mc"
+                      v-if="Number(mc_cur)>Number(mc)"
                       src="@/assets/images/increase.svg"
                       alt=""
                     >
                     <img
-                      v-else-if="mc_cur<mc"
+                      v-else-if="Number(mc_cur)<Number(mc)"
                       src="@/assets/images/decrease.svg"
                       alt=""
                     >
