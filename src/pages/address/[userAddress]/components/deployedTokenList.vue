@@ -10,7 +10,7 @@
       fit
       style="width: 100%"
       class="table-container"
-      @row-click="jumpBalance"
+      @row-click="onRowClick"
       @sort-change="handleSortChange"
     >
       <template #empty>
@@ -68,11 +68,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AveEmpty from '@/components/aveEmpty.vue'
 import TokenColumn from '@/components/tokenColumn.vue'
 import TotalProfitColumn from './totalProfitColumn.vue'
 import { formatNumber2 } from '@/utils/formatNumber'
+import type { RowEventHandlerParams } from 'element-plus'
+
 const props = defineProps({
   tableData: {
     type: Array,
@@ -89,27 +91,37 @@ const props = defineProps({
   },
 })
 
-const jumpBalance = (row) => {
-  if (row.chain === 'solana') {
-    // store.commit('setShowPopTokenDetails', !store.state.showPopTokenDetails)
-    // store.commit(
-    //   'setTokenUserAddress',
-    //   route.params?.userAddress ||
-    //     store.state?.bot?.userInfo?.addresses?.find?.((i) => i?.chain === 'solana')?.address ||
-    //     store.state.currentAccount
-    // )
-    // store.commit('setTokenUser', {
-    //   id: row.token + '-' + row.chain,
-    //   symbol: row.symbol,
-    //   logo_url: row.logo_url,
-    //   chain: row.chain,
-    //   address: '',
-    //   remark: '',
-    // })
-  } else {
-    // Assuming tableRowClick is a method that needs to be emitted
-    emit('table-row-click', row)
+function onRowClick({ row, column, event ,rowData }: RowEventHandlerParams) {
+  debugger;
+  if (!token.value) {
+    return
   }
+  if (SupportFullDataChain.includes(token.value.chain)) {
+    const { symbol, logo_url, chain, token: _token } = token.value
+    const { target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress } = pair.value!
+    tokenDetailSStore.$patch({
+      drawerVisible: true,
+      tokenInfo: {
+        id: route.params.id! as string,
+        symbol,
+        logo_url,
+        chain,
+        address: _token,
+        remark: rowData.remark!,
+      },
+      pairInfo: {
+        target_token,
+        token0_address,
+        token0_symbol,
+        token1_symbol,
+        pairAddress
+      },
+      user_address: rowData.wallet_address
+    })
+  } else {
+    window.open(formatExplorerUrl(token.value.chain, rowData.transaction, 'tx'))
+  }
+
 }
 </script>
 
