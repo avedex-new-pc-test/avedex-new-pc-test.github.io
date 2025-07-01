@@ -1,4 +1,4 @@
-export interface GetSignalV2ListResponse {
+export interface GetSignalV2ListResponse<T = IActionItem> {
   first_signal_time: number;
   last_signal_time: number;
   max_price_change: string;
@@ -25,11 +25,18 @@ export interface GetSignalV2ListResponse {
   action_wallet_type: string;
   action_type: string;
   action_count: number;
-  actions: IActionItem[];
+  actions: T[];
   signal_type: string;
   issue_platform: string;
   headline: string;
   price_change_24h: string;
+  twitter_url?: string;
+  tx_volume_u_24h?: string;
+  self_wallet_info?: {
+    total_purchase_usd: string;
+    total_sold_usd: string;
+    balance: string
+  }
 }
 
 export interface IActionItem {
@@ -119,7 +126,37 @@ export interface ITopSignal {
  */
 export function getTopSignal(): Promise<ITopSignal[]> {
   const {$api} = useNuxtApp()
-  return $api('https://0ftrfsdb.xyz/v2api/signals/v2/top_signal', {
+  return $api('/v2api/signals/v2/top_signal', {
     method: 'get'
+  })
+}
+
+
+export interface IActionV3Item {
+  id: number;
+  wallet_address: string;
+  wallet_alias: string;
+  action_type: string;
+  quote_token_amount: string;
+  quote_token_symbol: string;
+  quote_token_address: string;
+  quote_token_volume: string;
+  action_time: number;
+  token_balance_usd: string;
+}
+
+/**
+ * 信号广场右侧视图
+ */
+export function getSignalV3List(query: {
+  pageNO: number
+  pageSize: number
+  chain: string
+  wallet_address?: string
+}): Promise<GetSignalV2ListResponse<IActionV3Item>[]> {
+  const {$api} = useNuxtApp()
+  return $api('https://0ftrfsdb.xyz/v2api/signals/v2/public/list/v3', {
+    method: 'get',
+    query
   })
 }

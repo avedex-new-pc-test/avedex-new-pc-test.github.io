@@ -16,8 +16,9 @@
           <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
         </template>
       </NuxtLink>
-      <el-badge :is-dot="isDoted">
-        <div class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
+      <el-badge v-if="!route.path.includes('smart')" :is-dot="isDoted">
+        <div
+          class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
              @click="signalStore.signalVisible=!signalStore.signalVisible"
         >
           <Icon
@@ -36,7 +37,8 @@
       </li>
       <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
-        <a class="border-left" target="_blank" :href="lang?.includes?.('zh')
+        <a
+          class="border-left" target="_blank" :href="lang?.includes?.('zh')
             ? 'https://doc.ave.ai/cn/mian-ze-shen-ming'
             : 'https://doc.ave.ai/disclaimers'
           ">
@@ -59,13 +61,15 @@
       </li>
       <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
-        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
+        <a
+          target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
           class="flex-center">
           <Icon name="bi:twitter-x" class="text-16px" />
         </a>
       </li>
       <li class="color-[--d-999-l-666] hover:color-#3F80F7">
-        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
+        <a
+          target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
           class="flex-center">
           <Icon name="lineicons:telegram-original" class="text-19px" />
         </a>

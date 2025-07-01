@@ -50,8 +50,11 @@ async function setDialogVisible() {
 const signalLeftList = useTemplateRef<InstanceType<typeof SignalLeftList>>('signalLeftList')
 const signalRightList = useTemplateRef<InstanceType<typeof SignalRightList>>('signalRightList')
 
+const signalStore = useSignalStore()
 onMounted(() => {
+  initWs()
   updateLeftList()
+  signalStore.signalVisible = false
 })
 
 function onReset() {
@@ -71,10 +74,54 @@ function updateLeftList() {
     signalLeftList.value.fetchSignalList(filterParams.value)
   }
 }
+
+const wsStore = useWSStore()
+
+function initWs() {
+  wsStore.send({
+    'jsonrpc': '2.0',
+    method: 'unsubscribe',
+    'params': [
+      'signalsv2_public_monitor',
+      props.activeChain
+    ],
+    'id': 1
+  })
+
+  wsStore.send({
+    'jsonrpc': '2.0',
+    method: 'subscribe',
+    'params': [
+      'signalsv2_public_monitor',
+      props.activeChain
+    ],
+    'id': 1
+  })
+}
+
+function setFilterToken(token: string) {
+  if (signalRightList.value) {
+    signalRightList.value.setToken(token)
+  }
+  if (signalLeftList.value && !token) {
+    signalLeftList.value.setSelectId(undefined)
+  }
+  showResetBtn.value = !!token
+}
+
+function setResetBtn(val: boolean) {
+  showResetBtn.value = val
+  if (!val && signalLeftList.value) {
+    signalLeftList.value.setSelectId(undefined)
+  }
+}
 </script>
 
 <template>
-  <TimeLine :activeChain="activeChain"/>
+  <TimeLine
+    :activeChain="activeChain"
+    @updateFilterToken="setFilterToken"
+  />
   <div class="pt-24px pb-10px px-10px flex justify-between">
     <div class="flex items-center">
       <Filter
@@ -94,7 +141,7 @@ function updateLeftList() {
       <div
         v-show="showResetBtn"
         class="flex items-center text-12px gap-2px cursor-pointer ml-5px color-[--d-F5F5F5-l-333]"
-        @click="signalRightList.updateTokenFilter('')"
+        @click="setFilterToken('')"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path
@@ -131,7 +178,7 @@ function updateLeftList() {
           class="transition-all transition-duration-300 px-8px py-6px  rounded-4px bg-#FFA6221A text-12px color-#FFA622 cursor-pointer hover:bg-#FFA622 hover:color-#333"
           @click="setDialogVisible"
       >{{
-          $t('今日潜力金狗榜单')
+          $t('SignalTopList')
         }}</span>
       <QuickSwapSet
           v-model:quickBuyValue="quickBuyValue"
@@ -144,14 +191,19 @@ function updateLeftList() {
     <SignalLeftList
       ref="signalLeftList"
       :activeChain="activeChain"
+      :quickBuyValue="quickBuyValue"
+      @setToken="setFilterToken"
     />
     <SignalRightList
       ref="signalRightList"
+      :activeChain="activeChain"
+      :quickBuyValue="quickBuyValue"
+      @setResetBtn="setResetBtn"
     />
   </div>
   <el-dialog
       v-model="dialogValues.visible"
-      :title="$t('今日潜力榜单')"
+      :title="$t('SignalTopList')"
       append-to-body
       width="540px"
       :class="`[--el-message-close-size:24px]`"
@@ -159,7 +211,7 @@ function updateLeftList() {
     <el-table :data="dialogValues.list" :height="400">
       <el-table-column
           type="index"
-          :label="$t('排名')"
+          :label="$t('ranking')"
           label-class-name="text-12px color-[--d-666-l-999]"
       >
         <template #default="{$index}">
@@ -170,11 +222,14 @@ function updateLeftList() {
         </template>
       </el-table-column>
       <el-table-column
-          :label="$t('币种')"
+        :label="$t('token')"
           label-class-name="text-12px color-[--d-666-l-999]"
       >
         <template #default="{row}">
-          <div class="flex items-center text-12px gap-8px">
+          <div
+            class="flex items-center text-12px gap-8px cursor-pointer"
+            @click="navigateTo(`/token/${row.token}-${row.chain}`)"
+          >
             <TokenImg
                 chain-class="hidden"
                 :row="{
@@ -189,7 +244,7 @@ function updateLeftList() {
       </el-table-column>
       <el-table-column
           width="80"
-          :label="$t('首告时间')"
+          :label="$t('firstSignal')"
           label-class-name="text-12px color-[--d-666-l-999]"
       >
         <template #default="{row}">
@@ -198,7 +253,7 @@ function updateLeftList() {
       </el-table-column>
       <el-table-column
           width="110"
-          :label="$t('首告市值')"
+          :label="$t('firstMarketCap')"
           label-class-name="text-12px color-[--d-666-l-999]"
       >
         <template #default="{row}">
@@ -208,7 +263,7 @@ function updateLeftList() {
       <el-table-column
           width="130"
           align="right"
-          :label="$t('首告后最大涨幅(倍)')"
+          :label="$t('MaximumIncrease')"
           label-class-name="text-12px color-[--d-666-l-999]"
       >
         <template #default="{row}">
