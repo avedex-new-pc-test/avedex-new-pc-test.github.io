@@ -201,7 +201,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
             v-tooltip="$t('FilterCurrentToken')"
             class="mr-8px w-12px h-12px rounded-2px bg-[--d-1A1A1A-l-F2F2F2] flex items-center justify-center hover:color-[--d-F5F5F5-l-333] cursor-pointer"
             :class="filterToken===item.token ? 'color-[--d-F5F5F5-l-333]':''"
-            @click="filter(filterToken?'':item.token)"
+            @click="filter(filterToken?'':item.token);"
           >
             <Icon name="custom:filter"/>
           </div>
@@ -284,12 +284,12 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
         </div>
         <div class="flex-[2] text-right color-#12B886">
           {{ $t('buy') }}{{ localeStore.locale === 'en' ? ' ' : '' }}{{ formatNumber(quote_token_amount, 2) }} {{
-            quote_token_symbol
+            quote_token_symbol.toUpperCase() === 'USDC' ? 'U' : quote_token_symbol
           }}<span class="color-[--d-999-l-666]">(${{ formatNumber(quote_token_volume, 0) }})</span>
         </div>
         <div class="flex-1 text-right" v-if="!filterToken">
             <span
-              v-if="Number(token_balance_usd)===0"
+              v-if="!token_balance_usd || Number(token_balance_usd)===0"
               class="color-#F6465D"
             >
               {{ $t('soldAll') }}
