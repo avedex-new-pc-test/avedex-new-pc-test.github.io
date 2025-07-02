@@ -26,7 +26,7 @@
         }"
       >
         <template v-if="isSelfAddress" #default="{ row }">
-          <Icon name="bx:bxs-hide" @click.self.stop="hideToken(row)"/>
+          <Icon name="bx:bxs-hide" @click.self.stop="hideToken(row)" class="absolute top-0 left-0"/>
         </template>
       </TokenColumn>
       <el-table-column
@@ -237,18 +237,18 @@
         </template>
       </el-table-column>
     </el-table>
-    <!--HideTokenDialog
+    <HideTokenDialog
       v-model="hideTokenVisible"
       :row="currentHideToken"
       :self_address="address"
       @hideToken="$emit('hideToken')"
-    /-->
+    />
   </div>
 </template>
 
 <script setup>
 import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
-// import HideTokenDialog from './walletDetail/components/hideTokenDialog.vue'
+import HideTokenDialog from './hideTokenDialog.vue'
 import TokenColumn from '@/components/tokenColumn.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 import Share from '@/components/share.vue'
