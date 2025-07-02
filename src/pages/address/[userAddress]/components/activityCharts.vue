@@ -58,7 +58,7 @@ import AveCharts from '@/components/charts/aveCharts.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 // import Loading from '@/components/loading/js/Component.vue'
 import PnlDetail from './pnlDetail.vue'
-import { formatNumberS } from '@/utils/formatNumber'
+// import { formatNumberS } from '@/utils/formatNumber'
 import { generateAvatarIcon } from '@/utils'
 import { getEventsAnalysis, getEventsAnalysisDetail } from '@/api/wallet'
 
@@ -157,9 +157,7 @@ const activity = ref({
                   </div>
               </div>
               <div style="color:#fff;font-size: 12px;">
-                 ${$t('Vol')}: $${formatNumberS(value?.volume, {
-                   decimals: 2,
-                 })}
+                 ${$t('Vol')}: $${formatNumber(value?.volume, 2)}
               </div>
           </div>
         `

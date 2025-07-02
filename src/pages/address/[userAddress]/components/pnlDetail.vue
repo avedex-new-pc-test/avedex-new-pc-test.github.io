@@ -71,7 +71,7 @@
           </el-table-column>
           <el-table-column width="60" :label="$t('Vol')">
             <template #default="{ row }">
-              <span class="font-12"> {{ formatNumberS(row.volume) }}</span>
+              <span class="font-12"> {{ formatNumber(row.volume, 1) }}</span>
             </template>
           </el-table-column>
           <el-table-column :label="$t('price')">
@@ -98,7 +98,7 @@
 </template>
 
 <script setup>
-import { formatNumberS, formatNumber2 } from '@/utils/formatNumber'
+import {formatNumber2} from '@/utils/formatNumber'
 import { upColor, downColor } from '@/utils/constants'
 import dayjs from 'dayjs'
 import TokenColumn from '@/components/tokenColumn.vue'
@@ -167,9 +167,7 @@ const visible = computed({
 
 const volume = computed(() => {
   return typeof props.eventsDetail.volume === 'number'
-    ? formatNumberS(props.eventsDetail.volume, {
-        decimal: 2,
-      })
+    ? formatNumber(props.eventsDetail.volume, 2)
     : props.eventsDetail.volume
 })
 

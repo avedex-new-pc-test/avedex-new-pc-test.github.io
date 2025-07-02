@@ -14,14 +14,14 @@
           <ChainToken :chain="chain" :width="16" />
         </template>
         <el-option
-          v-for="{ chain } in smartChains"
-          :key="chain"
-          :label="getChainInfo(chain)?.name"
-          :value="chain"
+          v-for="{ chain:_chain } in smartChains"
+          :key="_chain"
+          :label="getChainInfo(_chain)?.name"
+          :value="_chain"
         >
           <div class="flex-center" style="gap: 4px">
-            <ChainToken :chain="chain" :width="16" />
-            {{ getChainInfo(chain)?.name }}
+            <ChainToken :_chain="_chain" :width="16"/>
+            {{ getChainInfo(_chain)?.name }}
           </div>
         </el-option>
       </el-select>
@@ -47,7 +47,7 @@
       <Statistic
         ref="statisticRef"
         :isSelfAddress="isSelfAddress"
-        :address="address"
+        :address="userAddress"
         :chain="chain"
         :interval="interval"
         :intervalText="intervalText"
@@ -55,37 +55,35 @@
       <TradeData
         :interval="interval"
         :intervalText="intervalText"
-        :address="address"
+        :address="userAddress"
         :chain="chain"
         @txAnalysisChange="txAnalysisChange"
       />
     </div>
     <ActivityCharts
       :interval="interval"
-      :address="address"
+      :address="userAddress"
       :chain="chain"
-      @change="changeTrendQuery"
     />
     <StatisticsTable
       ref="statisticsTable"
-      :address="address"
+      :address="userAddress"
       :chain="chain"
       :isSelfAddress="isSelfAddress"
     />
   </div>
 </template>
 <script setup>
-import Statistic from './components/Statistic.vue'
-import TradeData from './components/TradeData.vue'
-import StatisticsTable from './components/StatisticsTable.vue'
+import Statistic from './components/statistic.vue'
+import TradeData from './components/tradeData.vue'
+import StatisticsTable from './components/statisticsTable.vue'
 import ActivityCharts from './components/activityCharts.vue'
 import { getChainInfo } from '@/utils'
 
-const currentAccount = ''
 const interval = ref('7D')
 const route = useRoute()
-const chain = route.params.chain
-const address = route.params.userAddress
+const chain = computed(() => route.params.chain)
+const userAddress = computed(() => route.params.userAddress)
 const $t = getGlobalT()
 const statisticRef = ref(null)
 const statisticsTable = ref(null)
@@ -105,14 +103,9 @@ const options = [
     id: '30D',
   },
 ]
-//computed
-const currentBot = computed(() => {
-  return getBot(chain || 'solana')
-})
-
 const botStore = useBotStore()
 const isSelfAddress = computed(() => {
-  return route.params.userAddress === botStore.getWalletAddress(route.params.chain)
+  return userAddress.value === botStore.getWalletAddress(chain.value)
 })
 const intervalText = computed(() => {
   return options.find((item) => interval.value === item.id)?.name
@@ -133,59 +126,41 @@ const smartChains = computed(() => {
   ]
 })
 
-const statisticsTableRef = computed(() => {
-  return this.$refs.statisticsTable
-})
-
-//methods
-function changeTrendQuery(params) {
-  const $trendList = this.$refs.statisticsTable.$refs.trendList
-  if ($trendList) {
-    $trendList.parentSetTime(params)
-  }
-}
-function getBot(val) {
-  return {} //bot.value?.userInfo?.addresses?.find?.((i) => i?.chain === val) || {}
-}
 function txAnalysisChange(data) {
   if (statisticRef.value) {
     statisticRef.value.mergeStatistics(data) // 调用子组件方法
   }
 }
 
-// // Initialize
-// address.value = paramsAddress.value || currentBot.value.address || currentAccount.value
-// chain.value = paramsChain.value || currentBot.value.chain || netId.value
-
 // Watchers
-watch(
-  route,
-  (to) => {
-    if (to.name === 'Balance') {
-      if (to.params?.chain && to.params?.userAddress) {
-        address = to.params.userAddress
-        chain = to.params.chain
-      } else if (currentAccount.value) {
-        address = currentAccount.value
-        chain.value = netId.value
-      }
-      statisticsTable.value?.onRouteChange()
-    }
-  },
-  { deep: true }
-)
-
-watch(currentAccount, (val) => {
-  if (val) {
-    address.value = val
-    chain.value = netId.value
-    statisticsTable.value?.onRouteChange()
-  } else {
-    address.value = ''
-    chain.value = ''
-    statisticsTable.value?.resetData()
-  }
-})
+// watch(
+//   route,
+//   (to) => {
+//     if (to.name === 'Balance') {
+//       if (to.params?.chain && to.params?.userAddress) {
+//         address = to.params.userAddress
+//         chain = to.params.chain
+//       } else if (currentAccount.value) {
+//         address = currentAccount.value
+//         chain.value = netId.value
+//       }
+//       statisticsTable.value?.onRouteChange()
+//     }
+//   },
+//   { deep: true }
+// )
+//
+// watch(currentAccount, (val) => {
+//   if (val) {
+//     address.value = val
+//     chain.value = netId.value
+//     statisticsTable.value?.onRouteChange()
+//   } else {
+//     address.value = ''
+//     chain.value = ''
+//     statisticsTable.value?.resetData()
+//   }
+// })
 
 // watch(chain, () => {
 //   address.value = add || currentBot.value.address || currentAccount.value

@@ -61,7 +61,7 @@ import { getTxAnalysis } from '@/api/wallet'
 import ButtonGroup from '@/components/buttonGroup.vue'
 import AveCharts from '@/components/charts/aveCharts.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
-import { formatNumberS } from '@/utils/formatNumber'
+// import { formatNumberS } from '@/utils/formatNumber'
 
 const BestTokenEnum = {
   TOTAL_RATIO: 'total_profit_ratio',
@@ -118,7 +118,7 @@ const bestToken = ref({
         const isRatio = bestToken.value.filter === BestTokenEnum.TOTAL_RATIO
         const sign = isRatio ? '' : '$'
         const x = isRatio ? 'X' : ''
-        return `${sign}${formatNumberS(params.value)}${x}`
+        return `${sign}${formatNumber(params.value, 1)}${x}`
       },
     },
   },

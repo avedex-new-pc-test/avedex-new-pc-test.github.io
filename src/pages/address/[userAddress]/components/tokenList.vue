@@ -247,7 +247,7 @@
 </template>
 
 <script setup>
-import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
+// import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
 import HideTokenDialog from './hideTokenDialog.vue'
 import TokenColumn from '@/components/tokenColumn.vue'
 import AveEmpty from '@/components/aveEmpty.vue'

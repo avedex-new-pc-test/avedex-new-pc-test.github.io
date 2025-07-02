@@ -77,16 +77,16 @@
       <p class="total-profit">
         {{ $t("totalPnL") }}（{{ intervalText }}）
         <Number :value="statistics.profit" :signVisible="isUSDT">
-          {{ formatNumber2(Math.abs((statistics.profit ?? 0) / main_token_price), 2, 4, 4) }} {{ main_token_symbol }}
+          {{ formatNumber(Math.abs((statistics.profit ?? 0) / main_token_price), 2) }} {{ main_token_symbol }}
         </Number>
         <Number :value="statistics.profit_ratio">
-          {{ formatNumberS(Math.abs((statistics?.profit_ratio ?? 0) * 100), 2) }}%
+          {{ formatNumber(Math.abs((statistics?.profit_ratio ?? 0) * 100), 2) }}%
         </Number>
       </p>
       <p class="total-profit">
         {{ $t("winRate2") }}（{{ intervalText }}）
         <Number :value="statistics.win_rate">
-          {{formatNumberS(Math.abs(statistics.win_rate ?? 0))}}%
+          {{ formatNumber(Math.abs(statistics.win_rate ?? 0, 1)) }}%
         </Number>
       </p>
     </div>
@@ -143,7 +143,6 @@ import AveEmpty from '@/components/aveEmpty.vue'
 import ChainToken from '@/components/chainToken.vue'
 import Number from '../components/Number.vue'
 import { verifyLogin, formatRemark } from '@/utils'
-import { formatNumber2, formatNumberS } from '@/utils/formatNumber'
 import {addAttention, deleteAttention} from "~/api/attention";
 
 const props = defineProps({
@@ -261,8 +260,8 @@ const pnl = computed(() => {
         }
         return `<div style="font-size: 12px;">
              <div>
-                 <span style="color:${color}">${sign}${uSymbol.value}${formatNumberS(
-                   tooltipData?.absValue / main_token_price.value
+                 <span style="color:${color}">${sign}${uSymbol.value}${formatNumber(
+          tooltipData?.absValue / main_token_price.value, 1
                  )}${main_token_symbol.value}</span>
              </div>
              <div>
