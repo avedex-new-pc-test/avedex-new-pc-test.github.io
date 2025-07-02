@@ -34,7 +34,7 @@
               <img v-if="isDark" :width="16" src="@/assets/images/connect-x-dark.png" alt="" />
               <img v-else :width="16" src="@/assets/images//connect-x-light.png" alt="" />
 
-              {{ formatNumber2(statistics.x_followers, 2, 4, 4) }}
+              {{ formatNumber(statistics.x_followers || 0, 2) }}
             </a>
             <a
               v-else-if="isSelfAddress"

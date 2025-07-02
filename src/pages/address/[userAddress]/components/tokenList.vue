@@ -38,12 +38,12 @@
       >
         <template #default="{ row }">
           <span v-if="row?.total_profit > 0" :style="{ color: upColor }">
-            ${{ formatNumber2(row?.total_profit || 0, 2, 4, 4) }}
+            ${{ formatNumber(row?.total_profit || 0, 2) }}
           </span>
           <span v-else-if="row?.total_profit == 0" style="color: #959a9f">$0</span>
           <span v-else-if="row?.total_profit == '--'" style="color: #959a9f">--</span>
           <span v-else :style="{ color: downColor[7] }">
-            {{ '-$' + formatNumber2(Math.abs(row?.total_profit) || 0, 2, 4, 4) }}
+            {{ '-$' + formatNumber(Math.abs(row?.total_profit) || 0, 2) }}
           </span>
           <span
             :class="{
@@ -55,7 +55,7 @@
             <template v-else-if="row?.total_profit_ratio == '--'">--</template>
             <template v-else>
               <span :style="{ color: row?.total_profit_ratio > 0 ? upColor : downColor }">
-                {{ formatNumber2(row?.total_profit_ratio * 100 || 0, 2, 4, 4) }}%
+                {{ formatNumber(row?.total_profit_ratio * 100 || 0, 2) }}%
               </span>
             </template>
           </span>
@@ -70,12 +70,12 @@
       >
         <template #default="{ row }">
           <span v-if="row?.unrealized_profit > 0" :style="{ color: upColor }">
-            ${{ formatNumber2(row?.unrealized_profit || 0, 2, 4, 4) }}
+            ${{ formatNumber(row?.unrealized_profit || 0, 2) }}
           </span>
           <span v-else-if="row?.unrealized_profit == 0" style="color: #959a9f">$0</span>
           <span v-else-if="row?.unrealized_profit == '--'" style="color: #959a9f">--</span>
           <span v-else :style="{ color: downColor[7] }">
-            {{ '-$' + formatNumber2(Math.abs(row?.unrealized_profit) || 0, 2, 4, 4) }}
+            {{ '-$' + formatNumber(Math.abs(row?.unrealized_profit) || 0, 2) }}
           </span>
         </template>
       </el-table-column>
@@ -104,12 +104,12 @@
               {{
                 row?.main_token_price == 0
                   ? 0
-                  : formatNumber2(row?.balance_usd / row?.main_token_price || 0, 2, 4, 4)
+                    : formatNumber(row?.balance_usd / row?.main_token_price || 0, 2)
               }}
               <span class="font-12 color-999 ml-3px">{{ row?.main_token_symbol }}</span>
             </template>
             <template v-else>
-              {{ '$' + formatNumber2(row?.balance_usd || 0, 2, 4, 4) }}
+              {{ '$' + formatNumber(row?.balance_usd || 0, 2) }}
             </template>
           </template>
           <span
@@ -119,7 +119,7 @@
             <template v-if="row?.balance_amount == 0">0</template>
             <template v-else-if="row?.balance_amount == '--'">--</template>
             <template v-else>
-              {{ formatNumber2(row?.balance_amount || 0, 2, 4, 4) }}
+              {{ formatNumber(row?.balance_amount || 0, 2) }}
             </template>
           </span>
         </template>
@@ -129,7 +129,7 @@
           <span v-if="row?.total_purchase_usd == 0" class="color-gray">0</span>
           <span v-else-if="row?.total_purchase_usd == '--'" class="color-gray">--</span>
           <template v-else>
-            {{ '$' + formatNumber2(row?.total_purchase_usd || 0, 2, 4, 4) }}
+            {{ '$' + formatNumber(row?.total_purchase_usd || 0, 2) }}
           </template>
           <span
             :class="{
@@ -141,7 +141,7 @@
             <template v-if="row?.average_purchase_price_usd == 0">0</template>
             <template v-else-if="row?.average_purchase_price_usd == '--'">--</template>
             <template v-else>
-              {{ '$' + formatNumber2(row?.average_purchase_price_usd || 0, 2, 4, 4) }}
+              {{ '$' + formatNumber(row?.average_purchase_price_usd || 0, 2) }}
             </template>
           </span>
         </template>
@@ -152,7 +152,7 @@
           <span v-if="row?.total_sold_usd == 0" class="color-gray">0</span>
           <span v-else-if="row?.total_sold_usd == '--'" class="color-gray">--</span>
           <template v-else>
-            {{ '$' + formatNumber2(row?.total_sold_usd || 0, 2, 4, 4) }}
+            {{ '$' + formatNumber(row?.total_sold_usd || 0, 2) }}
           </template>
           <span
             :class="{
@@ -163,7 +163,7 @@
             <template v-if="row?.average_sold_price_usd == 0">0</template>
             <template v-else-if="row?.average_sold_price_usd == '--'">--</template>
             <template v-else>
-              {{ '$' + formatNumber2(row?.average_sold_price_usd || 0, 2, 4, 4) }}
+              {{ '$' + formatNumber(row?.average_sold_price_usd || 0, 2) }}
             </template>
           </span>
         </template>
@@ -182,7 +182,7 @@
             <template v-if="row?.total_transfer_in_amount == 0">0</template>
             <template v-else-if="row?.total_transfer_in_amount == '--'">--</template>
             <template v-else>
-              {{ formatNumber2(row?.total_transfer_in_amount || 0, 2, 4, 4) }}
+              {{ formatNumber(row?.total_transfer_in_amount || 0, 2) }}
             </template>
           </span>
           <span
@@ -197,7 +197,7 @@
             <template v-if="row?.total_transfer_out_amount == 0">0</template>
             <template v-else-if="row?.total_transfer_out_amount == '--'">--</template>
             <template v-else>
-              {{ formatNumber2(row?.total_transfer_out_amount || 0, 2, 4, 4) }}
+              {{ formatNumber(row?.total_transfer_out_amount || 0, 2) }}
             </template>
           </span>
         </template>
@@ -213,7 +213,7 @@
             <template v-if="row?.total_purchase == 0">0</template>
             <template v-else-if="row?.total_purchase == '--'">--</template>
             <template v-else>
-              {{ formatNumber2(row?.total_purchase || 0, 2, 4, 4) }}
+              {{ formatNumber(row?.total_purchase || 0, 2) }}
             </template>
           </span>
           <span :style="{ color: mode == 'light' ? '#D8D8D8' : '#666666' }">/</span>
@@ -226,7 +226,7 @@
             <template v-if="row?.total_sold == 0">0</template>
             <template v-else-if="row?.total_sold == '--'">--</template>
             <template v-else>
-              {{ formatNumber2(row?.total_sold || 0, 2, 4, 4) }}
+              {{ formatNumber(row?.total_sold || 0, 2) }}
             </template>
           </span>
         </template>

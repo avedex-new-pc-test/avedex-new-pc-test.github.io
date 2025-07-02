@@ -34,7 +34,7 @@
         :label="$t('walletMarketCap')"
         prop="market_cap"
       >
-        <template #default="{ row }"> ${{ formatNumber2(row.market_cap, 2, 4, 4) }} </template>
+        <template #default="{ row }"> ${{ formatNumber(row.market_cap, 2) }}</template>
       </el-table-column>
       <el-table-column
         sortable="custom"
@@ -42,11 +42,11 @@
         :label="$t('allTimeHigh')"
         prop="all_time_high"
       >
-        <template #default="{ row }"> ${{ formatNumber2(row.all_time_high, 2, 4, 4) }} </template>
+        <template #default="{ row }"> ${{ formatNumber(row.all_time_high, 2) }}</template>
       </el-table-column>
       <el-table-column :label="$t('holders')">
         <template #default="{ row }">
-          {{ formatNumber2(row.holders || 0, 2, 4, 10 ** 4) }}
+          {{ formatNumber(row.holders || 0, 2) }}
         </template>
       </el-table-column>
       <TotalProfitColumn :label="$t('profit3')" />
@@ -70,7 +70,7 @@
 import AveEmpty from '@/components/aveEmpty.vue'
 import TokenColumn from '@/components/tokenColumn.vue'
 import TotalProfitColumn from './totalProfitColumn.vue'
-import { formatNumber2 } from '@/utils/formatNumber'
+// import { formatNumber2 } from '@/utils/formatNumber'
 import type { RowEventHandlerParams } from 'element-plus'
 
 const props = defineProps({

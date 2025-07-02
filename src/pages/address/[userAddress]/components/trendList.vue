@@ -188,7 +188,7 @@
       <el-table-column align="right" :label="$t('price')">
         <template #default="{ row }">
           <span class="grey">
-            ${{ row?.token_price_u > 0 ? formatNumber2(row?.token_price_u || 0, 2, 4, 4) : 0 }}
+            ${{ row?.token_price_u > 0 ? formatNumber(row?.token_price_u || 0, 2) : 0 }}
           </span>
         </template>
       </el-table-column>
@@ -204,16 +204,16 @@
             v-if="row?.event_type === 'ADD_LIQUIDITY' || row?.event_type === 'REMOVE_LIQUIDITY'"
           >
             <span class="text-10px ellipsis">
-              {{ row?.amount > 0 ? formatNumber2(row?.amount || 0, 2, 4, 4) : 0 }}
+              {{ row?.amount > 0 ? formatNumber(row?.amount || 0, 2) : 0 }}
               <span class="color-#959A9F">{{ row?.symbol }}</span>
             </span>
             <span class="block text-10px ellipsis">
-              {{ row?.amount > 0 ? formatNumber2(row?.token1_amount || 0, 2, 4, 4) : 0 }}
+              {{ row?.amount > 0 ? formatNumber(row?.token1_amount || 0, 2) : 0 }}
               <span class="color-#959A9F">{{ row?.token1_symbol }}</span>
             </span>
           </div>
           <span v-else>
-            {{ row?.amount > 0 ? formatNumber2(row?.amount || 0, 2, 4, 4) : 0 }}
+            {{ row?.amount > 0 ? formatNumber(row?.amount || 0, 2) : 0 }}
           </span>
         </template>
       </el-table-column>
@@ -277,7 +277,7 @@
           </el-popover>
         </template>
         <template #default="{ row }">
-          ${{ row?.volume > 0 ? formatNumber2(row?.volume || 0, 2, 4, 4) : 0 }}
+          ${{ row?.volume > 0 ? formatNumber(row?.volume || 0, 2) : 0 }}
         </template>
       </el-table-column>
       <el-table-column align="right" label="TXN">
@@ -297,7 +297,7 @@
 
 <script setup>
 import AveEmpty from '@/components/aveEmpty.vue'
-import { formatNumber2 } from '@/utils/formatNumber'
+// import { formatNumber2 } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import TokenColumn from '@/components/tokenColumn.vue'
 const props = defineProps({

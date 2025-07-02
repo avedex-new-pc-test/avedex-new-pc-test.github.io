@@ -77,7 +77,7 @@
           <el-table-column :label="$t('price')">
             <template #default="{ row }">
               <span class="font-12">
-                ${{ row?.token_price_u > 0 ? formatNumber2(row?.token_price_u || 0, 2, 4, 4) : 0 }}
+                ${{ row?.token_price_u > 0 ? formatNumber(row?.token_price_u || 0, 2) : 0 }}
               </span>
             </template>
           </el-table-column>
@@ -98,7 +98,7 @@
 </template>
 
 <script setup>
-import {formatNumber2} from '@/utils/formatNumber'
+// import {formatNumber2} from '@/utils/formatNumber'
 import { upColor, downColor } from '@/utils/constants'
 import dayjs from 'dayjs'
 import TokenColumn from '@/components/tokenColumn.vue'
