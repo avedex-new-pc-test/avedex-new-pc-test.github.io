@@ -82,6 +82,9 @@ function updateLeftList() {
 }
 
 const wsStore = useWSStore()
+watch(() => props.activeChain, () => {
+  initWs()
+})
 
 function initWs() {
   wsStore.send({
