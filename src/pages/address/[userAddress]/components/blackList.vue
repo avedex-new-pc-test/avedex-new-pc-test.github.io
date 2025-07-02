@@ -1,6 +1,6 @@
 <template>
   <div class="black-list">
-    <span class="iconfont icon-laheiliebiao font-14" @click="showBlackList">
+    <span class="text-[14px]" @click="showBlackList">
       {{ t('BlackList') }}
     </span>
     <el-dialog
@@ -209,20 +209,9 @@ const updateRowLoading = (token, isLoading) => {
 
 <style lang="scss" scoped>
 .black-list {
-  .icon-laheiliebiao {
-    cursor: pointer;
-    color: var(--d-fff-l-333);
-
-    &:before {
-      margin-right: 4px;
-    }
-  }
-
-
   :deep() {
     .dialog {
-      --el-dialog-padding-primary: 30px 0;
-      --el-dialog-bg-color: var(--d-222-l-fff);
+      background-color: #222;
 
       .black-list-table {
         --el-table-header-bg-color: var(--a-bg-7-color);

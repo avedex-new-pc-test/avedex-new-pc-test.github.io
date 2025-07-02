@@ -1,6 +1,6 @@
 <template>
   <div class="statistics-table">
-    <div class="flex-between mt_20 border-bottom">
+    <div class="flex-between border-bottom">
       <div class="tabs">
         <a
           v-for="(item, index) in tabs"
@@ -11,7 +11,7 @@
           {{ item.title }}
         </a>
       </div>
-      <div v-if="isToken" class="checkbox-container align-center gap-10">
+      <div v-if="isToken" class="checkbox-container align-center flex items-center gap-10">
         <el-checkbox
           v-model="conditions_wallet.hide_sold"
           :false-value="0"
