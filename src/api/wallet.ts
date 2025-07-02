@@ -128,7 +128,7 @@ export function getDeployedTokens(params) {
 // 获取黑白名单
 export function getTokenFilterList(params) {
   const { $api } = useNuxtApp()
-  return $api('/v2api/walletinfo/v2/tokenfilterv2', {
+  return $api('/v1api/v3/users/balance/tokenfilterv2', {
     method: 'get',
     query: params,
   })

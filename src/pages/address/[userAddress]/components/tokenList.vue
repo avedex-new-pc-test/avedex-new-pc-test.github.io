@@ -26,7 +26,7 @@
         }"
       >
         <template v-if="isSelfAddress" #default="{ row }">
-          <span class="iconfont icon-yincang" @click.stop="hideToken(row)"></span>
+          <Icon name="bx:bxs-hide" @click.self.stop="hideToken(row)"/>
         </template>
       </TokenColumn>
       <el-table-column

@@ -478,7 +478,7 @@ function jumpTokenDetail(row) {
       token1_symbol: row.token1_symbol,
       pairAddress: ''
     },
-    user_address: botStore.getWalletAddress(row.chain) || 'solana'
+    user_address: botStore.getWalletAddress(row.chain)
   })
   // store.state.showPopTokenDetails = !store.state.showPopTokenDetails
   // store.state.token_user_address =

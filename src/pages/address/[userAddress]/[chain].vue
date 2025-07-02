@@ -6,10 +6,7 @@
         :model-value="chain"
         @update:model-value="
           (val) => {
-            router.push({
-              name: 'Balance',
-              params: { chain: val, userAddress: getBot(val)?.address },
-            })
+            navigateTo(`/address/${botStore.getWalletAddress(val)}/${val}`)
           }
         "
       >
@@ -113,13 +110,9 @@ const currentBot = computed(() => {
   return getBot(chain || 'solana')
 })
 
+const botStore = useBotStore()
 const isSelfAddress = computed(() => {
-  return true
-  return (
-    !this.paramsAddress ||
-    this.paramsAddress === this.currentBot.address ||
-    this.paramsAddress === this.currentAccount
-  )
+  return route.params.userAddress === botStore.getWalletAddress(route.params.chain)
 })
 const intervalText = computed(() => {
   return options.find((item) => interval.value === item.id)?.name
@@ -127,12 +120,12 @@ const intervalText = computed(() => {
 const smartChains = computed(() => {
   const chainIds = ['solana', 'bsc']
   // 如果是自己的钱包地址且为 bot 钱包那么展示所有的链，链钱包后面再改
-  // if (currentBot.value?.address === userAddress || chain) {
-  //   const botChains = this.bot?.userInfo?.addresses?.filter((el) => chainIds.includes(el.chain))
-  //   if (botChains && botChains.length > 0) {
-  //     return botChains
-  //   }
-  // }
+  if (botStore.evmAddress) {
+    const botChains = botStore.userInfo?.addresses?.filter?.(el => chainIds.includes(el.chain))
+    if (botChains && botChains.length > 0) {
+      return botChains
+    }
+  }
   return [
     {
       chain,
