@@ -733,4 +733,8 @@
   "wallet_detail_total_sell_avg": "Total Sell/Avg",
   "viewWallet": "View Wallet",
   "marketCap2": "Mkt Cap",
+  "searchContractORName": "Search for token contract/name",
+  "blackManage": "Blacklist Management",
+  "BlackList": "Blacklist",
+
 }

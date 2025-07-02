@@ -730,4 +730,6 @@
   "wallet_detail_total_sell_avg": "總賣出/均價",
   "viewWallet": "查看該錢包",
   "marketCap2": "市值",
+  "searchContractORName": "搜索代幣合約/名稱",
+  "operation": "操作",
 }
