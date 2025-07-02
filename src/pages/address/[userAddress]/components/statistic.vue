@@ -132,7 +132,6 @@
 <script setup lang="ts">
 //组件
 import AveCharts from '@/components/charts/aveCharts.vue'
-import numeral from 'numeral'
 import dayjs from 'dayjs'
 import { getBalanceAnalysis, getWalletBasicInfo, bindTwitter } from '@/api/wallet'
 
@@ -318,14 +317,12 @@ const wallet_age = computed(() => {
 })
 
 const total_balance = computed(() => {
-  const formatMap: { [key: string]: string } = {
-    solana: '0,0.00',
-    bsc: '0,0.0000',
+  const formatMap: Record<string, number> = {
+    solana: 2,
+    bsc: 4,
   }
   const { total_balance_without_risk } = balanceAnalysis.value
-  return numeral((total_balance_without_risk ?? 0) / main_token_price.value).format(
-    formatMap[chain.value]
-  )
+  return formatNumber((total_balance_without_risk ?? 0) / main_token_price.value, formatMap[chain.value])
 })
 
 const isUSDT = computed(() => {

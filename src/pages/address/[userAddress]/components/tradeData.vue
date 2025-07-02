@@ -56,7 +56,6 @@
 </template>
 
 <script setup lang="ts">
-import numeral from 'numeral'
 import { getTxAnalysis } from '@/api/wallet'
 // import { isNumericString } from "@/utils/utils"
 import ButtonGroup from '@/components/buttonGroup.vue'
@@ -320,7 +319,7 @@ const formatWinProfit = () => {
 const getProfitRatio = (key) => {
   const num = txAnalysis.value.profit_range?.[key]
   const sum = txAnalysis.value.profit_range?.total_count
-  return numeral(num / sum).format('0.00%')
+  return formatNumber(num / sum, 2) + '%'
 }
 
 // 监听器

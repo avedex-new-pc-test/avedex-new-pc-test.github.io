@@ -108,8 +108,8 @@ import TokenList from './tokenList.vue'
 import TrendList from './trendList.vue'
 import DeployedTokenList from './deployedTokenList.vue'
 import BlackList from './blackList.vue'
-import storage from 'good-storage'
 import { getDeployedTokens, getWhaleTokenList, getWhaleTrendList } from '@/api/wallet'
+import {useStorage} from '@vueuse/core'
 const $t = getGlobalT()
 const props = defineProps({
   chain: {
@@ -137,14 +137,12 @@ const tableData = ref({
 })
 const max_block_number = ref(0)
 const max_event_id = ref(0)
-const conditions_wallet = ref(
-  storage.get('conditions_wallet') || {
-    hide_sold: 1,
-    hide_small: 1,
-    sort: 'last_txn_time',
-    sort_dir: 'desc',
-  }
-)
+const conditions_wallet = useStorage('conditions_wallet', {
+  hide_sold: 1,
+  hide_small: 1,
+  sort: 'last_txn_time',
+  sort_dir: 'desc',
+})
 const trendQuery = ref({
   event_type: '',
   volume_min: 0,
@@ -218,7 +216,6 @@ const filterTableList = computed(() => {
 
 // Methods
 const onConditionChange = (type) => {
-  storage.set('conditions_wallet', conditions_wallet.value)
   tableData.value.pageNO = 1
   _getWhaleTokenList()
 }
@@ -240,7 +237,6 @@ const handleSortChange = ({ prop, order }) => {
   if (isToken.value) {
     conditions_wallet.value.sort = prop
     conditions_wallet.value.sort_dir = sort_dir
-    storage.set('conditions_wallet', conditions_wallet.value)
   } else if (isTrend.value) {
     trendQuery.value.sort = prop
     trendQuery.value.sort_dir = sort_dir
