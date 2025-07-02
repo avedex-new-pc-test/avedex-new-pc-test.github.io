@@ -39,7 +39,7 @@
             <a
               v-else-if="isSelfAddress"
               class="statistic-media-right flex-center pointer"
-              @click="bindTwitter"
+              @click="_bindTwitter"
             >
               <i class="iconfont icon-twitter2" />
               {{ $t('connect') }}
@@ -433,37 +433,38 @@ async function onGetBalanceAnalysis() {
   balanceAnalysis.value = res
 }
 
-async function bindTwitter() {
-  verifyLogin()
-  let signature = ''
-  if (address) {
-    signature = await $f.signTwitterConfirm()
+async function _bindTwitter() {
+  if (!verifyLogin()) {
+    return
   }
+  // let signature = ''
+  // if (address.value && !botStore.evmAddress) {
+  //   signature = await signTwitterConfirm()
+  // }
   const data = {
     user_address: address.value,
     user_chain: chain.value,
-    signature: signature,
     origin: window.location.href,
   }
   if (botStore.accessToken) {
     data.authorization = botStore.accessToken
   }
-  if (signature) {
-    data.signature = signature
-  }
+  // if (signature) {
+  //   data.signature = signature
+  // }
   // loadingBind = true
   bindTwitter(data)
     .then((res) => {
-      let ave_param = res?.ave_param
+      const ave_param = res?.ave_param
       const host =
         process.env.VUE_APP_BASE_API === 'https://0ftrfsdb.xyz'
           ? 'https://0ftrfsdb.xyz'
           : 'https://api.agacve.com'
-      let redirect_uri = encodeURIComponent(
+      const redirect_uri = encodeURIComponent(
         `${host}/v2api/walletinfo/v2/bind_x_callback?user_chain=${data.user_chain}&ave_param=${ave_param}&user_address=${data.user_address}`
       )
 
-      let url = `https://x.com/i/oauth2/authorize?response_type=code&client_id=UTdHQm9Ta2twLWtlWFBEd1hpenA6MTpjaQ&scope=tweet.read users.read follows.read list.read like.read&state=random_state&code_challenge=challenge&code_challenge_method=plain&redirect_uri=${redirect_uri}`
+      const url = `https://x.com/i/oauth2/authorize?response_type=code&client_id=UTdHQm9Ta2twLWtlWFBEd1hpenA6MTpjaQ&scope=tweet.read users.read follows.read list.read like.read&state=random_state&code_challenge=challenge&code_challenge_method=plain&redirect_uri=${redirect_uri}`
       window.open(url)
     })
     .catch((err) => {
