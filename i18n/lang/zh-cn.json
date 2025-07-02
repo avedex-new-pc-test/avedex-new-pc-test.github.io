@@ -733,4 +733,8 @@
   "wallet_detail_total_sell_avg": "总卖出/均价",
   "viewWallet": "查看该钱包",
   "marketCap2": "市值",
+  "searchContractORName": "搜索代币合约/名称",
+  "blackManage": "拉黑地址管理",
+  "BlackList": "拉黑列表",
+  "operation": "操作",
 }

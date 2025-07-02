@@ -42,9 +42,7 @@
         :label="$t('allTimeHigh')"
         prop="all_time_high"
       >
-        <template #default="{ row }">
-          ${{ formatNumber2(row.all_time_high, 2, 4, 4) }}
-        </template>
+        <template #default="{ row }"> ${{ formatNumber2(row.all_time_high, 2, 4, 4) }} </template>
       </el-table-column>
       <el-table-column :label="$t('holders')">
         <template #default="{ row }">
@@ -91,14 +89,19 @@ const props = defineProps({
   },
 })
 
-function onRowClick({ row, column, event ,rowData }: RowEventHandlerParams) {
-  debugger;
+function onRowClick(row: any, column: any, event: Event) {
   if (!token.value) {
     return
   }
   if (SupportFullDataChain.includes(token.value.chain)) {
     const { symbol, logo_url, chain, token: _token } = token.value
-    const { target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress } = pair.value!
+    const {
+      target_token,
+      token0_address,
+      token0_symbol,
+      token1_symbol,
+      pair: pairAddress,
+    } = pair.value!
     tokenDetailSStore.$patch({
       drawerVisible: true,
       tokenInfo: {
@@ -114,14 +117,13 @@ function onRowClick({ row, column, event ,rowData }: RowEventHandlerParams) {
         token0_address,
         token0_symbol,
         token1_symbol,
-        pairAddress
+        pairAddress,
       },
-      user_address: rowData.wallet_address
+      user_address: rowData.wallet_address,
     })
   } else {
     window.open(formatExplorerUrl(token.value.chain, rowData.transaction, 'tx'))
   }
-
 }
 </script>
 
