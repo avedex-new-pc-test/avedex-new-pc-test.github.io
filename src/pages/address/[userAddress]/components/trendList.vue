@@ -7,7 +7,7 @@
       fit
       style="width: 100%"
       class="table-container"
-      @row-click="jumpBalance"
+      @row-click="jumpTokenDetail"
     >
       <AveEmpty/>
       <TokenColumn
@@ -457,7 +457,29 @@ function tableRowClick(row) {
   // })
 }
 
-function jumpBalance(row) {
+const tokenDetailSStore = useTokenDetailsStore()
+const botStore = useBotStore()
+
+function jumpTokenDetail(row) {
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: row.token + '-' + row.chain,
+      symbol: row.symbol,
+      logo_url: row.logo_url,
+      chain: row.chain,
+      address: row.token,
+      remark: '',
+    },
+    pairInfo: {
+      target_token: row.token,
+      token0_address: row.token,
+      token0_symbol: row.symbol,
+      token1_symbol: row.token1_symbol,
+      pairAddress: ''
+    },
+    user_address: botStore.getWalletAddress(row.chain) || 'solana'
+  })
   // store.state.showPopTokenDetails = !store.state.showPopTokenDetails
   // store.state.token_user_address =
   //   router.currentRoute.value.params?.userAddress ||
