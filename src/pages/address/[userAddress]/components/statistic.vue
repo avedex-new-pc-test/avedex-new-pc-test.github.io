@@ -456,10 +456,7 @@ async function _bindTwitter() {
   bindTwitter(data)
     .then((res) => {
       const ave_param = res?.ave_param
-      const host =
-        process.env.VUE_APP_BASE_API === 'https://0ftrfsdb.xyz'
-          ? 'https://0ftrfsdb.xyz'
-          : 'https://api.agacve.com'
+      const host = 'https://api.agacve.com'
       const redirect_uri = encodeURIComponent(
         `${host}/v2api/walletinfo/v2/bind_x_callback?user_chain=${data.user_chain}&ave_param=${ave_param}&user_address=${data.user_address}`
       )
