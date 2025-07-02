@@ -97,12 +97,19 @@
           class="statistic-right-attention statistic-right-attention-followed"
           @click="_deleteAttention"
         >
-          <i class="iconfont icon-yiguanzhu" />
+          <Icon
+            name="custom:accountcheck"
+            class="text-14px"
+          />
           <span class="statistic-right-attention-text">{{ $t('followed') }}</span>
           <span class="statistic-right-attention-cancel">{{ $t('cancelFollowed') }}</span>
         </a>
         <a v-else class="statistic-right-attention" @click="_addAttention">
-          <i class="iconfont icon-guanzhushu" />{{ $t('follow') }}
+          <Icon
+            name="custom:accountplus"
+            class="text-14px"
+          />
+          {{ $t('follow') }}
         </a>
         <a class="statistic-right-share">
           {{ $t('share') }}

@@ -734,7 +734,12 @@
   "viewWallet": "View Wallet",
   "marketCap2": "Mkt Cap",
   "searchContractORName": "Search for token contract/name",
-  "blackManage": "Blacklist Management",
+  "operation": "Operation",
   "BlackList": "Blacklist",
-
+  "ConfirmHideToken": "Confirm to Hide Token",
+  "TokenName": "Token Name",
+  "ContractAddress": "Contract Address",
+  "Recover": "Recover",
+  "Hide": "Hide",
+  "BlockTips": "After blocking, the token will be hidden from your asset list. You can view and restore it in Blacklist Management."
 }

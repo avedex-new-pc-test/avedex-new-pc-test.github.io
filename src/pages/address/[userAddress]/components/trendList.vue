@@ -9,7 +9,7 @@
       class="table-container"
       @row-click="jumpTokenDetail"
     >
-      <AveEmpty/>
+      <AveEmpty />
       <TokenColumn
         :column-props="{
           label: $t('walletToken'),
@@ -362,7 +362,6 @@ const themeStore = useThemeStore()
 const mode = computed(() => {
   return themeStore.isDark ? 'dark' : 'light'
 })
-import { downColor, upColor } from '@/utils/constants'
 
 const trendTypeList = computed(() => [
   { id: 'SWAP', name: $t('swap_buy') + '/' + $t('swap_sell') },
@@ -448,18 +447,8 @@ function filterType(type) {
 function goLink(row) {
   window.open(formatExplorerUrl(row.chain, row.tx_hash, 'tx'))
 }
-
-function tableRowClick(row) {
-  // router.push({
-  //   name: 'Token',
-  //   params: { id: row.token + '-' + row.chain },
-  //   query: { from: router.currentRoute.value.name },
-  // })
-}
-
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
-
 function jumpTokenDetail(row) {
   tokenDetailSStore.$patch({
     drawerVisible: true,
@@ -476,9 +465,9 @@ function jumpTokenDetail(row) {
       token0_address: row.token,
       token0_symbol: row.symbol,
       token1_symbol: row.token1_symbol,
-      pairAddress: ''
+      pairAddress: '',
     },
-    user_address: botStore.getWalletAddress(row.chain)
+    user_address: botStore.getWalletAddress(row.chain),
   })
   // store.state.showPopTokenDetails = !store.state.showPopTokenDetails
   // store.state.token_user_address =
