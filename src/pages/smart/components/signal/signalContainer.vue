@@ -66,7 +66,7 @@ onMounted(() => {
 function onReset() {
   filterParams.value = {...defaultFilterParams}
   if (signalLeftList.value) {
-    signalLeftList.value.fetchSignalList()
+    signalLeftList.value.fetchSignalList({})
   }
 }
 
