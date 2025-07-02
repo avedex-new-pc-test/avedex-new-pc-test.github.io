@@ -86,13 +86,13 @@ async function fetchSignalList() {
 
 let hideTimer: number | NodeJS.Timeout
 const buttonRef = ref<null | HTMLElement>(null)
-const currentActions = shallowRef<IActionItem[]>([])
+const currentSignal = shallowRef<GetSignalV2ListResponse>({})
 
 const popVisible = shallowRef(false)
 
-function showPopover(e: MouseEvent, actions: IActionItem[]) {
+function showPopover(e: MouseEvent, item: GetSignalV2ListResponse) {
   buttonRef.value = e.currentTarget as HTMLElement | null
-  currentActions.value = actions || []
+  currentSignal.value = item
   popVisible.value = true
 }
 
@@ -180,6 +180,30 @@ function selectSignal(id: number, token: string) {
   selectId.value = id
   emit('setToken', token)
 }
+
+const tokenDetailSStore = useTokenDetailsStore()
+
+function openTokenDetail(el: IActionItem) {
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: currentSignal.value.token + '-' + props.activeChain,
+      symbol: currentSignal.value.symbol,
+      logo_url: currentSignal.value.logo,
+      chain: props.activeChain,
+      address: currentSignal.value.token,
+      remark: ''
+    },
+    pairInfo: {
+      target_token: currentSignal.value.token,
+      token0_address: el.quote_token_address,
+      token0_symbol: el.quote_token_symbol,
+      token1_symbol: currentSignal.value.symbol,
+      pairAddress: ''
+    },
+    user_address: el.wallet_address
+  })
+}
 </script>
 
 <template>
@@ -238,7 +262,7 @@ function selectSignal(id: number, token: string) {
               </div>
               <div
                 class="flex items-center gap-4px px-8px py-6px rounded-4px h-26px text-12px lh-12px color-#12B886 bg-#12B8861A"
-                @mouseenter.stop="showPopover($event,filterSignalList[index].actions)"
+                @mouseenter.stop="showPopover($event,filterSignalList[index])"
                 @mouseleave.stop="scheduleHide"
               >
                 <img class="w-14px h-14px rounded-full" :src="formatIconTag(tag)" alt="">
@@ -510,9 +534,10 @@ function selectSignal(id: number, token: string) {
           quote_token_symbol,
           quote_token_volume,
           action_time
-        },idx) in currentActions"
+        },idx) in currentSignal.actions"
           :key="idx"
-          class="flex color-[--d-999-l-666] text-12px lh-14px"
+          class="flex color-[--d-999-l-666] text-12px lh-14px cursor-pointer"
+          @click="openTokenDetail(currentSignal.actions[idx])"
         >
           <div class="flex-[3] flex items-center">
             <span class="w-10px h-10px rounded-full bg-#37B270 mr-4px"/>
