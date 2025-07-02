@@ -772,7 +772,7 @@
   "3d": "3天",
   "7d": "7天",
   "noSToken": "暫不支持",
-  "minimumTransactionAmount": "委託掛單賣出金額不能低於 ${n}",
+  "minimumTransactionAmount": "委託掛單金額不能低於 ${n}",
   "limitPriceTips": "掛單買入價格({p1})大於目前價格({p2})",
   "limitPriceTips1": "掛單賣出價格({p1})小於目前價格({p2})",
   "tradeConfirmed": "交易已確認",

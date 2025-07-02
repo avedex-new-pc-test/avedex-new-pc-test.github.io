@@ -835,3 +835,11 @@ export async function getDeviceId() {
   localStorage.setItem('device_id', deviceId)
   return deviceId
 }
+
+export function getFeeIn(bestRoute: { fee_index?: number; feeIn?: number }, chain: string) {
+  const chains = ['bsc', 'base']
+  if (chains?.includes?.(chain)) {
+    return String(bestRoute.fee_index ?? bestRoute.feeIn ?? '100')
+  }
+  return String(bestRoute.feeIn ?? '2')
+}

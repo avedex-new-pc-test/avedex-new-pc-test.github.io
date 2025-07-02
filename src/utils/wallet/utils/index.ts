@@ -270,13 +270,13 @@ export function getFeeAddress(user = useWalletStore().address) {
 export function formatFee(res: { to_rebate_address: string; platform_fee: number; total_rebate: number; to_rebate: number }, chain: string) {
   if (!FeeChainsRegExp.test(chain)) {
     return {
-      feeRate: 30,
+      feeRate: 50,
       receiveRate: 0,
       referrer: res.to_rebate_address || '',
     }
   }
   if (/bsc|core|arbitrum/.test(chain)) {
-    const platformFee = res.platform_fee ?? 30
+    const platformFee = res.platform_fee ?? 50
     const totalRebate = (res?.total_rebate / 2) || 20
     const toRebate = (res?.to_rebate / 2) || 0
     const feeRate = Math.trunc(
@@ -293,7 +293,7 @@ export function formatFee(res: { to_rebate_address: string; platform_fee: number
     }
     return feeInfo
   }
-  const platformFee = res.platform_fee ?? 30
+  const platformFee = res.platform_fee ?? 50
   const totalRebate = res.total_rebate ?? 40
   const toRebate = res.to_rebate ?? 0
   const feeRate = Math.trunc(

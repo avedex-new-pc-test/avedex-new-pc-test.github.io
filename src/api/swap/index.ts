@@ -1,5 +1,5 @@
 import { getSuiMethods, getSuiTokensBalance } from '~/utils/wallet/sui'
-import { ERC20ABI, SwapABI, QuoteABI, SunPump_Launchpad_ABI, SunPump_Router_ABI, Four_TokenManagerHelper_V2_ABI, ERC314ABI, Four_TokenManager_V1_ABI, Four_TokenManager_V2_ABI, WETHABI } from '~/utils/wallet/utils/abi'
+import { ERC20ABI, SwapABI, QuoteABI, SunPump_Launchpad_ABI, SunPump_Router_ABI, Four_TokenManagerHelper_V2_ABI, ERC314ABI, Four_TokenManager_V1_ABI, Four_TokenManager_V2_ABI, WETHABI, getQuoteABI, UniChainsV4, getSwapMethod } from '~/utils/wallet/utils/abi'
 import { QuoteAddress } from '~/utils/wallet/utils/constants'
 import BigNumber from 'bignumber.js'
 import { PublicKey } from '@solana/web3.js'
@@ -7,6 +7,7 @@ import { getSolanaConnection, getSolanaTokensBalance } from '~/utils/wallet/sola
 import { MultiContract, MultiProvider, getFeeAddress, getSigner } from '~/utils/wallet/utils'
 import { Contract } from 'ethers'
 import { TronContract, confirmTronTx } from '~/utils/wallet/utils/tronContract'
+import { getFeeIn } from '~/utils'
 
 export * from './sui'
 
@@ -600,6 +601,7 @@ export function getBestRouteV2(from_token: string, to_token: string, chain: stri
     decimals: number
   }>
   feeIn: number
+  fee_index?: number
   weight: number
   from_buy_tax: number
   from_sell_tax: number
@@ -613,7 +615,7 @@ export function getBestRouteV2(from_token: string, to_token: string, chain: stri
   to_price: number
 }>> {
   const { $api } = useNuxtApp()
-  return $api('/v1api/v2/aveswap/getBestRoute_v2', {
+  return $api('/botapi/swap/getBestRoute', {
     method: 'get',
     query: {
       from_token,
@@ -621,10 +623,10 @@ export function getBestRouteV2(from_token: string, to_token: string, chain: stri
       chain,
       max_hops,
       max_routes,
-      protocol: 'v3'
+      // protocol: 'v3'
     }
   }).then(async res => {
-    return res || []
+    return res?.data || res || []
   })
 }
 
@@ -685,10 +687,15 @@ export async function quoteBestRouterV2({from_token, to_token, amountIn, amountO
     if (route?.length === 0) {
       return Promise.reject({code: 'noMatchingRoute'})
     }
+    if (!amountIn && amountOut) {
+      if (route?.every(i => i?.pair_path?.some(j => j?.amm === 'viridian' || j?.amm === 'aerodrome'))) {
+        return Promise.reject('Exact output is not supported')
+      }
+    }
     const { _provider } = getProvider(chain)
     const signer = await getSigner()
     const swapContract = chain === 'tron' ? TronContract(SwapABI, getSwapContract(chain))  : new Contract(getSwapContract(chain), SwapABI, signer || _provider)
-    const QuoteContract = chain === 'tron' ? TronContract(QuoteABI, QuoteAddress[chain]) : new Contract(QuoteAddress[chain], QuoteABI, signer || _provider)
+    const QuoteContract = chain === 'tron' ? TronContract(QuoteABI, QuoteAddress[chain]) : new Contract(QuoteAddress[chain], getQuoteABI(chain), signer || _provider)
 
     // let swapContract = new ethers.Contract(swapContracts[chain], SwapABI, _provider)
     const walletStore = useWalletStore()
@@ -697,12 +704,23 @@ export async function quoteBestRouterV2({from_token, to_token, amountIn, amountO
       if (!bestRoute.pair_path || bestRoute.pair_path.length === 0 || !bestRoute.token_path || bestRoute.token_path.length === 0) {
         return Promise.resolve({routerPath: [], routerPairPath: []})
       }
-      const path = bestRoute.pair_path.map(i => ({
-        pair: i.pair,
-        tokenIn: i.token_in,
-        tokenOut: i.token_out,
-        router: i.amm_router
-      }))
+      const path = bestRoute.pair_path.map(i => {
+        if (UniChainsV4?.includes(chain)) {
+          return {
+            pair: i.protocol === 'v4' ? '0x'.padEnd(42, '0') : i.pair,
+            tokenIn: i.token_in,
+            tokenOut: i.token_out,
+            router: i.amm_router,
+            poolId: i.protocol === 'v4' ? i.pair : '0x'.padEnd(66, '0')
+          }
+        }
+        return {
+          pair: i.pair,
+          tokenIn: i.token_in,
+          tokenOut: i.token_out,
+          router: i.amm_router
+        }
+      })
       if (Number(amountIn)) {
         const getAmountsOutMethod = QuoteContract?.getAmountsOut?.staticCall
         return getAmountsOutMethod(path, amountIn).then(async (res: any[]) => {
@@ -718,19 +736,19 @@ export async function quoteBestRouterV2({from_token, to_token, amountIn, amountO
           let totalTax = 0
           if (allowanceAmount.gte(amountIn) && balance.gte(amountIn)) {
             const to = walletStore.address
-            const feeIn = String(bestRoute.feeIn ?? '2')
-            const feeRate =  30
+            const feeIn = getFeeIn(bestRoute, chain)
+            const feeRate = 50
             const referrer = getFeeAddress(walletStore.address)
             // const receiveRate = 0
             const aIn = new BigNumber(amountIn).toFixed(0)
-            const params = {
+            let params: any = {
               srcToken: from_token,
               dstToken: to_token,
               srcReceiver: Number(path[0].router) !== 0 ? bestRoute.pair_path[0].pair : swapContract.target,
               dstReceiver: to,
               amount: aIn,
-              minReturnAmount: '100',
-              feeIn: feeRate > 0 ? feeIn : '2',
+              minReturnAmount: '1',
+              feeIn: feeRate > 0 ? feeIn : '100',
               // 平台收费费率
               feeRate: feeRate,
               // 平台收费地址
@@ -742,15 +760,35 @@ export async function quoteBestRouterV2({from_token, to_token, amountIn, amountO
               path: path,
               routerPath: []
             }
+            if (UniChainsV4?.includes(chain)) {
+              params = {
+                srcToken: from_token,
+                dstToken: to_token,
+                amount: aIn,
+                minReturnAmount: '1',
+                feeIndex: feeRate > 0 ? feeIn : '2',
+                // 平台收费费率
+                feeRate: feeRate,
+                // 平台收费地址
+                feeTo: getFeeAddress(walletStore.address),
+                minLiquidity: '0',
+                maxLiquidity: '0',
+                // 用户上级返佣比率
+                referRates: [0],
+                // 用户上级返佣地址
+                referrers: [referrer],
+                paths: path,
+              }
+            }
             const value = from_token === NATIVE_TOKEN ? aIn : '0'
             const amountOut = res?.[routerPath.length - 1]?.toString()
             try {
-                const realAmountOut = await swapContract?.swapPlus?.staticCall(params, { value })
-                // console.log('realAmountOut', realAmountOut)
-                totalTax = Number(((10000 - Number(new BigNumber(realAmountOut.toString()).times(10000).div(amountOut).toFixed()) - feeRate) / 100).toFixed(2)) || 0
-              } catch (error) {
-                console.log('callStatic swap error', params, error)
-              }
+              const realAmountOut = await swapContract?.[getSwapMethod(chain)]?.staticCall(params, { value })
+              // console.log('realAmountOut', realAmountOut)
+              totalTax = Number(((10000 - Number(new BigNumber(realAmountOut.toString()).times(10000).div(amountOut).toFixed()) - feeRate) / 100).toFixed(2)) || 0
+            } catch (error) {
+              console.log('callStatic swap error', params, error)
+            }
           }
           return {routerPath, routerPairPath: path, ...bestRoute, totalTax: Math.max(totalTax, 0), isAmountOut: false }
         })
@@ -770,8 +808,8 @@ export async function quoteBestRouterV2({from_token, to_token, amountIn, amountO
           let totalTax = 0
           if (allowanceAmount.gte(amountIn) && balance.gte(amountIn)) {
             const to = walletStore.address
-            const feeIn = String(bestRoute.feeIn ?? '2')
-            const feeRate = 30
+            const feeIn = getFeeIn(bestRoute, chain)
+            const feeRate = 50
             const referrer = getFeeAddress(to)
             // const receiveRate = 0
             const aIn = balance.toString()
@@ -1332,12 +1370,14 @@ export async function ERC314Swap({fromToken, toToken, fromAmount}: { fromToken: 
   }
 }
 
-export async function swapV2(routerInfo: { totalTax: number; total_sell_tax: any; total_buy_tax: any; isAmountOut: any; toWrapper: number; wrapper: any; amount: any; routerPath: any[]; feeIn: any; routerPairPath: { router: any }[]; pair_path: any[] }, slippage: number | string, chain = useWalletStore().chain, to = useWalletStore().address) {
+export async function swapV2(routerInfo: { totalTax: number; total_sell_tax: any; total_buy_tax: any; isAmountOut: any; toWrapper: number; wrapper: any; amount: any; routerPath: any[]; feeIn: number; fee_index: number; routerPairPath: { router: any, poolId: string }[]; pair_path: any[] }, slippage: number | string, chain = useWalletStore().chain, to = useWalletStore().address) {
   let slippage1 = slippage
   if (routerInfo.totalTax > 0 || (routerInfo.total_sell_tax + routerInfo.total_buy_tax > 0)) {
     slippage1 = Math.min((Number(slippage) + 3), 49.99)
   }
-  const isAmountOut = routerInfo.isAmountOut || false
+  let isAmountOut = routerInfo.isAmountOut || false
+  const paramsPath = routerInfo.routerPairPath || []
+  isAmountOut = (UniChainsV4?.includes(chain) && paramsPath?.some(i => Number(i?.poolId || 0) !== 0)) ? false : isAmountOut
   const signer = await getSigner()
   if (routerInfo.toWrapper === 1 || routerInfo.toWrapper === 2) {
     const WETH = chain === 'tron' ? TronContract(WETHABI, routerInfo.wrapper)  : new Contract(routerInfo.wrapper, WETHABI, signer)
@@ -1382,16 +1422,15 @@ export async function swapV2(routerInfo: { totalTax: number; total_sell_tax: any
     limitAmount = new BigNumber(amountOut).times(new BigNumber('10000').minus(new BigNumber(parseInt(String(Number(slippage1) * 100))))).div('10000').toFixed(0)
   }
   amountIn = new BigNumber(amountIn).toFixed(0)
-  const feeIn = String(routerInfo.feeIn ?? '2')
-  const feeRate = 30
+  const feeIn = String(routerInfo?.fee_index ?? routerInfo.feeIn ?? '100')
+  const feeRate = 50
   // const walletStore = useWalletStore()
   const referrer = getFeeAddress(to)
   const isPair = true
-  const amount = routerInfo.isAmountOut ? limitAmount : amountIn
-  const minReturnAmount = routerInfo.isAmountOut ? amountOut : limitAmount
-  const paramsPath = routerInfo.routerPairPath || []
+  const amount = isAmountOut ? limitAmount : amountIn
+  const minReturnAmount = isAmountOut ? amountOut : limitAmount
   const getPrepareParam = null
-  const params = {
+  let params: any = {
     srcToken: fromToken.isETH ? NATIVE_TOKEN : fromToken.address,
     dstToken: toToken.isETH ? NATIVE_TOKEN : toToken.address,
     srcReceiver: isPair && Number(routerInfo.routerPairPath[0].router) !== 0 ? routerInfo.pair_path[0].pair : swapContract.target,
@@ -1410,6 +1449,26 @@ export async function swapV2(routerInfo: { totalTax: number; total_sell_tax: any
     path: paramsPath,
     routerPath: []
   }
+  if (UniChainsV4?.includes(chain) && !isAmountOut) {
+    params = {
+      srcToken: fromToken.isETH ? NATIVE_TOKEN : fromToken.address,
+      dstToken: toToken.isETH ? NATIVE_TOKEN : toToken.address,
+      amount: amount,
+      minReturnAmount: minReturnAmount,
+      feeIndex: feeRate > 0 ? feeIn : '100',
+      // 平台收费费率
+      feeRate: feeRate,
+      // 平台收费地址
+      feeTo: referrer,
+      minLiquidity: '0',
+      maxLiquidity: '0',
+      // 用户上级返佣比率
+      referRates: [0],
+      // 用户上级返佣地址
+      referrers: [referrer],
+      paths: paramsPath,
+    }
+  }
   let value = '0'
   let gas = '0'
   if (isAmountOut) {
@@ -1420,13 +1479,13 @@ export async function swapV2(routerInfo: { totalTax: number; total_sell_tax: any
   } else {
     value = fromToken.isETH ? amountIn : '0'
     if (chain !== 'tron') {
-      gas = await swapContract.swapPlus.estimateGas(params, { value })
+      gas = await swapContract?.[getSwapMethod(chain)].estimateGas(params, { value })
     }
   }
 
   const gasLimit = new BigNumber(gas).times('2').toFixed(0)
-  const swapMethod = isAmountOut ? swapContract.exactOutput : swapContract.swapPlus
-  const swapMethodCallStatic = isAmountOut ? (swapContract.exactOutput.staticCall) : (swapContract.swapPlus.staticCall)
+  const swapMethod = isAmountOut ? swapContract.exactOutput : swapContract?.[getSwapMethod(chain)]
+  const swapMethodCallStatic = isAmountOut ? (swapContract.exactOutput.staticCall) : (swapContract?.[getSwapMethod(chain)].staticCall)
   const swapParams = [params, { value, gasLimit }]
   return {
     swap: async () => {

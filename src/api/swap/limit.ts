@@ -1,4 +1,4 @@
-import { LimitABI, QuoteABI, SwapABI } from '~/utils/wallet/utils/abi'
+import { LimitABI, QuoteABI, SwapABI, getQuoteABI, UniChainsV4, getSwapMethod } from '~/utils/wallet/utils/abi'
 import { getBalanceAndAllowance, getBestRouteV2, getNativeTokenPrice } from './index'
 import { aveRequestProxy } from './solana'
 import { TronContract } from '~/utils/wallet/utils/tronContract'
@@ -129,7 +129,7 @@ export async function quoteLimit({from_token, to_token, amountIn, amountOut}: { 
     const signer = await getSigner()
     // let bestRoute = route[0]
     const swapContract = chain === 'tron' ? TronContract(SwapABI, getSwapContract(chain))  : new Contract(getSwapContract(chain), SwapABI, signer || _provider)
-    const QuoteContract = chain === 'tron' ? TronContract(QuoteABI, QuoteAddress[chain]) : new Contract(QuoteAddress[chain], QuoteABI, signer || _provider)
+    const QuoteContract = chain === 'tron' ? TronContract(QuoteABI, QuoteAddress[chain]) : new Contract(QuoteAddress[chain], getQuoteABI(chain), signer || _provider)
 
     const gasPrice = (await getGasPrice(chain)) as number
     const nativePrice = await getNativeTokenPrice(chain)
@@ -154,18 +154,29 @@ export async function quoteLimit({from_token, to_token, amountIn, amountOut}: { 
 }
 
 
-function quoteLimitPath(bestRoute: { pair_path: any; token_path: any; feeIn: any; weight?: number; from_buy_tax?: number; from_sell_tax?: number; to_buy_tax?: number; to_sell_tax?: number; from_cannot_sell_all?: number; to_cannot_sell_all?: number; total_buy_tax: any; total_sell_tax: any; from_price: any; to_price: any }, {chain, QuoteContract, swapContract, gasPrice, nativePrice, amountIn, amountOut, balance, allowanceAmount, fromIsETH, toIsETH, mainName, from_token, to_token}: { chain: string; QuoteContract: { [key: string]: any; address: string; abi: JsonFragment[] } | Contract; swapContract: { [key: string]: any; address: string; abi: JsonFragment[] } | Contract; gasPrice: number; nativePrice: string | number; amountIn: any; amountOut: any; balance: any; allowanceAmount: BigNumber; fromIsETH: boolean; toIsETH: boolean; mainName: any; from_token: any; to_token: any }) {
+function quoteLimitPath(bestRoute: { pair_path: any[]; token_path: any[]; feeIn: any; weight?: number; from_buy_tax?: number; from_sell_tax?: number; to_buy_tax?: number; to_sell_tax?: number; from_cannot_sell_all?: number; to_cannot_sell_all?: number; total_buy_tax: any; total_sell_tax: any; from_price: any; to_price: any }, {chain, QuoteContract, swapContract, gasPrice, nativePrice, amountIn, amountOut, balance, allowanceAmount, fromIsETH, toIsETH, mainName, from_token, to_token}: { chain: string; QuoteContract: { [key: string]: any; address: string; abi: JsonFragment[] } | Contract; swapContract: { [key: string]: any; address: string; abi: JsonFragment[] } | Contract; gasPrice: number; nativePrice: string | number; amountIn: any; amountOut: any; balance: any; allowanceAmount: BigNumber; fromIsETH: boolean; toIsETH: boolean; mainName: any; from_token: any; to_token: any }) {
   const gas = '0'
   let gasU = '0'
-  if (!bestRoute.pair_path || bestRoute.pair_path === 0 || !bestRoute.token_path || bestRoute.token_path.length === 0) {
+  if (!bestRoute.pair_path || bestRoute.pair_path?.length === 0 || !bestRoute.token_path || bestRoute.token_path.length === 0) {
     return Promise.resolve({routerPath: [], routerPairPath: []})
   }
-  const path = bestRoute.pair_path.map((i: { pair: string; token_in: string; token_out: string; amm_router: string }) => ({
-    pair: i.pair,
-    tokenIn: i.token_in,
-    tokenOut: i.token_out,
-    router: i.amm_router
-  }))
+  const path = bestRoute.pair_path.map((i: { protocol: string; pair: string; token_in: string; token_out: string; amm_router: string }) => {
+    if (UniChainsV4?.includes(chain)) {
+      return {
+        pair: i.protocol === 'v4' ? '0x'.padEnd(42, '0') : i.pair,
+        tokenIn: i.token_in,
+        tokenOut: i.token_out,
+        router: i.amm_router,
+        poolId: i.protocol === 'v4' ? i.pair : '0x'.padEnd(66, '0')
+      }
+    }
+    return {
+      pair: i.pair,
+      tokenIn: i.token_in,
+      tokenOut: i.token_out,
+      router: i.amm_router
+    }
+  })
   let rate = 1
   if (chain === 'arbitrum') {
     rate = 3.5
@@ -192,8 +203,7 @@ function quoteLimitPath(bestRoute: { pair_path: any; token_path: any; feeIn: any
         const feeIn = String(bestRoute.feeIn ?? '2')
         const feeRate = 30
         const referrer = getFeeAddress(walletStore.address)
-        const receiveRate = 0
-        const params = {
+        let params: any = {
           srcToken: from_token,
           dstToken: to_token,
           srcReceiver: Number(path[0].router) !== 0 ? bestRoute.pair_path[0].pair : swapContract.address,
@@ -206,16 +216,36 @@ function quoteLimitPath(bestRoute: { pair_path: any; token_path: any; feeIn: any
           // 平台收费地址
           feeTo: getFeeAddress(walletStore.address),
           // 用户上级返佣比率
-          receiveRate: FeeChainsRegExp.test(chain) ? receiveRate : 0,
+          receiveRate: 0,
           // 用户上级返佣地址
           referrer: referrer,
           path: path,
           routerPath: []
         }
+        if (UniChainsV4?.includes(chain)) {
+          params = {
+            srcToken: from_token,
+            dstToken: to_token,
+            amount: amountIn,
+            minReturnAmount: '1',
+            feeIn: feeRate > 0 ? feeIn : '100',
+            // 平台收费费率
+            feeRate: feeRate,
+            // 平台收费地址
+            feeTo: getFeeAddress(walletStore.address),
+            minLiquidity: '0',
+            maxLiquidity: '0',
+            // 用户上级返佣比率
+            referRates: [0],
+            // 用户上级返佣地址
+            referrers: [referrer],
+            paths: path,
+          }
+        }
         const value = from_token === NATIVE_TOKEN ? amountIn : '0'
         const amountOut = res?.[routerPath.length - 1]
         try {
-          const realAmountOut = new BigNumber(await swapContract.swapPlus.staticCall(params, { value }))
+          const realAmountOut = new BigNumber(await swapContract?.[getSwapMethod(chain)]?.staticCall(params, { value }))
           totalTax = Number(((10000 - realAmountOut.times(10000).div(amountOut).toNumber() - feeRate) / 100).toFixed(2)) || 0
           if (totalTax > 0) {
             routerPath[routerPath.length - 1].amount = realAmountOut.toString()

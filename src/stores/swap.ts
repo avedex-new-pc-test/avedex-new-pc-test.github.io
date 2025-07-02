@@ -164,7 +164,11 @@ export const useSwapStore = defineStore('swap', () => {
           }
         }).sort((a) => (a.token === NATIVE_TOKEN ? -1 : 1))
       }
-      if ((!token2.value.address || token1.value.address === token2.value.address || token2.value.chain !== chain || ((isERC314.value || isFourMeme.value || isFlap.value || isSunPump.value > 0) && token2.value.address !== NATIVE_TOKEN) || ((isPump.value || isMoonshot.value) && chain === 'solana' && token2.value.address === 'So11111111111111111111111111111111111111112')) && tokens.value.length > 0) {
+      const isSameToken = token1.value.address === token2.value.address
+      const isSpecialCase = (isERC314.value || isFourMeme.value || isFlap.value || isSunPump.value > 0) && token2.value.address !== NATIVE_TOKEN
+      const isSolanaPumpCase = (isPump.value || isMoonshot.value) && chain === 'solana' && token2.value.address === 'So11111111111111111111111111111111111111112'
+      const isSui = chain === 'sui' && (token2.value.address !== '0x2::sui::SUI' && token2.value.address !== NATIVE_TOKEN)
+      if ((!token2.value.address || isSameToken || token2.value.chain !== chain || isSpecialCase || isSolanaPumpCase || isSui) && tokens.value.length > 0) {
         let index = tokens.value.findIndex(i => /USDT/.test(i.symbol))
         index = index < 0 ? tokens.value.findIndex(i => /USD/.test(i.symbol)) : index
         index = index < 0 ? 0 : index
@@ -172,8 +176,8 @@ export const useSwapStore = defineStore('swap', () => {
         if (token1.value.address === token.address) {
           token = index === 0 ? (tokens.value[1] ?? tokens.value[0]) : tokens.value[0]
         }
-        if (isERC314.value || isPump.value || isMoonshot.value || isFourMeme.value || isFlap.value || isSunPump.value > 0) {
-          const token = tokens.value?.slice?.().find(i => (i.address === NATIVE_TOKEN || i.address === 'So11111111111111111111111111111111111111112'))
+        if (isERC314.value || isPump.value || isMoonshot.value || isFourMeme.value || isFlap.value || isSunPump.value > 0 || isSui) {
+          const token = tokens.value?.slice?.().find(i => (i.address === NATIVE_TOKEN || i.address === 'So11111111111111111111111111111111111111112' || i.address === '0x2::sui::SUI'))
           if (token) {
             token2.value = {...(token as typeof token2.value)}
           }

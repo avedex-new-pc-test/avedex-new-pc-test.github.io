@@ -667,12 +667,12 @@ async function dealGetQuoteInfo(isAmount: boolean, chain: string) {
           (new BigNumber(fromAmount.value || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${fromDecimals}})?`))?.[0] || 0,
           fromDecimals
         )
-        .toString() : '0',
+        .toFixed(0) : '0',
       amountOut: !isAmount ? parseUnits(
           new BigNumber(toAmount.value || 0).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${toDecimals}})?`))?.[0] || 0,
           toDecimals
         )
-        .toString() : '0'
+        .toFixed(0) : '0'
     }
 
     if (swapStore.isFourMeme) {
@@ -693,8 +693,8 @@ async function dealGetQuoteInfo(isAmount: boolean, chain: string) {
             nextAmm: ''
           }
         ]
-        swapQuoteInfo.value.fromAmount = parseUnits(fromAmount.value, swapStore.fromToken?.decimals).toString()
-        swapQuoteInfo.value.toAmount = parseUnits(toAmount.value, swapStore.toToken?.decimals).toString()
+        swapQuoteInfo.value.fromAmount = parseUnits(fromAmount.value, swapStore.fromToken?.decimals).toFixed(0)
+        swapQuoteInfo.value.toAmount = parseUnits(toAmount.value, swapStore.toToken?.decimals).toFixed(0)
         swapQuoteInfo.value.fromToken = {...swapStore.fromToken, amount: swapQuoteInfo.value.fromAmount}
         swapQuoteInfo.value.toToken = {...swapStore.toToken, amount: swapQuoteInfo.value.toAmount}
         swapQuoteInfo.value.quoteResult = {...res}
@@ -733,8 +733,8 @@ async function dealGetQuoteInfo(isAmount: boolean, chain: string) {
             nextAmm: ''
           }
         ]
-        swapQuoteInfo.value.fromAmount = parseUnits(fromAmount.value, swapStore.fromToken?.decimals).toString()
-        swapQuoteInfo.value.toAmount = parseUnits(toAmount.value, swapStore.toToken?.decimals).toString()
+        swapQuoteInfo.value.fromAmount = parseUnits(fromAmount.value, swapStore.fromToken?.decimals).toFixed(0)
+        swapQuoteInfo.value.toAmount = parseUnits(toAmount.value, swapStore.toToken?.decimals).toFixed(0)
         swapQuoteInfo.value.fromToken = {...swapStore.fromToken, amount: swapQuoteInfo.value.fromAmount}
         swapQuoteInfo.value.toToken = {...swapStore.toToken, amount: swapQuoteInfo.value.toAmount}
         swapQuoteInfo.value.quoteResult = {...res}
@@ -776,8 +776,8 @@ async function dealGetQuoteInfo(isAmount: boolean, chain: string) {
             nextAmm: ''
           }
         ]
-        swapQuoteInfo.value.fromAmount = parseUnits(fromAmount.value, swapStore.fromToken?.decimals).toString()
-        swapQuoteInfo.value.toAmount = parseUnits(toAmount.value, swapStore.toToken?.decimals).toString()
+        swapQuoteInfo.value.fromAmount = parseUnits(fromAmount.value, swapStore.fromToken?.decimals).toFixed(0)
+        swapQuoteInfo.value.toAmount = parseUnits(toAmount.value, swapStore.toToken?.decimals).toFixed(0)
         swapQuoteInfo.value.fromToken = {...swapStore.fromToken, amount: swapQuoteInfo.value.fromAmount}
         swapQuoteInfo.value.toToken = {...swapStore.toToken, amount: swapQuoteInfo.value.toAmount}
         const [token1Id, token2Id] = [swapStore.fromToken?.address + '-' + swapStore.fromToken?.chain, swapStore.toToken?.address + '-' + swapStore.toToken?.chain]
@@ -805,6 +805,7 @@ async function dealGetQuoteInfo(isAmount: boolean, chain: string) {
     }
     swapStore.isERC314 = false
     quoteBestRouterV2(params, wrapper, chain).then(_swapPathList => {
+      console.log('_swapPathList', _swapPathList)
       swapPathList.value = _swapPathList as typeof swapPathList.value
       selectedRouter(_swapPathList as typeof swapPathList.value)
       getSwapGas()
@@ -837,7 +838,7 @@ async function quoteSui(isAmount: boolean, chain: string) {
       amountIn: parseUnits(
           a.toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${fromDecimals}})?`))?.[0] || 0,
           fromDecimals
-        ).toString(),
+        ).toFixed(0),
        slippage: new BigNumber(suiTonSlippage.value).div(100).toNumber(),
     }
     quoteLoading.value = true
@@ -901,10 +902,10 @@ function quoteSolana(isAmount: boolean, chain: string) {
       amount: isAmount ? parseUnits(
           (new BigNumber(fromAmount.value || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${fromDecimals}})?`))?.[0] || 0,
           fromDecimals
-        ).toString() :  parseUnits(
+        ).toFixed(0) :  parseUnits(
           (new BigNumber(toAmount.value || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${toDecimals}})?`))?.[0] || 0,
           toDecimals
-        ).toString(),
+        ).toFixed(0),
       // 可选
       slippageBps: new BigNumber(solanaSlippage.value).times(100).toFixed(0),
       swapMode: isAmount ? 'ExactIn' : 'ExactOut',
@@ -1116,7 +1117,7 @@ function selectedRouter(_swapPathList = swapPathList.value) {
         (new BigNumber(fromAmount.value || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${fromDecimals}})?`))?.[0] || '0',
         fromDecimals
       )
-      .toString()
+      .toFixed(0)
 
     const amountInRes = res[0]?.amount || 0
     isCurReq = amountIn === amountInRes
@@ -1125,7 +1126,7 @@ function selectedRouter(_swapPathList = swapPathList.value) {
         new BigNumber(toAmount.value || 0).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${toDecimals}})?`))?.[0] || '0',
         toDecimals
       )
-      .toString()
+      .toFixed(0)
     const amountOutRes = res[res.length - 1]?.amount || 0
     isCurReq = amountOut === amountOutRes
   }
@@ -1133,7 +1134,7 @@ function selectedRouter(_swapPathList = swapPathList.value) {
     return
   }
   if (routerInfo.from_cannot_sell_all === 1) {
-    const balance = new BigNumber(parseUnits(String(swapStore.fromToken.balance), swapStore.fromToken?.decimals).toString())
+    const balance = new BigNumber(parseUnits(String(swapStore.fromToken.balance), swapStore.fromToken?.decimals).toFixed(0))
     const fromTokenAmount = new BigNumber(routerInfo?.routerPath[0].amount)
     isCannotSellAll.value = balance.gt(0) && fromTokenAmount.div(balance).gt(0.99999)
   } else {
@@ -2114,6 +2115,7 @@ watch([() => swapStore.fromToken.address, () => walletStore.address], () => {
     --el-border-color: transparent;
     --el-input-focus-border-color: transparent;
     --el-input-hover-border-color: transparent;
+    --el-input-bg-color: transparent;
     :deep(.el-input__wrapper) {
       padding: 0;
     }

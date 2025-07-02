@@ -27,7 +27,7 @@ export function onRequest({ options, request }: MyFetchContext) {
 
   if (url?.includes('/v1api/') || url.startsWith('/v2api/')) {
     const analogDeviceId = localStorage.getItem('analogDeviceId')
-    if (analogDeviceId) {
+    if (analogDeviceId && !url?.includes('/botapi')) {
       options.headers.set('ave-udid', analogDeviceId)
     }
     const currentAccount = localStorage.getItem('currentAccount')
@@ -72,7 +72,7 @@ export function onResponse({ response, request }: MyFetchContext) {
        throw new Error(data?.msg)
     }
   } else {
-    if (data?.status === 0) {
+    if (data?.status === 0 && data?.msg !== 'Success') {
       // return Promise.reject(data?.msg)
       throw new Error(data?.msg)
     }

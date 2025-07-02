@@ -47,6 +47,14 @@ export const QuoteABI = [
   'function getAmountsOut(tuple(address pair, address tokenIn, address tokenOut, address router)[] path, uint256 amountIn) returns (uint256[] amounts)'
 ]
 
+
+export const QuoteV4ABI = [
+  'function batchAmountsIn(tuple(tuple(address pair, address tokenIn, address tokenOut, address router, bytes32 poolId)[] path, uint256 amount)[] quoterList) returns (uint256[][] amountsList)',
+  'function batchAmountsOut(tuple(tuple(address pair, address tokenIn, address tokenOut, address router, bytes32 poolId)[] path, uint256 amount)[] quoterList) returns (uint256[][] amountsList)',
+  'function getAmountsIn(tuple(address pair, address tokenIn, address tokenOut, address router, bytes32 poolId)[] path, uint256 amountOut) returns (uint256[] amounts)',
+  'function getAmountsOut(tuple(address pair, address tokenIn, address tokenOut, address router, bytes32 poolId)[] path, uint256 amountIn) returns (uint256[] amounts)',
+]
+
 // feeIn 0 前收费 1 后收费
 // flag
 // 0 swapExactTokensForTokensSupportingFeeOnTransferTokens
@@ -59,19 +67,15 @@ export const QuoteABI = [
 // 7 swapExactTokensForETH
 // 8 swapETHForExactTokens
 export const SwapABI = [
-  'function exactOutput(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) desc) payable returns (uint256)',
+  'function exactOutput(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) d) payable returns (uint256)',
 
-  'function getPrepareParam() view returns (uint256 height, uint256 time, uint256 totalIncome)',
+  'function swapPlus(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) d) payable returns (uint256)',
 
-  'function swapInAve(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) desc, uint256 height, uint256 time, uint256 totalIncome) payable returns (uint256 amountOut)',
+  'function swapRefer(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 minLiquidity, uint256 maxLiquidity, uint256[] referRates, address[] referrers, tuple(address pair, address tokenIn, address tokenOut, address router)[] path) d) payable returns (uint256)',
 
-  'function swapInMask(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) desc, uint256 salt) payable returns (uint256 amountOut)',
+  'function swapSniper(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 minLiquidity, uint256 maxLiquidity, uint256[] referRates, address[] referrers, tuple(address pair, address tokenIn, address tokenOut, address router)[] path) d, bool isSelfTransfer, uint256 slippage) payable returns (uint256 amountOut)',
 
-  'function swapOutAve(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) desc, uint256 height, uint256 time, uint256 totalIncome) payable returns (uint256 amountOut)',
-
-  'function swapOutMask(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) desc, uint256 salt) payable returns (uint256 amountOut)',
-
-  'function swapPlus(tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 feeIn, uint256 feeRate, address feeTo, uint256 receiveRate, address referrer, tuple(address pair, address tokenIn, address tokenOut, address router)[] path, tuple(address router, bytes path, uint256 routerType)[] routerPath) desc) payable returns (uint256 amountOut)'
+  'function swapV4(tuple(address srcToken, address dstToken, uint256 amount, uint256 minReturnAmount, uint256 feeIndex, uint256 feeRate, address feeTo, uint256 minLiquidity, uint256 maxLiquidity, uint256[] referRates, address[] referrers, tuple(address pair, address tokenIn, address tokenOut, address router, bytes32 poolId)[] paths) d) payable returns (uint256)'
 ]
 
 export const WETHABI = [
@@ -449,3 +453,16 @@ export const SunPump_Router_ABI = [
   'function swapTokensForExactTokens(uint256 amountOut, uint256 amountInMax, address[] path, address to, uint256 deadline) returns (uint256[] amounts)',
   'function tokenWhiteList(address) view returns (bool)'
 ]
+
+export const UniChainsV4 = ['base', 'bsc']
+
+export function getQuoteABI(chain: string) {
+  if (UniChainsV4?.includes(chain)) {
+    return QuoteV4ABI
+  }
+  return QuoteABI
+}
+
+export function getSwapMethod(chain: string) {
+  return UniChainsV4?.includes(chain) ? 'swapV4' : 'swapPlus'
+}

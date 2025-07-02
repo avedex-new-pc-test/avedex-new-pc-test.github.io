@@ -141,13 +141,26 @@ export async function getSuiMethods<
   return null
 }
 
+function normalizeCoinType(coinType: string) {
+  return coinType.replace(/^0x([0-9a-fA-F]{1,64})(::.*)?$/, (_, addr, rest = '') => {
+    const padded = addr.padStart(64, '0').toLowerCase()
+    return `0x${padded}${rest}`
+  })
+}
+
+
 export async function getSuiTokensBalance(user = useWalletStore().address) {
-  const tokens = await getSuiMethods({
+  const tokens = (await getSuiMethods({
     method: 'getAllBalances',
     params: {
       owner: user
     }
-  })
+  }))?.map?.(i => {
+    return {
+      ...i,
+      coinType: i.coinType !== '0x2::sui::SUI' ? normalizeCoinType(i?.coinType) : '0x2::sui::SUI'
+    }
+  }) || []
   const tokenIds = tokens?.map?.(i => i?.coinType + '-sui') || []
   const prices = await getTokensPrice([...tokenIds])
   const configStore = useConfigStore()

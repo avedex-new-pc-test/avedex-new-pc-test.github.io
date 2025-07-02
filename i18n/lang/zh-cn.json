@@ -787,7 +787,7 @@
   "3d": "3天",
   "7d": "7天",
   "noSToken": "暂不支持",
-  "minimumTransactionAmount": "委托挂单卖出金额不能低于 ${n}",
+  "minimumTransactionAmount": "委托挂单金额不能低于 ${n}",
   "limitPriceTips": "挂单买入价格({p1})大于当前价格({p2})",
   "limitPriceTips1": "挂单卖出价格({p1})小于当前价格({p2})",
   "tradeConfirmed": "交易已确认",

@@ -1,7 +1,6 @@
 import { getQuote, buildTx } from '@7kprotocol/sdk-ts'
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { getTokensPrice } from '../token'
 import { NATIVE_TOKEN } from '@/utils/constants'
 import BigNumber from 'bignumber.js'
 
@@ -140,67 +139,6 @@ export function build7kSuiTx(data: { quoteResponse: any; slippage: any }, accoun
   })
 }
 
-let time = 0
-export async function getSuiMethods({
-  method = 'getAllBalances',
-  params = {},
-}: {
-  method: string
-  params: any
-}) {
-  const client = new SuiClient({ url: getFullnodeUrl('mainnet') })
-  if (Date.now() - time < 1000) {
-    const offset = Date.now() - time
-    if (offset < 0) {
-      time = Date.now() + 1000 - offset
-      await sleep(1000 - offset)
-    } else {
-      time = Date.now() + 1000
-      await sleep(1000)
-    }
-  }
-  try {
-    const res = await client[method](params)
-    return res
-  } catch (error) {
-    console.log(error)
-  }
-  return null
-}
-
-export async function getSuiTokensBalance(user1 = useWalletStore().address) {
-  const user = user1
-  const tokens = await getSuiMethods({
-    method: 'getAllBalances',
-    params: {
-      owner: user
-    }
-  })
-  const configStore = useConfigStore()
-  const tokenIds = tokens?.map?.((i: { coinType: string }) => i?.coinType + '-sui')
-  const prices: Record<string, any> = await getTokensPrice([...tokenIds])
-  const nativeLogoUrl = `${configStore.token_logo_url || 'https://www.logofacade.com/'}token_icon/sui/0x2::sui::SUI_1700879589.png`
-  let tokenList = tokens?.map((i: { coinType: string; totalBalance: any }, k: string | number) => {
-    const symbolInfo = prices[k]
-    const decimals = symbolInfo?.decimal || symbolInfo?.decimals || 0
-    const isNative = i?.coinType === '0x2::sui::SUI'
-    return {
-      symbol: symbolInfo?.symbol || '',
-      decimals: decimals,
-      balance: formatUnits(i?.totalBalance || 0, decimals),
-      value: formatUnits(i?.totalBalance || 0, decimals),
-      address: isNative ? NATIVE_TOKEN : i?.coinType,
-      token: isNative ? NATIVE_TOKEN : i?.coinType,
-      chain: 'sui',
-      id: (isNative ? NATIVE_TOKEN : i?.coinType) + '-sui',
-      price: symbolInfo?.current_price_usd || 0,
-      logo_url: isNative ? nativeLogoUrl : (symbolInfo?.logo_url || ''),
-    }
-  })
-  tokenList = tokenList?.slice?.().sort?.((a: { price: number; balance: number }, b: { price: number; balance: number }) => b.price * b.balance - a.price * a.balance)
-  console.log(tokens, tokenList)
-  return tokenList?.filter?.((i: { symbol: any }) => i?.symbol) || []
-}
 
 export function sui_waitForTransaction(digest: any) {
   const client = new SuiClient({ url: getFullnodeUrl('mainnet') })

@@ -785,7 +785,7 @@
   "3d": "3d",
   "7d": "7d",
   "noSToken": "Not supported",
-  "minimumTransactionAmount": "The selling amount of entrusted limit order cannot be less than ${n}",
+  "minimumTransactionAmount": "The amount of entrusted limit order cannot be less than ${n}",
   "limitPriceTips": "The limit order buy price ({p1}) is greater than current price ({p2})",
   "limitPriceTips1": "The sell price of limit order ({p1}) is less than current price ({p2})",
   "tradeConfirmed": "Transaction Confirmed",

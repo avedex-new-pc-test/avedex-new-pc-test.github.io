@@ -30,7 +30,7 @@
         <el-icon><Minus /></el-icon>
       </button>
       <span class="text-14px color-[--d-666-l-999]">$</span>
-      <el-input v-model="triggerPrice" placeholder="0.0"  size="large" clearable class="input-number" input-style="text-align:right"  @update:model-value="value => {triggerPrice = value?.replace?.(/\-|[^\d.]/g, '')}" />
+      <el-input v-model="triggerPrice" placeholder="0.0"  size="large" clearable class="input-number" input-style="text-align:center"  @update:model-value="value => {triggerPrice = value?.replace?.(/\-|[^\d.]/g, '')}" />
       <button class="limit-price-icon" type="button" :disabled="!triggerPrice" @click.stop="addTriggerPrice">
         <el-icon><Plus /></el-icon>
       </button>
@@ -42,7 +42,7 @@
           <el-icon><Minus /></el-icon>
         </button>
         <span class="text-14px color-[--d-666-l-999]">$</span>
-        <el-input v-model="limitSolanaPriceU" placeholder="0.0" size="large" clearable class="input-number" input-style="text-align:right"  @update:model-value="value => {limitSolanaPriceU = value?.replace?.(/\-|[^\d.]/g, '');watchLimitSolanaPrice()}" />
+        <el-input v-model="limitSolanaPriceU" placeholder="0.0" size="large" clearable class="input-number" input-style="text-align:center"  @update:model-value="value => {limitSolanaPriceU = value?.replace?.(/\-|[^\d.]/g, '');watchLimitSolanaPrice()}" />
         <button class="limit-price-icon" type="button" :disabled="!limitSolanaPriceU" @click.stop="addLimitSolanaPrice">
            <el-icon><Plus /></el-icon>
         </button>
@@ -55,7 +55,7 @@
            <el-icon><Minus /></el-icon>
         </button>
         <span class="text-14px color-[--d-666-l-999]">$</span>
-        <el-input v-model="limitPrice" placeholder="0.0" size="large" clearable class="input-number" input-style="text-align:right"  @update:model-value="value => {limitPrice = value?.replace?.(/\-|[^\d.]/g, '');watchLimitPrice()}" />
+        <el-input v-model="limitPrice" placeholder="0.0" size="large" clearable class="input-number" input-style="text-align:center"  @update:model-value="value => {limitPrice = value?.replace?.(/\-|[^\d.]/g, '');watchLimitPrice()}" />
         <button class="limit-price-icon" type="button" :disabled="!limitPrice" @click.stop="addLimitPrice">
           <el-icon><Plus /></el-icon>
         </button>
@@ -312,7 +312,7 @@ function _quoteLimitSolana() {
   const params = {
     from_token: swapStore.token1?.address,
     to_token: swapStore.token2?.address,
-    amountIn: parseUnits('1', swapStore.token1?.decimals).toString(),
+    amountIn: parseUnits('1', swapStore.token1?.decimals).toFixed(0),
   }
   limitSolanaError.value = ''
   quoteLimitSolana(params).then(res => {
@@ -492,8 +492,8 @@ function watchLimitPrice() {
   Timer6 = setTimeout(() => {
     const limitFromToken = swapStore.activeTab === 0 ? swapStore.token2 : swapStore.token1
     const limitToToken = swapStore.activeTab === 1 ? swapStore.token2 : swapStore.token1
-    const amountIn = parseUnits((swapStore.activeTab === 0 ? limitAmount2.value : limitAmount1.value) || '0', limitFromToken.decimals).toString()
-    const amountOut = parseUnits((swapStore.activeTab === 1 ? limitAmount2.value : limitAmount1.value) || '0', limitToToken.decimals).toString()
+    const amountIn = parseUnits((swapStore.activeTab === 0 ? limitAmount2.value : limitAmount1.value) || '0', limitFromToken.decimals).toFixed(0)
+    const amountOut = parseUnits((swapStore.activeTab === 1 ? limitAmount2.value : limitAmount1.value) || '0', limitToToken.decimals).toFixed(0)
     const from_token = limitFromToken.address
     const to_token = limitToToken.address
     const data = {from_token, to_token, amountIn, amountOut}
@@ -816,10 +816,10 @@ function _submitLimitOrder() {
   const limitToAmount = swapStore.activeTab === 0 ? limitAmount1.value : limitAmount2.value
 
   const fromToken = limitFromToken.address
-  const fromAmount = parseUnits((new BigNumber(limitFromAmount || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${limitFromToken.decimals}})?`))?.[0] || 0, limitFromToken.decimals).toString()
+  const fromAmount = parseUnits((new BigNumber(limitFromAmount || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${limitFromToken.decimals}})?`))?.[0] || 0, limitFromToken.decimals).toFixed(0)
   const toToken = limitToToken.address
-  const toAmount = parseUnits((new BigNumber(limitToAmount || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${limitToToken.decimals}})?`))?.[0] || 0, limitToToken.decimals).toString()
-  const minReturn = parseUnits((new BigNumber(limitToAmount || 0).times(slippage)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${limitToToken.decimals}})?`))?.[0] || 0, limitToToken.decimals).toString()
+  const toAmount = parseUnits((new BigNumber(limitToAmount || 0)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${limitToToken.decimals}})?`))?.[0] || 0, limitToToken.decimals).toFixed(0)
+  const minReturn = parseUnits((new BigNumber(limitToAmount || 0).times(slippage)).toFixed().match(new RegExp(`[0-9]*(\\.[0-9]{0,${limitToToken.decimals}})?`))?.[0] || 0, limitToToken.decimals).toFixed(0)
   const targetToken = swapStore.token1.address
   const targetLimitPrice = limitPrice.value
   loadingConfirmLimit.value = true
@@ -1186,6 +1186,7 @@ onMounted(() => {
     --el-border-color: transparent;
     --el-input-focus-border-color: transparent;
     --el-input-hover-border-color: transparent;
+    --el-input-bg-color: transparent;
     :deep(.el-input__wrapper) {
       padding: 0;
     }
