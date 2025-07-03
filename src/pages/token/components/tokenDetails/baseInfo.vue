@@ -180,8 +180,8 @@ function attention() {
       class="flex justify-between items-center mb-20px"
     >
       <div class="flex items-center">
-        {{ console.log(statistics.wallet_logo) }}
         <UserAvatar
+          v-if="statistics.wallet_logo"
           :wallet_logo="statistics.wallet_logo"
           :chain="tokenDetailStore.tokenInfo!.chain"
           :address="tokenDetailStore.user_address"
