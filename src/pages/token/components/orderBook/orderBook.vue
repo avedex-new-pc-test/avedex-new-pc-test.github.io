@@ -100,6 +100,11 @@
               </div>
             </div>
           </div>
+          <template v-if="filterTableList.length === 0">
+            <div class="h-full flex flex-col items-center justify-center ">
+              <img src="@/assets/images/empty-black.svg" alt="">
+            </div>
+          </template>
         </div>
       </div>
     </div>
