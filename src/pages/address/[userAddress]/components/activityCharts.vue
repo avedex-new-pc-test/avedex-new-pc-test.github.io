@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="flex-between mt-[20px] mb-[10px]">
-      <h2 class="summary-title">{{ $t('walletActivity') }}</h2>
+    <div class="flex justify-between mt-5 mb-2.5">
+      <h2 class="summary-title text-5 leading-5 font-500 text-[var(--d-fff-l-333)]">{{ $t('walletActivity') }}</h2>
     </div>
-    <div v-loading="loading" class="activity">
+    <div v-loading="loading" class="activity relative p-5 rounded-2 h-[220px] bg-[--d-15171C-l-F6F6F6]">
       <template v-if="activity.dataset.source.length <= 0">
         <AveEmpty
           :style="{
@@ -39,7 +39,6 @@
     />
   </div>
 </template>
-
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import dayjs from 'dayjs'
@@ -320,48 +319,35 @@ function onGetEventsAnalysisDetail() {
 </script>
 
 <style scoped lang="scss">
-.summary-title {
-  font-size: 20px;
-  line-height: 20px;
-  font-weight: 500;
-  color: var(--d-fff-l-333);
+/* Only keep styles that can't be expressed with UnoCSS */
+.activity :deep(.el-card) {
+  border: 0 none;
+  background-color: var(--custom-bg-10-color);
+  border-radius: 12px;
 }
 
-.activity {
-  position: relative;
-  padding: 20px;
-  height: 220px;
-  background-color: #15171c;
+.activity :deep(.el-card__header) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .fixed-tooltip {
-    display: none;
-    position: absolute;
-    top: -30px;
-    border-radius: 4px;
-    color: rgb(102, 102, 102);
-    font: 14px / 21px sans-serif;
-    padding: 8px;
-    background-color: rgba(0, 0, 0, 0.8);
-  }
+.activity :deep(.el-card__body) {
+  padding-top: 0;
+}
 
-  :deep(.el-card) {
-    border: 0 none;
-    background-color: var(--custom-bg-10-color);
-    border-radius: 12px;
-  }
+.activity :deep(.tooltip) {
+  pointer-events: auto !important;
+}
 
-  :deep(.el-card__header) {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  :deep(.el-card__body) {
-    padding-top: 0;
-  }
-
-  :deep(.tooltip) {
-    pointer-events: auto !important;
-  }
+.fixed-tooltip {
+  display: none;
+  position: absolute;
+  top: -30px;
+  border-radius: 4px;
+  color: rgb(102, 102, 102);
+  font: 14px / 21px sans-serif;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 </style>

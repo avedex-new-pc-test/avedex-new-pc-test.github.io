@@ -1,28 +1,28 @@
 <template>
   <el-drawer
     v-model="visible"
-    class="pnl bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]"
-    :size="430"
-    header-class="!mb-[20px]"
+    class="bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]"
+    :size="440"
+    header-class="!mb-5"
   >
     <template #header>
-      <span class="pnl-title">{{ $t('pnlDetail') }}</span>
+      <span class="pnl-title text-[var(--d-fff-l-333)]">{{ $t('pnlDetail') }}</span>
     </template>
-    <el-divider style="margin: 0 0 20px; border-top-color: #33353d" />
+    <el-divider class="!m-0 !mb-5 !border-t-[#33353d]" />
     <div>
-      <div class="pnl-row flex-between">
-        <span class="pnl-row-name">{{ $t('Txs') }}</span>
-        <span class="pnl-row-value">{{ eventsDetail.txns }}</span>
+      <div class="pnl-row flex justify-between px-5 text-3.5 leading-5 mb-3">
+        <span class="pnl-row-name text-[#959a9f]">{{ $t('Txs') }}</span>
+        <span class="pnl-row-value text-[var(--d-fff-l-333)]">{{ eventsDetail.txns }}</span>
       </div>
-      <div class="pnl-row flex-between">
-        <span class="pnl-row-name">{{ $t('Vol') }}</span>
-        <span class="pnl-row-value">${{ volume }}</span>
+      <div class="pnl-row flex justify-between px-5 text-3.5 leading-5 mb-3">
+        <span class="pnl-row-name text-[#959a9f]">{{ $t('Vol') }}</span>
+        <span class="pnl-row-value text-[var(--d-fff-l-333)]">${{ volume }}</span>
       </div>
-      <div class="pnl-row flex-between">
-        <span class="pnl-row-name">{{ $t('time') }}</span>
-        <span class="pnl-row-value">{{ time }}</span>
+      <div class="pnl-row flex justify-between px-5 text-3.5 leading-5 mb-3">
+        <span class="pnl-row-name text-[#959a9f]">{{ $t('time') }}</span>
+        <span class="pnl-row-value text-[var(--d-fff-l-333)]">{{ time }}</span>
       </div>
-      <el-divider style="border-top-color: #33353d" class="!mb-[10px]"/>
+      <el-divider class="!border-t-[#33353d] !mb-2.5"/>
       <div
         v-infinite-scroll="onLoad"
         :infinite-scroll-disabled="loading || finished || error"
@@ -45,13 +45,13 @@
           <TokenColumn
             :columnProps="{
               label: $t('walletToken'),
-              width: '142',
+              width: '152',
             }"
           />
-          <el-table-column width="50" :label="$t('type')">
+          <el-table-column width="60" :label="$t('type')">
             <template #default="{ row }">
               <span
-                class="font-12"
+                class="text-3"
                 :style="{
                   color: filterType(row?.flow_type)?.color == 'green' ? upColor : downColor,
                 }"
@@ -62,32 +62,31 @@
           </el-table-column>
           <el-table-column width="60" :label="$t('Vol')">
             <template #default="{ row }">
-              <span class="font-12"> {{ formatNumber(row.volume, 1) }}</span>
+              <span class="text-3"> {{ formatNumber(row.volume, 1) }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('price')">
+          <el-table-column width="70" :label="$t('price')">
             <template #default="{ row }">
-              <span class="font-12">
+              <span class="text-3">
                 ${{ row?.token_price_u > 0 ? formatNumber(row?.token_price_u || 0, 2) : 0 }}
               </span>
             </template>
           </el-table-column>
           <el-table-column :label="$t('time')">
             <template #default="{ row }">
-              <span class="font-12">
+              <span class="text-3">
                 {{ dayjs(row.block_time * 1000).format('YYYY-MM-DD HH:mm:ss') }}
               </span>
             </template>
           </el-table-column>
         </el-table>
-        <div class="mt_20 font-14 tc" :style="{ color: mode === 'light' ? '#666' : '#999' }">
+        <div class="mt-5 text-3.5 text-center text-[--d-666-l-959A9F)]]">
           <span v-if="loading && pageNO > 1">{{ $t('loading') }}</span>
         </div>
       </div>
     </div>
   </el-drawer>
 </template>
-
 <script setup>
 import { upColor, downColor } from '@/utils/constants'
 import dayjs from 'dayjs'
@@ -143,12 +142,6 @@ const emit = defineEmits(['input', 'detailOnLoad'])
 
 const table_ref = ref(null)
 
-const themeStore = useThemeStore()
-
-const mode = computed(() => {
-  return themeStore.isDark ? 'dark' : 'light'
-})
-
 const visible = computed({
   get: () => props.value,
   set: (val) => emit('input', val),
@@ -202,85 +195,3 @@ const onLoad = () => {
   emit('detailOnLoad')
 }
 </script>
-
-<style scoped lang="scss">
-.font-14 {
-  font-size: 14px;
-}
-.font-12 {
-  font-size: 12px;
-}
-.header {
-  padding: 18px 20px;
-}
-.pnl {
-  &-title {
-    color: var(--d-fff-l-333);
-  }
-
-  &-row {
-    padding: 0 20px;
-    font-size: 14px;
-    line-height: 20px;
-    margin-bottom: 12px;
-
-    &-name {
-      color: #959a9f;
-    }
-
-    &-value {
-      color: var(--d-fff-l-333);
-    }
-  }
-
-  &-logos {
-    margin-bottom: 30px;
-    margin-top: 13px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-
-    > img {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-    }
-  }
-}
-
-:deep(.el-drawer__header) {
-  margin-bottom: 10px; /* 修改为你需要的值 */
-}
-:deep(.cell) {
-  font-weight: normal;
-  padding: 0 5px;
-}
-
-.token-address {
-  gap: 4px;
-  font-size: 10px;
-  color: var(--d-666-l-959a9f);
-
-  .iconfont {
-    font-size: 10px;
-  }
-}
-
-.token-info {
-  display: flex;
-  align-items: center;
-
-  .token-symbol {
-    font-size: 14px;
-    margin-right: 3px;
-  }
-
-  .token-icon {
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-  }
-}
-</style>
