@@ -479,5 +479,8 @@
   "totalBuy": "Total Buy",
   "totalSell": "Total Sell",
   "avgBuyPrice": " Avg Buy Price",
-  "avgSellPrice": " Avg Sell Price"
+  "avgSellPrice": " Avg Sell Price",
+  "trades": "Trades",
+  "me": "Me",
+  "orderBook": "Order Book"
 }

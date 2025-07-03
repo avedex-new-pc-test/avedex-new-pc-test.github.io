@@ -1,9 +1,9 @@
 <template>
   <div class="watermark relative" :style="{height: `${kHeight}px`}">
     <div id="tv_chart_container" ref="kline" :style="{ width: '100%', height: '100%' }" />
-  </div>
-  <div id="kline-draggable" class="w-full cursor-row-resize bg-[--d-2D3037-l-F5F5F5] flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
-    <Icon name="custom:drag" class="text-4px color-#959A9F"/>
+    <div id="kline-draggable" class="w-full cursor-row-resize bg-[--d-2D3037-l-F5F5F5] flex items-center justify-center h-6px"  @mousedown.stop.prevent="drag">
+      <Icon name="custom:drag" class="text-4px color-#959A9F"/>
+    </div>
   </div>
 </template>
 

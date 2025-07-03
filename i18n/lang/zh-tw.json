@@ -478,5 +478,8 @@
   "totalBuy": "總買入",
   "totalSell": "總賣出",
   "avgBuyPrice": "買入成本價",
-  "avgSellPrice": "賣出成本價"
+  "avgSellPrice": "賣出成本價",
+  "trades": "交易",
+  "me": "我的",
+  "orderBook": "訂單簿"
 }

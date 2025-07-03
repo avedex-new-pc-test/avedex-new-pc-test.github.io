@@ -1,13 +1,18 @@
 <template>
   <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px w-100%" style="min-height: calc(100vh - 100px);">
     <div class="flex-1 min-w-0">
-      <Top/>
+      <Top />
       <div class="flex gap-4px">
-        <Left class="w-292px flex flex-col flex-shrink-0"/>
+        <Left class="w-292px flex flex-col flex-shrink-0" />
         <div class="flex-1 hide-scrollbar min-w-0">
           <el-scrollbar height="calc(100vh - 152px)">
-            <KLine />
-            <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]"/>
+            <div :class="orderBookVisible ? 'grid grid-cols-[1fr_292px] gap-4px' : 'grid grid-cols-1 gap-4px'">
+              <div>
+                <KLine ref="klineContainer" />
+              </div>
+              <OrderBook v-model="orderBookVisible" :kline-height="klineHeight" />
+            </div>
+            <BelowChartTable class="min-h-300px rounded-4px bg-[--d-000-l-F6F6F6]" />
           </el-scrollbar>
         </div>
       </div>
@@ -17,13 +22,15 @@
 </template>
 
 <script setup lang='ts'>
+import { useElementSize } from '@vueuse/core'
 import { getTokenInfo, getTokenInfoExtra } from '~/api/token'
 import { useTokenStore } from '~/stores/token'
 import Top from './components/top/index.vue'
 import TokenRight from './components/right/index.vue'
-import {Left} from './components/left'
-import {BelowChartTable} from './components/belowChartTable'
+import { Left } from './components/left'
+import { BelowChartTable } from './components/belowChartTable'
 import KLine from '~/pages/token/components/kLine/index.vue'
+import {OrderBook} from './components/orderBook'
 
 definePageMeta({
   name: 'token-id',
@@ -35,6 +42,13 @@ const route = useRoute()
 const tokenStore = useTokenStore()
 const wsStore = useWSStore()
 
+// 订单簿显示状态
+const orderBookVisible = ref(false)
+provide('orderBookVisible', orderBookVisible)
+
+// KLine 高度监听
+const klineContainer = ref()
+const { height: klineHeight } = useElementSize(() => klineContainer.value?.$el)
 
 const documentVisible = shallowRef(true)
 provide('documentVisible', documentVisible)
@@ -88,7 +102,7 @@ onBeforeRouteLeave(() => {
 
 <style>
 .hide-scrollbar {
-  > .el-scrollbar {
+  >.el-scrollbar {
     .el-scrollbar__bar {
       --at-apply: hidden;
     }

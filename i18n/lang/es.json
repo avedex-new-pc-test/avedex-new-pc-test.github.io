@@ -173,5 +173,8 @@
   "noWalletTip": "Por favor conecte su billetera para usar esta función",
   "profit": "Ganancia",
   "totalBuy": "Compra Total",
-  "totalSell": "Venta Total"
+  "totalSell": "Venta Total",
+  "trades": "Operaciones",
+  "me": "Yo",
+  "orderBook": "Libro de Órdenes"
 }

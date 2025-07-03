@@ -286,5 +286,8 @@
   "totalBuy": "Tổng mua",
   "totalSell": "Tổng bán",
   "avgBuyPrice": "Giá mua trung bình",
-  "avgSellPrice": "Giá bán trung bình"
+  "avgSellPrice": "Giá bán trung bình",
+  "trades": "Giao dịch",
+  "me": "Tôi",
+  "orderBook": "Sổ Lệnh"
 }

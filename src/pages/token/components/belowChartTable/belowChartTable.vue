@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Transactions from './transactions/transactions.vue'
 import OneClick from '../right/botSwap/oneClick.vue'
+import OrderBookButton from '../right/botSwap/orderBookButton.vue'
+
 
 const {t} = useI18n()
 const activeTab = shallowRef<keyof typeof components>('Transactions')
@@ -12,6 +14,9 @@ const tabs = shallowRef([
   {name: t('orders'), component: 'Orders' as const},
   {name: t('mySwap'), component: 'MySwap' as const},
 ])
+
+// 订单簿状态 - 通过 provide/inject 与父组件通信
+const orderBookVisible = inject<Ref<boolean>>('orderBookVisible', ref(false))
 const components = {
   Transactions,
   Holders: defineAsyncComponent(() => import('./holders.vue')),
@@ -27,7 +32,7 @@ const Component = computed(() => {
 
 <template>
   <div
-    :class="`bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1
+    :class="`bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex-1 mb
     `">
     <div
       class="flex items-center px-12px gap-20px border-b-1px border-b-solid border-b-[rgba(255,255,255,.03)] mb-12px">
@@ -40,6 +45,8 @@ const Component = computed(() => {
       >
         {{ item.name }}
       </a>
+      <div class="flex-1" />
+      <OrderBookButton v-model="orderBookVisible" />
       <OneClick />
     </div>
     <component :is="Component"/>
