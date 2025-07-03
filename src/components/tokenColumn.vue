@@ -8,20 +8,12 @@
         <div class="icon-token-container relative flex mr-2">
           <TokenImg
             :row="{
-              logo_url: `${s3BaseUrl}${row?.logo_url}`,
+              logo_url: row.logo_url ? `${s3BaseUrl}${row.logo_url}`:'',
               chain: row.chain || row.network,
               symbol: row.symbol,
             }"
             token-class="w-8 h-8"
           />
-          <img
-            v-if="row?.network || row?.chain"
-            :src="`${s3BaseUrl}chain/${row.chain}.png`"
-            alt=""
-            class="icon-symbol absolute max-w-3 w-full h-3 left-4.5 z-10 top-3.25 rounded-full border border-[var(--custom-primary-lighter-0-color)] bg-[var(--custom-primary-lighter-0-color)]"
-            onerror="this.src='/icon-default.png'"
-            srcset=""
-          >
         </div>
         <div>
           <div class="flex items-start">
