@@ -198,7 +198,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
           class="flex items-center color-[--d-666-l-999] text-12px"
         >
           <div
-            v-tooltip="$t('FilterCurrentToken')"
+            v-tooltip="filterToken?$t('CancelFilter'):$t('FilterCurrentToken')"
             class="mr-8px w-12px h-12px rounded-2px bg-[--d-1A1A1A-l-F2F2F2] flex items-center justify-center hover:color-[--d-F5F5F5-l-333] cursor-pointer"
             :class="filterToken===item.token ? 'color-[--d-F5F5F5-l-333]':''"
             @click="filter(filterToken?'':item.token);"
