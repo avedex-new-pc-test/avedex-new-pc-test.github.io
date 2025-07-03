@@ -459,6 +459,7 @@ function tableRowClick(row) {
 
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
+const route = useRoute()
 
 function jumpTokenDetail(row) {
   tokenDetailSStore.$patch({
@@ -478,7 +479,7 @@ function jumpTokenDetail(row) {
       token1_symbol: row.token1_symbol,
       pairAddress: ''
     },
-    user_address: botStore.getWalletAddress(row.chain)
+    user_address: route.params.userAddress
   })
   // store.state.showPopTokenDetails = !store.state.showPopTokenDetails
   // store.state.token_user_address =
