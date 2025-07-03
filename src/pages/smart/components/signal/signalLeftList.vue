@@ -146,7 +146,7 @@ function filterCallback(el: GetSignalV2ListResponse) {
 }
 
 const canDrag = shallowRef(false)
-const width = useStorage('signalLefWid', 546)
+const width = useStorage('signalLefWid', 536)
 
 function drag(e: MouseEvent) {
   let dx = e.clientX

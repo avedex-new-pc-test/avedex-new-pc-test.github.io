@@ -724,6 +724,7 @@
   "smart_money_trade": "个",
   "AlertMC": "警报时市值",
   "FilterCurrentToken": "筛选当前币种",
+  "CancelFilter": "取消筛选",
   "SignalDetail": "信号详情",
   "SignalTopList": "今日潜力榜单",
   "ranking": "排名",
