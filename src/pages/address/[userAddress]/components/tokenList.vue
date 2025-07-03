@@ -26,7 +26,11 @@
         }"
       >
         <template v-if="isSelfAddress" #default="{ row }">
-          <Icon name="bx:bxs-hide" @click.self.stop="hideToken(row)" class="absolute top-0 left-0"/>
+          <Icon
+            name="bx:bxs-hide"
+            @click.self.stop="hideToken(row)"
+            class="absolute top-0 left-0"
+          />
         </template>
       </TokenColumn>
       <el-table-column
@@ -91,7 +95,7 @@
             >{{ $t('balance1') }}
             <Icon
               name="custom:price"
-              :class="`${isVolUSDT?'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
+              :class="`${isVolUSDT ? 'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
               @click.stop.prevent="switch_amount_3 = !switch_amount_3"
             />
           </span>
@@ -104,7 +108,7 @@
               {{
                 row?.main_token_price == 0
                   ? 0
-                    : formatNumber(row?.balance_usd / row?.main_token_price || 0, 2)
+                  : formatNumber(row?.balance_usd / row?.main_token_price || 0, 2)
               }}
               <span class="font-12 color-999 ml-3px">{{ row?.main_token_symbol }}</span>
             </template>
@@ -206,8 +210,7 @@
         <template #default="{ row }">
           <span
             :style="{
-              color:
-                row?.total_purchase == '--' || row?.total_purchase == 0 ? '#959a9f' : upColor,
+              color: row?.total_purchase == '--' || row?.total_purchase == 0 ? '#959a9f' : upColor,
             }"
           >
             <template v-if="row?.total_purchase == 0">0</template>
@@ -303,17 +306,28 @@ const mode = computed(() => {
 const upColor = 'green'
 const downColor = 'red'
 
+const tokenDetailSStore = useTokenDetailsStore()
+const botStore = useBotStore()
 function jumpBalance(row) {
-  // store.state.showPopTokenDetails = !store.state.showPopTokenDetails
-  // store.state.token_user_address = props.address
-  // store.state.token_user = {
-  //   id: row.token + '-' + row.chain,
-  //   symbol: row.symbol,
-  //   logo_url: row.logo_url,
-  //   chain: row.chain,
-  //   address: '',
-  //   remark: '',
-  // }
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: row.token + '-' + row.chain,
+      symbol: row.symbol,
+      logo_url: row.logo_url,
+      chain: row.chain,
+      address: row.token,
+      remark: '',
+    },
+    pairInfo: {
+      target_token: row.token,
+      token0_address: row.token,
+      token0_symbol: row.symbol,
+      token1_symbol: row.token1_symbol,
+      pairAddress: '',
+    },
+    user_address: botStore.getWalletAddress(row.chain),
+  })
 }
 
 function hideToken(row) {
@@ -340,7 +354,7 @@ function hideToken(row) {
       border-top-color: var(--a-text-2-color);
     }
   }
-  tr th{
+  tr th {
     background: #0a0b0d !important;
   }
 

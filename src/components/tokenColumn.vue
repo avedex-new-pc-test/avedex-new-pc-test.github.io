@@ -8,7 +8,7 @@
         @click.stop.prevent="tableRowClick(row)"
       >
         <div class="icon-token-container" style="margin-right: 5px">
-          <UserAvatar
+          <!-- <UserAvatar
             :wallet_logo="{
               name:row?.symbol,
               logo:`${s3BaseUrl}${row?.logo_url}`,
@@ -17,6 +17,14 @@
             :address="address"
             :chain="chain"
             iconSize="32px"
+          /> -->
+          <TokenImg
+            :row="{
+              logo_url: `${s3BaseUrl}${row?.logo_url}`,
+              chain: row.chain || row.network,
+              symbol: row.symbol,
+            }"
+            token-class="w-32px h-32px"
           />
           <img
             v-if="row?.network || row?.chain"
@@ -37,7 +45,7 @@
               class="iconfont icon-danger font-14 ml-[2px]"
             />
           </div>
-          <div class="flex-start" style="min-width: 110%" @click.stop="() => {}">
+          <div class="flex-start mt-2px" style="min-width: 110%" @click.stop="() => {}">
             <span class="token-address">
               {{ row.token.slice(0, 4) + '...' + row.token.slice(-6) }}
               <Icon v-copy="row.token" name="bxs:copy" class="mb--1px text-[10px] clickable"/>
@@ -52,7 +60,7 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import UserAvatar from '@/components/userAvatar.vue'
+// import UserAvatar from '@/components/userAvatar.vue'
 const configStore = useConfigStore()
 const s3BaseUrl = configStore.token_logo_url
 
@@ -68,7 +76,7 @@ const route = useRoute()
 
 const tableRowClick = (row) => {
   router.push({
-    name: 'Token',
+    name: 'token-id',
     params: { id: row.token + '-' + row.chain },
     query: { from: route.name },
   })
@@ -79,7 +87,6 @@ const tableRowClick = (row) => {
 .token-address {
   font-size: 12px;
   color: #666;
-  margin-top: -5px;
   .iconfont {
     font-size: 10px;
   }

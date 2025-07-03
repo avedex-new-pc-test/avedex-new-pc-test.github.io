@@ -20,7 +20,7 @@
           @keyup.enter="getBlackList"
         >
           <template #prefix>
-            <span class="iconfont icon-search1 pointer" @click="getBlackList"/>
+            <span class="iconfont icon-search1 pointer" @click="getBlackList" />
           </template>
         </el-input>
 
@@ -43,14 +43,21 @@
               </div>
             </template>
 
-            <!-- <el-table-column :label="t('name')">
+            <el-table-column :label="t('name')">
               <template #default="{ row }">
-                <div class="align-center gap-8 font-weight-500" @click="jumpToTokenDetail(row)">
-                  <TokenImg :logo_url="row.logo_url" :symbol="row.symbol" :chain="row.chain" />
-                  {{ row.symbol }}
+                <div class="flex items-center" @click="jumpToTokenDetail(row)">
+                  <TokenImg
+                    :row="{
+                      logo_url: `${s3BaseUrl}${row?.logo_url}`,
+                      symbol: row.symbol,
+                      chain: row.chain,
+                    }"
+                    token-class="w-28px h-28px"
+                  />
+                  <div class="ml-6px">{{ row.symbol }}</div>
                 </div>
               </template>
-            </el-table-column> -->
+            </el-table-column>
 
             <el-table-column :min-width="210" :label="t('address')">
               <template #default="{ row }">
@@ -99,13 +106,15 @@
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-// import { TokenImg } from '@/common'
-import { getTokenFilterList, setUserTokenStatus,  } from '@/api/wallet'
+
+import { getTokenFilterList, setUserTokenStatus } from '@/api/wallet'
 
 const { t } = useI18n()
 
 const router = useRouter()
 const route = useRoute()
+const configStore = useConfigStore()
+const s3BaseUrl = configStore.token_logo_url
 
 // Props
 const props = defineProps({
@@ -130,10 +139,6 @@ const result = ref({
   list: [],
   total: 0,
 })
-
-const themeStore = useThemeStore()
-// Computed
-const isLight = computed(() => !themeStore.isDark)
 
 // Methods
 const showBlackList = () => {
@@ -171,7 +176,7 @@ const closeDialog = () => {
 
 const jumpToTokenDetail = ({ token, chain }) => {
   router.push({
-    name: 'Token',
+    name: 'token-id',
     params: { id: `${token}-${chain}` },
     query: { from: route.name },
   })
@@ -208,71 +213,4 @@ const updateRowLoading = (token, isLoading) => {
 </script>
 
 <style lang="scss" scoped>
-.black-list {
-  :deep() {
-    .dialog {
-      background-color: #222;
-
-      .black-list-table {
-        --el-table-header-bg-color: var(--a-bg-7-color);
-        background-color: var(--d-222-l-fff);
-      }
-    }
-
-    .el-dialog__header {
-      display: flex;
-      align-items: center;
-      padding: 0 20px 20px;
-      font-weight: 500;
-      font-size: 24px;
-      line-height: 30px;
-      border-bottom: 1px solid var(--d-333333-l-F2F2F2);
-    }
-
-    .el-dialog__headerbtn {
-      top: 22px;
-    }
-
-    .el-input__wrapper {
-      background: var(--a-bg-7-color);
-      box-shadow: none;
-
-      .el-input__inner {
-        color: var(--a-text-1-color);
-      }
-    }
-
-    .el-table {
-      tr {
-        background-color: var(--d-222-l-fff);
-      }
-    }
-  }
-
-  .dialog-padding {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px 20px 0;
-  }
-
-  .recover-btn {
-    padding-left: 8px;
-    padding-right: 8px;
-    height: 20px;
-    font-size: 12px;
-    border-radius: 2px;
-    background-color: var(--d-333333-l-F2F2F2);
-    border-color: var(--d-333333-l-F2F2F2);
-
-    &:hover {
-      color: var(--d-333333-l-F2F2F2);
-      background-color: var(--d-fff-l-333);
-    }
-  }
-
-  .pagination-box {
-    margin: 0 auto;
-  }
-}
 </style>
