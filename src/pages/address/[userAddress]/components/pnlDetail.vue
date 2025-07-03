@@ -2,7 +2,7 @@
   <el-drawer
     v-model="visible"
     class="bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]"
-    :size="440"
+    :size="480"
     header-class="!mb-5"
   >
     <template #header>
@@ -35,7 +35,7 @@
           :data="eventsDetail.events"
           fit
           style="width: 100%"
-          class="table-container pointer"
+          class="pointer"
           @row-click="tableRowClick"
         >
           <template #empty>
@@ -59,12 +59,12 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column width="60" :label="$t('Vol')">
+          <el-table-column width="75" :label="$t('Vol')">
             <template #default="{ row }">
               <span class="text-3"> {{ formatNumber(row.volume, 1) }}</span>
             </template>
           </el-table-column>
-          <el-table-column width="70" :label="$t('price')">
+          <el-table-column :label="$t('price')">
             <template #default="{ row }">
               <span class="text-3">
                 ${{ row?.token_price_u > 0 ? formatNumber(row?.token_price_u || 0, 2) : 0 }}
