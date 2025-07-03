@@ -202,6 +202,7 @@ async function _getTokenDetailMarks(type: string) {
             class="relative h-200px mb-22px"
           >
             <LineChart
+              v-if="loadingLineChart || lineChartList.length > 0"
               v-loading="loadingLineChart"
               element-loading-background="transparent"
               :active-time="activeTime"
@@ -209,6 +210,7 @@ async function _getTokenDetailMarks(type: string) {
               :show-series="[true,true]"
               :data-list="lineChartList"
             />
+            <AveEmpty class="pt-50px" v-else/>
           </div>
 
           <BaseInfo ref="baseRef"/>

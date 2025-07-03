@@ -89,41 +89,29 @@ const props = defineProps({
   },
 })
 
-function onRowClick(row: any, column: any, event: Event) {
-  if (!token.value) {
-    return
-  }
-  if (SupportFullDataChain.includes(token.value.chain)) {
-    const { symbol, logo_url, chain, token: _token } = token.value
-    const {
-      target_token,
-      token0_address,
-      token0_symbol,
-      token1_symbol,
-      pair: pairAddress,
-    } = pair.value!
-    tokenDetailSStore.$patch({
-      drawerVisible: true,
-      tokenInfo: {
-        id: route.params.id! as string,
-        symbol,
-        logo_url,
-        chain,
-        address: _token,
-        remark: rowData.remark!,
-      },
-      pairInfo: {
-        target_token,
-        token0_address,
-        token0_symbol,
-        token1_symbol,
-        pairAddress,
-      },
-      user_address: rowData.wallet_address,
-    })
-  } else {
-    window.open(formatExplorerUrl(token.value.chain, rowData.transaction, 'tx'))
-  }
+const tokenDetailSStore = useTokenDetailsStore()
+const route = useRoute()
+
+function onRowClick(row) {
+  tokenDetailSStore.$patch({
+    drawerVisible: true,
+    tokenInfo: {
+      id: row.token + '-' + row.chain,
+      symbol: row.symbol,
+      logo_url: row.logo_url,
+      chain: row.chain,
+      address: row.token,
+      remark: '',
+    },
+    pairInfo: {
+      target_token: row.token,
+      token0_address: row.token,
+      token0_symbol: row.symbol,
+      token1_symbol: row.token1_symbol,
+      pairAddress: '',
+    },
+    user_address: route.params.userAddress as string,
+  })
 }
 </script>
 

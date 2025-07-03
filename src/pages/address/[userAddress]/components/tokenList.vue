@@ -307,7 +307,7 @@ const upColor = 'green'
 const downColor = 'red'
 
 const tokenDetailSStore = useTokenDetailsStore()
-const botStore = useBotStore()
+const route = useRoute()
 function jumpBalance(row) {
   tokenDetailSStore.$patch({
     drawerVisible: true,
@@ -326,7 +326,7 @@ function jumpBalance(row) {
       token1_symbol: row.token1_symbol,
       pairAddress: '',
     },
-    user_address: botStore.getWalletAddress(row.chain),
+    user_address: route.params.userAddress,
   })
 }
 

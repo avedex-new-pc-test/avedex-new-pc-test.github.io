@@ -310,8 +310,12 @@ const formatWinProfit = () => {
   })
 
   if (typeof firstNonEmptyIndex !== 'undefined' && typeof lastNonEmptyIndex !== 'undefined') {
-    series[firstNonEmptyIndex].itemStyle.borderRadius = [6, 0, 0, 6]
-    series[lastNonEmptyIndex].itemStyle.borderRadius = [0, 6, 6, 0]
+    if (firstNonEmptyIndex === lastNonEmptyIndex) {
+      series[firstNonEmptyIndex].itemStyle.borderRadius = [6, 6, 6, 6]
+    } else {
+      series[firstNonEmptyIndex].itemStyle.borderRadius = [6, 0, 0, 6]
+      series[lastNonEmptyIndex].itemStyle.borderRadius = [0, 6, 6, 0]
+    }
   }
   winProfit.value.series = series
 }

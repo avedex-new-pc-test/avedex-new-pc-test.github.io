@@ -448,7 +448,6 @@ function goLink(row) {
   window.open(formatExplorerUrl(row.chain, row.tx_hash, 'tx'))
 }
 const tokenDetailSStore = useTokenDetailsStore()
-const botStore = useBotStore()
 const route = useRoute()
 
 function jumpTokenDetail(row) {
@@ -471,19 +470,6 @@ function jumpTokenDetail(row) {
     },
     user_address: route.params.userAddress
   })
-  // store.state.showPopTokenDetails = !store.state.showPopTokenDetails
-  // store.state.token_user_address =
-  //   router.currentRoute.value.params?.userAddress ||
-  //   store.state?.bot?.userInfo?.addresses?.find?.((i) => i?.chain === 'solana')?.address ||
-  //   store.state.currentAccount
-  // store.state.token_user = {
-  //   id: row.token + '-' + row.chain,
-  //   symbol: row.symbol,
-  //   logo_url: row.logo_url,
-  //   chain: row.chain,
-  //   address: '',
-  //   remark: '',
-  // }
 }
 
 function handleCheckAllChange(val) {
