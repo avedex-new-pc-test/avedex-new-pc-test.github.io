@@ -310,5 +310,6 @@
   "push": "Empujar",
   "pauseMonitor": "Monitoreo de pausa",
   "enableMonitor": "Encender el monitoreo",
-  "sniper": "Francotiradores"
+  "sniper": "Francotiradores",
+  "snipers": "Francotiradores"
 }

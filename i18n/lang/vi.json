@@ -489,5 +489,7 @@
   "copyTrade": "Copy giao dịch",
   "pauseMonitor": "Tạm dừng giám sát",
   "enableMonitor": "Bật giám sát",
-  "sniper": "Người săn"
+  "sniper": "Người săn",
+  "ranking": "Xếp hạng",
+  "snipers": "Số lượng săn"
 }

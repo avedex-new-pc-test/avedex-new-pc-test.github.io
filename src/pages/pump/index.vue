@@ -1,6 +1,6 @@
 <template>
-  <div class="pump w-full">
-    <div class="flex-start p-x-17px border border-solid border-1 border-[--d-1A1A1A-l-FFF] py-12px">
+  <div class="pump w-full bg-[--d-1A1A1A-l-FFF]">
+    <div class="flex-start p-x-17px py-12px bg-[--d-111-l-FFF] mb-1px mt-1px">
       <el-popover
         v-model:visible="visible_platforms"
         placement="bottom-start"
@@ -119,7 +119,7 @@
         </button>
       </div>
     </div>
-    <el-row :gutter="pumpSetting.isGutter ? 10 : 2" class="w-full bg-[--d-1A1A1A-l-FFF] pt-1px">
+    <el-row :gutter="pumpSetting.isGutter ? 10 : 2" class="w-full bg-[--d-1A1A1A-l-FFF]">
       <el-col :span="8">
         <div class="pump-item bg-[--d-111-l-FFF]  rounded-4px" style="padding-top: 15px;">
           <div class="pump-item_header flex-start px-10px">
@@ -138,15 +138,15 @@
               ref="inputSearch"
               v-model.trim="pump_query[activeChain].new"
               class="search-input1 px-20px ml-auto mr-4px"
-              clearable
               autofocus
               size="small"
+              :placeholder="$t('search')"
               @input="(val) => pump_query[activeChain].new = val.replace(/\s/g, '')"
             >
               <template #prefix>
                 <Icon
                   class="text-12px text-[var(--d-666-l-999)]"
-                  name="ep:search"
+                  name="custom:search"
                 />
               </template>
               <template #suffix>
@@ -198,15 +198,15 @@
               ref="inputSearch"
               v-model.trim="pump_query[activeChain].soon"
               class="search-input1 px-20px ml-auto mr-4px"
-              clearable
               autofocus
               size="small"
+              :placeholder="$t('search')"
               @input="(val) => pump_query[activeChain].soon = val.replace(/\s/g, '')"
             >
               <template #prefix>
                 <Icon
                   class="text-12px text-[var(--d-666-l-999)]"
-                  name="ep:search"
+                  name="custom:search"
                 />
               </template>
               <template #suffix>
@@ -255,15 +255,15 @@
               ref="inputSearch"
               v-model.trim="pump_query[activeChain].graduated"
               class="search-input1 px-20px ml-auto mr-4px"
-              clearable
               autofocus
               size="small"
+              :placeholder="$t('search')"
               @input="(val) => pump_query[activeChain].graduated = val.replace(/\s/g, '')"
             >
               <template #prefix>
                 <Icon
                   class="text-12px text-[var(--d-666-l-999)]"
-                  name="ep:search"
+                  name="custom:search"
                 />
               </template>
               <template #suffix>
@@ -461,8 +461,8 @@ const list1 = computed(() => {
       (item) =>
         !pumpBlackList.value?.some(
           (i) =>
-            i.address == item.token ||
-            i.address == item.symbol
+            (i.address == item.token ||
+            i.address == item.symbol) && (i.type=='ca' || i.type=='keyword')
         )
     )
   }
@@ -470,6 +470,7 @@ const list1 = computed(() => {
   const pumpFilter_new = localStorage.getItem(
     `pumpFilter_${activeChain.value}_new`
   )
+
   const wsList = getFilterData(list1, pumpFilter_new)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
   if(pump_notice.value[activeChain.value].new && pumpAudio.value && wsList1.length >0) {
@@ -484,16 +485,16 @@ const list2 = computed(() => {
       (item) =>
         !pumpBlackList.value?.some(
           (i) =>
-            i.address == item.token ||
-            i.address == item.symbol
+          ( i.address == item.token ||
+            i.address == item.symbol) && (i.type=='ca' || i.type=='keyword')
         )
     )
   }
   const list1 = (wsTableList.value || [])?.filter(i => i.state === 'soon' && i.chain === activeChain.value)
-  const pumpFilter_new = localStorage.getItem(
+  const pumpFilter_soon = localStorage.getItem(
     `pumpFilter_${activeChain.value}_soon`
   )
-  const wsList = getFilterData(list1, pumpFilter_new)
+  const wsList = getFilterData(list1, pumpFilter_soon)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
   if(pump_notice.value[activeChain.value].soon && pumpAudio.value && wsList1.length >0) {
     pumpAudio.value.play()
@@ -507,16 +508,16 @@ const list3 = computed(() => {
       (item) =>
         !pumpBlackList.value?.some(
           (i) =>
-          i.address == item.token ||
-          i.address == item.symbol
+          (i.address == item.token ||
+          i.address == item.symbol) && (i.type=='ca' || i.type=='keyword')
         )
     )
   }
   const list1 = (wsTableList.value || [])?.filter(i => i.state === 'graduated' && i.chain === activeChain.value)
-  const pumpFilter_new = localStorage.getItem(
+  const pumpFilter_graduated= localStorage.getItem(
     `pumpFilter_${activeChain.value}_graduated`
   )
-  const wsList = getFilterData(list1, pumpFilter_new)
+  const wsList = getFilterData(list1, pumpFilter_graduated)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
   if(pump_notice.value[activeChain.value].graduated && pumpAudio.value && wsList1.length >0) {
     pumpAudio.value.play()
@@ -804,10 +805,14 @@ function getPump(params, isFilter = false) {
   } else {
     params.platforms = undefined
   }
-console.log('-------pump_query[chain][params.category]----------',pump_query.value[chain][params.category])
+  console.log('-------pump_query[chain][params.category]----------',pump_query.value[chain][params.category])
 
   if (pump_query.value[chain][params.category]) {
+    if (isFilter) {
       params.q = params.q + pump_query.value[activeChain.value][params.category]
+    } else {
+      params.q =  pump_query.value[activeChain.value][params.category]
+    }
   }
   if (params.has_sm) {
     params.has_sm = true
@@ -1056,8 +1061,8 @@ function getFilterData(list, conditions) {
       // lbtx: '' ,//买入交易数
       // rbtx: '',
       // lstx: '', //卖出交易数
-      // rstx: '',
-
+  // rstx: '',
+      conditions = JSON.parse(conditions)
       return list?.filter((i) => {
         let pass = true
         if (conditions?.q) {
@@ -1074,10 +1079,10 @@ function getFilterData(list, conditions) {
           pass = pass && i.progress <= Number(conditions.progress_max)
         }
         if (conditions?.lage) {
-          pass = pass && (new Date().getTime()/1000- i.time)/3600 >= Number(conditions.lage)
+          pass = pass && (new Date().getTime()/1000- i.time)/60 >= Number(conditions.lage)
         }
         if (conditions?.rage) {
-          pass = pass && (new Date().getTime()/1000- i.time)/3600  <= Number(conditions.rage)
+          pass = pass && (new Date().getTime()/1000- i.time)/60 <= Number(conditions.rage)
         }
 
         if (conditions?.progress_min) {
@@ -1086,8 +1091,6 @@ function getFilterData(list, conditions) {
         if (conditions?.progress_max) {
           pass = pass && i.progress <= Number(conditions.progress_max)
         }
-
-
 
         if (conditions?.market_cap_min) {
           pass = pass && i.market_cap >= Number(conditions.market_cap_min)
@@ -1199,6 +1202,9 @@ function getFilterData(list, conditions) {
   .el-input__wrapper {
     background-color: transparent;
     box-shadow: none;
+    .el-input__inner::placeholder {
+      color: var(--d-666-l-999);
+    }
   }
 }
 </style>

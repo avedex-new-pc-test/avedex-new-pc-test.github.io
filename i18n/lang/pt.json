@@ -310,5 +310,6 @@
   "push": "Empurrar",
   "pauseMonitor": "PAUSE MONITORIONAMENTO",
   "enableMonitor": "Ligue o monitoramento",
-  "sniper": "Snipers"
+  "sniper": "Snipers",
+  "snipers": "Snipers"
 }

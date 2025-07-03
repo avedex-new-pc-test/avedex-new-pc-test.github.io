@@ -305,5 +305,6 @@
   "push": "İtmek",
   "pauseMonitor": "Duraklat İzleme",
   "enableMonitor": "İzlemeyi aç",
-  "sniper": "Keskin nişancı"
+  "sniper": "Keskin nişancı",
+  "snipers": "Keskin nişancı sayısı"
 }

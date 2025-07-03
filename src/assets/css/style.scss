@@ -147,7 +147,10 @@
 }
 .tooltip-pd-0.el-popper{
   padding: 0;
-  line-height:0
+  line-height:0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--d-111-l-FFF);
 }
 
 .hide-scrollbar {
@@ -174,5 +177,10 @@
 .m-radio-group{
   .el-radio-button .el-radio-button__original-radio:not(:disabled) + .el-radio-button__inner{
     border-color: var(--d-333-l-666);
+  }
+}
+@media (max-width: 1920px) {
+  .filter-height{
+    height: 450px;
   }
 }

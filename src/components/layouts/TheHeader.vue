@@ -25,7 +25,7 @@
     >
       <Icon
         class="text-16px text-[var(--d-666-l-999)]"
-        name="ep:search"
+        name="custom:search"
       />
       <span class="text-12px ml-4px text-[var(--d-666-l-999)]">
         {{ $t('enterAddress/token') }}
@@ -129,7 +129,7 @@ const list = computed(() => {
     { id: 'index', name: t('markets'), src: 'https://ave.ai/' + query ,target:'_blank'},
     { id: 'pump', name: t('pump1'), src: '/pump' },
     { id: 'follow', name: t('follow'), src: '/follow' },
-    { id: 'smart', name: t('smarter2'), src: 'https://ave.ai/smart' + query ,target:'_blank'},
+    {id: 'smart', name: t('smarter2'), src: '/smart'},
     { id: 'assets', name: t('balances'), src: 'https://ave.ai/address' + query ,target:'_blank'},
   ]
 })

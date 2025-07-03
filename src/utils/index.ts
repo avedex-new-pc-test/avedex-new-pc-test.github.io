@@ -843,6 +843,8 @@ export function usePumpTableDataFetching(key = '') {
       rbtx: '',
       lstx: '', //卖出交易数
       rstx: '',
+      has_sm: 0,
+      sm_list: []
     },
     localStorage,
     { mergeDefaults: true }

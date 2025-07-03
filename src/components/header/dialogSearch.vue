@@ -21,7 +21,7 @@
       <template #prefix>
         <Icon
           class="text-20px text-[var(--d-666-l-999)]"
-          name="ep:search"
+          name="custom:search"
         />
       </template>
       <template #suffix>

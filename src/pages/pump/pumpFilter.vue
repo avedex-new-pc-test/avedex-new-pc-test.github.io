@@ -21,23 +21,25 @@
       </template>
 
       <template #default>
-        <span class="text-14px block border pb-10px">筛选配置</span>
+        <span class="text-14px block border pb-10px">{{ $t('FilterSetting') }}</span>
         <el-form
+          ref="formRef"
+          class="hide-scrollbar"
           :model="form"
           label-width="auto"
-          ref="formRef"
           autocomplete="off"
           label-position="left"
           size="small"
           @submit.prevent
         >
+        <el-scrollbar view-class="filter-height">
           <el-form-item
-              label="搜索关键词(最多3个)"
+              :label="$t('searchTip')"
               :prop="form.q"
               class="border pb-20px pt-20px"
             >
             <div class="formItem inputRange">
-              <el-input v-model.trim="form.q" clearable  @input="(val) => form.q = val.replace(/\s/g, '')"/>
+              <el-input v-model.trim="form.q" class="search-input1"  clearable placeholder="abc,abc,abc" @input="(val) => form.q = val.replace(/\s/g, '')" />
             </div>
 
           </el-form-item>
@@ -98,7 +100,7 @@
           <template v-for="(column) in columns" :key="column.label">
             <el-form-item
               v-if="active== column.tab"
-              class="mt-20px px-10px pxy-10px"
+              class="mt-20px px-10px"
               :label="column.tab !== 'media' ?column.label : ''"
               :prop="isArray(column.prop) ? '' : isString(column.prop) ? column.prop : ''"
             >
@@ -157,9 +159,10 @@
               </template>
             </el-form-item>
           </template>
+        </el-scrollbar>
 
           <el-form-item>
-            <div style="display: flex; width: 100%" >
+            <div style="display: flex; width: 100%" class="mt-30px">
               <el-button
                 style="height: 30px; min-width: 60px; --el-button-font-weight: 400; background: var(--d-333333-l-DDDDDD); border: none"
                 :color="isDark? '#222222' : '#f5f5f5'"
@@ -291,9 +294,9 @@ const tableFilter = usePumpTableDataFetching(props.storage)
 const active = shallowRef('tag')
 const tabs = computed(() => {
   return [
-    { name: '链上画像', id: 'tag' },
-    { name: '市场指数', id: 'market' },
-    { name:'社交媒体', id: 'media' }
+    { name: t('chainToken'), id: 'tag' },
+    { name: t('marketIndices'), id: 'market' },
+    { name: t('media'), id: 'media' }
   ]
 })
   watch(visible, (val) => {
@@ -309,11 +312,11 @@ const tabs = computed(() => {
   const columns = computed(() => {
     const c = [
         {
-          label: `代币时长`,
+          label: `${t('tokenDuration')}`,
           prop: ['lage', 'rage'],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
-          suffix: 'h',
+          suffix: 'm',
           tab: 'tag'
         },
         {
@@ -341,11 +344,10 @@ const tabs = computed(() => {
         },
 
         {
-          label: `狙击人数`,
+          label: t('snipers'),
           prop: ['lsnip', 'rsnip'],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
-          suffix: '%',
           tab: 'tag'
         },
         {
@@ -356,21 +358,23 @@ const tabs = computed(() => {
           ],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
+          suffix: 'TXs',
           tab: 'tag'
         },
 
         {
-          label: '老鼠仓',
+          label: t('insiders'),
           prop: [
             'lins',
             'rins'
           ],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
+          suffix: '%',
           tab: 'tag'
         },
         {
-          label: 'KOL交易人数',
+          label: t('KOLTraders'),
           prop: [
             'lkol',
             'rkol'
@@ -380,13 +384,14 @@ const tabs = computed(() => {
           tab: 'tag'
         },
         {
-          label: '跑路概率',
+          label: `${t('runPullRatio')}`,
           prop: [
             'lrug',
             'rrug'
           ],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
+          suffix: '%',
           tab: 'tag'
         },
 
@@ -407,14 +412,14 @@ const tabs = computed(() => {
           tab: 'market'
         },
         {
-          label: `买入交易数`,
+          label: `${t('buyTxs')}`,
           prop: ['lbtx', 'rbtx'],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
           tab: 'market'
         },
         {
-          label: `卖出交易数`,
+          label: `${t('sellTxs')}`,
           prop: ['lstx', 'rstx'],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
@@ -450,7 +455,7 @@ const tabs = computed(() => {
           tab: 'media'
         },
         {
-          label: '至少有一个官方账号',
+          label: `${t('oneOfficial')}`,
           prop: 'has_sm',
           type: 'checkbox',
           tab: 'media'
@@ -474,9 +479,79 @@ const tabs = computed(() => {
 
   const filterNumber = computed(() => {
     const form = tableFilter.value
-    let filterList = Object.keys(form).filter((key) => form[key] !== null && form[key] !== undefined && form[key] !== '' && form[key] !== 0)
-      filterList = Array.from(new Set(filterList.map(key => key.replace(/_min|_max$/g, ''))))
-      filterList = filterList?.filter(i => i !== 'platforms')
+    let filterList = Object.keys(form).filter((key) => form[key] !== null && form[key] !== undefined && form[key] !== '' && form[key] !== 0 && (form[key]?.length >0 || form[key] ==1))
+    filterList = Array.from(new Set(filterList.map(key => key.replace(/_min|_max$/g, ''))))
+    if (filterList.includes('has_sm') && filterList.includes('sm_list')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('sm_list')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+
+    if (filterList.includes('lage') && filterList.includes('rage')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('rage')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+
+    if (filterList.includes('lsnip') && filterList.includes('rsnip')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('rsnip')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+
+    if (filterList.includes('lins') && filterList.includes('rins')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('rins')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+
+    if (filterList.includes('lkol') && filterList.includes('rkol')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('rkol')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+    if (filterList.includes('lbtx') && filterList.includes('lbtx')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('lbtx')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+
+    if (filterList.includes('rbtx') && filterList.includes('rbtx')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('rbtx')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+    if (filterList.includes('lstx') && filterList.includes('rstx')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('rstx')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+
+    if (filterList.includes('lrug') && filterList.includes('rrug')) {
+      // 任选其一删除，这里以删除 'lage' 为例
+      const index = filterList.indexOf('rrug')
+      if (index !== -1) {
+        filterList.splice(index, 1)
+      }
+    }
+
+      filterList = filterList?.filter(i => i !== 'platforms' )
     return filterList?.length || 0
   })
 
@@ -514,7 +589,40 @@ const tabs = computed(() => {
 
   function handleBlur(props: string[], val: string, index: number) {
     const key = props[index] || ''
-    // Handle the input blur event, adjust range values, etc.
+      const defaultRange = props
+        ? [limitData[props[0]], limitData[props[1]]]
+        : []
+      // form.value[a]=Number(b)
+    // form.value[key]=val.replace(/\-|[^\d.]/g, '')
+    if (form.value[key]) {
+        if (defaultRange[0] && Number.parseFloat(form.value[key]) <= defaultRange[0])
+          form.value[key] = defaultRange[0]
+
+
+        if (defaultRange[1] && Number.parseFloat(form.value[key]) >= defaultRange[1])
+          form.value[key] = defaultRange[1]
+          if (index == 1) {
+          if (!form.value[props[0]]) return
+          if (
+            Number.parseFloat(form.value[key]) <=
+            Number.parseFloat(form.value[props[0]])
+          ) {
+            form.value[key] = form.value[props[0]]
+          }
+        } else {
+          if (!form.value[props[1]]) return
+          if (
+            Number.parseFloat(form.value[key]) >=
+            Number.parseFloat(form.value[props[1]])
+          ) {
+            // if (this.form[key] >= this.form[props[1]]) {
+            form.value[key] = form.value[props[1]]
+          }
+        }
+
+
+
+      }
   }
 
   function switchForm(f: any) {
@@ -663,5 +771,12 @@ const tabs = computed(() => {
 }
 :deep().el-checkbox__label{
   color: var(--d-666-l-999);
+}
+:deep().el-input {
+  .el-input__wrapper {
+    .el-input__inner::placeholder {
+      color: var(--d-666-l-999);
+    }
+  }
 }
 </style>

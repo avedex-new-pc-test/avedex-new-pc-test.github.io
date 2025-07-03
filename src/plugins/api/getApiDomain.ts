@@ -98,10 +98,10 @@ export function getBestApiDomain () {
   if (baseUrl === 'https://0ftrfsdb.xyz') {
     return 'https://0ftrfsdb.xyz'
   }
-  const apiDomain = localStorage.getItem('apiDomain')
-  if (apiDomain && isJSON(apiDomain)) {
-    return JSON.parse(apiDomain)?.domain
-  }
+  // const apiDomain = localStorage.getItem('apiDomain')
+  // if (apiDomain && isJSON(apiDomain)) {
+  //   return JSON.parse(apiDomain)?.domain
+  // }
   return baseUrl
 }
 

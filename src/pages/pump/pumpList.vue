@@ -1,7 +1,7 @@
 <template>
-  <div class="mt-20px">
+  <div class="mt-20px mb-30px">
     <el-scrollbar v-loading="loading" height="calc(100vh - 180px)">
-      <ul class="pump-item_list" v-if="tableList?.length >0">
+      <ul v-if="tableList?.length >0" class="pump-item_list">
         <li
           v-for="row in tableList"
           :id="row?.target_token + '-' + row?.chain"
@@ -11,11 +11,11 @@
           @contextmenu="handleContextMenu($event, row)"
           :ref="setBtnRef"
           @mouseenter="showPopover(row)"
-           @mouseleave="showPop = false"
+          @mouseleave="showPop = false"
 
         >
           <div>
-            <Icon  v-if="pumpBlackList?.findIndex(i=> i.address == row.token || i.address == row.symbol) !==-1"  name="custom:key-invisible" class="text-8px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
+            <Icon  v-if="pumpBlackList?.findIndex(i=> (i.address == row.token || i.address == row.symbol) && (i.type=='ca' || i.type=='keyword')) !==-1"  name="custom:key-invisible" class="text-8px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
             <Icon v-else name="custom:key-visible" class="text-8px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
             <div class="token-logo">
               <el-image class="token-icon" :src="getSymbolDefaultIcon(row, pumpSetting.avatar_isCircle=='rect'? 'rect' :'circle')" :style="{ 'border-radius': pumpSetting.avatar_isCircle=='circle' ? '100%' : '0'}">
@@ -74,7 +74,7 @@
                 >
                   <Icon
                     class="text-16px text-[var(--d-999-l-666)]"
-                    name="ep:search"
+                    name="custom:search"
                   />
                 </a>
               </el-tooltip>
@@ -285,7 +285,7 @@
                   </span>
                 </template>
               </template> -->
-              <div v-if="row?.medias?.length > 0 && pumpSetting?.define?.some(i=> i=== 'media')" class="flex text-10px ml-5px">
+              <div v-if="row?.medias?.length > 0 && pumpSetting?.define?.some(i=> i=== 'media')" class="flex text-12px ml-5px">
                 <div
                   v-for="(item, $index) in row?.medias"
                   :key="$index"
@@ -299,7 +299,7 @@
                     >
                       <Icon
                         :name="`custom:${item.icon}`"
-                        class="text-[--d-666-l-999] h-10px"
+                        class="text-[--d-666-l-999] h-12px"
                       />
                     </span>
                     <a
@@ -312,7 +312,7 @@
                     >
                       <Icon
                         :name="`custom:${item.icon}`"
-                        class="text-[--d-666-l-999] h-10px"
+                        class="text-[--d-666-l-999] h-12px"
                       />
                     </a>
                   </template>
@@ -324,8 +324,8 @@
                 target="_blank"
               >
                 <Icon
-                  class="text-[--d-666-l-999] h-16px w-10px"
-                  name="ep:search"
+                  class="text-[--d-666-l-999] h-16px w-12px"
+                  name="custom:search"
                 />
               </a>
               <div
@@ -609,7 +609,7 @@
           </div>
         </li>
       </ul>
-      <AveEmpty class="mt-200px" v-else/>
+      <AveEmpty v-if="tableList?.length ==0 && !loading" class="mt-200px" />
     </el-scrollbar>
     <el-popover
       v-model:visible="showPop"
@@ -671,7 +671,7 @@ const router = useRouter()
 const { token_logo_url } = useConfigStore()
 const globalStore = useGlobalStore()
 const { isDark, pumpSetting, pumpBlackList } = storeToRefs(globalStore)
-
+const { t } = useI18n()
 
 
 
@@ -693,9 +693,13 @@ function tableRowClick(row: { target_token: string, chain: string }) {
   })
 }
 function addOrRemoveBlaclList(item: {token: string},type:  'ca' | 'dev' | 'keyword') {
+  if (pumpBlackList.value?.length > 499) {
+    ElMessage.error(t('blacklistLimit'))
+    return
+  }
   if (pumpBlackList.value) {
     const findIndex = pumpBlackList.value?.findIndex(
-      (i) => item.token == i.address
+      (i) => item.token == i.address && i.type =='ca'
     )
     if (findIndex !== -1) {
       pumpBlackList.value.splice(findIndex, 1)

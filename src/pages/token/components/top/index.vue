@@ -158,12 +158,13 @@
             >
               <Icon
                 class="text-[--d-666-l-999] h-16px w-10px"
-                name="ep:search"
+                name="custom:search"
               />
             </a>
             <a
+              v-if="aiSummary?.headline || aiSummary?.summary"
               v-tooltip.raw="{
-                content: aiSummary?.headline || aiSummary?.summary ? `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>` : `${$t('aiIsAnalyzing')}`,
+                content: `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>`,
                 props:{
                   placement:'top-start'
                 }

@@ -29,7 +29,7 @@
     <template #header>
       <span class="px-20px text-20px"> {{ $t('black') }} </span>
     </template>
-    <div class="content">
+    <div class="content mb-20px">
       <div class="px-20px mt-20px">
         <el-input
           ref="inputSearch"
@@ -43,7 +43,7 @@
           <template #prefix>
             <Icon
               class="text-12px text-[var(--d-F5F5F5-l-999999)]"
-              name="ep:search"
+              name="custom:search"
             />
           </template>
           <template #suffix>
@@ -100,9 +100,9 @@
               @click="switchItem(item)"
               >{{ item.name }}
               <template
-                v-if="list?.filter((i) => i.type == item.value)?.length > 0"
+                v-if="pumpBlackList?.filter((i) => i.type == item.value)?.length > 0"
               >
-                {{ list?.filter((i) => i.type == item.value)?.length }}
+                {{ pumpBlackList?.filter((i) => i.type == item.value)?.length }}
               </template>
             </el-button>
           </div>
@@ -112,7 +112,7 @@
         </div>
 
         <el-scrollbar v-if="list?.length > 0" height="500px" min-height="400px">
-          <ul class="content1">
+          <ul class="content1 mb-20px">
             <li v-for="(row, $index) in list" :key="$index">
               <a href="" class="flex no-underline h-50px" @click.stop.prevent>
                 <div>{{ row.address }}</div>
@@ -132,14 +132,14 @@
           </ul>
         </el-scrollbar>
         <AveEmpty v-else class="mt-150px" />
-        <div class="text-14px count color-[--d-666-l-999]">
-          {{ $t('total') }}<span
-            class="ml-5px"
-            :class="list?.length > 0 ? 'color-[--d-F5F5F5-l-333]' : ''"
-            >{{ list.length }}</span
-          >/500
-        </div>
       </div>
+    </div>
+    <div class="text-14px count color-[--d-666-l-999] bg-[--d-222-l-FFF] w-full px-20px py-20px">
+      {{ $t('total') }}<span
+        class="ml-5px"
+        :class="list?.length > 0 ? 'color-[--d-F5F5F5-l-333]' : ''"
+        >{{ list.length }}</span
+      >/500
     </div>
   </el-dialog>
 </template>
@@ -180,16 +180,31 @@ const typeList = computed(() => {
   ]
 })
 const list = computed(() => {
-  return pumpBlackList.value || []
+  const list = pumpBlackList.value?.slice() || []
+  if (active.value == 'dev') {
+    return list.filter(i => i.type == 'dev') || []
+  } else if (active.value == 'ca') {
+    return list?.filter(i => i.type == 'ca') || []
+  } else if (active.value == 'keyword') {
+    return list?.filter(i => i.type == 'keyword') || []
+  } else {
+    return list || []
+  }
 })
+
 
 function openDialog() {}
 function switchItem(item: { value: string }) {
   active.value = item.value
 }
 function add(item: { value: 'ca' | 'dev' | 'keyword' }) {
+  if (pumpBlackList.value?.length > 499) {
+    ElMessage.error(t('blacklistLimit'))
+    return
+  }
   if (!query.value) {
     ElMessage.error(t('plsSearchTip'))
+    return
   }
   if (item.value == 'ca' || item.value == 'dev') {
     if (
@@ -200,13 +215,12 @@ function add(item: { value: 'ca' | 'dev' | 'keyword' }) {
       return
     }
   }
-
   if (pumpBlackList.value) {
     const findIndex = pumpBlackList.value?.findIndex(
-      (i) => query.value == i.address
+      (i) => query.value == i.address && i.type == item.value
     )
     if (findIndex !== -1) {
-      ElMessage.success(t('blacklistExists'))
+      ElMessage.error(t('blacklistExists'))
     } else {
       pumpBlackList.value.push({ address: query.value, type: item.value })
     }
@@ -214,9 +228,9 @@ function add(item: { value: 'ca' | 'dev' | 'keyword' }) {
     pumpBlackList.value = [{ address: query.value, type: item.value }]
   }
 }
-function restore(item: { address: string }) {
+function restore(item: { address: string, type: string }) {
   const findIndex = pumpBlackList.value?.findIndex(
-    (i) => item.address == i.address
+    (i) => item.address == i.address && i.type == item.type
   )
   if (findIndex !== -1) {
     pumpBlackList.value.splice(findIndex, 1)
@@ -378,7 +392,7 @@ function restore(item: { address: string }) {
 }
 .count {
   position: absolute;
-  left: 20px;
-  bottom: 20px;
+  left: 0;
+  bottom: 0;
 }
 </style>
