@@ -26,7 +26,7 @@
             />
           </div>
           <div class="flex items-start mt-0.5 min-w-[110%]" @click.stop="() => {}">
-            <span class="token-address text-xs text-gray-600">
+            <span class="token-address text-xs color-[--d-666-l-999]">
               {{ row.token.slice(0, 4) + '...' + row.token.slice(-6) }}
               <Icon v-copy="row.token" name="bxs:copy" class="mb--0.25 text-2.5 clickable"/>
             </span>
