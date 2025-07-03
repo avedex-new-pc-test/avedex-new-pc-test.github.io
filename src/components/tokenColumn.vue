@@ -1,7 +1,6 @@
 <template>
   <el-table-column v-bind="columnProps">
     <template #default="{ row }">
-
       <div
         class="token-info table-item_d"
         style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"

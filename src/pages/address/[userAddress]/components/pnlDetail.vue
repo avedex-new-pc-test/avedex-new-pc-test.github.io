@@ -30,18 +30,9 @@
         :infinite-scroll-delay="200"
         :infinite-scroll-immediate="false"
       >
-        <!-- <Loading
-          v-if="pageNO === 1"
-          :active="loading"
-          :can-cancel="false"
-          loader="dots"
-          :opacity="0.2"
-          :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
-          color="var(--custom-primary-color)"
-          :is-full-page="false"
-        /> -->
         <el-table
           ref="table_ref"
+          :load="loading"
           :data="eventsDetail.events"
           fit
           style="width: 100%"
@@ -98,11 +89,9 @@
 </template>
 
 <script setup>
-// import {formatNumber2} from '@/utils/formatNumber'
 import { upColor, downColor } from '@/utils/constants'
 import dayjs from 'dayjs'
 import TokenColumn from '@/components/tokenColumn.vue'
-// import Loading from '@/components/loading/js/Component.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 
 const $t = getGlobalT()

@@ -3,17 +3,7 @@
     <div class="flex-between mt-[20px] mb-[10px]">
       <h2 class="summary-title">{{ $t('walletActivity') }}</h2>
     </div>
-    <div class="activity">
-      <!-- <Loading
-        v-if="loading"
-        v-model:active="loading"
-        :can-cancel="false"
-        loader="dots"
-        :opacity="0.2"
-        :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
-        color="var(--custom-primary-color)"
-        :is-full-page="false"
-      /> -->
+    <div v-loading="loading" class="activity">
       <template v-if="activity.dataset.source.length <= 0">
         <AveEmpty
           :style="{
@@ -327,39 +317,6 @@ function onGetEventsAnalysisDetail() {
       eventsPage.value.loading = false
     })
 }
-
-function createRoundedImage(url, width, height, radius) {
-  return new Promise((resolve, reject) => {
-    const dpr = window.devicePixelRatio || 1
-    const canvas = document.createElement('canvas')
-    canvas.width = width * dpr
-    canvas.height = height * dpr
-    const ctx = canvas.getContext('2d')
-    ctx.scale(dpr, dpr)
-
-    const img = new Image()
-    img.crossOrigin = 'Anonymous'
-    img.onload = function () {
-      ctx.clearRect(0, 0, width, height)
-      ctx.beginPath()
-      ctx.moveTo(radius, 0)
-      ctx.arcTo(width, 0, width, height, radius)
-      ctx.arcTo(width, height, 0, height, radius)
-      ctx.arcTo(0, height, 0, 0, radius)
-      ctx.arcTo(0, 0, width, 0, radius)
-      ctx.closePath()
-      ctx.clip()
-      ctx.drawImage(img, 0, 0, width, height)
-      resolve(canvas.toDataURL())
-    }
-
-    img.onerror = (e) => {
-      reject(e)
-    }
-    img.src = url
-  })
-}
-
 </script>
 
 <style scoped lang="scss">
