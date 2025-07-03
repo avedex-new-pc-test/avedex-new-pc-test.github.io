@@ -103,15 +103,16 @@
           <span class="statistic-right-attention-text">{{ $t('followed') }}</span>
           <span class="statistic-right-attention-cancel hidden text-[#f6465d]">{{ $t('cancelFollowed') }}</span>
         </a>
-        <a v-else class="statistic-right-attention flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[var(--custom-br-1-color)] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]" @click="_addAttention">
+        <a v-else class="statistic-right-attention flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-666-l-CCC] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]" @click="_addAttention">
           <Icon
             name="custom:accountplus"
             class="text-3.5"
           />
           {{ $t('follow') }}
         </a>
-        <a class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[var(--custom-br-1-color)] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
-           @click="shareComponent&&shareComponent.openDialog()"
+        <a
+          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-666-l-CCC] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
+          @click="shareComponent&&shareComponent.openDialog()"
         >
           {{ $t('share') }}
           <Share ref="shareComponent" :statistics="statistics" :address="address" :chain="chain"/>

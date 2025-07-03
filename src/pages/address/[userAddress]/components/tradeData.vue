@@ -1,8 +1,10 @@
 <template>
-  <div class="trade">
-    <div class="trade-pnl">
-      <div class="flex-between mb-[28px]">
-        <span class="trade-pnl-title"> {{ $t('bestToken2') }}（{{ intervalText }}） </span>
+  <div class="trade flex w-[40vw] rounded-2 bg-[--d-15171C-l-F6F6F6]">
+    <div class="trade-pnl min-w-0 flex-1 p-5">
+      <div class="flex justify-between mb-7">
+        <span class="trade-pnl-title text-3.5 leading-4.25 text-center text-[var(--d-666-l-959A9F)]">
+          {{ $t('bestToken2') }}（{{ intervalText }}）
+        </span>
         <ButtonGroup
           v-model:active-value="bestToken.filter"
           :options="bestTokenOptions"
@@ -24,17 +26,22 @@
         :grid="bestToken.grid"
       />
     </div>
-    <div class="trade-pnl">
-      <p class="trade-pnl-title trade-pnl-title2 mb-[28px]">
+    <div class="min-w-0 flex-1 p-5">
+      <p class="mb-7 text-3.5 leading-7 text-left text-[var(--d-666-l-959A9F)]">
         {{ $t('profit3') }}（{{ intervalText }}）
       </p>
-      <ul class="trade-pnl-stage">
-        <li class="trade-pnl-stage-item" v-for="{ label, key, negative } in profitList" :key="key">
-          <span>{{ label }}</span>
+      <ul class="mb-2.5 flex flex-col gap-2.5">
+        <li
+          v-for="{ label, key, negative } in profitList"
+          :key="key"
+          class="flex items-center"
+        >
+          <span class="flex-shrink-0 text-3 font-500 text-[var(--d-fff-l-333)]">{{ label }}</span>
           <span
-            class="flex-1 text-right color-green"
+            class="flex-1 text-right"
             :class="{
-              'color-red': negative,
+              'text-[var(--color-teal-300)]': !negative,
+              'text-[var(--color-red-500)]': negative,
             }"
           >
             {{ txAnalysis.profit_range?.[key] }} ({{ getProfitRatio(key) }})
@@ -57,11 +64,10 @@
 
 <script setup lang="ts">
 import { getTxAnalysis } from '@/api/wallet'
-// import { isNumericString } from "@/utils/utils"
 import ButtonGroup from '@/components/buttonGroup.vue'
 import AveCharts from '@/components/charts/aveCharts.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
-// import { formatNumberS } from '@/utils/formatNumber'
+import { defineEmits, defineProps } from 'vue'
 
 const BestTokenEnum = {
   TOTAL_RATIO: 'total_profit_ratio',
@@ -337,124 +343,18 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.trade {
-  display: flex;
-  width: 40vw;
-  border-radius: 8px;
-  background-color: #15171c;
-  --a-text-1-light-color: #222;
-  --color-teal-300: #12b886;
-  --color-red-500: #f6465d;
-
-  &-pnl {
-    min-width: 0;
-    flex: 1;
-    padding: 20px;
-
-    &-title {
-      margin-top: 0;
-      color: var(--d-666-l-959A9F);
-      font-size: 14px;
-      line-height: 17px;
-      text-align: center;
-    }
-
-    &-title2 {
-      line-height: 28px;
-      text-align: left;
-    }
-
-    &-sum {
-      margin: 16px 0 8px;
-      color: var(--d-fff-l-333);
-      font-size: 24px;
-      line-height: 30px;
-      text-align: center;
-    }
-
-    &-profit {
-      margin-top: 4px;
-      margin-bottom: 16px;
-      font-weight: 500;
-      font-size: 16px;
-      line-height: 20px;
-      text-align: center;
-      color: var(--color-teal-300);
-
-      &-negative {
-        color: var(--color-red-500);
-      }
-    }
-
-    &-percent {
-      font-weight: bold;
-      font-size: 12px;
-      color: var(--color-teal-300);
-    }
-
-    &-progress {
-      margin-bottom: 16px;
-      text-align: center;
-      --el-fill-color-light: rgba(18, 184, 134, 0.1);
-    }
-
-    &-stage {
-      margin-bottom: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-
-      &-item {
-        display: flex;
-        align-items: center;
-
-        &:before {
-          margin-right: 2px;
-          content: '';
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background-color: var(--color-teal-300);
-        }
-
-        > span {
-          flex-shrink: 0;
-          font-weight: 500;
-          font-size: 12px;
-          color: var(--d-fff-l-333);
-        }
-
-        .color-green {
-          color: var(--color-teal-300);
-        }
-
-        .color-red {
-          color: var(--color-red-500);
-        }
-
-        &:nth-child(2):before {
-          opacity: 0.6;
-        }
-
-        &:nth-child(3):before {
-          opacity: 0.3;
-        }
-
-        &:nth-child(4):before {
-          opacity: 0.6;
-          background-color: var(--color-red-500);
-        }
-
-        &:nth-child(5):before {
-          background-color: var(--color-red-500);
-        }
-      }
-    }
-  }
-
-  &-rate {
-    flex: 1;
-    padding: 20px;
-  }
+/* Add any necessary base styles that can't be expressed with UnoCSS here */
+.trade-pnl-stage-item:nth-child(2):before {
+  opacity: 0.6;
+}
+.trade-pnl-stage-item:nth-child(3):before {
+  opacity: 0.3;
+}
+.trade-pnl-stage-item:nth-child(4):before {
+  opacity: 0.6;
+  background-color: var(--color-red-500);
+}
+.trade-pnl-stage-item:nth-child(5):before {
+  background-color: var(--color-red-500);
 }
 </style>
