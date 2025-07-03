@@ -1,10 +1,10 @@
 <template>
-  <div class="statistic p-[20px]">
+  <div class="p-5 flex justify-between mr-5 flex-1 rounded-2 bg-[#15171c]">
     <div>
-      <div class="statistic-avatar">
+      <div class="flex gap-6 mb-5">
         <UserAvatar
           :key="statistics?.wallet_logo?.logo"
-           :wallet_logo="{
+          :wallet_logo="{
             ...(statistics.wallet_logo || {}),
             ...(address === botStore?.evmAddress ? { name: userInfo?.name } : {}),
           }"
@@ -13,10 +13,10 @@
           iconSize="60px"
         />
         <div>
-          <div class="flex-start" style="margin-bottom: 6px">
+          <div class="flex items-start mb-1.5">
             <UserRemark
               :key="address"
-              class="statistic-name"
+              class="gap-1.5 text-6 leading-7.5 text-[var(--a-text-5-color)]"
               :address="address"
               :remark="defaultRemark"
               :chain="chain"
@@ -27,41 +27,40 @@
             />
             <a
               v-if="statistics.x_url"
-              class="statistic-media-right flex-center"
+              class="flex items-center justify-center ml-6 gap-1 px-2 py-1 h-6 rounded text-3 cursor-pointer text-[var(--d-fff-l-18181B)] bg-gradient-to-r from-[rgba(18,184,134,0.1)] to-[rgba(139,79,221,0.1)]"
               :href="statistics.x_url"
               target="_blank"
             >
               <img v-if="isDark" :width="16" src="@/assets/images/connect-x-dark.png" alt="" />
               <img v-else :width="16" src="@/assets/images//connect-x-light.png" alt="" />
-
               {{ formatNumber(statistics.x_followers || 0, 2) }}
             </a>
             <a
               v-else-if="isSelfAddress"
-              class="statistic-media-right flex-center pointer"
+              class="flex items-center justify-center pointer"
               @click="_bindTwitter"
             >
               <i class="iconfont icon-twitter2" />
               {{ $t('connect') }}
             </a>
           </div>
-          <div class="statistic-media">
-            <div v-copy="address" class="statistic-address">
-              <div class="statistic-address-copy flex-center">
+          <div class="flex items-center gap-2">
+            <div v-copy="address" class="statistic-address flex gap-2.5 cursor-pointer">
+              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[var(--d-999-l-18181B)] bg-[#222]">
                 {{ addressText }}
-                <Icon  name="bxs:copy" class="text-[10px] clickable"/>
+                <Icon name="bxs:copy" class="text-2.5 clickable text-[var(--d-999-l-333)]"/>
               </div>
             </div>
-            <div class="statistic-media-left">
-              <i class="iconfont icon-time" />
+            <div class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[var(--d-666-l-959A9F)] bg-[#222]">
+              <i class="iconfont icon-time text-3" />
               <span>{{ wallet_age?.value }}</span>
               <span>{{ wallet_age?.unit }}</span>
             </div>
           </div>
         </div>
       </div>
-      <div class="statistic-money">
-        <strong class="statistic-money-sum">
+      <div class="flex gap-2 items-center mb-5 text-6 leading-7.5 font-bold">
+        <strong class="text-6 leading-7.5 text-[var(--d-fff-l-333)]">
           {{ uSymbol }}{{ total_balance }} {{ main_token_symbol }}
         </strong>
 
@@ -70,11 +69,11 @@
             <ChainToken :chain="chain" :width="16" />
           </template>
           <template #inactive-action>
-            <span class="statistic-money-u">$</span>
+            <span class="flex w-full h-full items-center justify-center text-2.5 rounded-full text-[var(--d-fff-l-333)] bg-[var(--d-666-l-fff)]">$</span>
           </template>
         </el-switch>
       </div>
-      <p class="total-profit">
+      <p class="m-0 mb-2 leading-5 text-3.5 text-[var(--d-666-l-959A9F)]">
         {{ $t("totalPnL") }}（{{ intervalText }}）
         <Number :value="statistics.profit" :signVisible="isUSDT">
           {{ formatNumber(Math.abs((statistics.profit ?? 0) / main_token_price), 2) }} {{ main_token_symbol }}
@@ -83,35 +82,35 @@
           {{ formatNumber(Math.abs((statistics?.profit_ratio ?? 0) * 100), 1) }}%
         </Number>
       </p>
-      <p class="total-profit">
+      <p class="m-0 mb-2 leading-5 text-3.5 text-[var(--d-666-l-959A9F)]">
         {{ $t("winRate2") }}（{{ intervalText }}）
         <Number :value="statistics.win_rate">
           {{ formatNumber(Math.abs(statistics.win_rate ?? 0), 1) }}%
         </Number>
       </p>
     </div>
-    <div class="statistic-right">
-      <div class="statistic-operations">
+    <div class=" flex flex-col justify-between flex-shrink-0">
+      <div class="flex justify-end items-center h-15 gap-2 mb-5">
         <a
           v-if="statistics.is_wallet_address_fav === 1"
-          class="statistic-right-attention statistic-right-attention-followed"
+          class="w-25 px-0 box-border flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[var(--custom-br-1-color)] text-3 leading-4 cursor-pointer rounded text-[var(--d-666-l-999)] bg-[var(--d-0A0B0C-l-E5E5E5)] hover:opacity-100 hover:border-[#f6465d] hover:bg-[rgba(246,70,93,0.1)]"
           @click="_deleteAttention"
         >
           <Icon
             name="custom:accountcheck"
-            class="text-14px"
+            class="text-3.5"
           />
           <span class="statistic-right-attention-text">{{ $t('followed') }}</span>
-          <span class="statistic-right-attention-cancel">{{ $t('cancelFollowed') }}</span>
+          <span class="statistic-right-attention-cancel hidden text-[#f6465d]">{{ $t('cancelFollowed') }}</span>
         </a>
-        <a v-else class="statistic-right-attention" @click="_addAttention">
+        <a v-else class="statistic-right-attention flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[var(--custom-br-1-color)] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]" @click="_addAttention">
           <Icon
             name="custom:accountplus"
-            class="text-14px"
+            class="text-3.5"
           />
           {{ $t('follow') }}
         </a>
-        <a class="statistic-right-share"
+        <a class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[var(--custom-br-1-color)] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
            @click="shareComponent&&shareComponent.openDialog()"
         >
           {{ $t('share') }}
@@ -119,7 +118,7 @@
         </a>
       </div>
       <div>
-        <div class="statistic-pnl" />
+        <div class="statistic-pnl mb-5 text-4 leading-8 text-right" />
         <AveEmpty v-if="pnl.dataset.source.length <= 0" style="height: 80px" :showText="false" />
         <AveCharts
           v-else
@@ -392,9 +391,7 @@ async function onGetWalletBasicInfo() {
     ...statistics.value,
     ...(res || {}),
   }
-  // if (address === botStore?.evmAddress) {
   remark.value = res.remark || userInfo?.name
-  // }
 }
 
 function _deleteAttention() {
@@ -505,291 +502,3 @@ defineExpose({
   mergeStatistics,
 })
 </script>
-
-<style scoped lang="scss">
-.statistic {
-  display: flex;
-  justify-content: space-between;
-  margin-right: 20px;
-  flex: 1;
-  border-radius: 8px;
-  background-color: #15171c;
-
-  .statistic-avatar {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 24px;
-
-    .avatar-img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-    }
-
-    .statistic-name {
-      gap: 6px;
-      font-size: 24px;
-      line-height: 30px;
-      color: var(--a-text-5-color);
-    }
-  }
-
-  .statistic-edit {
-    margin-bottom: 6px;
-    width: fit-content;
-
-    button {
-      position: absolute;
-      right: 5px;
-      top: 5px;
-      font-size: 12px;
-      padding: 2px 5px;
-    }
-
-    ::v-deep(.el-input__wrapper) {
-      background: var(--a-bg-7-color);
-      box-shadow: none;
-
-      &.height_36 {
-        padding: 3px 11px;
-      }
-
-      .el-input__inner {
-        color: var(--a-text-1-color);
-      }
-    }
-  }
-
-  .statistic-media {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    .statistic-media-left {
-      padding: 0 8px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      height: 24px;
-      border-radius: 4px;
-      font-size: 12px;
-      color: var(--d-666-l-959A9F);
-      background-color: #222;
-      .iconfont {
-        font-size: 12px;
-      }
-    }
-  }
-  .statistic-media-right {
-    margin-left: 24px;
-    gap: 4px;
-    padding: 4px 8px;
-    height: 24px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    color: var(--d-fff-l-18181B);
-    background: linear-gradient(
-      90.25deg,
-      rgba(18, 184, 134, 0.1) 0.27%,
-      rgba(139, 79, 221, 0.1) 89.4%
-    );
-    > a {
-      &:hover {
-        color: inherit;
-      }
-    }
-  }
-
-  .statistic-address {
-    display: flex;
-    gap: 10px;
-    cursor: pointer;
-
-    .statistic-address-copy {
-      padding: 7px 8px;
-      height: 24px;
-      border-radius: 4px;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--d-999-l-18181B);
-      background-color: #222;
-
-      > i {
-        font-size: 10px;
-        color: var(--d-999-l-333);
-      }
-    }
-
-    .statistic-tag {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background-color: var(--d-222-l-F4F4F5);
-    }
-  }
-
-  .statistic-money {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    font-size: 24px;
-    line-height: 30px;
-    font-weight: bold;
-
-    .statistic-money-sum {
-      font-size: 24px;
-      line-height: 30px;
-      color: var(--d-fff-l-333);
-    }
-
-    .statistic-money-profit {
-      font-weight: 500;
-      font-size: 16px;
-      line-height: 20px;
-      color: var(--color-teal-300);
-
-      &-negative {
-        color: var(--color-red-500);
-      }
-    }
-
-    ::v-deep(.el-switch) {
-      --el-switch-off-color: #333;
-      --el-switch-on-color: #666;
-    }
-
-    .statistic-money-u {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      border-radius: 50%;
-      color: var(--d-fff-l-333);
-      background-color: var(--d-666-l-fff);
-    }
-  }
-
-  .statistic-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-shrink: 0;
-
-    .statistic-operations {
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: flex-end;
-      height: 60px;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .statistic-right-share,
-    .statistic-right-trade,
-    .statistic-right-attention {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 11px 18px;
-      background: var(--custom-br-1-color);
-      color: var(--d-fff-l-333);
-      font-size: 12px;
-      line-height: 16px;
-      cursor: pointer;
-      border-radius: 4px;
-
-      &:before {
-        font-size: 16px;
-      }
-    }
-
-    .statistic-right-attention {
-      width: 100px;
-      padding-left: 0;
-      padding-right: 0;
-      box-sizing: border-box;
-
-      &-followed {
-        color: var(--d-666-l-999);
-        background: var(--d-0A0B0C-l-E5E5E5);
-
-        .statistic-right-attention-cancel {
-          display: none;
-        }
-
-        &:hover {
-          opacity: 1;
-          border-color: #f6465d;
-          background-color: rgba(246, 70, 93, 0.1);
-
-          > i,
-          .statistic-right-attention-text {
-            display: none;
-          }
-
-          .statistic-right-attention-cancel {
-            color: #f6465d;
-            display: inline;
-          }
-        }
-      }
-    }
-
-    .statistic-right-trade {
-      color: var(--d-333-l-fff);
-      background: var(--d-fff-l-3F80F7);
-    }
-
-    .statistic-pnl {
-      margin-bottom: 20px;
-      font-size: 16px;
-      line-height: 32px;
-      text-align: right;
-
-      > span {
-        color: var(--d-999-l-959A9F);
-      }
-    }
-
-    .statistic-profit {
-      font-size: 12px;
-      line-height: 15px;
-    }
-  }
-
-  .total-profit {
-    margin: 0 0 8px;
-    line-height: 20px;
-    font-size: 14px;
-    color: var(--d-666-l-959A9F);
-    > span {
-      margin-left: 8px;
-    }
-  }
-}
-
-.dialog-wallet {
-  &.el-dialog .el-dialog__title {
-    color: #fff;
-  }
-
-  &.dialog-share .content {
-    .share-card {
-      width: 558px;
-    }
-  }
-}
-</style>
-
-function defineExpose(arg0: { mergeStatistics: (data: any) => void }) {
-  throw new Error('Function not implemented.')
-}
-
-function defineExpose(arg0: { mergeStatistics: (data: any) => void }) {
-  throw new Error('Function not implemented.')
-}
