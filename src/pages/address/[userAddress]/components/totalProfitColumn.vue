@@ -15,9 +15,7 @@
         {{ '-$' + formatNumber(Math.abs(row?.total_profit) || 0, 2, 4, 4) }}
       </span>
       <span
-        class="mini"
-        :class="{ 'color-gray': row?.total_profit_ratio == '--' || row?.total_profit_ratio == 0 }"
-      >
+        class="block text-12px">
         <template v-if="row?.total_profit_ratio == 0">0</template>
         <template v-else-if="row?.total_profit_ratio == '--'">--</template>
         <template v-else>
@@ -44,14 +42,4 @@ const props = defineProps({
 </script>
 
 <style lang="scss" scoped>
-.mini {
-  font-size: 12px;
-  color: #959a9f;
-  display: block;
-}
-
-.color-gray {
-  color: #959a9f;
-  font-size: 12px;
-}
 </style>

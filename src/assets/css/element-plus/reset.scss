@@ -87,6 +87,9 @@
   }
 }
 
+.el-button {
+  --el-font-weight-primary: normal;
+}
 .el-button:disabled.is-disabled, .el-button:disabled.is-disabled:hover {
   // color:  var(--el-button-text-color);
   background-color: var(--el-button-bg-color);

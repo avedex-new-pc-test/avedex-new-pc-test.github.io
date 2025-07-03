@@ -1,6 +1,7 @@
 <template>
-  <div class="black-list">
-    <span class="text-[14px]" @click="showBlackList">
+  <div>
+    <span class="flex items-center text-[14px] cursor-pointer color-[--d-FFF-l-333]" @click="showBlackList">
+      <Icon name="custom:black" class="mr-4px"/>
       {{ t('BlackList') }}
     </span>
     <el-dialog

@@ -1,15 +1,20 @@
 <template>
-  <div class="mt_20">
+  <div>
     <el-table
       ref="table_ref"
-      :data="tableData"
       :key="tableIndex"
+      :data="tableData"
       fit
       style="width: 100%"
-      class="table-container"
+      cell-class-name="color-[--d-F5F5F5-l-222]"
+      row-class-name="cursor-pointer"
+      header-row-class-name="text-12px"
       @row-click="jumpTokenDetail"
     >
-      <AveEmpty />
+      <template #empty>
+        <AveEmpty v-if="!loading && tableData.length===0" class="pt-40px"/>
+        <span v-else/>
+      </template>
       <TokenColumn
         :column-props="{
           label: $t('walletToken'),
@@ -21,38 +26,32 @@
         <template #header>
           <span>{{ $t('time') }}</span>
           <el-popover
+              v-model:visible="filterForm.time.visible"
             placement="bottom"
-            popper-class="chains-table-filter"
             :width="430"
             trigger="click"
-            v-model:visible="filterForm.time.visible"
+              popper-style="--el-text-color-primary:--d-666-l-999"
           >
             <template #reference>
               <Icon
                 name="custom:filter"
-                class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
-                :style="{
-                  color:
-                    trendQuery.block_time_min && trendQuery.block_time_max
-                      ? 'var(--custom-primary-color)'
-                      : '',
-                }"
+                class="cursor-pointer text-10px ml-3px"
+                :class="trendQuery.block_time_min && trendQuery.block_time_max?'color-[--d-999-l-666]':'color-[--d-666-l-999]'"
                 @click.stop
               />
             </template>
             <template #default>
               <div class="filter-box" :class="mode">
-                <div class="text-14px font-400" style="color: var(--a-text-1-color)">
+                <div class="text-14px font-400 color-[--d-F5F5F5-l-333]">
                   {{ $t('filterByDate') }}
                 </div>
-                <div class="flex text-12px mt-10px" style="color: var(--a-text-2-color)">
+                <div class="flex text-12px mt-10px color-[--d-999-l-666]">
                   <span style="flex: 1.2">{{ $t('startTime') }}</span>
                   <span class="flex-1">{{ $t('endTime2') }}</span>
                 </div>
                 <el-date-picker
-                  style="--el-date-editor-width: 100%"
-                  class="mt-5px"
-                  v-model="filterForm.time.value"
+                    v-model="filterForm.time.value"
+                    class="mt-5px w-full [--el-font-size-base:12px]"
                   type="datetimerange"
                   range-separator="To"
                   start-placeholder="yyyy/mm/dd hh:mm"
@@ -63,40 +62,37 @@
                   :teleported="false"
                 />
                 <div class="flex mt-20px">
-                  <div class="flex clickable" style="cursor: pointer">
-                    <span class="filter-title">{{ $t('sort') }}</span>
-                    <div class="chain-icon-sort-container">
-                      <svg
-                        class="icon-svg"
-                        aria-hidden="true"
-                        :class="filterForm.time.sort_dir === 'asc' ? 'active' : ''"
-                        @click.stop="localSortChange('block_time', 'asc')"
-                      >
-                        <use xlink:href="#icon-sort-up"></use>
-                      </svg>
-                      <svg
-                        class="icon-svg"
-                        aria-hidden="true"
-                        :class="filterForm.time.sort_dir === 'desc' ? 'active' : ''"
-                        @click.stop="localSortChange('block_time', 'desc')"
-                      >
-                        <use xlink:href="#icon-sort-down"></use>
-                      </svg>
+                  <div class="flex items-center cursor-pointer">
+                    <span>{{ $t('sort') }}</span>
+                    <div class="flex flex-col items-center justify-center ml-5px">
+                      <i
+                          :class="`w-0 h-0 border-solid border-4px border-transparent cursor-pointer ${
+                            filterForm.time.sort_dir === 'asc' ? 'border-b-[--b-F5F5F5-l-333]'
+                              : 'border-b-[--d-666-l-999]'
+                          }
+                          `"
+                          @click.stop="localSortChange('block_time', 'asc')"
+                      />
+                      <i
+                          :class="`w-0 h-0 border-solid border-4px border-transparent mt-3px cursor-pointer ${
+                             filterForm.time.sort_dir === 'desc' ? 'border-t-[--d-F5F5F5-l-333]'
+                              : 'border-t-[--d-666-l-999]'
+                          }
+                            `"
+                          @click.stop="localSortChange('block_time', 'desc')"
+                      />
                     </div>
                   </div>
                   <el-button
-                    size="default"
-                    style="height: 30px; margin-left: auto; --el-button-font-weight: 400"
-                    :color="isLight ? '#f2f2f2' : '#333333'"
+                      class="h-30px m-l-auto min-w-70px"
+                      :color="themeStore.isDark ? '#333':'#F2F2F2'"
                     @click.stop="resetTime"
                   >
                     {{ $t('reset') }}
                   </el-button>
                   <el-button
-                    size="default"
                     type="primary"
-                    :color="isLight ? '#222222' : '#f5f5f5'"
-                    style="height: 30px; min-width: 70px; --el-button-font-weight: 400"
+                    class="h-30px m-l-auto min-w-70px"
                     @click.stop="confirmTime"
                   >
                     {{ $t('confirm') }}
@@ -107,8 +103,8 @@
           </el-popover>
         </template>
         <template #default="{ row }">
-          <span class="grey">
-            {{ dayjs(row.block_time * 1000).format('YYYY-MM-DD HH:mm:ss') }}
+          <span class="color-[--d-666-l-999]">
+            {{ formatDate(row.block_time, 'YYYY-MM-DD HH:mm:ss') }}
           </span>
         </template>
       </el-table-column>
@@ -116,21 +112,20 @@
         <template #header>
           <span>{{ $t('type') }}</span>
           <el-popover
+              v-model:visible="filterForm.type.visible"
             placement="bottom"
-            popper-class="chains-table-filter"
             :width="207"
             trigger="click"
-            v-model:visible="filterForm.type.visible"
           >
             <template #reference>
               <Icon
                 name="custom:filter"
-                :style="{ color: !trendQuery.checkAll ? 'var(--custom-primary-color)' : '' }"
-                class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
+                class="cursor-pointer text-10px ml-3px"
+                :class="!trendQuery.checkAll ? 'color-[--d-999-l-666]':'color-[--d-666-l-999]'"
               />
             </template>
             <template #default>
-              <div class="checkbox-container">
+              <div>
                 <el-checkbox
                   v-model="filterForm.type.checkAll"
                   :indeterminate="filterForm.type.isIndeterminate"
@@ -139,8 +134,8 @@
                   {{ $t('all') }}
                 </el-checkbox>
                 <el-checkbox-group
-                  class="checkbox-vertical"
-                  v-model="filterForm.type.checkedTrend"
+                    v-model="filterForm.type.checkedTrend"
+                    class="flex flex-col"
                   @change="handleCheckedChange"
                 >
                   <el-checkbox
@@ -153,19 +148,19 @@
                   </el-checkbox>
                 </el-checkbox-group>
               </div>
-              <div class="mt-20 flex">
+              <div class="mt-20px flex justify-between">
                 <el-button
                   size="default"
-                  style="height: 30px; min-width: 70px; --el-button-font-weight: 400"
-                  :color="isLight ? '#f2f2f2' : '#333333'"
+                  class="h-30px flex-1"
+                  :color="themeStore.isDark ? '#333':'#F2F2F2'"
                   @click.stop="filterForm.type.visible = false"
                 >
                   {{ $t('cancel') }}
                 </el-button>
                 <el-button
                   size="default"
-                  :color="isLight ? '#222222' : '#f5f5f5'"
-                  style="height: 30px; min-width: 70px; --el-button-font-weight: 400"
+                  type="primary"
+                  class="h-30px flex-1"
                   @click.stop="confirmTypeFilter"
                 >
                   {{ $t('confirm') }}
@@ -187,7 +182,7 @@
 
       <el-table-column align="right" :label="$t('price')">
         <template #default="{ row }">
-          <span class="grey">
+          <span class="color-[--d-666-l-999]">
             ${{ row?.token_price_u > 0 ? formatNumber(row?.token_price_u || 0, 2) : 0 }}
           </span>
         </template>
@@ -195,19 +190,14 @@
       <el-table-column align="right" :label="$t('amount')">
         <template #default="{ row }">
           <div
-            style="
-              display: flex;
-              align-items: end;
-              justify-content: flex-end;
-              flex-direction: column;
-            "
-            v-if="row?.event_type === 'ADD_LIQUIDITY' || row?.event_type === 'REMOVE_LIQUIDITY'"
+              v-if="row?.event_type === 'ADD_LIQUIDITY' || row?.event_type === 'REMOVE_LIQUIDITY'"
+              class="flex flex-col items-end justify-end"
           >
-            <span class="text-10px ellipsis">
+            <span class="text-10px max-w-100px whitespace-nowrap text-ellipsis overflow-hidden">
               {{ row?.amount > 0 ? formatNumber(row?.amount || 0, 2) : 0 }}
               <span class="color-#959A9F">{{ row?.symbol }}</span>
             </span>
-            <span class="block text-10px ellipsis">
+            <span class="text-10px max-w-100px whitespace-nowrap text-ellipsis overflow-hidden">
               {{ row?.amount > 0 ? formatNumber(row?.token1_amount || 0, 2) : 0 }}
               <span class="color-#959A9F">{{ row?.token1_symbol }}</span>
             </span>
@@ -221,54 +211,43 @@
         <template #header>
           <span>{{ $t('value') }}</span>
           <el-popover
+              v-model:visible="filterForm.price.visible"
             placement="bottom"
-            popper-class="chains-table-filter"
             :width="300"
             trigger="click"
-            v-model:visible="filterForm.price.visible"
           >
             <template #reference>
               <Icon
                 name="custom:filter"
-                class="color-[--d-666-l-999] cursor-pointer text-10px ml-3px"
-                :style="{
-                  color:
-                    trendQuery.volume_min && trendQuery.volume_max
-                      ? 'var(--custom-primary-color)'
-                      : '',
-                }"
+                class="cursor-pointer text-10px ml-3px"
+                :class="trendQuery.volume_min && trendQuery.volume_max?'color-[--d-999-l-666]':'color-[--d-666-l-999]'"
               />
             </template>
             <template #default>
-              <span class="text-12px font-400 filter-title">{{ $t('value') }}($)</span>
-              <div class="flex mt-10">
+              <span class="text-12px font-400">{{ $t('value') }}($)</span>
+              <div class="flex items-center mt-10px">
                 <el-input
-                  class="height_36"
                   v-model.trim.number="filterForm.price.volume_min"
                   :placeholder="$t('minor')"
                   clearable
                 />
-                <span class="ml-10 mr-10">~</span>
+                <span class="ml-10px mr-10px">~</span>
                 <el-input
-                  class="height_36"
                   v-model.trim.number="filterForm.price.volume_max"
                   :placeholder="$t('max1')"
                   clearable
                 />
               </div>
-              <div class="mt-10">
+              <div class="mt-10px flex">
                 <el-button
-                  style="height: 30px; min-width: 60px; --el-button-font-weight: 400"
-                  :color="isLight ? '#f2f2f2' : '#333333'"
-                  class="flex-1"
+                    :color="themeStore.isDark ? '#333':'#F2F2F2'"
+                    class="h-30px m-l-auto min-w-70px flex-1"
                   @click="resetPrice"
                   >{{ $t('reset') }}
                 </el-button>
                 <el-button
-                  :color="isLight ? '#222222' : '#f5f5f5'"
-                  style="height: 30px; min-width: 60px; --el-button-font-weight: 400"
+                    class="h-30px m-l-auto min-w-70px flex-1"
                   type="primary"
-                  class="flex-1"
                   @click="confirmPrice"
                   >{{ $t('confirm') }}
                 </el-button>
@@ -553,365 +532,4 @@ function localSortChange(sort, sort_dir) {
 }
 </script>
 <style lang="scss" scoped>
-:deep(.el-table) {
-  overflow: initial;
-  min-height: calc(100vh - 220px);
-
-  .el-table__header-wrapper {
-    position: sticky;
-    top: 0px;
-    z-index: 3;
-  }
-
-  .sort-caret {
-    &.ascending {
-      border-bottom-color: var(--a-text-2-color);
-    }
-
-    &.descending {
-      border-top-color: var(--a-text-2-color);
-    }
-  }
-
-  tr th {
-    background: #0a0b0d !important;
-  }
-
-  tr {
-    cursor: pointer;
-
-    &:hover {
-      td {
-        &.el-table__cell {
-          // background-color: var(--custom-td-hover-2-color);
-        }
-      }
-    }
-  }
-
-  .cell {
-    line-height: 15px;
-    padding: 0 3px;
-  }
-
-  th {
-    // background: var(--custom-primary-lighter-2-color);
-    border-bottom: none;
-
-    &.el-table__cell.is-leaf {
-      border-bottom: none;
-
-      &.descending {
-        .cell {
-          color: var(--custom-primary-color);
-
-          .sort-caret {
-            &.descending {
-              border-top-color: var(--custom-primary-color);
-            }
-          }
-        }
-      }
-
-      &.ascending {
-        .cell {
-          color: var(--custom-primary-color);
-
-          .sort-caret {
-            &.ascending {
-              border-bottom-color: var(--custom-primary-color);
-            }
-          }
-        }
-      }
-    }
-
-    .cell {
-      font-weight: 400;
-      font-size: 12px;
-    }
-  }
-
-  td {
-    &.el-table__cell {
-      // padding: 6px 0;
-      // border-bottom: 1px solid var(--custom-td-border-1-color);
-      // border-right: 1px solid var(--custom-td-border-1-color);
-      font-weight: 400;
-    }
-
-    .cell {
-      // color: var(--custom-font-1-color);
-      overflow: visible;
-    }
-  }
-}
-
-.icon-token-container {
-  margin-right: 4px;
-
-  .icon-symbol {
-    left: 20px;
-    top: 20px;
-  }
-}
-
-.plus {
-  font-size: 20px;
-  line-height: 20px;
-  display: block;
-  height: 20px;
-  margin-right: 10px;
-}
-
-.progress {
-  margin-left: 3px;
-
-  :deep().el-progress__text {
-    min-width: 12px;
-  }
-
-  .icon-suo1 {
-    width: 8px;
-    height: 8px;
-  }
-}
-
-.icon-svg1 {
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-}
-
-.token-info {
-  display: flex;
-  align-items: center;
-
-  .token-symbol {
-    // white-space: nowrap;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
-    font-size: 14px;
-    margin-right: 3px;
-  }
-
-  .token-network {
-    border: 1px solid #878fbc;
-    border-radius: 10px;
-    font-size: 12px;
-    color: #878fbc;
-    padding: 2px 5px;
-    margin-left: 9px;
-  }
-
-  .token-icon {
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-  }
-}
-
-.table-empty {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 80px 0;
-  min-height: calc(100vh - 750px);
-}
-
-.icon-svg {
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--custom-primary-color);
-  border-radius: 100%;
-  width: 20px;
-  vertical-align: middle;
-
-  &.icon-huoyan {
-    width: 12px;
-    font-size: 12px;
-  }
-
-  &.icon-new {
-    font-size: 12px;
-  }
-
-  &.icon-xiala {
-    width: 8px;
-    height: 8px;
-    margin-left: 5px;
-  }
-}
-
-.icon-shaixuan {
-  &:hover {
-    cursor: pointer;
-    color: var(--custom-primary-color);
-  }
-}
-
-.filter-box {
-  color: var(--custom-text-1-color);
-
-  .filter-title {
-    font-size: 12px;
-    color: var(--a-text-2-color);
-  }
-
-  // :deep() .el-input__wrapper {
-  //   .el-input__inner{
-  //     color: var(--custom-font-1-color);
-  //   }
-  // }
-  :deep() .el-slider__runway {
-    --el-slider-button-size: 14px;
-
-    .el-slider__marks {
-      .el-slider__marks-text:nth-child(2) {
-        transform: translateX(0) !important;
-        right: -6px !important;
-        left: auto !important;
-      }
-    }
-  }
-
-  .chain-icon-sort-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-left: 5px;
-
-    .icon-svg {
-      font-size: 10px;
-      padding: 0;
-      cursor: pointer;
-      color: var(--a-text-2-color);
-      width: 12px;
-      height: 10px;
-
-      & + .icon-svg {
-        margin-top: 1px;
-      }
-
-      &.active {
-        color: var(--custom-primary-color);
-      }
-    }
-  }
-
-  .icon-filter-sort {
-    font-size: 12px;
-    opacity: 0.3;
-
-    &.active {
-      opacity: 1;
-    }
-
-    &:hover:not(.active) {
-      opacity: 0.6;
-    }
-
-    cursor: pointer;
-  }
-}
-
-.popper-gold {
-  .title {
-    color: var(--a-text-2-color);
-  }
-
-  ul {
-    li {
-      a {
-        color: var(--custom-text-1-color);
-        padding: 6px 15px;
-        display: flex;
-
-        .icon-bianzu,
-        .icon-dexs1 {
-          color: var(--a-text-1-color);
-        }
-
-        &.disabled {
-          color: var(--a-text-2-color);
-
-          &:hover {
-            cursor: not-allowed;
-          }
-        }
-
-        &:hover {
-          opacity: 1;
-          text-decoration: none;
-          background: var(--custom-btn-2-color);
-        }
-      }
-    }
-  }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 15px 0;
-  }
-
-  .tag-left {
-    margin-left: 3px;
-    width: 12px;
-    height: 12px;
-  }
-
-  .tag-left2 {
-    margin-left: 3px;
-    width: 19px;
-    height: 17px;
-  }
-}
-
-.icon-danger {
-  color: red;
-}
-
-.color-gray {
-  color: #959a9f;
-  font-size: 12px;
-}
-
-.mini {
-  font-size: 12px;
-  color: #959a9f;
-  display: block;
-}
-
-.token-address {
-  gap: 4px;
-  font-size: 10px;
-  color: var(--d-666-l-959a9f);
-
-  .iconfont {
-    font-size: 10px;
-  }
-}
-
-.checkbox-container {
-  > a {
-    cursor: pointer;
-
-    &:hover {
-      color: #999;
-    }
-  }
-}
-
-.checkbox-vertical {
-  display: flex;
-  flex-direction: column; /* 垂直排列 */
-}
-
-.grey {
-  color: var(--d-666-l-959a9f);
-}
 </style>

@@ -9,7 +9,8 @@
       }"
       fit
       style="width: 100%"
-      class="table-container"
+      header-row-class-name="text-12px"
+      row-class-name="cursor-pointer color-[--d-F5F5F5-l-333]"
       @row-click="onRowClick"
       @sort-change="handleSortChange"
     >
@@ -118,13 +119,6 @@ function onRowClick(row) {
 <style scoped lang="scss">
 :deep(.el-progress-bar__outer) {
   background-color: var(--el-border-color-lighter);
-}
-
-:deep(.el-table) {
-  overflow: initial;
-  tr th {
-    background: #0a0b0d !important;
-  }
 }
 .table-empty {
   display: flex;

@@ -1,22 +1,22 @@
 <template>
-  <div class="statistics-table">
-    <div class="flex-between border-bottom">
-      <div class="tabs">
+  <div>
+    <div class="flex justify-between border-b-1px border-b-solid border-b-[--d-222-l-F2F2F2] mb-20px">
+      <div class="flex items-center pl-10px gap-24px">
         <a
           v-for="(item, index) in tabs"
           :key="index"
-          :class="{ active: activeTab === item.id }"
+          :class="`text-14px pb-10px cursor-pointer flex items-center decoration-none lh-20px text-center color-[--d-666-l-999] b-b-solid b-b-3px ${activeTab === item.id ? 'color-[--d-F5F5F5-l-222] b-b-[--d-F5F5F5-l-333]' : 'b-b-transparent'}`"
           @click.stop.prevent="switchTab(item)"
         >
           {{ item.title }}
         </a>
       </div>
-      <div v-if="isToken" class="checkbox-container align-center flex items-center gap-10">
+      <div v-if="isToken" class="flex items-center gap-10px">
         <el-checkbox
           v-model="conditions_wallet.hide_sold"
+          class="[&&]:mr-0"
           :false-value="0"
           :true-value="1"
-          label="Option 1"
           @change="onConditionChange('hide_sold')"
         >
           {{ $t('hide_sell') }}
@@ -25,7 +25,6 @@
           v-model="conditions_wallet.hide_small"
           :false-value="0"
           :true-value="1"
-          label="Option 2"
           @change="onConditionChange('hide_small')"
         >
           {{ $t('hideSmallAssets1') + '<1USD' }}
@@ -37,36 +36,25 @@
           @addWhite="refreshTokenList"
         />
       </div>
-      <div v-else-if="isTrend" class="checkbox-container">
+      <div v-else-if="isTrend">
         <el-checkbox
           v-model="trendQuery.hideNative"
           :false-value="0"
           :true-value="1"
-          label="Option 2"
         >
           {{ $t('hideNative') }}
         </el-checkbox>
       </div>
     </div>
-    <div ref="listArea" class="mb-32px">
+    <div ref="listArea">
       <div
         v-infinite-scroll="onLoad"
         :infinite-scroll-delay="200"
         :infinite-scroll-disabled="tableData.loading || tableData.finished || tableData.error"
         :infinite-scroll-immediate="false"
-        class="tableBox card relative"
+        class="relative min-h-500px"
         infinite-scroll-distance="300"
       >
-        <!-- <loading
-          v-if="tableData.pageNO === 1"
-          v-model:active="tableData.loading"
-          :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
-          :can-cancel="false"
-          :is-full-page="false"
-          :opacity="0.2"
-          color="var(--custom-primary-color)"
-          loader="dots"
-        /> -->
         <TokenList
           v-if="isToken"
           :conditions="conditions_wallet"
@@ -196,16 +184,8 @@ const filterTableList = computed(() => {
         !(i.event_type === 'swap_buy' || i.event_type === 'swap_sell')
     )
     if (trendQuery.value.hideNative === 1) {
-      const unSupport_arr = [
-        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-        'So11111111111111111111111111111111111111112',
-        'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-        'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-        'Am5hwEp5VBqXoeE5pRU47RTW6gYeFQ6ahi1j4ZVVeL2V',
-        '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      ]
       trendList = trendList.filter(
-        (i) => unSupport_arr.findIndex((y) => y?.toLowerCase() === i.token?.toLowerCase()) === -1
+        (i) => NATIVE_TOKENS.findIndex((y) => y?.toLowerCase() === i.token?.toLowerCase()) === -1
       )
     }
     return trendList
@@ -449,183 +429,4 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.border-bottom {
-  border-bottom: 1px solid var(--custom-primary-lighter-14-color);
-}
-
-.checkbox-container {
-  > a {
-    cursor: pointer;
-
-    &:hover {
-      color: #999;
-    }
-  }
-  :deep() {
-    .el-checkbox {
-      margin-right: 0;
-    }
-  }
-}
-
-.tabs {
-  padding: 10px 5px;
-  font-size: 16px;
-
-  > a {
-    font-size: 14px;
-    color: #999;
-    text-align: center;
-    font-weight: 500;
-    line-height: 16px;
-    text-decoration: none;
-    border-bottom: 3px solid transparent;
-    padding-bottom: 10px;
-    margin-right: 30px;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    &.active {
-      color: var(--a-text-1-color);
-      border-bottom: 3px solid var(--a-text-1-color);
-    }
-  }
-}
-
-.tableBox {
-  :deep(.el-table) {
-    --el-table-tr-bg-color: var(--custom-bg-1-color);
-    --el-table-bg-color: var(--custom-bg-1-color);
-    --el-table-text-color: var(--a-text-1-color);
-    --el-table-header-bg-color: var(--a-btn-bg-1-color);
-    --el-fill-color-lighter: var(--custom-bg-1-color);
-    --el-table-header-text-color: var(--a-text-2-color);
-    --el-table-border-color: var(--a-br-1-color);
-    --el-table-row-hover-bg-color: var(--a-table-hover-bg-color);
-    background: var(--custom-bg-1-color);
-    --el-bg-color: var(--custom-bg-1-color);
-    overflow: initial;
-    min-height: calc(100vh - 600px);
-    font-size: 14px;
-    .el-scrollbar__wrap {
-      overflow-y: hidden;
-    }
-    .sort-caret {
-      &.ascending {
-        border-bottom-color: var(--custom-font-8-color);
-      }
-
-      &.descending {
-        border-top-color: var(--custom-font-8-color);
-      }
-    }
-
-    a {
-      color: currentColor;
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 1;
-    }
-
-    tr {
-      cursor: pointer;
-    }
-
-    .cell {
-      line-height: 17px;
-      padding: 0 1px;
-    }
-
-    th {
-      padding: 6px 5px 6px 5px;
-      border-bottom: none !important;
-      height: 40px;
-
-      &.el-table__cell.is-leaf {
-        border-bottom: none;
-
-        &.descending {
-          .cell {
-            color: var(--el-table-header-text-color);
-
-            .sort-caret {
-              &.descending {
-                border-top-color: var(--a-btn-bg-2-color);
-              }
-            }
-          }
-        }
-
-        &.ascending {
-          .cell {
-            color: var(--el-table-header-text-color);
-
-            .sort-caret {
-              &.ascending {
-                border-bottom-color: var(--a-btn-bg-2-color);
-              }
-            }
-          }
-        }
-      }
-
-      .cell {
-        font-weight: 400;
-        font-size: 12px;
-      }
-    }
-
-    td {
-      height: 60px;
-
-      &.el-table__cell {
-        z-index: 0;
-        padding: 6px 5px 6px 5px;
-        border-bottom: 0.5px solid var(--custom-br-1-color);
-        font-weight: 400;
-      }
-    }
-
-    th:first-child,
-    td:first-child {
-      padding-left: 20px;
-    }
-
-    th:last-child,
-    td:last-child {
-      padding-right: 20px;
-    }
-
-    .token-symbol {
-      color: var(--a-text-1-color);
-    }
-
-    .trade {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-
-      a {
-        background: var(--a-bg-4-color);
-        padding: 5px 7px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        color: var(--a-text-1-color);
-
-        .icon-svg {
-          margin-right: 3px;
-        }
-
-        &:hover {
-          opacity: 0.5;
-        }
-      }
-    }
-  }
-}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-[0px]">
+  <div>
     <el-table
       :key="tableIndex"
       ref="table_ref"
@@ -8,13 +8,18 @@
         prop: conditions.sort,
         order: conditions.sort_dir ? conditions.sort_dir + 'ending' : null,
       }"
-      class="table-container"
       fit
       style="width: 100%"
+      header-row-class-name="text-12px"
+      cell-class-name="color-#848E9C"
+      row-class-name="cursor-pointer"
       @row-click="jumpBalance"
       @sort-change="handleSortChange"
     >
-      <AveEmpty v-if="0" style="height: 80px" :showText="false" />
+      <template #empty>
+        <AveEmpty v-if="!loading && tableData.length===0" class="pt-40px"/>
+        <span v-else/>
+      </template>
       <TokenColumn
         :column-props="{
           label: $t('recentlyTrade'),
@@ -28,8 +33,8 @@
         <template v-if="isSelfAddress" #default="{ row }">
           <Icon
             name="bx:bxs-hide"
+            class="absolute top-0 left-0 hidden bxs-hide cursor-pointer color-#959a9f"
             @click.self.stop="hideToken(row)"
-            class="absolute top-0 left-0"
           />
         </template>
       </TokenColumn>
@@ -41,24 +46,19 @@
         sortable="custom"
       >
         <template #default="{ row }">
-          <span v-if="row?.total_profit > 0" :style="{ color: upColor }">
+          <span v-if="row?.total_profit > 0" class="color-#12B886">
             ${{ formatNumber(row?.total_profit || 0, 2) }}
           </span>
-          <span v-else-if="row?.total_profit == 0" style="color: #959a9f">$0</span>
-          <span v-else-if="row?.total_profit == '--'" style="color: #959a9f">--</span>
-          <span v-else :style="{ color: downColor[7] }">
+          <span v-else-if="row?.total_profit == 0">$0</span>
+          <span v-else-if="row?.total_profit == '--'">--</span>
+          <span v-else class="color-#FF646D">
             {{ '-$' + formatNumber(Math.abs(row?.total_profit) || 0, 2) }}
           </span>
-          <span
-            :class="{
-              'color-gray': row?.total_profit_ratio == '--' || row?.total_profit_ratio == 0,
-            }"
-            class="mini"
-          >
+          <span class="block lh-17px">
             <template v-if="row?.total_profit_ratio == 0">0</template>
             <template v-else-if="row?.total_profit_ratio == '--'">--</template>
             <template v-else>
-              <span :style="{ color: row?.total_profit_ratio > 0 ? upColor : downColor }">
+              <span :style="{ color: row?.total_profit_ratio > 0 ? 'color-#12B886' : 'color-#FF646D' }">
                 {{ formatNumber(row?.total_profit_ratio * 100 || 0, 2) }}%
               </span>
             </template>
@@ -73,12 +73,12 @@
         sortable="custom"
       >
         <template #default="{ row }">
-          <span v-if="row?.unrealized_profit > 0" :style="{ color: upColor }">
+          <span v-if="row?.unrealized_profit > 0" class="color-#12B886'">
             ${{ formatNumber(row?.unrealized_profit || 0, 2) }}
           </span>
-          <span v-else-if="row?.unrealized_profit == 0" style="color: #959a9f">$0</span>
-          <span v-else-if="row?.unrealized_profit == '--'" style="color: #959a9f">--</span>
-          <span v-else :style="{ color: downColor[7] }">
+          <span v-else-if="row?.unrealized_profit == 0">$0</span>
+          <span v-else-if="row?.unrealized_profit == '--'">--</span>
+          <span v-else class="color-#FF646D">
             {{ '-$' + formatNumber(Math.abs(row?.unrealized_profit) || 0, 2) }}
           </span>
         </template>
@@ -92,33 +92,32 @@
       >
         <template #header>
           <span
-            >{{ $t('balance1') }}
-            <Icon
+              class="inline-flex items-center"
+          >{{ $t('balance1') }}<Icon
               name="custom:price"
-              :class="`${isVolUSDT ? 'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
-              @click.stop.prevent="switch_amount_3 = !switch_amount_3"
+              :class="`${isVolUSDT ? 'color-[--d-666-l-999]' : 'color-[--d-F5F5F5-l-222]'} cursor-pointer ml-3px`"
+              @click.stop.prevent="isVolUSDT = !isVolUSDT"
             />
           </span>
         </template>
         <template #default="{ row }">
-          <span v-if="row?.balance_usd == 0" class="color-gray">0</span>
-          <span v-else-if="row?.balance_usd == '--'" class="color-gray">--</span>
-          <template v-else>
-            <template v-if="switch_amount_3">
+          <span v-if="row?.balance_usd == 0">0</span>
+          <span v-else-if="row?.balance_usd == '--'">--</span>
+          <span v-else class="color-[--d-F5F5F5-l-333] flex justify-end">
+            <template v-if="!isVolUSDT">
               {{
                 row?.main_token_price == 0
                   ? 0
                   : formatNumber(row?.balance_usd / row?.main_token_price || 0, 2)
               }}
-              <span class="font-12 color-999 ml-3px">{{ row?.main_token_symbol }}</span>
+              <span class="text-12px color-[--d-999-l-666] ml-3px">{{ row?.main_token_symbol }}</span>
             </template>
             <template v-else>
               {{ '$' + formatNumber(row?.balance_usd || 0, 2) }}
             </template>
-          </template>
+          </span>
           <span
-            :class="{ 'color-gray': row?.balance_amount == '--' || row?.balance_amount == 0 }"
-            class="mini"
+              class="block text-12px lh-17px"
           >
             <template v-if="row?.balance_amount == 0">0</template>
             <template v-else-if="row?.balance_amount == '--'">--</template>
@@ -130,17 +129,13 @@
       </el-table-column>
       <el-table-column :label="$t('wallet_detail_total_buy_avg')" align="right">
         <template #default="{ row }">
-          <span v-if="row?.total_purchase_usd == 0" class="color-gray">0</span>
-          <span v-else-if="row?.total_purchase_usd == '--'" class="color-gray">--</span>
-          <template v-else>
+          <span v-if="row?.total_purchase_usd == 0">0</span>
+          <span v-else-if="row?.total_purchase_usd == '--'">--</span>
+          <span v-else class="color-[--d-F5F5F5-l-333]">
             {{ '$' + formatNumber(row?.total_purchase_usd || 0, 2) }}
-          </template>
+          </span>
           <span
-            :class="{
-              'color-gray':
-                row?.average_purchase_price_usd == '--' || row?.average_purchase_price_usd == 0,
-            }"
-            class="mini"
+              class="block text-12px lh-17px"
           >
             <template v-if="row?.average_purchase_price_usd == 0">0</template>
             <template v-else-if="row?.average_purchase_price_usd == '--'">--</template>
@@ -153,16 +148,13 @@
 
       <el-table-column :label="$t('wallet_detail_total_sell_avg')" align="right">
         <template #default="{ row }">
-          <span v-if="row?.total_sold_usd == 0" class="color-gray">0</span>
-          <span v-else-if="row?.total_sold_usd == '--'" class="color-gray">--</span>
-          <template v-else>
+          <span v-if="row?.total_sold_usd == 0">0</span>
+          <span v-else-if="row?.total_sold_usd == '--'">--</span>
+          <span v-else class="color-[--d-F5F5F5-l-333]">
             {{ '$' + formatNumber(row?.total_sold_usd || 0, 2) }}
-          </template>
+          </span>
           <span
-            :class="{
-              'color-gray': row?.average_sold_price_usd == '--' || row?.average_sold_price_usd == 0,
-            }"
-            class="mini"
+              class="block text-12px lh-17px"
           >
             <template v-if="row?.average_sold_price_usd == 0">0</template>
             <template v-else-if="row?.average_sold_price_usd == '--'">--</template>
@@ -175,62 +167,34 @@
 
       <el-table-column :label="$t('wallet_detail_transfer_in_out')" align="right">
         <template #default="{ row }">
-          <span
-            :style="{
-              color:
-                row?.total_transfer_in_amount == '--' || row?.total_transfer_in_amount == 0
-                  ? '#959a9f'
-                  : upColor,
-            }"
-          >
-            <template v-if="row?.total_transfer_in_amount == 0">0</template>
-            <template v-else-if="row?.total_transfer_in_amount == '--'">--</template>
-            <template v-else>
-              {{ formatNumber(row?.total_transfer_in_amount || 0, 2) }}
-            </template>
+          <template v-if="row?.total_transfer_in_amount == 0">0</template>
+          <template v-else-if="row?.total_transfer_in_amount == '--'">--</template>
+          <span v-else class="color-#12B886">
+            {{ formatNumber(row?.total_transfer_in_amount || 0, 2) }}
           </span>
           <span
-            :style="{
-              color:
-                row?.total_transfer_out_amount == '--' || row?.total_transfer_out_amount == 0
-                  ? '#959a9f'
-                  : downColor[7],
-            }"
-            class="block"
+              class="block lh-17px"
           >
             <template v-if="row?.total_transfer_out_amount == 0">0</template>
             <template v-else-if="row?.total_transfer_out_amount == '--'">--</template>
-            <template v-else>
+            <span v-else class="color-#FF646D">
               {{ formatNumber(row?.total_transfer_out_amount || 0, 2) }}
-            </template>
+            </span>
           </span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('wallet_detail_tx_count')" align="right">
         <template #default="{ row }">
-          <span
-            :style="{
-              color: row?.total_purchase == '--' || row?.total_purchase == 0 ? '#959a9f' : upColor,
-            }"
-          >
-            <template v-if="row?.total_purchase == 0">0</template>
-            <template v-else-if="row?.total_purchase == '--'">--</template>
-            <template v-else>
-              {{ formatNumber(row?.total_purchase || 0, 2) }}
-            </template>
+          <template v-if="row?.total_purchase == 0">0</template>
+          <template v-else-if="row?.total_purchase == '--'">--</template>
+          <span v-else class="color-#12B886">
+            {{ formatNumber(row?.total_purchase || 0, 2) }}
           </span>
-          <span :style="{ color: mode == 'light' ? '#D8D8D8' : '#666666' }">/</span>
-          <span
-            :style="{
-              color: row?.total_sold == '--' || row?.total_sold == 0 ? '#959a9f' : downColor[7],
-            }"
-            class=""
-          >
-            <template v-if="row?.total_sold == 0">0</template>
-            <template v-else-if="row?.total_sold == '--'">--</template>
-            <template v-else>
-              {{ formatNumber(row?.total_sold || 0, 2) }}
-            </template>
+          <span :style="{ color: themeStore.isDark ?  '#666666':'#D8D8D8'  }">/</span>
+          <template v-if="row?.total_sold == 0">0</template>
+          <template v-else-if="row?.total_sold == '--'">--</template>
+          <span v-else class="color-#FF646D">
+            {{ formatNumber(row?.total_sold || 0, 2) }}
           </span>
         </template>
       </el-table-column>
@@ -294,17 +258,11 @@ const props = defineProps({
 
 const emit = defineEmits(['hideToken'])
 
-const switch_amount_3 = ref(false)
 const hideTokenVisible = ref(false)
 const currentHideToken = ref({})
+const isVolUSDT = shallowRef(true)
 
 const themeStore = useThemeStore()
-
-const mode = computed(() => {
-  return themeStore.isDark ? 'dark' : 'light'
-})
-const upColor = 'green'
-const downColor = 'red'
 
 const tokenDetailSStore = useTokenDetailsStore()
 const route = useRoute()
@@ -337,369 +295,8 @@ function hideToken(row) {
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-table) {
-  overflow: initial;
-  // min-height: calc(100vh - 220px);
-  .el-table__header-wrapper {
-    position: sticky;
-    top: 0px;
-    z-index: 3;
-  }
-  .sort-caret {
-    &.ascending {
-      border-bottom-color: var(--a-text-2-color);
-    }
-
-    &.descending {
-      border-top-color: var(--a-text-2-color);
-    }
-  }
-  tr th {
-    background: #0a0b0d !important;
-  }
-
-  tr {
-    cursor: pointer;
-    &:hover {
-      td {
-        &.el-table__cell {
-          // background-color: var(--custom-td-hover-2-color);
-        }
-      }
-    }
-  }
-
-  .cell {
-    line-height: 15px;
-    padding: 0 3px;
-  }
-
-  th {
-    // background: var(--custom-primary-lighter-2-color);
-    border-bottom: none;
-
-    &.el-table__cell.is-leaf {
-      border-bottom: none;
-
-      &.descending {
-        .cell {
-          color: var(--custom-primary-color);
-
-          .sort-caret {
-            &.descending {
-              border-top-color: var(--custom-primary-color);
-            }
-          }
-        }
-      }
-
-      &.ascending {
-        .cell {
-          color: var(--custom-primary-color);
-
-          .sort-caret {
-            &.ascending {
-              border-bottom-color: var(--custom-primary-color);
-            }
-          }
-        }
-      }
-    }
-
-    .cell {
-      font-weight: 400;
-      font-size: 12px;
-    }
-  }
-
-  td {
-    &.el-table__cell {
-      // padding: 6px 0;
-      // border-bottom: 1px solid var(--custom-td-border-1-color);
-      // border-right: 1px solid var(--custom-td-border-1-color);
-      font-weight: 400;
-    }
-
-    .cell {
-      // color: var(--custom-font-1-color);
-      overflow: visible;
-    }
-  }
-}
-
-.icon-token-container {
-  margin-right: 4px;
-
-  .icon-symbol {
-    left: 20px;
-    top: 20px;
-  }
-}
-
-.plus {
-  font-size: 20px;
-  line-height: 20px;
-  display: block;
-  height: 20px;
-  margin-right: 10px;
-}
-
-// .trade {
-//   display: flex;
-//   align-items: center;
-//   justify-content: flex-end;
-//   a {
-//     background: var(--custom-btn-bg-color);
-//     padding: 5px 7px;
-//     border-radius: 6px;
-//     display: flex;
-//     align-items: center;
-//     font-size: 14px;
-//     color: var(--custom-text-1-color);
-//     .icon-svg {
-//       // font-size: 12px;
-//       // height: 12px;
-//       // width: 12px;
-//       margin-right: 3px;
-//     }
-//     &:hover {
-//       opacity: 0.5;
-//     }
-//   }
-// }
-.progress {
-  margin-left: 3px;
-
-  :deep().el-progress__text {
-    min-width: 12px;
-  }
-
-  .icon-suo1 {
-    width: 8px;
-    height: 8px;
-  }
-}
-
-.icon-svg1 {
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-}
-
-.token-info {
-  display: flex;
-  align-items: center;
-
-  .token-symbol {
-    // white-space: nowrap;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
-    font-size: 14px;
-    margin-right: 3px;
-  }
-
-  .token-network {
-    border: 1px solid #878fbc;
-    border-radius: 10px;
-    font-size: 12px;
-    color: #878fbc;
-    padding: 2px 5px;
-    margin-left: 9px;
-  }
-
-  .token-icon {
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-  }
-}
-
-.table-empty {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 80px 0;
-  min-height: calc(100vh - 750px);
-}
-
-.icon-svg {
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--custom-primary-color);
-  border-radius: 100%;
-  width: 20px;
-  vertical-align: middle;
-
-  &.icon-huoyan {
-    width: 12px;
-    font-size: 12px;
-  }
-
-  &.icon-new {
-    font-size: 12px;
-  }
-
-  &.icon-xiala {
-    width: 8px;
-    height: 8px;
-    margin-left: 5px;
-  }
-}
-
-.icon-shaixuan {
-  &:hover {
-    cursor: pointer;
-    color: var(--custom-primary-color);
-  }
-}
-
-.filter-box {
-  color: var(--custom-text-1-color);
-
-  .filter-title {
-    font-size: 12px;
-    color: var(--a-text-2-color);
-  }
-
-  // :deep() .el-input__wrapper {
-  //   .el-input__inner{
-  //     color: var(--custom-font-1-color);
-  //   }
-  // }
-  :deep() .el-slider__runway {
-    --el-slider-button-size: 14px;
-
-    .el-slider__marks {
-      .el-slider__marks-text:nth-child(2) {
-        transform: translateX(0) !important;
-        right: -6px !important;
-        left: auto !important;
-      }
-    }
-  }
-
-  .chain-icon-sort-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-left: 5px;
-
-    .icon-svg {
-      font-size: 10px;
-      padding: 0;
-      cursor: pointer;
-      color: var(--a-text-2-color);
-      width: 12px;
-      height: 10px;
-
-      & + .icon-svg {
-        margin-top: 1px;
-      }
-
-      &.active {
-        color: var(--custom-primary-color);
-      }
-    }
-  }
-
-  .icon-filter-sort {
-    font-size: 12px;
-    opacity: 0.3;
-
-    &.active {
-      opacity: 1;
-    }
-
-    &:hover:not(.active) {
-      opacity: 0.6;
-    }
-
-    cursor: pointer;
-  }
-}
-
-.popper-gold {
-  .title {
-    color: var(--a-text-2-color);
-  }
-
-  ul {
-    li {
-      a {
-        color: var(--custom-text-1-color);
-        padding: 6px 15px;
-        display: flex;
-
-        .icon-bianzu,
-        .icon-dexs1 {
-          color: var(--a-text-1-color);
-        }
-
-        &.disabled {
-          color: var(--a-text-2-color);
-
-          &:hover {
-            cursor: not-allowed;
-          }
-        }
-
-        &:hover {
-          opacity: 1;
-          text-decoration: none;
-          background: var(--custom-btn-2-color);
-        }
-      }
-    }
-  }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 15px 0;
-  }
-
-  .tag-left {
-    margin-left: 3px;
-    width: 12px;
-    height: 12px;
-  }
-
-  .tag-left2 {
-    margin-left: 3px;
-    width: 19px;
-    height: 17px;
-  }
-}
-
-.icon-danger {
-  color: red;
-}
-
-.color-gray {
-  color: #959a9f;
-  font-size: 12px;
-}
-
-.mini {
-  font-size: 12px;
-  color: #959a9f;
-  display: block;
-}
-
-.icon-yincang {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: #959a9f;
-  cursor: pointer;
-}
-
 .hover-row {
-  .icon-yincang {
+  .bxs-hide {
     display: block;
   }
 }
