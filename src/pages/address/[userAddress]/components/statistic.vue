@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 flex justify-between mr-5 flex-1 rounded-2 bg-[#15171c]">
+  <div class="p-5 flex justify-between mr-5 flex-1 rounded-2 bg-[--d-15171C-l-F6F6F6]">
     <div>
       <div class="flex gap-6 mb-5">
         <UserAvatar
@@ -46,12 +46,12 @@
           </div>
           <div class="flex items-center gap-2">
             <div v-copy="address" class="statistic-address flex gap-2.5 cursor-pointer">
-              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[var(--d-999-l-18181B)] bg-[#222]">
+              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[var(--d-999-l-18181B)] bg-[--d-666-l-CCC]">
                 {{ addressText }}
                 <Icon name="bxs:copy" class="text-2.5 clickable text-[var(--d-999-l-333)]"/>
               </div>
             </div>
-            <div class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[var(--d-666-l-959A9F)] bg-[#222]">
+            <div class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[--d-666-l-959A9F] bg-[--d-666-l-CCC]">
               <i class="iconfont icon-time text-3" />
               <span>{{ wallet_age?.value }}</span>
               <span>{{ wallet_age?.unit }}</span>
