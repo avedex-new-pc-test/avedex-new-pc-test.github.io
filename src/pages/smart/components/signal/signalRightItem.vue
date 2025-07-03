@@ -274,7 +274,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
         <div class="flex-[2] flex items-center">
           <UserAvatar
             icon-size="24px"
-            :wallet_logo="{logo:wallet_logo}"
+            :wallet_logo="{logo:wallet_logo,name:wallet_alias}"
             :address="wallet_address"
             :chain="activeChain"
           />
