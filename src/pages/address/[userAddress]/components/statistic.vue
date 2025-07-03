@@ -80,7 +80,7 @@
           {{ formatNumber(Math.abs((statistics.profit ?? 0) / main_token_price), 2) }} {{ main_token_symbol }}
         </Number>
         <Number :value="statistics.profit_ratio">
-          {{ formatNumber(Math.abs((statistics?.profit_ratio ?? 0) * 100), 2) }}%
+          {{ formatNumber(Math.abs((statistics?.profit_ratio ?? 0) * 100), 1) }}%
         </Number>
       </p>
       <p class="total-profit">
@@ -111,9 +111,11 @@
           />
           {{ $t('follow') }}
         </a>
-        <a class="statistic-right-share">
+        <a class="statistic-right-share"
+           @click="shareComponent&&shareComponent.openDialog()"
+        >
           {{ $t('share') }}
-        <Share :statistics="statistics" :address="address" :chain="chain" />
+          <Share ref="shareComponent" :statistics="statistics" :address="address" :chain="chain"/>
         </a>
       </div>
       <div>
@@ -177,6 +179,7 @@ const $t = getGlobalT()
 const { address, chain, interval, intervalText } = toRefs(props)
 const botStore = useBotStore()
 const themeStore = useThemeStore()
+const shareComponent = useTemplateRef<InstanceType<typeof Share>>('shareComponent')
 
 const { userInfo } = storeToRefs(useBotStore())
 

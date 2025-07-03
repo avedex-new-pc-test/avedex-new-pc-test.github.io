@@ -52,6 +52,9 @@ const imgList = computed(() => {
     downs
   }
 })
+defineExpose({
+  openDialog
+})
 
 function openDialog() {
   dialogVisible.value = true

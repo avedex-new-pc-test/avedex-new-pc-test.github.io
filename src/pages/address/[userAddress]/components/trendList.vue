@@ -282,11 +282,11 @@
       </el-table-column>
       <el-table-column align="right" label="TXN">
         <template #default="{ row }">
-          <a class="ml-5 a-gray font-16" href="" @click.stop.prevent="goLink(row)">
+          <a class="ml-5 a-gray font-16" href="javascript:;">
             <Icon
               name="custom:browser"
               class="text-16px color-[--d-666-l-999] cursor-pointer"
-              @click.stop.self="goBrowser(row)"
+              @click.stop.self="goLink(row)"
             />
           </a>
         </template>
