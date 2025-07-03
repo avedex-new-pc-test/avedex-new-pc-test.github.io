@@ -14,6 +14,7 @@ import List from './list.vue'
 import BigNumber from 'bignumber.js'
 
 const tokenDetailStore = useTokenDetailsStore()
+const themeStore = useThemeStore()
 const botStore = useBotStore()
 const {t} = useI18n()
 const listQuery = shallowRef({
@@ -25,6 +26,14 @@ const listQuery = shallowRef({
 })
 const checkedTrend = ref(['SWAP', 'ADD_LIQUIDITY/REMOVE_LIQUIDITY'])
 const trendList = shallowRef<GetTokenDetailsListResponse[]>([])
+const filteredTrendList = computed(() => {
+  return trendList.value.filter(
+    i =>
+      (i.is_target && (i.event_type == 'swap_buy' || i.event_type == 'swap_sell')) ||
+      !(i.event_type == 'swap_buy' || i.event_type == 'swap_sell')
+  ).filter(i => NATIVE_TOKENS.findIndex(y => y?.toLowerCase() == i.token?.toLowerCase()) == -1)
+
+})
 const listStatus = ref({
   loading: false,
   finished: false,
@@ -42,6 +51,7 @@ defineExpose({
 })
 
 function init() {
+  trendList.value.length = 0
   editable.value = false
   statistics.value = {} as any
   _getTokenStatistics()
@@ -101,16 +111,16 @@ function _getTokenDetailsList() {
       const list = Array.isArray(res) ? res : []
       const arr = list.map(i => {
         let event_type = i.event_type
-        if (i.event_type == 'SWAP' && i.flow_type == 0) {
+        if (i.event_type === 'SWAP' && i.flow_type == 0) {
           event_type = 'swap_buy'
         }
-        if (i.event_type == 'SWAP' && i.flow_type == 1) {
+        if (i.event_type === 'SWAP' && i.flow_type == 1) {
           event_type = 'swap_sell'
         }
-        if (i.event_type == 'TRANSFER' && i.flow_type == 0) {
+        if (i.event_type === 'TRANSFER' && i.flow_type == 0) {
           event_type = 'transfer_in'
         }
-        if (i.event_type == 'TRANSFER' && i.flow_type == 1) {
+        if (i.event_type === 'TRANSFER' && i.flow_type == 1) {
           event_type = 'transfer_out'
         }
         return {
@@ -127,16 +137,16 @@ function _getTokenDetailsList() {
       if (!listStatus.value.finished) {
         listQuery.value.pageNO++
       }
-      listQuery.value.max_block_number = arr[arr?.length - 1].block_number
-      listQuery.value.max_event_id = arr[arr?.length - 1].event_id
+      listQuery.value.max_block_number = arr[arr?.length - 1]?.block_number
+      listQuery.value.max_event_id = arr[arr?.length - 1]?.event_id
     }).finally(() => {
     listStatus.value.loading = false
   })
 }
 
-function updateRemark({remark}) {
+// function updateRemark({remark}) {
 
-}
+// }
 
 function attention() {
   if (!verifyLogin()) {
@@ -187,7 +197,7 @@ function attention() {
               :chain="tokenDetailStore.tokenInfo!.chain"
               :wallet_logo="statistics.wallet_logo"
               address-class="max-w-95px whitespace-nowrap text-ellipsis overflow-x-hidden text-14px"
-              @updateRemark="updateRemark"
+              :formatAddress="(address: string) => address.slice(0, 4) + '...' + address.slice(-4)"
             />
             <div v-if="statistics.newTags?.length > 0" class="ml-6px">
               <el-tooltip
@@ -256,17 +266,19 @@ function attention() {
               name="bxs:copy"
               class="cursor-pointer color-[--d-666-l-696E7C] text-10px"
             />
-            <Icon
-              name="custom:attention"
-              :class="`cursor-pointer ${isAttention
-                  ?'color-#f45469'
-                  :'color-[--d-666-l-696E7C]'} text-10px hover:color-#f45469`"
-              @click.self.stop="attention"
-            />
+            <!--<Icon-->
+            <!--  name="custom:attention"-->
+            <!--  :class="`cursor-pointer ${isAttention-->
+            <!--      ?'color-#f45469'-->
+            <!--      :'color-[&#45;&#45;d-666-l-696E7C]'} text-10px hover:color-#f45469`"-->
+            <!--  @click.self.stop="attention"-->
+            <!--/>-->
           </div>
         </div>
       </div>
-      <NuxtLink to="/" class="py-7px px-8px bg-[--d-333-l-F2F2F2] rounded-4px color-[--d-F5F5F5-l-333] text-12px">
+      <NuxtLink
+        :to="`/address/${tokenDetailStore.user_address}/${tokenDetailStore.tokenInfo!.chain}`" class="py-7px px-8px bg-[--d-333-l-F2F2F2] rounded-4px color-[--d-F5F5F5-l-333] text-12px"
+      >
         {{ $t('walletDetail') }}
       </NuxtLink>
     </div>
@@ -282,12 +294,12 @@ function attention() {
               formatNumber(Math.abs(Number(statistics.total_profit)), 2)
             }}
           </ExcludeError>
-          <ExcludeError :model-value="statistics.total_profit_ratio">({{
+          (<ExcludeError :model-value="statistics.total_profit_ratio">{{
               addSign(Number(statistics.total_profit_ratio))
             }}{{
               formatNumber(Math.abs(Number(statistics.total_profit_ratio) * 100), 2)
-            }}%)
-          </ExcludeError>
+            }}%
+          </ExcludeError>)
           <Share
             :address="tokenDetailStore.user_address"
             :chain="tokenDetailStore.tokenInfo!.chain"
@@ -311,7 +323,7 @@ function attention() {
     <div class="flex items-center mb-20px">
       <div class="flex-1 flex flex-col">
         <span class="color-[--d-666-l-999] text-12px lh-16px mb-4px">{{ $t('wallet_detail_transfer_in_out') }}</span>
-        <div class="flex text-16px lh-24px items-center color-[--d-F5F5F5-l-333]"
+        <div class="flex text-16px lh-24px items-center color-#959a9f"
         >
           <ExcludeError :model-value="statistics.total_transfer_in_usd">
             <span class="color-#12B886">
@@ -328,7 +340,7 @@ function attention() {
       </div>
       <div class="flex-1 flex flex-col">
         <span class="color-[--d-666-l-999] text-12px lh-16px mb-4px">{{ $t('wallet_detail_total_buy_sell') }}</span>
-        <div class="flex text-16px lh-24px items-center color-[--d-F5F5F5-l-333]"
+        <div class="flex text-16px lh-24px items-center color-#959a9f"
         >
           <ExcludeError :model-value="statistics.total_purchase_usd">
             <span class="color-#12B886">
@@ -366,7 +378,7 @@ function attention() {
       </div>
       <div class="flex-1 flex flex-col">
         <span class="color-[--d-666-l-999] text-12px lh-16px mb-4px">{{ $t('wallet_detail_tx_count') }}</span>
-        <div class="flex text-16px lh-24px items-center color-[--d-F5F5F5-l-333]"
+        <div class="flex text-16px lh-24px items-center color-#959a9f"
         >
           <ExcludeError :model-value="statistics.total_purchase">
             <span class="color-#12B886">
@@ -391,8 +403,10 @@ function attention() {
     >
       <List
         v-model="checkedTrend"
-        v-loading="listStatus.loading&&listQuery.pageNO===1"
-        :tableList="trendList"
+        v-loading="listStatus.loading&&listQuery.pageNO===1&&filteredTrendList.length===0"
+        :tableList="filteredTrendList"
+        :loading="listStatus.loading"
+        element-loading-background="transparent"
         @update:modelValue="resetListStatus"
       />
       <div

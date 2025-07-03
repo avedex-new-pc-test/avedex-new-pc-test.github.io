@@ -1,5 +1,3 @@
-import Cookies from 'js-cookie'
-
 interface GetUserBalanceResponse {
   address: string
   token: string
@@ -27,7 +25,7 @@ function getUserBalance(
     sort_dir = 'desc',
     hide_risk = 1,
     hide_small = 0
-  }): Promise<{ data: GetUserBalanceResponse[] }> {
+  }): Promise<{ data: GetUserBalanceResponse[] ; total: number ;pageNo: number; pageSize: number }> {
   const { $api } = useNuxtApp()
   return $api('/v2api/user_balance/v1/swap/balance', {
     method: 'post',

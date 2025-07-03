@@ -8,15 +8,20 @@ import {
   changeFavoritesIndex, editTokenFavRemark
 } from '~/api/fav'
 import TokenImg from '~/components/tokenImg.vue'
+import {useEventBus} from '@vueuse/core'
+import {BusEventType} from '~/utils/constants'
 
-defineProps({
+const props = defineProps({
   list: {
     type: Array<GetUserFavoriteGroupsResponse>,
     default: () => []
   },
+  visible: Boolean
 })
+const favDialogEvent = useEventBus(BusEventType.FAV_DIALOG)
 const {t} = useI18n()
 const {evmAddress} = useBotStore()
+const tokenStore = useTokenStore()
 const activeTab = shallowRef(0)
 const favoritesList = shallowRef<GetFavListResponse[]>([])
 const listStatus = shallowRef({
@@ -34,8 +39,8 @@ function setActiveTab(val: number) {
   resetAndGet()
 }
 
-watch(() => evmAddress, () => {
-  _getFavoriteList()
+watch(() => [evmAddress, props.visible], () => {
+  resetAndGet()
 })
 
 async function _getFavoriteList() {
@@ -50,7 +55,7 @@ async function _getFavoriteList() {
       id: i.token + '-' + i.chain,
       address: i.token,
       network: i.chain,
-      priceChange24h: i?.price_change ? i?.price_change / 100 : 0,
+      priceChange24h: i?.price_change ? Number(i?.price_change) / 100 : 0,
       priceUSD: i?.current_price_usd || 0,
       activeGroup: activeTab.value
     }))
@@ -62,6 +67,9 @@ async function _getFavoriteList() {
     if (res?.length === 0) {
       listStatus.value.finished = true
     }
+    if (!listStatus.value.finished) {
+      listStatus.value.pageNo++
+    }
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:52) (e)', (e))
   } finally {
@@ -71,11 +79,16 @@ async function _getFavoriteList() {
 
 async function confirmSwitchGroup(row: GetFavListResponse, id: number) {
   try {
+    const tokenId = row.token + '-' + row.chain
     await moveFavoriteGroup(
-      row.token + '-' + row.chain, id, evmAddress
+      tokenId, id, evmAddress
     )
     ElMessage.success(t('success'))
-    _getFavoriteList()
+    resetAndGet()
+    favDialogEvent.emit({
+        type: 'confirmSwitchGroup',
+        tokenId
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:76) e', e)
     ElMessage.error(t('fail'))
@@ -87,13 +100,18 @@ async function tokenSetTop(item: GetFavListResponse, index: number) {
     return
   }
   try {
+    const tokenId = item.token + '-' + item.chain
     await changeFavoritesTop(
-      item.token + '-' + item.chain,
+      tokenId,
       activeTab.value,
       evmAddress
     )
     ElMessage.success(t('success'))
     resetAndGet()
+    favDialogEvent.emit({
+      type: 'order',
+      tokenId
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:94) e', e)
     ElMessage.error(t('fail'))
@@ -112,6 +130,10 @@ async function _changeFavoritesIndex(item: GetFavListResponse, index: number, di
     await changeFavoritesIndex(id, id1, activeTab.value, evmAddress)
     ElMessage.success(t('success'))
     resetAndGet()
+    favDialogEvent.emit({
+      type: 'order',
+      tokenId: id
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:114) e', e)
     ElMessage.error(t('fail'))
@@ -136,14 +158,19 @@ async function handleEditRemark(item: GetFavListResponse) {
       return true
     }
   })
-  confirmEditRemark(value, tokenId)
+  confirmEditRemark(value, tokenId, item)
 }
 
-async function confirmEditRemark(remark: string, tokenId: string) {
+async function confirmEditRemark(remark: string, tokenId: string, item: GetFavListResponse) {
   try {
     await editTokenFavRemark(tokenId, remark, evmAddress)
-    _getFavoriteList()
+    item.remark = remark
+    triggerRef(favoritesList)
     ElMessage.success(t('success'))
+    favDialogEvent.emit({
+      type: 'remark',
+      tokenId,
+    })
   } catch (e) {
     console.log('=>(dialogFavoriteManage.vue:149) e', e)
   }
@@ -152,15 +179,17 @@ async function confirmEditRemark(remark: string, tokenId: string) {
 
 <template>
   <div>
-    <a
-      v-for="(item, $index) in list"
-      :key="$index" href="javascript:;"
-      :class="`decoration-none inline-block text-14px  px-4px h-44px lh-44px
-              ${item.group_id === activeTab?'color-[var(--d-F5F5F5-l-333)]':'color-#80838b'}`"
-      @click.stop.prevent="setActiveTab(item.group_id)"
-    >
-      {{ item.name }}
-    </a>
+    <div class="flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide mb-12px">
+      <a
+        v-for="(item,index) in list"
+        :key="index" href="javascript:;"
+        :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
+         ${activeTab===item.group_id ? 'bg-[--d-333-l-F2F2F2] color-[--d-F5F5F5-l-333]':''}`"
+        @click="setActiveTab(item.group_id)"
+      >
+        {{ item.name }}
+      </a>
+    </div>
     <el-table
       id="table_fav"
       ref="table_ref"
@@ -172,9 +201,12 @@ async function confirmEditRemark(remark: string, tokenId: string) {
       :infinite-scroll-immediate="false"
       :data="favoritesList"
       height="350px"
-      class="w-full table-container"
+      class="w-full table-container [&&]:text-12px"
       highlight-current-row
     >
+      <template #empty>
+        <AveEmpty/>
+      </template>
       <el-table-column
         :label="$t('token')"
       >
@@ -184,7 +216,7 @@ async function confirmEditRemark(remark: string, tokenId: string) {
               class="mr-8px"
               :row="row"
             />
-            <span class="token-symbol">{{ row.symbol }}</span>
+            <span class="[&&]:color-[--d-F5F5F5-l-333]">{{ row.symbol }}</span>
           </div>
         </template>
       </el-table-column>
@@ -251,7 +283,7 @@ async function confirmEditRemark(remark: string, tokenId: string) {
     </el-table>
     <div
       v-if="listStatus.pageNo!==1 && listStatus.loading"
-      class="flex justify-center items-center py-15px text-14px">
+      class="flex justify-center items-center py-15px text-12px">
       <span>{{ $t('loading') }}</span>
     </div>
   </div>

@@ -15,10 +15,10 @@ pnpm generate
 cd dist
 touch .nojekyll
 
-git init;
-git add -A;
-git commit -m 'deploy';
+git init --initial-branch=master
+git add -A
+git commit -m 'deploy'
 git remote add origin git@github.com:ave-test-10/ave-test-10.github.io.git
-git push -f origin master:main;
+git push -f origin master:main
 
 cd -

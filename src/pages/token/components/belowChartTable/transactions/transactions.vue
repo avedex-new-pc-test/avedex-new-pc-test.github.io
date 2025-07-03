@@ -4,32 +4,52 @@ import VolFilter from './volFilter.vue'
 import MakersFilter from './makersFilter.vue'
 import MarkerTooltip from './markerTooltip.vue'
 import UserTxsFilterHead from './userTxsFilterHead.vue'
-import type {RowEventHandlerParams} from 'element-plus'
+import type { RowEventHandlerParams } from 'element-plus'
 
 import {filterLanguage} from '~/pages/token/components/kLine/utils'
-import {getPairLiq, type GetPairLiqResponse, getPairTxs, type GetPairTxsResponse, type Profile} from '~/api/token'
-import {formatDate, getAddressAndChainFromId, getChainInfo, getWSMessage} from '~/utils'
-import dayjs from 'dayjs'
+import {
+  getPairLiq,
+  type GetPairLiqResponse,
+  type IGetTokenTxsResponse,
+  getTokenTxs,
+  type Profile
+} from '~/api/token'
+import {formatDate, formatTimeFromNow, getAddressAndChainFromId, getChainInfo, uuid} from '~/utils'
+
 import {useThrottleFn} from '@vueuse/core'
 
 import IconUnknown from '@/assets/images/icon-unknown.png'
+import type {AveTable} from '#components'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
-const {t} = useI18n()
-const {totalHolders, pairAddress, token, pair} = storeToRefs(useTokenStore())
+const { t } = useI18n()
+const {totalHolders, pairAddress, token, pair, commonHeight} = storeToRefs(useTokenStore())
 const tokenDetailSStore = useTokenDetailsStore()
 const botStore = useBotStore()
 const wsStore = useWSStore()
+const tagStore = useTagStore()
 const route = useRoute()
+const aveTableRef = ref<InstanceType<typeof AveTable> | null>(null)
+const firstActivated = ref(true)
+onActivated(() => {
+  if (!firstActivated.value && aveTableRef.value) {
+    aveTableRef.value.scrollToTop(0)
+  }
+  firstActivated.value = false
+})
+
+const finalHeight = computed(() => Math.max(500, commonHeight.value - 250))
+// 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
+const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
   if (Array.isArray(totalHolders.value)) {
     totalHolders.value.forEach(i => {
-      const num = i.total_address
+      const num = i.total_address!
       if (num > 0) {
         arr.push({
           ...i,
-          label: i?.[filterLanguage(useLocaleStore().locale)] + (i.type !== '31' ? `(${num})` : ''),
+          label: i?.[filterLanguage(useLocaleStore().locale)] + `(${num})`,
           value: i.type
         })
       }
@@ -39,55 +59,58 @@ const tabs = computed(() => {
     label: t('all'),
     value: 'all'
   },
-    {
-      label: t('buy3'),
-      value: 'buy'
-    },
-    {
-      label: t('sell3'),
-      value: 'sell'
-    },
-    {
-      label: t('followed'),
-      value: '-100'
-    },
-    {
-      label: t('liquidity2'),
-      value: 'liquidity'
-    }, ...arr]
+  {
+    label: t('buy3'),
+    value: 'buy'
+  },
+  {
+    label: t('sell3'),
+    value: 'sell'
+  },
+  // {
+  //   label: t('followed'),
+  //   value: '-100'
+  // },
+  {
+    label: t('liquidity2'),
+    value: 'liquidity'
+  }, ...arr]
 })
 const activeTab = shallowRef('all')
-const isPausedTxs = shallowRef(false)
-const documentVisible = inject<Ref<boolean>>('documentVisible')
+const ignoreWs = computed(() => {
+  return !['all', 'buy', 'sell'].includes(activeTab.value)
+})
+const isHoverTable = shallowRef(false)
 
 const isLiquidity = computed(() => activeTab.value === 'liquidity')
 const columns = computed(() => {
   const visible = token.value?.chain === 'solana' && !isLiquidity.value
-  return [{key: 'time', dataKey: 'time', title: t('time'), width: 80},
-    {key: 'type', dataKey: 'type', title: t('type'), width: 80},
-    {key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), width: 100},
-    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), align: 'right', width: 140},
-    {
-      key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative'
-    },
-    {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right'},
-    {
-      key: 'SOLBalance',
-      dataKey: 'SOLBalance',
-      title: t('makers') + ' SOL',
-      align: 'right',
-      hidden: !visible,
-      width: 100
-    },
-    {key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', width: 70}]
+  return [{ key: 'time', dataKey: 'time', title: t('time'), minWidth: 80 },
+  { key: 'type', dataKey: 'type', title: t('type'), minWidth: 80 },
+  { key: 'swapPrice', dataKey: 'swapPrice', title: t('swapPrice'), minWidth: 100 },
+    {key: 'amountB', dataKey: 'amountB', title: t('amountB'), minWidth: 120},
+  {
+    key: 'amountU', dataKey: 'amountU', title: t('amountU'), align: 'right', class: 'relative',
+    minWidth: 120
+  },
+    {key: 'makers', dataKey: 'makers', title: t('makers'), align: 'right', minWidth: 220},
+  {
+    key: 'SOLBalance',
+    dataKey: 'SOLBalance',
+    title: t('makers') + ' SOL',
+    align: 'right',
+    hidden: !visible,
+    minWidth: 86
+  },
+  { key: 'DEX', dataKey: 'DEX', title: 'DEX/TXN', align: 'right', minWidth: 70 }]
     .filter(el => !el.hidden)
 })
 const listStatus = ref({
   loadingTxs: false,
   loadingLiq: false
 })
-const pairTxs = shallowRef<GetPairTxsResponse[]>([])
-const wsPairCache = shallowRef<GetPairTxsResponse[]>([])
+const tokenTxs = shallowRef<IGetTokenTxsResponse[]>([])
+const wsPairCache = shallowRef<IGetTokenTxsResponse[]>([])
 const pairLiq = shallowRef<GetPairLiqResponse[]>([])
 const wsLiqCache = shallowRef<GetPairLiqResponse[]>([])
 
@@ -104,20 +127,20 @@ const tableFilter = ref<{
 })
 
 const filterTableListMap = {
-  all: () => [...pairTxs.value, ...pairLiq.value].toSorted((a, b) => b.time - a.time),
+  all: () => [...tokenTxs.value, ...pairLiq.value].toSorted((a, b) => b.time - a.time),
   liquidity: () => pairLiq.value,
-  buy: () => pairTxs.value.filter(el => isBuy((el))),
-  sell: () => pairTxs.value.filter(el => !isBuy(el))
+  buy: () => tokenTxs.value.filter(el => isBuy((el))),
+  sell: () => tokenTxs.value.filter(el => !isBuy(el))
 }
 // 纯前端筛选
 const filterTableList = computed(() => {
-  let tableList: ((GetPairTxsResponse | GetPairLiqResponse) & { count?: number })[] = []
+  let tableList: ((IGetTokenTxsResponse | GetPairLiqResponse) & { count?: number })[] = []
   if (activeTab.value in filterTableListMap) {
     tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
   } else {
-    tableList = pairTxs.value
+    tableList = tokenTxs.value
   }
-  const {timestamp, amountU, markerAddress} = tableFilter.value
+  const { timestamp, amountU, markerAddress } = tableFilter.value
   const [startTime, endTime] = timestamp || []
   const [startVol, endVol] = amountU || []
   if (startTime) {
@@ -166,7 +189,13 @@ const tableFilterVisible = ref({
   markers: false
 })
 const makerTooltip = ref()
-const currentRow = shallowRef<GetPairTxsResponse & { senderProfile: Profile }>({} as any)
+const markerTooltipVisible = shallowRef(false)
+const currentRow = shallowRef<IGetTokenTxsResponse & { senderProfile: Profile }>({} as any)
+const isPausedTxs = computed(() => {
+  return isHoverTable.value
+    || tokenDetailSStore.drawerVisible
+    || markerTooltipVisible.value
+})
 
 const addressAndChain = computed(() => {
   const id = route.params.id as string
@@ -178,95 +207,125 @@ const addressAndChain = computed(() => {
     chain: token.value?.chain || ''
   }
 })
-watch(() => pairAddress.value, () => {
+watch(() => pairAddress.value, (pair, oldPair) => {
   if (pairAddress.value) {
-    txCount.value = {}
-    _getPairTxs()
     _getPairLiq()
-    subscribeTxsAndLiq()
+    subscribeLiq(pair, oldPair)
   }
 }, {
   immediate: true
 })
 
-if (documentVisible) {
-  watch(() => documentVisible.value, (val) => {
-    if (val) {
-      txCount.value = {}
-      wsPairCache.value.length = 0
-      wsLiqCache.value.length = 0
-      _getPairTxs()
-      _getPairLiq()
-    }
-  })
-}
-
-onMounted(() => {
-  onTxsLiqMessage()
-})
-
-onUnmounted(() => {
-  wsStore.getWSInstance()?.offMessage('tx_history')
-})
-
-function onTxsLiqMessage() {
-  wsStore.getWSInstance()?.onmessage(e => {
-    const msg = getWSMessage(e)
-    if (!msg || (documentVisible && !documentVisible.value)) {
-      return
-    }
-    const {event, data} = msg
-    if (event == WSEventType.TX && !listStatus.value.loadingTxs) {
-      const {wallet_address} = data.tx
-      txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
-      const {topN, wallet_tag} = getWalletTag(data.tx)
-      const item = {
-        ...data.tx,
-        topN, wallet_tag,
-        senderProfile: JSON.parse(data.tx.profile || '{}'),
-        count: txCount.value[wallet_address]
-      }
-      wsPairCache.value.unshift(item)
-      if (!isPausedTxs.value) {
-        updatePairTxs()
-      }
-    } else if (event === WSEventType.LIQ && !listStatus.value.loadingLiq) {
-      const {wallet_address} = data.liq
-      txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
-      wsLiqCache.value.unshift({
-        ...data.liq,
-        count: txCount.value[wallet_address]
-      })
-      if (!isPausedTxs.value) {
-        updateLiqList()
-      }
-      if (pairLiq.value.length > 300) {
-        pairLiq.value.pop()
-      }
-    }
-  }, 'tx_history')
-}
-
-function subscribeTxsAndLiq() {
-  const liqParams = {
-    jsonrpc: '2.0',
-    params: ['liq', pairAddress.value],
-    id: 1
+watch(() => route.params.id, val => {
+  if (val) {
+    resetCache()
+    tableFilter.value.markerAddress = ''
+    _getTokenTxs()
   }
-  wsStore.send({
-    ...liqParams,
-    method: 'unsubscribe'
+}, {
+  immediate: true
+})
+
+useVisibilityChange(() => {
+  resetCache()
+  _getTokenTxs()
+  _getPairLiq()
+})
+
+//
+// const txsBounding = useElementBounding(aveTableRef)
+// const mouseInsideTxs = useThrottleFn((event: MouseEvent) => {
+//   // 获取鼠标位置
+//   const mouseX = event.clientX
+//   const mouseY = event.clientY
+//
+//   // 判断鼠标是否在元素边界内并且鼠标不在视口外
+//   isPausedTxs.value = (
+//     mouseX >= txsBounding.left.value &&
+//     mouseX <= txsBounding.right.value &&
+//     mouseY >= txsBounding.top.value &&
+//     mouseY <= txsBounding.bottom.value
+//   ) && (
+//     mouseX >= 0 &&
+//     mouseX <= window.innerWidth &&
+//     mouseY >= 0 &&
+//     mouseY <= window.innerHeight
+//   )
+// }, 100, true, false)
+
+function resetCache() {
+  txCount.value = {}
+  wsPairCache.value.length = 0
+  wsLiqCache.value.length = 0
+}
+
+watch(() => wsStore.wsResult[WSEventType.TX], data => {
+  if (!data || listStatus.value.loadingTxs || ignoreWs.value) {
+    return
+  }
+  const {wallet_address, from_address, to_address} = data.tx
+  // 不是当前币种的数据
+  if (from_address !== realAddress.value && to_address !== realAddress.value) {
+    return
+  }
+  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  const { topN, wallet_tag } = getWalletTag(data.tx)
+  const item = {
+    ...data.tx,
+    topN, wallet_tag,
+    senderProfile: JSON.parse(data.tx.profile || '{}'),
+    count: txCount.value[wallet_address],
+    time: Math.min(Math.floor(Date.now() / 1000), data.tx.time),
+    uuid: uuid()
+  }
+  wsPairCache.value.unshift(item)
+  if (!isPausedTxs.value) {
+    updatePairTxs()
+  }
+})
+watch(() => wsStore.wsResult[WSEventType.LIQ], data => {
+  if (!data || listStatus.value.loadingLiq || !['all', 'liquidity'].includes(activeTab.value)) {
+    return
+  }
+  // const { wallet_address } = data.liq
+  // txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  wsLiqCache.value.unshift({
+    ...data.liq,
+    uuid: uuid()
+    // count: txCount.value[wallet_address]
   })
-  wsStore.send({
-    ...liqParams,
-    method: 'subscribe'
-  })
+  if (!isPausedTxs.value) {
+    updateLiqList()
+  }
+  if (pairLiq.value.length > 300) {
+    pairLiq.value.pop()
+  }
+})
+
+function subscribeLiq(pair: string, oldPair?: string) {
+  if (oldPair) {
+    wsStore.send({
+      jsonrpc: '2.0',
+      params: ['liq', oldPair],
+      id: 1,
+      method: 'unsubscribe'
+    })
+  }
+
+  setTimeout(() => {
+    wsStore.send({
+      jsonrpc: '2.0',
+      params: ['liq', pair],
+      id: 1,
+      method: 'subscribe'
+    })
+  }, 20)
 }
 
 const updatePairTxs = useThrottleFn(() => {
-  pairTxs.value.unshift(...wsPairCache.value)
+  tokenTxs.value.unshift(...wsPairCache.value)
   wsPairCache.value.length = 0
-  triggerRef(pairTxs)
+  triggerRef(tokenTxs)
 }, 500)
 
 const updateLiqList = useThrottleFn(() => {
@@ -286,38 +345,44 @@ function confirmVolFilter(amountU: string[] = []) {
 }
 
 function confirmMakersFilter(markerAddress = '') {
+  txCount.value = {}
   tableFilterVisible.value.markers = false
   tableFilter.value.markerAddress = markerAddress
+  _getTokenTxs()
 }
 
-async function _getPairTxs() {
+async function _getTokenTxs() {
   try {
     listStatus.value.loadingTxs = true
-    const {tag_type} = tableFilter.value
+    const { tag_type } = tableFilter.value
     const getPairTxsParams = {
-      pair: pairAddress.value + '-' + addressAndChain.value.chain,
-      tag_type
+      token_id: route.params.id as string,
+      tag_type,
+      maker: tableFilter.value.markerAddress
     }
-    const res = await getPairTxs(getPairTxsParams)
-    pairTxs.value = (res || []).reverse().map(val => {
+    const res = await getTokenTxs(getPairTxsParams)
+    realAddress.value = getAddressAndChainFromId(getPairTxsParams.token_id).address
+    tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
-      const {wallet_tag, topN} = getWalletTag(val)
+      const { wallet_tag, topN } = getWalletTag(val)
       return {
         ...val,
         wallet_tag,
         topN,
         count: txCount.value[val.wallet_address],
-        senderProfile: JSON.parse(val.profile || '{}')
+        senderProfile: JSON.parse(val.profile || '{}'),
+        uuid: uuid()
       }
     }).reverse()
   } catch (e) {
+    tokenTxs.value = []
     console.log('=>(transactions.vue:62) e', e)
   } finally {
     listStatus.value.loadingTxs = false
   }
 }
 
-function getWalletTag(val: GetPairTxsResponse) {
+function getWalletTag(val: IGetTokenTxsResponse) {
   const wallet_tagStr = val.wallet_tag_v2 || ''
   let topN = ''
   let wallet_tag: string[] = []
@@ -342,10 +407,11 @@ async function _getPairLiq() {
     listStatus.value.loadingLiq = true
     const res = await getPairLiq(pairAddress.value + '-' + addressAndChain.value.chain)
     pairLiq.value = (res || []).reverse().map(val => {
-      txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
+      // txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       return {
         ...val,
-        count: txCount.value[val.wallet_address],
+        uuid: uuid()
+        // count: txCount.value[val.wallet_address],
       }
     }).reverse()
   } catch (e) {
@@ -355,11 +421,11 @@ async function _getPairLiq() {
   }
 }
 
-function isBuy(row: GetPairLiqResponse | GetPairTxsResponse) {
+function isBuy(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('from_address' in row) {
     if (
       row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.from_address?.toLowerCase?.()
     ) {
       return false
     }
@@ -368,14 +434,14 @@ function isBuy(row: GetPairLiqResponse | GetPairTxsResponse) {
   if ('to_address' in row) {
     if (
       row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.to_address.toLowerCase?.()
     ) {
       return true
     }
   }
 }
 
-function getRowColor(row: GetPairLiqResponse | GetPairTxsResponse) {
+function getRowColor(row: GetPairLiqResponse | IGetTokenTxsResponse) {
   if ('type' in row) {
     if (row.type === 'addLiquidity') {
       return 'color-#65C4ED'
@@ -386,8 +452,9 @@ function getRowColor(row: GetPairLiqResponse | GetPairTxsResponse) {
   return isBuy(row) ? 'color-#12B886' : 'color-#FF646D'
 }
 
-function getPrice(row: GetPairLiqResponse | GetPairTxsResponse, isShowToken = false) {
-  const tokenAddress = addressAndChain.value.address
+function getPrice(row: GetPairLiqResponse | IGetTokenTxsResponse, isShowToken = false) {
+  // route.params。id 同步更改，而接口异步请求，此时更新该值变成了 0
+  const tokenAddress = realAddress.value
   if ('from_address' in row) {
     if (
       row.from_address &&
@@ -418,11 +485,11 @@ function getPrice(row: GetPairLiqResponse | GetPairTxsResponse, isShowToken = fa
   return 0
 }
 
-function getAmount(row: GetPairLiqResponse | GetPairTxsResponse, needPrice = false, isVolUSDT = false) {
+function getAmount(row: GetPairLiqResponse | IGetTokenTxsResponse, needPrice = false, isVolUSDT = false) {
   if ('from_address' in row) {
     if (
       row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.from_address?.toLowerCase?.()
     ) {
       return row.from_amount * (
         needPrice ? Number(isVolUSDT ? row.from_price_usd : row.from_price_eth)
@@ -434,7 +501,7 @@ function getAmount(row: GetPairLiqResponse | GetPairTxsResponse, needPrice = fal
   if ('to_address' in row) {
     if (
       row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address.toLowerCase?.()
+      realAddress.value.toLowerCase?.() === row.to_address.toLowerCase?.()
     ) {
       return row.to_amount * (
         needPrice ? Number(isVolUSDT ? row.to_price_usd : row.to_price_eth)
@@ -445,12 +512,12 @@ function getAmount(row: GetPairLiqResponse | GetPairTxsResponse, needPrice = fal
   return 0
 }
 
-function hasNewAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { senderProfile?: Profile }) {
+function hasNewAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderProfile?: Profile }) {
   if (row?.newTags?.some?.(i => i?.type === '8')) {
     return false
   }
   if (
-    addressAndChain.value.address.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
+    realAddress.value.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
   ) {
     return row.senderProfile?.token0HasNewAccount
   } else {
@@ -458,12 +525,12 @@ function hasNewAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { sender
   }
 }
 
-function hasClearedAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { senderProfile?: Profile }) {
+function hasClearedAccount(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderProfile?: Profile }) {
   if (isBuy(row) || row.newTags?.some?.(i => i?.type === '8')) {
     return false
   }
   if (
-    addressAndChain.value.address.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
+    realAddress.value.toLowerCase?.() === row.senderProfile?.token0Address?.toLowerCase?.()
   ) {
     return row.senderProfile?.token0HasClearedAccount
   } else {
@@ -471,29 +538,25 @@ function hasClearedAccount(row: (GetPairLiqResponse | GetPairTxsResponse) & { se
   }
 }
 
-function bigWallet(row: (GetPairLiqResponse | GetPairTxsResponse) & { senderProfile?: Profile }) {
+function bigWallet(row: (GetPairLiqResponse | IGetTokenTxsResponse) & { senderProfile?: Profile }) {
   if (row?.newTags?.some?.(i => i.type === '8')) {
     return false
   }
   return Number(row.senderProfile?.solTotalHolding) > 50
 }
 
-function getGradient(row: GetPairTxsResponse) {
+function getGradient(row: IGetTokenTxsResponse) {
   const str = `${useThemeStore().isDark}-${isBuy(row)}`
   const map = {
-    'true-true': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.1)_0%,rgba(18,184,134,0.1)_100%)]',
-    'true-false': 'bg-[linear-gradient(270deg,rgba(17,17,17,0.1)_0%,rgba(246,70,93,0.1)_100%)]',
-    'false-false': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.1)_0%,rgba(246,70,93,0.1)_100%)]',
-    'false-true': 'bg-[linear-gradient(270deg,rgba(255,255,255,0.1)_0%,rgba(18,184,134,0.1)_100%)]',
+    'true-true': 'bg-[linear-gradient(270deg,#111_0%,#12654C_70%,#12B886_100%)]',
+    'true-false': 'bg-[linear-gradient(270deg,#111_0%,#7F2A36_70%,#F6465D_100%)]',
+    'false-false': 'bg-[linear-gradient(270deg,#FFF_0%,#88DBC3_70%,#12B886_100%)]',
+    'false-true': 'bg-[linear-gradient(270deg,#FFF_0%,#FBA2AE_70%,#F6465D_100%)]',
   } as { [key: string]: string }
   return map[str]
 }
 
-function updateRemark() {
-
-}
-
-function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile }, e: MouseEvent) {
+function openMarkerTooltip(row: IGetTokenTxsResponse & { senderProfile: Profile }, e: MouseEvent) {
   if (row && MAKER_SUPPORT_CHAINS.includes(row.chain)) {
     makerTooltip.value = e.currentTarget
     if (currentRow.value?.wallet_address === row.wallet_address) {
@@ -503,13 +566,14 @@ function openMarkerTooltip(row: GetPairTxsResponse & { senderProfile: Profile },
   }
 }
 
-function goBrowser(row: GetPairTxsResponse) {
+function goBrowser(row: IGetTokenTxsResponse) {
   window.open(
     formatExplorerUrl(row.chain, row.transaction, 'tx')
   )
 }
 
-function setActiveTab(val: string) {
+const tabsContainer = ref<HTMLElement | null>(null)
+function setActiveTab(val: string,index:number) {
   activeTab.value = val
   if (val === '-100' && !botStore.evmAddress) {
     throw new Error('')
@@ -517,133 +581,141 @@ function setActiveTab(val: string) {
   txCount.value = {}
   tableFilter.value.tag_type = val
   if (val !== 'liquidity') {
-    _getPairTxs()
+    _getTokenTxs()
   } else {
     _getPairLiq()
   }
+  scrollTabToCenter(tabsContainer,index)
 }
 
 function setMakerAddress(address: string) {
+  txCount.value = {}
   tableFilter.value.markerAddress = tableFilter.value.markerAddress ? '' : address
+  _getTokenTxs()
 }
 
-function onRowClick({rowData}: RowEventHandlerParams) {
-  const {symbol, logo_url, chain, token: _token} = token.value!
-  const {target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress} = pair.value!
-  tokenDetailSStore.$patch({
-    drawerVisible: true,
-    tokenInfo: {
-      id: route.params.id!,
-      symbol,
-      logo_url,
-      chain,
-      address: _token,
-      remark: rowData.remark!,
-    },
-    pairInfo: {
-      target_token,
-      token0_address,
-      token0_symbol,
-      token1_symbol,
-      pairAddress
-    },
-    user_address: rowData.wallet_address
-  })
+function onRowClick({ rowData }: RowEventHandlerParams) {
+  if (!token.value) {
+    return
+  }
+  if (SupportFullDataChain.includes(token.value.chain)) {
+    const { symbol, logo_url, chain, token: _token } = token.value
+    const { target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress } = pair.value!
+    tokenDetailSStore.$patch({
+      drawerVisible: true,
+      tokenInfo: {
+        id: route.params.id! as string,
+        symbol,
+        logo_url,
+        chain,
+        address: _token,
+        remark: rowData.remark!,
+      },
+      pairInfo: {
+        target_token,
+        token0_address,
+        token0_symbol,
+        token1_symbol,
+        pairAddress
+      },
+      user_address: rowData.wallet_address
+    })
+  } else {
+    window.open(formatExplorerUrl(token.value.chain, rowData.transaction, 'tx'))
+  }
+
+}
+
+function resetMakerAddress() {
+  txCount.value = {}
+  tableFilter.value.markerAddress = ''
+  _getTokenTxs()
 }
 </script>
 
 <template>
   <div class="transactions">
     <div class="px-12px mb-10px flex justify-between">
-      <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
+      <div
+        ref="tabsContainer"
+        class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide"
+      >
         <a
-          v-for="(item) in tabs"
-          :key="item.value" href="javascript:;"
-          :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
-         ${activeTab===item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]':''}`"
-          @click="setActiveTab(item.value)"
-        >
+          v-for="(item,index) in tabs" :key="item.value" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-666-l-999] px-12px py-4px rounded-4px
+         ${activeTab === item.value ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]' : ''}`"
+          @click="setActiveTab(item.value,index)">
           {{ item.label }}
         </a>
       </div>
       <div v-show="isPausedTxs" class="flex items-center color-#FFA622 text-12px">
-        <Icon name="custom:stop"/>
+        <Icon name="custom:stop" />
         <span class="ml-3px">{{ $t('paused') }}</span>
       </div>
     </div>
-    <template
-      v-if="tableFilter.markerAddress"
-    >
+    <template v-if="tableFilter.markerAddress">
       <div
-          v-if="listStatus.loadingTxs || listStatus.loadingLiq"
-          class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
-        >
-          {{ $t('loading') }}
+        v-if="listStatus.loadingTxs || listStatus.loadingLiq"
+        class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px">
+        {{ $t('loading') }}
       </div>
       <template v-else>
-        <div
-          class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px"
-          v-html="$t('filterTip',{
-          address:`<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0,4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
-          count:`<span>&nbsp;${filterTableList[0]?.count}&nbsp;</span>`
-         })"
-        />
+        <div class="lh-20px text-13px py-6px bg-#3F80F71A text-center mb-12px flex justify-center">
+          <div
+            v-html="$t('filterTip', {
+            address: `<span class='color-#3F80F7'>&nbsp;${tableFilter.markerAddress.slice(0, 4)}...${tableFilter.markerAddress.slice(-4)}&nbsp;</span>`,
+            count: `<span>&nbsp;${filterTableList[0]?.count || 0}&nbsp;</span>`
+          })" />
+          <span class='color-#3F80F7 decoration-underline cursor-pointer ml-2px' @click.stop="resetMakerAddress">
+            {{ $t('filterCancel') }}
+          </span>
+        </div>
         <UserTxsFilterHead
-          :makerAddress="tableFilter.markerAddress"
-          :isLiquidity="isLiquidity"
-          :pairLiq="pairLiq"
-          :isBuy="isBuy"
-          :getAmount="getAmount"
-          :getPrice="getPrice"
-          :chain="addressAndChain.chain"
+          :makerAddress="tableFilter.markerAddress" :isLiquidity="isLiquidity" :pairLiq="pairLiq"
+          :isBuy="isBuy" :getAmount="getAmount" :getPrice="getPrice" :chain="addressAndChain.chain"
           :tagType="tableFilter.tag_type"
+          :tokenTxs="tokenTxs"
         />
       </template>
     </template>
-    <div v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px">
+    <div
+      v-loading="listStatus.loadingTxs || listStatus.loadingLiq" class="text-12px"
+      element-loading-background="transparent">
       <AveTable
-        :data="filterTableList"
+        ref="aveTableRef"
+        rowKey="uuid"
+        fixed :data="filterTableList"
         :columns="columns"
-        class="h-560px"
-        :rowEventHandlers="{
-          onMouseenter:()=>{
-            isPausedTxs = true
-          },
-          onMouseleave:()=>{
-            isPausedTxs = false
-          },
-          onClick:onRowClick
+        :style="{
+          height:`${finalHeight}px`
         }"
-      >
+        row-class='cursor-pointer'
+        :rowEventHandlers="{
+        onMouseenter:()=>isHoverTable=true,
+        onMouseleave:()=>isHoverTable=false,
+        onClick: onRowClick
+      }">
         <template #header-time>
           <div class="flex items-center gap-2px">
             <span>{{ $t('time') }}</span>
             <Icon
-              :name="`${tableView.isShowDate?'custom:calendar':'custom:countdown'}`"
-              class="color-[--d-666-l-999] cursor-pointer"
-              @click.self="tableView.isShowDate=!tableView.isShowDate"
-            />
+              :name="`${tableView.isShowDate ? 'custom:calendar' : 'custom:countdown'}`"
+              class="color-[--d-666-l-999] cursor-pointer" @click.self="tableView.isShowDate = !tableView.isShowDate" />
             <TableDateFilter
-              v-model:visible="tableFilterVisible.timestamp"
-              :modelValue="tableFilter.timestamp"
-              @confirm="onTimestampConfirm"
-            />
+              v-model:visible="tableFilterVisible.timestamp" :modelValue="tableFilter.timestamp"
+              @confirm="onTimestampConfirm" />
           </div>
         </template>
-        <template #cell-time="{row}">
+        <template #cell-time="{ row,rowIndex }">
           <TimerCount
-            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time,true)) < 60"
-            :key="row.time"
-            :timestamp="row.time"
-            :end-time="60"
-          >
-            <template #default="{seconds}">
+            v-if="!tableView.isShowDate && row.time && Number(formatTimeFromNow(row.time, true)) < 60"
+            :key="`${row.time}${rowIndex}`" :timestamp="row.time" :end-time="60">
+            <template #default="{ seconds }">
               <span class="color-[--d-999-l-666]">
-                <template v-if="seconds<60">
-                  {{ seconds }}{{ $t('ss') }}
+                <template v-if="seconds < 60">
+                  {{ seconds }}s
                 </template>
                 <template v-else>
-                  {{ dayjs(row.time * 1000).fromNow() }}
+                  {{ formatTimeFromNow(row.time) }}
                 </template>
               </span>
             </template>
@@ -652,24 +724,24 @@ function onRowClick({rowData}: RowEventHandlerParams) {
             {{
               tableView.isShowDate
                 ? formatDate(row.time, 'HH:mm:ss')
-                : dayjs(row.time * 1000).fromNow()
+                : formatTimeFromNow(row.time)
             }}
           </span>
         </template>
-        <template #cell-type="{row}">
+        <template #cell-type="{ row }">
           <div :class="getRowColor(row)">
             <span v-if="row.type !== undefined">
               <template v-if="row.type == 'removeLiquidity'">
-                  {{ $t('removeLiq') }}
+                {{ $t('removeLiq') }}
               </template>
               <template v-else-if="row.type == 'addLiquidity'">
-                  {{ $t('addLiq') }}
+                {{ $t('addLiq') }}
               </template>
               <template v-else-if="row.type == 'CollectFee'">
-                  {{ $t('CollectFee') }}
+                {{ $t('CollectFee') }}
               </template>
               <template v-else>
-                  {{ row.type }}
+                {{ row.type }}
               </template>
             </span>
             <span v-else-if="isBuy(row)">{{ $t('buy') }}</span>
@@ -686,11 +758,11 @@ function onRowClick({rowData}: RowEventHandlerParams) {
             <!--/>-->
           </div>
         </template>
-        <template #cell-swapPrice="{row}">
+        <template #cell-swapPrice="{ row }">
           <template v-if="row.type !== undefined">- -</template>
           <div v-else :class="getRowColor(row)">
             <!--<template v-if="tableView.isSwapPriceUSDT">-->
-              ${{ formatNumber(getPrice(row), 4) }}
+            ${{ formatNumber(getPrice(row), 4) }}
             <!--</template>-->
             <!--<template v-else>-->
             <!--  {{ formatNumber(getPrice(row, true), 4) }}-->
@@ -698,10 +770,9 @@ function onRowClick({rowData}: RowEventHandlerParams) {
             <!--</template>-->
           </div>
         </template>
-        <template #cell-amountB="{row}">
+        <template #cell-amountB="{ row }">
           <span v-if="row.type === undefined" :class="getRowColor(row)">
             {{ formatNumber(getAmount(row), 2) }}
-            <span class="color-[--d-999-l-666]">{{ token?.symbol }}</span>
           </span>
           <div v-else>
             <div :class="getRowColor(row)">
@@ -722,30 +793,20 @@ function onRowClick({rowData}: RowEventHandlerParams) {
           <div class="flex items-center gap-2px">
             <span>{{ $t('amountU') }}</span>
             <Icon
-              :name="`${tableView.isVolUSDT?'custom:u':'custom:b'}`"
-              class="color-[--d-666-l-999] cursor-pointer"
-              @click.self="tableView.isVolUSDT=!tableView.isVolUSDT"
-            />
+              name="custom:price"
+              :class="`${tableView.isVolUSDT ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'} cursor-pointer`"
+              @click.self="tableView.isVolUSDT = !tableView.isVolUSDT" />
             <VolFilter
-              v-model:visible="tableFilterVisible.amountU"
-              :modelValue="tableFilter.amountU"
-              @confirm="confirmVolFilter"
-            />
+              v-model:visible="tableFilterVisible.amountU" :modelValue="tableFilter.amountU"
+              @confirm="confirmVolFilter" />
           </div>
         </template>
-        <template #cell-amountU="{row}">
+        <template #cell-amountU="{ row }">
           <div
-            v-if="row.type===undefined"
-            :class="`absolute h-full ${getGradient(row)}`"
-            :style="`width:${Math.min(getAmount(row,true,true)/20,100)}%`"
-          />
-          <div
-            v-if="row.type===undefined"
-            :class="`${getRowColor(row)} w-full h-full flex items-center justify-end`"
-          >
-            <template
-              v-if="tableView.isVolUSDT"
-            >
+            v-if="row.type === undefined" :class="`absolute h-full ${getGradient(row)} opacity-15`"
+            :style="`width:${Math.min(getAmount(row, true, true) / 20, 100)}%`" />
+          <div v-if="row.type === undefined" :class="`${getRowColor(row)} w-full h-full flex items-center justify-end`">
+            <template v-if="tableView.isVolUSDT">
               ${{ formatNumber(getAmount(row, true, true), 2) }}
             </template>
             <template v-else>
@@ -755,13 +816,8 @@ function onRowClick({rowData}: RowEventHandlerParams) {
               </span>
             </template>
           </div>
-          <div
-            v-else
-            :class="getRowColor(row)"
-          >
-            <template
-              v-if="tableView.isVolUSDT"
-            >
+          <div v-else :class="getRowColor(row)">
+            <template v-if="tableView.isVolUSDT">
               ${{ formatNumber(row.amount0 * row.token0_price_usd + row.amount1 * row.token1_price_usd, 2) }}
             </template>
             <template v-else>
@@ -775,48 +831,33 @@ function onRowClick({rowData}: RowEventHandlerParams) {
         <template #header-makers>
           <span class="mr-2px">{{ $t('makers') }}</span>
           <MakersFilter
-            v-model:visible="tableFilterVisible.markers"
-            :modelValue="tableFilter.markerAddress"
-            :chain="addressAndChain.chain"
-            @confirm="confirmMakersFilter"
-          />
+            v-model:visible="tableFilterVisible.markers" :modelValue="tableFilter.markerAddress"
+            :chain="addressAndChain.chain" @confirm="confirmMakersFilter" />
         </template>
-        <template #cell-makers="{row}">
-          <template v-if="['solana','bsc'].includes(row.chain)&&row.senderProfile">
+        <template #cell-makers="{ row }">
+          <template v-if="['solana', 'bsc'].includes(row.chain) && row.senderProfile">
             <Icon
               v-if="hasNewAccount(row)"
-              v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`"
-              name="custom:new-account"
-              class="mr-3px"
-            />
+              v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`" name="custom:new-account"
+              class="mr-3px shrink-0"/>
             <Icon
-              v-if="hasClearedAccount(row)"
-              v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
-              name="custom:cleared-account"
-              class="mr-3px"/>
+              v-if="hasClearedAccount(row)" v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
+              name="custom:cleared-account" class="mr-3px shrink-0"/>
             <Icon
-              v-if="bigWallet(row)"
-              v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
-              name="custom:big"
-              class="mr-3px"
-            />
+              v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
+              name="custom:big" class="mr-3px shrink-0"/>
           </template>
           <SignalTags
-            tagClass="mr-3px"
-            :tags="row.newTags"
-            :walletAddress="row.wallet_address"
-            :chain="row.chain"
-          />
+            tagClass="mr-3px" :tags="(row.newTags||[]).map((el: any)=>tagStore.matchTag(el.type))"
+                      :walletAddress="row.wallet_address" :chain="row.chain"/>
           <div :key="row.wallet_address" class="flex items-center gap-4px">
             <UserRemark
-              v-if="MAKER_SUPPORT_CHAINS.includes(row.chain)"
               :remark="row.remark"
               :address="row.wallet_address"
+              :maxRemarkLength="8"
               :chain="row.chain"
-              :wallet_logo="row.wallet_logo"
-              class="color-[--d-999-l-666]"
-              :mouseoverAddress="e=>openMarkerTooltip(row,e)"
-              @update-remark="updateRemark"
+              :wallet_logo="row.wallet_logo" class="color-[--d-999-l-666]"
+              :mouseoverAddress="e => openMarkerTooltip(row, e)"
             >
               <div v-if="row.count && row.count > 1">
                 ({{ row.count }})
@@ -824,76 +865,54 @@ function onRowClick({rowData}: RowEventHandlerParams) {
             </UserRemark>
             <Icon
               name="custom:filter"
-              :class="`${tableFilter.markerAddress?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
-              @click.self.stop="setMakerAddress(row.wallet_address)"
-            />
+              :class="`${tableFilter.markerAddress ? 'color-[--d-999-l-666]' : 'color-[--d-666-l-999]'} cursor-pointer text-10px shrink-0`"
+              @click.self.stop="setMakerAddress(row.wallet_address)" />
           </div>
         </template>
-        <template #cell-SOLBalance="{row}">
+        <template #cell-SOLBalance="{ row }">
           <span v-if="row.senderProfile" class="color-[--d-999-l-666]">
             {{ formatNumber(row.senderProfile?.solTotalHolding || 0, 2) }}
           </span>
         </template>
-        <template #cell-DEX="{row}">
+        <template #cell-DEX="{ row }">
           <div class="flex justify-end gap-8px">
             <img
-              v-if="row.amm === 'unknown'"
-              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
-              class="w-16px h-16px cursor-pointer" :src="IconUnknown"
-              alt=""
-            >
+              v-if="row.amm === 'unknown'" v-tooltip="getSwapInfo(row.chain, row.amm)?.show_name"
+              class="w-16px h-16px cursor-pointer rounded-full" :src="IconUnknown" alt="">
             <img
               v-else
-              v-tooltip="getSwapInfo(row.chain,row.amm)?.show_name"
-              class="w-16px h-16px cursor-pointer"
-              :src="formatIconSwap(row.amm)"
-              alt=""
-            >
+              v-tooltip="getSwapInfo(row.chain, row.amm)?.show_name"
+              class="w-16px h-16px cursor-pointer rounded-full"
+              :src="formatIconSwap(row.amm)" alt="" @click.stop.self="goBrowser(row)">
             <Icon
-              name="custom:browser"
-              class="text-16px color-[--d-999-l-666] cursor-pointer"
-              @click.self="goBrowser(row)"
-            />
+              name="custom:browser" class="text-16px color-[--d-666-l-999] cursor-pointer"
+              @click.stop.self="goBrowser(row)" />
           </div>
         </template>
       </AveTable>
       <MarkerTooltip
-        :virtual-ref="makerTooltip"
-        :currentRow="currentRow"
-        :addressAndChain="addressAndChain"
+        :virtual-ref="makerTooltip" :currentRow="currentRow" :addressAndChain="addressAndChain"
+        v-model="markerTooltipVisible"
       >
-        <template v-if="['solana','bsc'].includes(currentRow.chain)&&currentRow.senderProfile">
+        <template v-if="['solana', 'bsc'].includes(currentRow.chain) && currentRow.senderProfile">
           <Icon
             v-if="hasNewAccount(currentRow)"
-            v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`"
-            name="custom:new-account"
-            class="mr-3px"
-          />
+            v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`" name="custom:new-account"
+            class="mr-3px" />
           <Icon
             v-if="hasClearedAccount(currentRow)"
-            v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
-            name="custom:cleared-account"
-            class="mr-3px"/>
+            v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`" name="custom:cleared-account"
+            class="mr-3px" />
           <Icon
-            v-if="bigWallet(currentRow)"
-            v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
-            name="custom:big"/>
+            v-if="bigWallet(currentRow)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
+            name="custom:big" />
         </template>
         <SignalTags
-          tagClass="mr-3px"
-          :tags="currentRow.newTags"
-          :walletAddress="currentRow.wallet_address"
-          :chain="currentRow.chain"
-        />
+          tagClass="mr-3px" :tags="currentRow.newTags" :walletAddress="currentRow.wallet_address"
+          :chain="currentRow.chain" />
       </MarkerTooltip>
     </div>
   </div>
 </template>
 
-<style>
-.transactions {
-  .el-table-v2__header-wrapper, .el-table-v2__header {
-    --at-apply: overflow-visible;
-  }
-}
-</style>
+<style></style>

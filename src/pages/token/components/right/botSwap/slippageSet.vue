@@ -29,7 +29,7 @@
               <!-- <span v-if="index !== 0" style="flex: 1"></span> -->
               <input
                 :id="`radio-${item}-${key}`"
-                v-model="slippageValue"
+                v-model="botSetting[selected].slippageValue"
                 type="radio"
                 :value="item"
                 :disabled="isAuto"
@@ -41,7 +41,7 @@
             <el-col :span="6">
               <div class="slippage-input">
                 <el-input-number
-                  v-model="customSlippage"
+                  v-model="botSetting[selected].customSlippage"
                   class="bg-[--d-333-l-F2F2F2] rounded-4px"
                   name="slippage"
                   type="number"
@@ -63,7 +63,7 @@
               </div>
             </el-col>
           </el-row>
-          <span v-if="slippageValue !== undefined && Number(slippageValue) <= 0.1" class="tip">{{ $t('slippageTip1') }}</span>
+          <span v-if="botSetting[selected].slippageValue !== undefined && Number(botSetting[selected].slippageValue) <= 0.1" class="tip">{{ $t('slippageTip1') }}</span>
         </div>
         <div v-if="isAutoSell" class="slippage-label mt-20px">
           <span class="mr-auto">{{ $t('autoSellHalf') }}</span>
@@ -139,7 +139,7 @@
             size="large"
             type="primary"
             native-type="submit"
-            :disabled="slippageValue == 0"
+            :disabled="botSetting[selected].slippageValue == 0"
           >
             {{ $t('confirm1') }}
           </el-button>
@@ -181,8 +181,8 @@ const botSetting = ref(cloneDeep(props.setting ?? {}))
 
 const selected = computed(() => botSetting.value.selected)
 
-const slippageValue = ref<number | undefined>()
-const customSlippage = ref<number | undefined>()
+// const slippageValue = ref<number | undefined>()
+// const customSlippage = ref<number | undefined>()
 
 watch(show, (val) => {
   if (val) {
@@ -190,30 +190,35 @@ watch(show, (val) => {
     botSetting.value = cloneDeep(props.setting ?? {})
     const s = botSetting.value[selected]?.slippage ?? 9
     isAuto.value = s === 'auto'
-    slippageValue.value = s === 'auto' ? undefined : Number(s)
-    customSlippage.value = s === 'auto' || slippageList.includes(Number(s)) ? undefined : Number(s)
+    botSetting.value[selected].slippageValue = s === 'auto' ? undefined : Number(s)
+    botSetting.value[selected].customSlippage = s === 'auto' || slippageList.includes(Number(s)) ? undefined : Number(s)
+  }
+})
+
+watch(() => botSetting.value.selected, (val) => {
+  if (show.value) {
+    if (!botSetting.value[val].slippageValue && !botSetting.value[val].customSlippage) {
+      const s = botSetting.value[val]?.slippage ?? 9
+      isAuto.value = s === 'auto'
+      botSetting.value[val].slippageValue = s === 'auto' ? undefined : Number(s)
+      botSetting.value[val].customSlippage = s === 'auto' || slippageList.includes(Number(s)) ? undefined : Number(s)
+    }
   }
 })
 
 watch(isAuto, (val) => {
   if (val) {
-    slippageValue.value = undefined
+    const selected = botSetting.value.selected
+    botSetting.value[selected].slippageValue = undefined
   } else {
     const selected = botSetting.value.selected
     const s = botSetting.value[selected]?.slippage ?? 9
-    slippageValue.value = s === 'auto' ? undefined : Number(s)
+    console.log(s)
+    botSetting.value[selected].slippageValue = s === 'auto' ? undefined : Number(s)
+    botSetting.value[selected].customSlippage = s === 'auto' || slippageList.includes(Number(s)) ? undefined : Number(s)
   }
 })
 
-watch(slippageValue, (val) => {
-  const selected = botSetting.value.selected
-  if (val === undefined) {
-    botSetting.value[selected].slippage = 'auto'
-  } else {
-    botSetting.value[selected].slippage = String(val)
-    customSlippage.value = slippageList.includes(val) ? undefined : val
-  }
-})
 
 const priorityText = computed(() => [`🐢 ${t('slow')}`, `🚗 ${t('normal')}`, `🚄 ${t('fast')}`])
 
@@ -231,18 +236,35 @@ const isCanMev = computed(() => {
 // other methods
 function changeSlippage() {
   if (!show.value) return
-  customSlippage.value = undefined
+  const selected = botSetting.value.selected
+  botSetting.value[selected].customSlippage = undefined
 }
 
 function handleCustomSlippage(val: number | undefined) {
   if (val) {
-    slippageValue.value = customSlippage.value
+    const selected = botSetting.value.selected
+    botSetting.value[selected].slippageValue = botSetting.value[selected].customSlippage
   }
 }
 
 
 function confirmSubmit() {
-  const setting = botSetting.value as typeof botSettingStore.botSettings[string]
+  const setting = cloneDeep(botSetting.value as typeof botSettingStore.botSettings[string])
+  const selected = botSetting.value.selected as 's1' | 's2' | 's3'
+  const slippageValue = botSetting.value[selected].slippageValue
+
+  if (setting?.[selected]) {
+    if (slippageValue === undefined) {
+      setting[selected].slippage = 'auto'
+    } else {
+      setting[selected].slippage = String(slippageValue)
+    };
+    ['s1', 's2', 's3'].forEach((s) => {
+      Reflect.deleteProperty(setting[s as 's1' | 's2' | 's3'], 'slippageValue')
+      Reflect.deleteProperty(setting[s as 's1' | 's2' | 's3'], 'customSlippage')
+    })
+  }
+
   if (setting?.selected) {
     if (props.chain === 'solana') {
       botSettingStore.botSettings = {

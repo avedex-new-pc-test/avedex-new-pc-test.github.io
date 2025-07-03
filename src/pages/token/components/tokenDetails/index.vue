@@ -7,7 +7,6 @@ import {
 } from '~/api/token'
 import LineChart from './lineChart.vue'
 import BaseInfo from '~/pages/token/components/tokenDetails/baseInfo.vue'
-import {templateRef} from '@vueuse/core'
 
 const tokenDetailsStore = useTokenDetailsStore()
 const symbol = computed(() => {
@@ -55,9 +54,10 @@ const lineChartList = shallowRef<GetTokenDetailsLineResponse[]>([])
 const marks = shallowRef<TMark[]>([])
 const loadingMark = ref(false)
 
-const baseRef = templateRef('baseRef')
+const baseRef = useTemplateRef('baseRef')
 watch(() => tokenDetailsStore.drawerVisible, val => {
   if (val) {
+    activeTime.value = 86400
     init()
     setTimeout(() => {
       if (baseRef.value) {
@@ -68,7 +68,6 @@ watch(() => tokenDetailsStore.drawerVisible, val => {
 })
 
 async function init() {
-  activeTime.value = 86400
   marks.value = []
   lineChartList.value = []
   await _getTokenDetailLine()
@@ -204,6 +203,7 @@ async function _getTokenDetailMarks(type: string) {
           >
             <LineChart
               v-loading="loadingLineChart"
+              element-loading-background="transparent"
               :active-time="activeTime"
               :marks="marks"
               :show-series="[true,true]"

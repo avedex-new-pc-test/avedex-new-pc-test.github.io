@@ -108,8 +108,8 @@
         <label
           class="el-form-item__label icon mb-0 justify-between!"
         >
-          <div
-            class="gap-8px flex items-center cursor-pointer"
+          <a
+            class="gap-8px flex items-center cursor-pointer decoration-underline color-[--d-F5F5F5-l-333]"
             @click="loginType = loginType === 'password' ? 'email' : 'password'"
           >
             {{
@@ -117,33 +117,33 @@
                 ? $t("startVcodeLogin")
                 : $t("startPwdLogin")
             }}
-            <el-icon class="h-11.33px w-13.33px">
+            <!-- <el-icon class="h-11.33px w-13.33px">
               <Switch />
-            </el-icon>
-          </div>
-          <div
-            class="gap-8px flex items-center cursor-pointer"
+            </el-icon> -->
+          </a>
+          <a
+            class="gap-8px flex items-center cursor-pointer decoration-underline color-[--d-F5F5F5-l-333]"
             @click.prevent="emit('update:c-type', 'reset')"
           >
             {{ $t("startForgetPassword") }}
-          </div>
+          </a>
         </label>
       </el-form-item>
-      <el-form-item :style="{ paddingTop: cType === 'login' ? '10px' : '0' }">
+      <el-form-item class="mb-10px!">
         <el-button
           class="btn"
-          :color="mode == 'dark' ? '#F5F5F5' : '#222222'"
+          :color="'#3F80F7'"
           size="large"
           :disabled="cType == 'register' && !form.agree"
           :loading="loading"
-          style="width: 100%; --el-button-disabled-text-color: #222222"
+          style="width: 100%;"
           @click="submitForm"
           >{{ $t("startSubmit") }}</el-button
         >
       </el-form-item>
       <p class="botFooter">
         <span :style="lang == 'en' ? { 'margin-right': '10px' } : ''">{{
-          cType == "register" ? $t("startBotFooter11") : ""
+          cType == "register" ? $t("startBotFooter11") : $t("startBotFooter21")
         }}</span>
         <a
           v-if="cType == 'register'"
@@ -165,12 +165,14 @@
       <el-form-item
         v-if="cType == 'register'"
         size="small"
-        class="h-20px lh-20px mt-20px"
+        class="h-20px lh-20px mt-20px mb-0px!"
       >
         <el-checkbox v-model="form.agree" class="text-[#999] mx-auto! my-0">
           {{ $t("startFooter1") }}&nbsp;
           <el-link
             type="primary"
+            :underline="false"
+            class="decoration-underline!"
             :href="
               !lang?.includes?.('zh-')
                 ? 'https://doc.ave.ai/cn/yong-hu-xie-yi'
@@ -180,7 +182,7 @@
             >&nbsp;{{ $t("startFooter2") }}</el-link
           >
           &nbsp;{{ $t("startFooter3") }}
-          <el-link type="primary" href="https://ave.ai/privacy" target="_blank">
+          <el-link type="primary" :underline="false" href="https://ave.ai/privacy" target="_blank" class="decoration-underline!">
             &nbsp;{{ $t("startFooter4") }}</el-link
           >
         </el-checkbox>
@@ -193,51 +195,27 @@
     </el-divider>
     <ul v-show="cType === 'login'" class="w-loginByThird">
       <li class="relative">
-        <a
-          href="javascript:void(0)"
-          class="flex relative justify-center"
-        >
-          <img
-            v-show="loading4"
-            class="googleLoading cursor-pointer border-[none]"
-            src="@/assets/images/googleSVG.svg"
-            alt=""
-            width="36"
-            height="36"
-          >
+        <el-button class="w-[100%]" :color="isDark ? '#333' : '#F2F2F2'" :loading="loading4" :disabled="disabled4">
           <div id="g_id_onload" :class="[loading4 ? 'loading' : '']" />
-        </a>
+        </el-button>
       </li>
       <li>
-        <a
-          href="javascript:void(0)"
-          class="inline-block"
-          @click.stop="botStore.tgLogin()"
-          ><img src="@/assets/images/tg.png" width="53" height="56" >
-        </a>
+        <el-button class="inline-block w-[100%]" :color="isDark ? '#333' : '#F2F2F2'" @click.stop="botStore.tgLogin()"
+          ><img src="@/assets/images/tgIcon.svg" width="20" height="20" >
+        </el-button>
       </li>
     </ul>
     <!-- <slot v-if="cType == 'login'" name="nav" /> -->
   </div>
-  <!-- <loading
-    v-model:active="loading3"
-    :can-cancel="false"
-    loader="dots"
-    :opacity="0.2"
-    :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
-    color="var(--custom-primary-color)"
-    :is-full-page="false"
-  /> -->
 </template>
 
 <script setup lang="ts">
-import { ArrowUp, ArrowDown, Switch } from '@element-plus/icons-vue'
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import Cookies from 'js-cookie'
-import { ElMessage } from 'element-plus'
+import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 import sha256 from 'crypto-js/sha256'
-import { storeToRefs } from 'pinia'
+import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import Cookies from 'js-cookie'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type RuleForm = {
   email: string;
@@ -249,17 +227,16 @@ type RuleForm = {
 };
 
 console.log('emailRegisterAndLogin')
-// const { t } = useI18n()
 const userStore = useUserStore()
 const botStore = useBotStore()
 const {mode,lang,isDark} = storeToRefs(useGlobalStore())
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const props = defineProps({
   cType: {
     type: String,
     required: true,
     validator: (value: string) => {
-      return ['login', 'register'].includes(value)
+      return ['login', 'register', 'reset'].includes(value)
     },
   },
 })
@@ -273,6 +250,7 @@ const loading = ref(false)
 const loading2 = ref(false)
 const loading3 = ref(false)
 const loading4 = ref(true)
+const disabled4 = ref(true)
 const timer = ref<ReturnType<typeof setInterval> | undefined>(undefined)
 const loginType = ref('password')
 const showRefCode = ref(false)
@@ -361,7 +339,7 @@ function startCountdown() {
           loading2.value = false
         })
         .catch((err) => {
-          ElMessage.error(err)
+          ElMessage.error(String(err))
           loading2.value = false
         })
     } else {
@@ -421,7 +399,7 @@ function login() {
         })
         .catch((err) => {
           // store.commit('showMessage', { type: 'error', text: err });
-          ElMessage.error(err)
+          ElMessage.error(String(err))
         })
         .finally(() => {
           loading.value = false
@@ -458,7 +436,7 @@ function register() {
           }, 1500)
         })
         .catch((err) => {
-          ElMessage.error(err)
+          ElMessage.error(String(err))
           // store.commit('showMessage', { type: 'error', text: err })
         })
         .finally(() => {
@@ -498,7 +476,7 @@ function handleCredentialResponse(response: any) {
       botStore.changeConnectVisible(false)
     })
     .catch((err) => {
-      ElMessage.error(err)
+      ElMessage.error(String(err))
     })
     .finally(() => {
       loading3.value = false
@@ -516,11 +494,12 @@ function initGoogleLogin() {
     callback: handleCredentialResponse,
   })
   google.accounts.id.renderButton(document.getElementById('g_id_onload'), {
-    type: 'icon',
-    shape: 'circle',
+    type: 'standard',
+    shape: 'rectangular',
     theme: 'outline',
     text: 'signin_with',
     size: 'large',
+    width: 205,
   })
   const iframe = document.querySelector('#g_id_onload iframe') as HTMLElement
   const button = document.querySelector(
@@ -534,13 +513,13 @@ function initGoogleLogin() {
   iframe.onload = () => {
     iframe.style = `
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 40px;
-      height: 56px;
-      opacity: 0; 
-      pointer-events: auto; 
-      z-index: 1; 
+      top: -6px;
+      left: -91px;
+      width: 205px;
+      height: 32px;
+      opacity: 0;
+      pointer-events: auto;
+      z-index: 1;
     `
     loading4.value = false
   }
@@ -557,8 +536,16 @@ onMounted(() => {
     script.src = 'https://accounts.google.com/gsi/client'
     document.body.appendChild(script)
     script.onload = () => {
+      disabled4.value = false
       initGoogleLogin()
     }
+    // 设置一个延时，确保 Google 登录按钮加载完成
+    setTimeout(() => {
+      if(disabled4.value ){
+        loading4.value = false
+        disabled4.value = true
+      }
+    }, 5000)
   } else {
     initGoogleLogin()
   }
@@ -585,7 +572,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style style="scss" scoped>
+<style lang='scss' scoped>
 @keyframes rotate {
   from {
     transform: rotate(0deg);
@@ -598,9 +585,9 @@ onBeforeUnmount(() => {
 
 .w-divider {
   border-color: #333;
-  margin: 27px 0;
+  margin: 50px 0 40px 0;
   --el-bg-color: #222222;
-  --el-text-color-primary: #999999;
+  --el-text-color-primary: var(--d-666-l-CCC);
 }
 
 .w-emailRegister {
@@ -634,17 +621,6 @@ onBeforeUnmount(() => {
 
   .btn {
     height: 48px;
-
-    /* :deep() &.el-button {
-      color: #000000;
-      background-color: #F5F5F5;
-    } */
-
-    /* :deep() &.el-button.is-disabled,
-    :deep() &.el-button.is-disabled:hover {
-      color: #000000;
-      background-color: rgb(248, 248, 248);
-    } */
   }
 
   .el-link.el-link--primary {
@@ -692,10 +668,12 @@ onBeforeUnmount(() => {
   ul.w-loginByThird {
     display: flex;
     justify-content: center;
-    gap: 38px;
+    gap: 20px;
     align-items: flex-start;
     flex-wrap: nowrap;
-
+    >li{
+      flex: 1;
+    }
     .googleLoading {
       display: inline-block;
       width: 36px;
@@ -714,7 +692,7 @@ onBeforeUnmount(() => {
     font-size: 14px;
     height: 20px;
     margin: 0;
-    margin-top: 20px;
+    margin-bottom: 10px;
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -751,19 +729,6 @@ onBeforeUnmount(() => {
 
 .light {
   &.w-emailRegister {
-    /* .btn {
-      :deep() &.el-button {
-        color: #F5F5F5;
-        background-color: #333333;
-      }
-
-      :deep() &.el-button.is-disabled,
-      :deep() &.el-button.is-disabled:hover {
-        color: #F5F5F5;
-        background-color: #333333c2;
-      }
-    } */
-
     .el-link.el-link--primary {
       --el-link-text-color: #333333;
       --el-link-hover-text-color: #333333;
@@ -809,7 +774,6 @@ onBeforeUnmount(() => {
       color: #ffffff;
       border-color: #d8d8dc;
       --el-bg-color: #ffffff;
-      --el-text-color-primary: #999;
     }
 
     .botFooter {
@@ -826,14 +790,9 @@ onBeforeUnmount(() => {
 }
 
 :deep() #g_id_onload {
-  width: 40px;
-  height: 56px;
-  background: url("@/assets/images/google.png") center no-repeat;
+  width: 20px;
+  height: 20px;
+  background: url("@/assets/images/ggIcon.svg") center no-repeat;
   background-size: cover;
-
-  &.loading {
-    background: url("@/assets/images/googleLoading.png") center no-repeat;
-    background-size: cover;
-  }
 }
 </style>

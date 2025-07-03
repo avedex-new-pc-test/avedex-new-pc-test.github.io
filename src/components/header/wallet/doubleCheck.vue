@@ -60,7 +60,7 @@
                       <template #suffix>
                         <a
                           v-copy="googleAuth.secret" href="javascript:void(0)"
-                          :class="`text-14px font-400 lh-20px text-left text-from-font decoration-none text-[#3F80F7]`">Copy</a>
+                          class="text-14px font-400 lh-20px text-left text-from-font decoration-none text-#3F80F7">Copy</a>
                       </template>
                     </el-input>
                     <canvas id="qr-google-canvas" />
@@ -189,7 +189,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import { Back, Right } from '@element-plus/icons-vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
@@ -217,7 +217,7 @@ const props = defineProps({
 const emit = defineEmits(['update:showVisible', 'update:authCode', 'update:emailCode', 'action'])
 const { mode, lang } = storeToRefs(useGlobalStore())
 const { isDark } = useThemeStore()
-const { t } = useGlobalStore()
+const { t } = useI18n()
 const userStore = useUserStore()
 
 

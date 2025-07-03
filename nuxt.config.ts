@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/eslint',
-    '@nuxt/fonts',
+    // '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
@@ -28,23 +28,33 @@ export default defineNuxtConfig({
       ga: process.env.NUXT_PUBLIC_GA
     }
   },
-  fonts: {
-    families: [
-      {
-        name: 'DINPro-Medium',
-        src: '/fonts/DINPro-Medium.woff2',
-        global: true,
-        weight: 'normal',
-        style: 'normal',
-        // unicodeRange: 'U+0030-0039',
-        preload: true
-      }
-    ],
-    providers: {
-      google: false,
-      googleicons: false
-    }
-  },
+  // fonts: {
+  //   families: [
+  //     {
+  //       name: 'DINPro-regular',
+  //       src: '/fonts/DINPro-regular.otf',
+  //       global: true,
+  //       weight: 'normal',
+  //       style: 'normal',
+  //       // unicodeRange: 'U+0030-0039',
+  //       preload: true
+  //     },
+  //     {
+  //       name: 'Poppins-regular',
+  //       src: '/fonts/Poppins-Regular.ttf',
+  //       global: true,
+  //       weight: 'normal',
+  //       style: 'normal',
+  //       unicodeRange: 'U+4E00-9FFF',
+  //       preload: true
+
+  //     }
+  //   ],
+  //   providers: {
+  //     google: false,
+  //     googleicons: false
+  //   }
+  // },
   icon: {
     // 可根据情况配置：
     // mode: 'auto' | 'local' | 'cdn'
@@ -77,12 +87,16 @@ export default defineNuxtConfig({
   css: [
     // 可以在这里添加 UnoCSS 的基础样式（如果需要的话）
     // 'uno.css',
+    '@/assets/css/font.css',
     '@/assets/css/reset.css',
     '@/assets/css/var.scss',
     '@/assets/css/style.scss',
     '@/assets/css/element-plus/reset.scss'
   ],
   plugins: [
+    // 添加 gameanalytics
+    '@/plugins/core-js.ts',
+    '@/plugins/gameanalytics.client.ts',
     '@/plugins/directives/index.ts', // 引入自定义指令插件
     '@/plugins/pwa-meta.client.ts', // 引入 pwa-meta 插件
     '@/plugins/i18n-sync.client.ts',
@@ -135,9 +149,14 @@ export default defineNuxtConfig({
         },
       }
     },
-    optimizeDeps: {
-      include: ['lodash-unified'],
+    $client: {
+      optimizeDeps: {
+        include: ['lodash-unified'],
+      }
     },
+    // optimizeDeps: {
+    //   include: ['lodash-unified'],
+    // },
     build: {
       minify: 'terser',
       sourcemap: !isProd,
@@ -192,10 +211,20 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,json,woff2}'],
+      navigateFallback: null,
+      globPatterns: ['**/*.{js,css,ico,png,jpg,jpeg,svg,webp,json,woff2,otf,ttf,woff}'],
       maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 设置为 3 MiB
-      cleanupOutdatedCaches: true
+      cleanupOutdatedCaches: true,
+      runtimeCaching: [
+        {
+          urlPattern: ({ request }) => request.destination === 'document',
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'html-cache',
+            expiration: { maxAgeSeconds: 0 },
+          },
+        },
+      ],
     },
   },
 

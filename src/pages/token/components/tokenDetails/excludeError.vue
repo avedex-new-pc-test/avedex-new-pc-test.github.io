@@ -2,14 +2,14 @@
 defineProps({
   modelValue: {
     type: [Number, String],
-    required: true
+    default: ''
   }
 })
 </script>
 
 <template>
   <template v-if="Number(modelValue)===0">0</template>
-  <template v-else-if="modelValue==='--'">0</template>
+  <template v-else-if="modelValue==='--'">--</template>
   <slot v-else/>
 </template>
 

@@ -6,7 +6,11 @@
     :size="430"
     class="draw-right"
   >
-    <div class="check-container bg-[--d-222-l-fff] h-100vh">
+    <div class="check-container bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]">
+      <div class="flex items-center justify-between text-20px p-20px sticky top-0 bg-[--d-222-l-FFF] z-1">
+        <span>{{ $t('check2') }}</span>
+        <Icon name="ri:close-large-fill" class="clickable" @click.stop="visible = false" />
+      </div>
       <div class="check-content">
         <el-row v-if="showResult" :gutter="20">
           <el-col :span="24">
@@ -73,8 +77,8 @@
                   v-if="statistics_warning"
                   src="@/assets/images/yichang1-gaoliang.svg"
                   :width="12"
-                />
-                <img v-else :width="12" src="@/assets/images/yichang1.svg" />
+                >
+                <img v-else :width="12" src="@/assets/images/yichang1.svg" >
                 <span class="num">{{ statistics_warning }}</span>
               </div>
               <div class="item1">
@@ -82,8 +86,8 @@
                   v-if="statistics_unknown"
                   :width="12"
                   src="@/assets/images/zhuyi1-gaoliang.svg"
-                />
-                <img v-else :width="12" src="@/assets/images/zhuyi1.svg" />
+                >
+                <img v-else :width="12" src="@/assets/images/zhuyi1.svg" >
                 <span class="num">{{ statistics_unknown }}</span>
               </div>
             </div>
@@ -92,43 +96,24 @@
             <div class="card card1">
               <ul>
                 <template
-                  v-for="(item, index) in showRiskList ||
-                  checkResult?.chain === 'solana'
-                    ? riskList
-                    : riskList?.slice(0, 2)"
+                  v-for="(item, index) in (showRiskList || checkResult?.chain === 'solana' ? riskList : riskList?.slice(0, 2))"
                   :key="index"
                 >
                   <li
                     v-if="item[0] === 0.6"
                     class="card-list-item flex-start hover"
                   >
-                    <el-tooltip
-                      effect="customized"
-                      :content="t('notSurePermissionRemovalRemovesRisk')"
-                      placement="top-start"
-                    >
                       <div
-                        style="
-                          display: inline-flex;
-                          align-items: center;
-                          color: currentColor;
-                        "
+                        v-tooltip="t('notSurePermissionRemovalRemovesRisk')"
+                        class="inline-flex items-center color-[currentColor]"
                       >
-                        <!-- <svg
-                          class="icon-svg"
-                          style="cursor: default"
-                          aria-hidden="true"
-                        >
-                          <use :xlink:href="`#icon-${riskStatus[item[0]]}`" />
-                        </svg> -->
                         <img
                           :src="getAssetsImagesUrl(riskStatus[item[0]])"
                           width="12px"
                           alt=""
-                        />
-                        <span class="risk-message">{{ item[1] }}</span>
+                        >
+                        <span class="color-[--d-999-l-666] ml-5px">{{ item[1] }}</span>
                       </div>
-                    </el-tooltip>
                   </li>
                   <li
                     v-else
@@ -146,8 +131,8 @@
                       :src="getAssetsImagesUrl(riskStatus[item[0]])"
                       width="12px"
                       alt=""
-                    />
-                    <span class="risk-message">{{ item[1] }}</span>
+                    >
+                    <span :class="item[0] > 1 ? 'color-[--d-F5F5F5-l-333] ml-5px' : 'color-[--d-999-l-666] ml-5px'">{{ item[1] }}</span>
                   </li>
                 </template>
               </ul>
@@ -155,11 +140,11 @@
                 v-if="riskList.length > 2 && checkResult?.chain !== 'solana'"
                 class="block text-center"
                 href=""
-                style="color: #848e9c; font-size: 12px; text-decoration: none"
+                style="font-size: 12px; text-decoration: none"
                 @click.stop.prevent="showRiskList = !showRiskList"
               >
                 <Icon
-                  class="text-24px"
+                  class="text-24px color-[--d-666-l-999]"
                   :name="
                     showRiskList
                       ? 'material-symbols:keyboard-arrow-up'
@@ -175,26 +160,20 @@
           <el-col :span="24">
             <div class="card basic">
               <div
-                class="flex-between flex items-center justify-between"
-                style="align-items: flex-start"
+                class="flex items-start justify-between"
               >
                 <ul
-                  style="
-                    flex: 1;
-                    margin-right: 15px;
-                    padding-right: 15px;
-                    border-right: 1px solid #97979733;
-                  "
+                  class="flex-1 pr-15px border-r border-[#97979733]"
                 >
                   <li
-                    class="card-list-item cursor"
+                    class="card-list-item cursor-pointer"
                     @click.stop="
                       buy_tax_list_show = !buy_tax_list_show;
                       sell_tax_list_show = !sell_tax_list_show
                     "
                   >
                     <span>{{ $t('buyTax') }}</span>
-                    <span :class="{ danger: (checkResult?.buy_tax ?? 0) > 0 }">
+                    <span class="flex items-center" :class="{ danger: (checkResult?.buy_tax ?? 0) > 0 }">
                       {{ formatNumber(checkResult?.buy_tax || 0, 2) }}%
                       <template
                         v-if="
@@ -215,19 +194,27 @@
                           <use xlink:href="#icon-shouqi1"></use>
                         </svg> -->
                         <Icon
-                          class="text-24px shui-icon"
+                          class="text-20px color-[--d-999-l-666]"
                           :name="
                             buy_tax_list_show
-                              ? 'material-symbols:keyboard-arrow-down'
-                              : 'material-symbols:keyboard-arrow-up'
+                              ? 'material-symbols:keyboard-arrow-up'
+                              : 'material-symbols:keyboard-arrow-down'
                           "
                         />
                       </template>
                     </span>
                   </li>
                   <Transition>
-                    <li v-if="buy_tax_list_show" class="buy_tax_list">
-                      <ul class="indent">
+                    <li
+                      v-if="buy_tax_list_show && Number(checkResult?.tm_buy_tax_for_lp) > 0 ||
+                          Number(checkResult?.tm_buy_tax_for_burn) > 0 ||
+                          Number(checkResult?.tm_buy_tax_for_fund) > 0 ||
+                          Number(checkResult?.tm_buy_tax_for_holders) > 0 ||
+                          Number(checkResult?.tm_buy_tax_for_lp_holders) > 0 ||
+                          Number(checkResult?.tm_buy_tax_for_team) > 0 ||
+                          Number(checkResult?.tm_buy_tax_for_inviter) > 0 ||
+                          Number(checkResult?.tm_buy_tax_for_other) > 0" class="py-5px">
+                      <ul class="ml-15px">
                         <li
                           v-if="Number(checkResult?.tm_buy_tax_for_lp) > 0"
                           class="card-list-item in"
@@ -348,14 +335,14 @@
                 </ul>
                 <ul style="flex: 1">
                   <li
-                    class="card-list-item cursor"
+                    class="card-list-item cursor-pointer"
                     @click.stop="
                       buy_tax_list_show = !buy_tax_list_show;
                       sell_tax_list_show = !sell_tax_list_show
                     "
                   >
                     <span>{{ $t('sellTax') }}</span>
-                    <span :class="{ danger: checkResult?.sell_tax ?? 0 > 0 }">
+                    <span class="flex items-center" :class="{ danger: checkResult?.sell_tax ?? 0 > 0 }">
                       {{ formatNumber(checkResult?.sell_tax || 0, 2) }}%
                       <template
                         v-if="
@@ -369,25 +356,27 @@
                           Number(checkResult?.tm_sell_tax_for_other) > 0
                         "
                       >
-                        <!-- <svg class="icon-svg shui-icon" aria-hidden="true" v-if="sell_tax_list_show">
-                          <use xlink:href="#icon-zhankai"></use>
-                        </svg>
-                        <svg class="icon-svg shui-icon" aria-hidden="true" v-else>
-                          <use xlink:href="#icon-shouqi1"></use>
-                        </svg> -->
                         <Icon
-                          class="text-24px shui-icon"
+                          class="text-20px color-[--d-999-l-666]"
                           :name="
                             sell_tax_list_show
-                              ? 'material-symbols:keyboard-arrow-down'
-                              : 'material-symbols:keyboard-arrow-up'
+                              ? 'material-symbols:keyboard-arrow-up'
+                              : 'material-symbols:keyboard-arrow-down'
                           "
                         />
                       </template>
                     </span>
                   </li>
                   <Transition>
-                    <li v-if="sell_tax_list_show" class="buy_tax_list">
+                    <li
+                        v-if="sell_tax_list_show && Number(checkResult?.tm_sell_tax_for_lp) > 0 ||
+                        Number(checkResult?.tm_sell_tax_for_burn) > 0 ||
+                        Number(checkResult?.tm_sell_tax_for_fund) > 0 ||
+                        Number(checkResult?.tm_sell_tax_for_holders) > 0 ||
+                        Number(checkResult?.tm_sell_tax_for_lp_holders) > 0 ||
+                        Number(checkResult?.tm_sell_tax_for_team) > 0 ||
+                        Number(checkResult?.tm_sell_tax_for_inviter) > 0 ||
+                        Number(checkResult?.tm_sell_tax_for_other) > 0" class="py-5px">
                       <ul class="indent">
                         <li
                           v-if="Number(checkResult?.tm_sell_tax_for_lp) > 0"
@@ -514,106 +503,93 @@
                   </Transition>
                 </ul>
               </div>
-              <!-- <div class="flex-between" style="align-items: flex-start">
+              <div v-if="Number(checkResult?.buy_gas || 0) >= 0.1 || checkResult?.buy_max_amount_per_tx || Number(checkResult?.sell_gas || 0) >= 0.1 || checkResult?.sell_max_amount_per_tx" class="flex justify-between mt-10px">
                 <ul
-                  style="
-                    flex: 1;
-                    margin-right: 15px;
-                    padding-right: 15px;
-                    border-right: 1px solid #97979733;
-                  "
+                  class="flex-1 mr-5px pr-5px border-r border-[#97979733]"
                 >
-                  <li class="card-list-item in" v-if="Number(checkResult.buy_gas) >= 0.1">
+                  <li v-if="Number(checkResult?.buy_gas) >= 0.1" class="card-list-item in">
                     <span>{{ $t('buy_gas') }}</span>
                     <span
-                      :style="{ color: $f.filterGas(Number(checkResult.buy_gas), checkResult.chain) }"
+                      :style="{ color: filterGas(Number(checkResult?.buy_gas || 0), checkResult?.chain || '') }"
                     >
-                      ${{ formatNumber(checkResult.buy_gas, 2) }}
+                      ${{ formatNumber(checkResult?.buy_gas || 0, 2) }}
                     </span>
                   </li>
-                  <li class="card-list-item in" v-if="checkResult.buy_max_amount_per_tx">
+                  <li v-if="checkResult?.buy_max_amount_per_tx" class="card-list-item in">
                     <span>{{ $t('buyMaxAmount') }}</span>
                     <span class="danger">
-                      {{ formatNumber(checkResult.buy_max_amount_per_tx, 0) }}
+                      {{ formatNumber(checkResult?.buy_max_amount_per_tx || 0, 0) }}
                     </span>
                   </li>
                 </ul>
                 <ul style="flex: 1">
-                  <li class="card-list-item in" v-if="Number(checkResult.sell_gas) >= 0.1">
+                  <li v-if="Number(checkResult?.sell_gas || 0) >= 0.1" class="card-list-item in">
                     <span>{{ $t('sell_gas') }}</span>
                     <span
                       :style="{
-                        color: $f.filterGas(Number(checkResult.sell_gas), checkResult.chain)
+                        color: filterGas(Number(checkResult?.sell_gas || 0), checkResult?.chain || '')
                       }"
                     >
-                      ${{ formatNumber(checkResult.sell_gas, 2) }}
+                      ${{ formatNumber(checkResult?.sell_gas || 0, 2) }}
                     </span>
                   </li>
-                  <li class="card-list-item in" v-if="checkResult.sell_max_amount_per_tx">
+                  <li v-if="checkResult?.sell_max_amount_per_tx" class="card-list-item in">
                     <span>{{ $t('sellMaxAmount') }}</span>
                     <span class="danger">
-                      {{ formatNumber(checkResult.sell_max_amount_per_tx, 0) }}
+                      {{ formatNumber(checkResult?.sell_max_amount_per_tx || 0, 0) }}
                     </span>
                   </li>
                 </ul>
-              </div> -->
-              <!-- <ul
+              </div>
+              <ul
                 v-if="
-                  Number(checkResult.approve_gas) >= 0.1 ||
-                  checkResult.tm_max_hold_amount_per_wallet ||
-                  checkResult.tm_bonus_token_name ||
-                  checkResult.tm_bonus_token_for_lp_holders ||
-                  checkResult.market_wallet ||
-                  checkResult.team_wallet ||
-                  checkResult.tm_kill_block_after_open ||
-                  checkResult.tm_start_trade_at_block ||
-                  checkResult.mechanism_intro
+                  Number(checkResult?.approve_gas || 0) >= 0.1 ||
+                  checkResult?.tm_max_hold_amount_per_wallet ||
+                  checkResult?.tm_bonus_token_name ||
+                  checkResult?.tm_bonus_token_for_lp_holders ||
+                  checkResult?.market_wallet ||
+                  checkResult?.team_wallet ||
+                  checkResult?.tm_kill_block_after_open ||
+                  checkResult?.tm_start_trade_at_block ||
+                  checkResult?.mechanism_intro
                 "
-                class="mt_10"
+                class="mt-10px"
               >
-                <li class="card-list-item cursor" v-if="Number(checkResult.approve_gas) >= 0.1">
-                  <span class="color-333">{{ $t('approve_gas') }}</span>
+                <li v-if="Number(checkResult?.approve_gas || 0) >= 0.1" class="card-list-item cursor">
+                  <span >{{ $t('approve_gas') }}</span>
                   <span
                     :style="{
-                      color: $f.filterGas(Number(checkResult.approve_gas), checkResult.chain)
+                      color: filterGas(Number(checkResult?.approve_gas || 0), checkResult?.chain || '')
                     }"
                   >
-                    ${{ formatNumber(checkResult.approve_gas, 2) }}
+                    ${{ formatNumber(checkResult?.approve_gas || 0, 2) }}
                   </span>
                 </li>
-                <li class="card-list-item" v-if="checkResult.tm_max_hold_amount_per_wallet">
-                  <span class="color-333">{{ $t('tm_max_hold_amount_per_wallet') }}</span>
+                <li v-if="checkResult?.tm_max_hold_amount_per_wallet" class="card-list-item">
+                  <span >{{ $t('tm_max_hold_amount_per_wallet') }}</span>
                   <span class="danger">
                     {{ formatNumber(checkResult.tm_max_hold_amount_per_wallet, 0) }}
                   </span>
                 </li>
-                <li class="card-list-item" v-if="checkResult.tm_bonus_token_name">
-                  <span class="color-333">{{ $t('tm_bonus_token_name') }}</span>
+                <li v-if="checkResult?.tm_bonus_token_name" class="card-list-item">
+                  <span >{{ $t('tm_bonus_token_name') }}</span>
                   <a
-                    :href="
-                      $f.formatExplorerUrl(checkResult.chain, checkResult.tm_bonus_token_for_holders)
-                    "
+                    :href="formatExplorerUrl(checkResult?.chain || '', checkResult?.tm_bonus_token_for_holders || '')"
                     target="_blank"
                   >
                     {{ checkResult.tm_bonus_token_name }}
                   </a>
                 </li>
-                <li class="card-list-item" v-if="checkResult.tm_bonus_token_for_lp_holders">
-                  <span class="color-333">{{ $t('tm_bonus_token_name_for_lp') }}</span>
-                  <div>
+                <li v-if="checkResult?.tm_bonus_token_for_lp_holders" class="card-list-item">
+                  <span>{{ $t('tm_bonus_token_name_for_lp') }}</span>
+                  <div class="flex items-center">
                     <a
-                      :href="
-                        $f.formatExplorerUrl(
-                          checkResult.chain || '',
-                          checkResult.tm_bonus_token_for_lp_holders || '',
-                          'address'
-                        )
-                      "
+                      :href="formatExplorerUrl(checkResult.chain || '', checkResult.tm_bonus_token_for_lp_holders || '', 'address')"
                       target="_blank"
                     >
                       {{
-                        checkResult.tm_bonus_token_name_for_lp ||
-                        (checkResult.tm_bonus_token_for_lp_holders || '').replace(
+                        checkResult?.tm_bonus_token_name_for_lp ||
+                        (checkResult?.tm_bonus_token_for_lp_holders || '').replace(
                           new RegExp('(^.{6})(.+)(.{4}$)'),
                           '$1...$3'
                         )
@@ -621,17 +597,11 @@
                     </a>
                   </div>
                 </li>
-                <li class="card-list-item" v-if="checkResult.market_wallet">
-                  <span class="color-333">{{ $t('fundWallet') }}</span>
-                  <div>
+                <li v-if="checkResult?.market_wallet" class="card-list-item">
+                  <span>{{ $t('fundWallet') }}</span>
+                  <div class="flex items-center">
                     <a
-                      :href="
-                        $f.formatExplorerUrl(
-                          checkResult.chain || '',
-                          checkResult.market_wallet || '',
-                          'address'
-                        )
-                      "
+                      :href="formatExplorerUrl(checkResult?.chain || '', checkResult?.market_wallet || '', 'address')"
                       target="_blank"
                     >
                       {{
@@ -641,20 +611,19 @@
                         )
                       }}
                     </a>
-                    <i class="iconfont icon-copy color-848E9C ml-3" v-copy="checkResult.market_wallet || ''"></i>
+                    <Icon
+                      v-copy="checkResult.market_wallet || ''"
+                      name="bxs:copy"
+                      class="text-12px ml-2px clickable color-#999"
+                      @click.stop.prevent
+                    />
                   </div>
                 </li>
-                <li class="card-list-item" v-if="checkResult.team_wallet">
-                  <span class="color-333">{{ $t('teamWallet') }}</span>
+                <li v-if="checkResult?.team_wallet" class="card-list-item">
+                  <span >{{ $t('teamWallet') }}</span>
                   <div>
                     <a
-                      :href="
-                        $f.formatExplorerUrl(
-                          checkResult.chain || '',
-                          checkResult.team_wallet || '',
-                          'address'
-                        )
-                      "
+                      :href="formatExplorerUrl(checkResult.chain || '', checkResult.team_wallet || '', 'address')"
                       target="_blank"
                     >
                       {{
@@ -664,61 +633,44 @@
                         )
                       }}
                     </a>
-                    <i class="iconfont icon-copy color-848E9C ml-3" v-copy="checkResult.team_wallet || ''"></i>
+                    <Icon
+                      v-copy="checkResult.team_wallet || ''"
+                      name="bxs:copy"
+                      class="text-12px ml-2px clickable color-#999"
+                      @click.stop.prevent
+                    />
                   </div>
                 </li>
-                <li class="card-list-item" v-if="checkResult.tm_kill_block_after_open">
-                  <span class="color-333">{{ $t('tm_kill_block_after_open') }}</span>
+                <li v-if="checkResult?.tm_kill_block_after_open" class="card-list-item">
+                  <span >{{ $t('tm_kill_block_after_open') }}</span>
                   <span>{{ formatNumber(checkResult.tm_kill_block_after_open, 0) }}</span>
                 </li>
-                <li class="card-list-item" v-if="checkResult.tm_start_trade_at_block">
-                  <span class="color-333">{{ $t('tm_start_trade_at_block') }}</span>
+                <li v-if="checkResult?.tm_start_trade_at_block" class="card-list-item">
+                  <span >{{ $t('tm_start_trade_at_block') }}</span>
                   <span>{{ formatNumber(checkResult.tm_start_trade_at_block, 0) }}</span>
                 </li>
-                <li class="card-list-item" v-if="checkResult.mechanism_intro">
-                  <span class="color-333" style="word-break: keep-all">{{ $t('mechanism_intro') }}</span>
-                  <span class="indent" v-html="checkResult?.mechanism_intro?.replace?.(/\n/g, '<br/>')"></span>
+                <li v-if="checkResult?.mechanism_intro" class="card-list-item">
+                  <span  style="word-break: keep-all">{{ $t('mechanism_intro') }}</span>
+                  <span class="indent" v-html="checkResult?.mechanism_intro?.replace?.(/\n/g, '<br/>')"/>
                 </li>
-              </ul> -->
+              </ul>
             </div>
           </el-col>
           <el-col :span="24">
-            <!-- <div class="tabs">
-              <a
-                v-for="(item, $index) in list"
-                :key="$index"
-                href=""
-                :class="{ active: activeTab == item.id }"
-                @click.stop.prevent="activeTab = item.id"
-              >
-                {{ item.name }}
-                <template v-if="item.id == 1">
-                  ({{ formatNumber(checkResult?.holders || 0) }})
-                </template>
-                <template v-if="item.id == 2">
-                  ({{ formatNumber(checkResult?.pair_holders || 0) }})
-                </template>
-                <template v-if="item.id == 3">
-                  ({{ formatNumber(checkResult?.owner_txs?.length || 0) }})
-                </template>
-              </a>
-            </div> -->
             <div class="text-12px">
-              {{ list?.[0]?.name }}({{
-                formatNumber(checkResult?.holders || 0)
-              }})
+              {{ list?.[0]?.name }}({{ formatNumber(checkResult?.holders || 0)}})
             </div>
             <div class="card card1">
-              <div class="flex-1">
+              <div class="flex-s">
                 <span class="label">{{ $t('totalSupply1') }}</span>
                 <span class="range-text">{{
                   formatNumber(checkResult?.total || 0)
                 }}</span>
               </div>
-              <div class="flex-1">
+              <div class="flex-s flex items-center">
                 <span class="label">{{ $t('top10Holder') }}</span>
                 <span style="flex: 1" />
-                <span class="range-text">{{ formatNumber(range * 100) }}%</span>
+                <span class="range-text">{{ formatNumber(range * 100, 1) }}%</span>
                 <div class="range">
                   <span
                     class="range-bar"
@@ -726,13 +678,13 @@
                   />
                 </div>
               </div>
-              <ul>
+              <ul class="mt-10px">
                 <template
                   v-for="(item, index) in checkResult?.token_holders_rank || []"
                   :key="index"
                 >
                   <li
-                    class="card-list-item"
+                    class="card-list-item holder-item"
                     :class="{
                       'bg-warning': Number(item?.analysis_show_warning) === 1,
                     }"
@@ -777,7 +729,7 @@
                         src="@/assets/images/LP.svg"
                         :width="12"
                         alt=""
-                      />
+                      >
                       <!-- <i
                         v-if="item?.is_contract  && item?.is_contract === 1"
                         class="iconfont icon-contract"
@@ -788,7 +740,7 @@
                         src="@/assets/images/contact.svg"
                         :width="12"
                         alt=""
-                      />
+                      >
                       <template v-if="!item.mark">
                         {{
                           (item.address || '').slice(0, 2) +
@@ -806,22 +758,22 @@
                           )
                         "
                       >
-                        <br />
+                        <br >
                         {{ $t('unlocked') }}
                       </template>
                     </a>
-                    <span>
-                      {{ formatNumber(item.quantity || 0, 2) }}
-                      <template v-if="checkResult?.total && item?.quantity">
+                    <div class="flex items-center">
+                      <span>{{ formatNumber(item.quantity || 0, 2) }}</span>
+                      <span v-if="checkResult?.total && item?.quantity" class="color-[--d-666-l-999]">
                         ({{
                           formatNumber(
-                            Number(item?.quantity) /
+                            Number(item?.quantity) * 100 /
                               Number(checkResult?.total) || 0,
                             2
                           )
-                        }})
-                      </template>
-                    </span>
+                        }}%)
+                      </span>
+                    </div>
                   </li>
                   <table
                     v-if="item.lock && item.lock.length > 0"
@@ -865,18 +817,17 @@
               }})
             </div>
             <div class="card card1">
-              <div class="flex-1">
+              <div class="flex-s">
                 <span class="label">{{ $t('totalSupply1') }}</span>
                 <span class="range-text">{{
                   formatNumber(checkResult?.pair_total || 0)
                 }}</span>
               </div>
-              <div class="flex-1">
-                <span class="label">{{ $t('LPLocked') }}</span>
-                <span style="flex: 1" />
+              <div class="flex-s flex items-center">
+                <span class="label mr-auto">{{ $t('LPLocked') }}</span>
                 <span class="range-text">{{
-                  formatNumber(rangePair * 100)
-                }}</span>
+                  formatNumber(rangePair * 100, 1)
+                }}%</span>
                 <div class="range">
                   <span
                     class="range-bar"
@@ -884,13 +835,13 @@
                   />
                 </div>
               </div>
-              <ul>
+              <ul class="mt-10px">
                 <template
                   v-for="(item, index) in checkResult?.pair_holders_rank || []"
                   :key="index"
                 >
                   <li
-                    class="card-list-item"
+                    class="card-list-item holder-item"
                     :class="{
                       'bg-warning': Number(item?.analysis_show_warning) === 1,
                     }"
@@ -922,14 +873,14 @@
                           v-if="
                             (item?.lock?.length ?? 0) > 0 &&
                             item?.lock?.every?.(
-                              (i) => i.unlockDate ?? 0 * 1000 <= Date.now()
+                              (i) => (i.unlockDate ?? 0) * 1000 <= Date.now()
                             )
                           "
                           style="height: 15px"
                           src="@/assets/images/unlock.png"
                           alt=""
                           srcset=""
-                        />
+                        >
                         <!-- <van-icon v-else color="#B3920E" name="lock" /> -->
                         <Icon
                           v-else
@@ -944,7 +895,7 @@
                         src="@/assets/images/contact.svg"
                         :width="12"
                         alt=""
-                      />
+                      >
                       <template v-if="!item?.mark">
                         {{
                           (item?.address || '').slice(0, 2) +
@@ -954,25 +905,26 @@
                       </template>
                       <template v-else>{{ item?.mark }}</template>
                     </a>
-                    <span>
-                      {{ formatNumber(item?.quantity || 0) }}
-                      <template
+                    <div class="flex items-center">
+                      <span>{{ formatNumber(item?.quantity || 0) }}</span>
+                      <span
                         v-if="
                           (checkResult?.pair_total && item?.quantity) ||
                           item?.percent
                         "
+                        class="color-[--d-666-l-999]"
                       >
                         ({{
                           item.percent && Number(item?.percent)
-                            ? formatNumber(item.percent, 2)
+                            ? formatNumber(Number(item?.percent || 0) * 100, 2)
                             : formatNumber(
-                                Number(item.quantity) /
+                                Number(item.quantity) * 100 /
                                   Number(checkResult?.pair_total) || 0,
                                 2
                               )
-                        }})
-                      </template>
-                    </span>
+                        }}%)
+                      </span>
+                    </div>
                   </li>
                   <table
                     v-if="item?.lock && item?.lock?.length > 0"
@@ -988,8 +940,8 @@
                     </thead>
                     <tbody>
                       <tr
-                        v-for="(item1, index) in item.lock"
-                        :key="index"
+                        v-for="(item1, index1) in item.lock"
+                        :key="index1"
                         :style="{
                           color:
                             item1.unlockDate ?? 0 * 1000 <= Date.now()
@@ -1114,7 +1066,7 @@
                     <span class="color-777e90">
                       (
                       <!-- <i class="iconfont icon-heyue color-777e90"></i> -->
-                      <img src="@/assets/images/合约.svg" :width="12" alt="" />
+                      <img src="@/assets/images/合约.svg" :width="12" alt="" >
                       {{
                         item1?.method_code?.slice(0, 4) +
                         '...' +
@@ -1209,11 +1161,11 @@
           <el-col v-if="checkResult?.holder_analysis" :span="24">
             <div class="card card1 simulate">
               <span class="text-12px">{{ $t('simulate') }}</span>
-              <table>
+              <table class="rd-4px">
                 <tbody>
                   <tr>
                     <td>
-                      <span class="block color-999">{{
+                      <span class="block color-[--d-666-l-999]">{{
                         $t('simulateHolders')
                       }}</span>
                       <span class="block">
@@ -1225,7 +1177,7 @@
                       </span>
                     </td>
                     <td>
-                      <span class="block color-999">{{
+                      <span class="block color-[--d-666-l-999]">{{
                         $t('sellSuccessful')
                       }}</span>
                       <span class="block">
@@ -1238,7 +1190,7 @@
                     </td>
                     <td>
                       <span
-                        class="block color-999"
+                        class="block color-[--d-666-l-999]"
                         :class="{
                           failedBg:
                             (checkResult?.holder_analysis?.sell_failure ?? 0) >
@@ -1264,7 +1216,7 @@
                     </td>
                     <td>
                       <span
-                        class="block color-999"
+                        class="block color-[--d-666-l-999]"
                         :class="{
                           balanceBg:
                             (checkResult?.holder_analysis
@@ -1285,13 +1237,13 @@
                   </tr>
                   <tr>
                     <td>
-                      <span class="color-999">{{ $t('sellSlippage') }}</span>
+                      <span class="color-[--d-666-l-999]">{{ $t('sellSlippage') }}</span>
                     </td>
                     <td colspan="3" class="tl">
                       <span
                         :class="{ avgBg: checkResult?.avg_tax_too_high == 1 }"
                       >
-                        <span class="color-999">{{ $t('averageTax') }}</span>
+                        <span class="color-[--d-666-l-999]">{{ $t('averageTax') }}</span>
                         &nbsp;{{
                           formatNumber(
                             checkResult?.holder_analysis?.average_tax || 0
@@ -1305,11 +1257,11 @@
                         class="flex-start"
                       >
                         <span>
-                          <span class="color-999">{{ $t('slippage1') }}</span>
+                          <span class="color-[--d-666-l-999]">{{ $t('slippage1') }}</span>
                           &nbsp;{{ formatNumber(item?.tax) }}%
                         </span>
                         <span>
-                          <span class="color-999">{{
+                          <span class="color-[--d-666-l-999]">{{
                             $t('addressCount')
                           }}</span>
                           &nbsp;{{ item?.count }}
@@ -1339,7 +1291,7 @@
                     name="garden:thumbs-up-fill-12"
                     :style="{
                       color:
-                        (checkResult?.my_vote ?? 0) > 0 ? '#12B886' : '#e1e1e1',
+                        (checkResult?.vote_support ?? 0) > 0 ? '#12B886' : '#e1e1e1',
                     }"
                   />
                   <span class="thumbs-label">
@@ -1383,12 +1335,7 @@
                   class="iconfont icon-fandui icon-thumbs"
                   :style="{ color: checkResult.my_vote < 0 ? '#F6465D' : '#e1e1e1' }"
                 ></i> -->
-                  <Icon
-                    name="garden:thumbs-down-fill-12"
-                    :style="{
-                      color:
-                        (checkResult?.my_vote ?? 0) < 0 ? '#F6465D' : '#e1e1e1',
-                    }"
+                  <Icon name="garden:thumbs-down-fill-12" :style="{ color: (checkResult?.vote_against ?? 0) > 0 ? '#F6465D' : '#e1e1e1'}"
                   />
                   <span class="thumbs-label">
                     {{ $t('against') }}({{ checkResult?.vote_against || 0 }})
@@ -1413,7 +1360,6 @@
 <script setup lang="ts">
 import emptyWhite from '@/assets/images/empty-white.svg'
 import emptyDark from '@/assets/images/empty-black.svg'
-import ArcProgress from './arcProgress.vue'
 
 import {
   _voteSupport,
@@ -1440,7 +1386,7 @@ const showRiskList = shallowRef(false)
 const buy_tax_list_show = shallowRef(true)
 const sell_tax_list_show = shallowRef(true)
 // const activeTab = shallowRef(1)
-const { evmAddress } = useBotStore()
+const { evmAddress } = storeToRefs(useBotStore())
 
 const riskStatus: Record<number, string> = {
   0: 'normal1',
@@ -1505,9 +1451,11 @@ const lp_remark = computed(() => {
 const holder_remark = computed(() => {
   return ave_remarks?.value.holder_remark || ''
 })
-const tx_liq_remark = computed(() => {
-  return ave_remarks?.value.tx_liq_remark || ''
-})
+
+// const tx_liq_remark = computed(() => {
+//   return ave_remarks?.value.tx_liq_remark || ''
+// })
+
 const risk_remark = computed(() => {
   return ave_remarks?.value.risk_remark || ''
 })
@@ -1575,7 +1523,6 @@ const riskSimulateList = computed(() => {
   return a
 })
 const statistics_risk = computed(() => {
-  console.log('--------riskList?.value----', riskList?.value)
   let num = riskList?.value?.filter((i) => i[0] == 2)?.length || 0
   if (riskSimulateList?.value) {
     riskSimulateList?.value?.forEach((item) => {
@@ -1584,7 +1531,7 @@ const statistics_risk = computed(() => {
       }
     })
   }
-  checkStore.statistics_risk_store =  checkResult?.value?.audit_pass_by ? 0 : num
+
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
 
@@ -1621,7 +1568,6 @@ const statistics_unknown = computed(() => {
     num = num + 1
   }
   num = num + riskList?.value?.filter((i) => i[0] == 0.6)?.length
-  checkStore.statistics_unknown_store =  checkResult?.value?.audit_pass_by ? 0 : num
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
 const statistics_warning = computed(() => {
@@ -1664,12 +1610,22 @@ const statistics_warning = computed(() => {
       }
     })
   }
-  checkStore.statistics_warning_store =  checkResult?.value?.audit_pass_by ? 0 : num
   return checkResult?.value?.audit_pass_by ? 0 : num
 })
-
+watch(statistics_risk, (val) => {
+  checkStore.statistics_risk_store =  val
+})
+watch(statistics_warning, (val) => {
+  checkStore.statistics_warning_store =  val
+})
+watch(statistics_unknown, (val) => {
+  checkStore.statistics_unknown_store =  val
+})
 onMounted(() => {
-    getVote()
+  getVote()
+})
+watch(evmAddress, () => {
+  getVote()
 })
 function formatRisk(checkResult?: Check) {
   if (!showResult || !checkResult?.risk_score) {
@@ -1872,7 +1828,6 @@ function formatRisk(checkResult?: Check) {
     }
   }
   const b = a.sort((a, b) => b[0] - a[0])
-  console.log('----------b---------', b)
   return b
 }
 
@@ -1926,7 +1881,6 @@ function formatNote(checkResult?: Check) {
   if (checkResult?.selfdestruct === '1') {
     a.push(t('selfdeStruct'))
   }
-  console.log('------------------formatNote-----', a)
   return a
 }
 //获取assets下的图片
@@ -1983,7 +1937,7 @@ function formatVoteP(checkResult: Check | null) {
 }
 
 function voteSupport() {
-  const user = evmAddress
+  const user = evmAddress.value
   if (!user) {
     ElMessage.error(t('connectWalletFirst'))
     return
@@ -1995,7 +1949,7 @@ function voteSupport() {
   const support = () => {
     const tokenId = route.params.id as string
     loadingVote.value = true
-    _voteSupport(tokenId,user)
+    _voteSupport(tokenId, user)
       .then(() => {
         if (checkResult?.value?.my_vote === 0) {
           ElMessage.success(t('voteSuccess'))
@@ -2022,7 +1976,7 @@ function voteSupport() {
     .catch(() => {})
 }
 function voteAgainst() {
-      const user = evmAddress
+      const user = evmAddress.value
       if (!user) {
         ElMessage.error(t('connectWalletFirst'))
         return
@@ -2062,13 +2016,15 @@ function voteAgainst() {
         .catch(() => {})
     }
 function getVote() {
+  if (!(visible.value && evmAddress.value)) return
   const tokenId = route.params.id as string
-  _getVote(tokenId, evmAddress).then(res => {
-    if (checkResult.value) {
+  _getVote(tokenId, evmAddress.value).then(res => {
       Object.keys(res).forEach(i => {
-        checkResult.value[i] = res[i]
+        if (checkResult.value) {
+            checkResult.value[i as keyof Check] = res[i]
+        }
       })
-    }
+
   })
 }
 // const checkResult1 = computed(() => {
@@ -2171,12 +2127,12 @@ onMounted(() => {})
   margin: 0 0 10px 0;
   padding: 10px 10px;
   &.basic {
-    background: transparent;
-    border: 1px solid var(--d-282e35-l-e5e5e5);
-    border-radius: 6px;
-    .card-list-item > :nth-child(1) {
-      color: #848e9c;
-    }
+    background: var(--d-333-l-F2F2F2);
+    // border: 1px solid var(--d-282e35-l-e5e5e5);
+    border-radius: 4px;
+    // .card-list-item > :nth-child(1) {
+    //   color: #848e9c;
+    // }
   }
   &.card1 {
     padding: 0;
@@ -2211,17 +2167,17 @@ onMounted(() => {})
   justify-content: space-between;
   align-items: center;
 }
-.flex-1 {
+.flex-s {
   display: flex;
   justify-content: space-between;
   padding: 10px 0 0;
-  color: var(--custom-font-1-color);
-  align-items: center;
+  color: var(--d-F5F5F5-l-333);
+  // align-items: center;
   font-size: 12px;
   .label {
     margin-right: 10px;
     font-weight: 400;
-    color: #848e9c;
+    color: var(--d-666-l-999);
   }
   .value {
     font-weight: 500;
@@ -2229,10 +2185,11 @@ onMounted(() => {})
   .range-text {
     font-size: 12px;
     margin-right: 5px;
+    color: var(--d-999-l-666);
   }
   .range {
     width: 35%;
-    background: var(--d-1f242a-l-F5f5f5);
+    background: var(--d-1F242A-l-F5F5F5);
     border-radius: 4px;
     display: flex;
     .range-bar {
@@ -2246,22 +2203,23 @@ onMounted(() => {})
 }
 .card-list-item {
   font-size: 12px;
-  color: var(--custom-font-5-color);
+  // color: var(--custom-font-5-color);
   letter-spacing: 0;
   font-weight: 400;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
+  // margin-top: 10px;
+  & + .card-list-item {
+    margin-top: 10px;
+  }
+
   &.basic-content {
     margin-top: 5px;
   }
   &.in {
-    margin-top: 10px;
-  }
-  &.cursor {
-    &:hover {
-      cursor: pointer;
+    & + .in {
+      margin-top: 10px;
     }
   }
   &.bg-warning {
@@ -2270,15 +2228,19 @@ onMounted(() => {})
       color: #f8be46;
     }
   }
+
+  &.holder-item {
+    color: var(--d-999-l-666);
+    > :nth-child(1) {
+      color: var(--d-666-l-999);
+    }
+  }
   > :nth-child(1) {
-    color: #848e9c;
+    color: var(--d-999-l-666);
   }
   > :nth-child(2) {
     text-align: left;
-    margin-left: 15px;
-    &.gray1 {
-      color: #848e9c;
-    }
+    margin-left: 5px;
   }
   > .danger {
     color: #f81111;
@@ -2431,12 +2393,16 @@ onMounted(() => {})
   }
 }
 .table-lock {
-  color: rgba($color: #848e9c, $alpha: 0.8);
+  color: var(--d-999-l-666);
+  background: var(--d-333-l-F2F2F2);
+  border-radius: 4px;
   width: 100%;
   font-size: 12px;
+  padding: 5px;
   td,
   th {
     text-align: left;
+    color: var(--d-666-l-999);
     &:nth-child(2),
     &:nth-child(3),
     &:nth-child(4) {
@@ -2446,6 +2412,7 @@ onMounted(() => {})
 }
 .community-container {
   display: flex;
+  align-items: flex-start;
   .thumbs-container {
     display: flex;
     flex-direction: column;
@@ -2472,14 +2439,14 @@ onMounted(() => {})
 
   .thumbs-label {
     font-size: 12px;
-    color: #848e9c;
+    color: var(--d-999-l-666);
     line-height: 20px;
     font-weight: 400;
     margin-top: 5px;
   }
 }
 .range-container {
-  padding-top: 15px;
+  // padding-top: 15px;
   flex: 1;
   margin: 0 15px;
   text-align: center;
@@ -2513,7 +2480,7 @@ onMounted(() => {})
   }
 
   .range-label {
-    font-size: 13px;
+    font-size: 11px;
     color: #3f80f7;
     font-weight: 400;
     margin-top: 10px;
@@ -2677,16 +2644,16 @@ onMounted(() => {})
   width: 100%;
   a {
     font-size: 12px;
-    color: #848e9c;
+    color: #999;
     text-decoration: none;
     text-align: center;
     padding: 4px 0;
     display: inline-block;
     &:hover {
-      color: var(--custom-font-1-color);
+      color: var(--d-F5F5F5-l-333);
     }
     &.active {
-      color: var(--custom-font-1-color);
+      color: var(--d-F5F5F5-l-333);
       border-bottom: 2px solid #3f80f7;
     }
   }
@@ -2699,14 +2666,15 @@ onMounted(() => {})
     border-collapse: collapse;
     width: 100%;
     font-size: 12px;
-    color: var(--custom-font-1-color);
+    color: var(--d-F5F5F5-l-333);
+    background-color: var(--d-333-l-F2F2F2);
     letter-spacing: 0;
     font-weight: 400;
     text-align: center;
     margin-top: 10px;
     tr {
       td {
-        border: 1px solid rgba(71, 77, 87, 0.3);
+        // border: 1px solid rgba(71, 77, 87, 0.3);
         padding: 5px 5px;
         &.tl {
           text-align: left;

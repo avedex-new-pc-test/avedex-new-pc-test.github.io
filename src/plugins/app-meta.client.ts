@@ -1,10 +1,7 @@
 // plugins/app-meta.client.ts
 export default defineNuxtPlugin(() => {
-  const tokenLogoUrl =
-    JSON.parse(localStorage.getItem('ave_globalConfig') || '{}')?.token_logo_url ||
-    'https://www.iconaves.com/'
-  const config = useRuntimeConfig()
-  const GA = config.public.ga
+  // const config = useRuntimeConfig()
+  // const GA = config.public.ga
   useHead({
     title: 'Ave.ai',
     meta: [
@@ -40,27 +37,22 @@ export default defineNuxtPlugin(() => {
       { rel: 'icon', href: '/favicon.ico' },
       { rel: 'shortcut icon', href: '/favicon.ico' },
     ],
-    script: [
-      {
-        src: `https://www.googletagmanager.com/gtag/js?id=${GA}`,
-        async: true,
-      },
-      {
-        id: 'gtag-init', // 或 id: 'gtag-init'
-        innerHTML: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GA}');
-        `,
-        type: 'text/javascript',
-      },
-      // { src: '/vemachine.js' },
-      // {
-      //   src: tokenLogoUrl + 'charting_library/charting_library.standalone.js',
-      //   defer: true,
-      // },
-    ],
+    // script: [
+    //   {
+    //     src: `https://www.googletagmanager.com/gtag/js?id=${GA}`,
+    //     async: true,
+    //   },
+    //   {
+    //     id: 'gtag-init', // 或 id: 'gtag-init'
+    //     innerHTML: `
+    //       window.dataLayer = window.dataLayer || [];
+    //       function gtag(){dataLayer.push(arguments);}
+    //       gtag('js', new Date());
+    //       gtag('config', '${GA}');
+    //     `,
+    //     type: 'text/javascript',
+    //   },
+    // ],
   })
 
   // 执行跳转/安全逻辑

@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import TopLeftTable from './topLeftTable.vue'
-import {useWindowSize} from '@vueuse/core'
 import BottomLeftTable from '~/pages/token/components/left/bottomLeftTable.vue'
+import {useStorage, useWindowSize} from '@vueuse/core'
+import {DefaultHeight} from '~/utils/constants'
 
-const topLeftHeight = shallowRef(370)
+const topLeftHeight = useStorage('topLeftHeight', DefaultHeight.TOPLEFT)
 const canDrag = shallowRef(false)
+const globalStore = useGlobalStore()
 const {height} = useWindowSize()
+
+// const leftDragEvent = useEventBus(BusEventType.LEFT_DRAG)
 
 function drag(e: MouseEvent) {
   let dy = e.clientY
@@ -14,40 +18,39 @@ function drag(e: MouseEvent) {
     if (!canDrag.value) {
       return
     }
-    if (e.clientY > height.value) {
-      canDrag.value = false
-      return
+    const {clientY} = e
+
+    const _topLeftHeight = clientY < dy
+      ? topLeftHeight.value - (dy - clientY)
+      : topLeftHeight.value + clientY - dy
+    if (_topLeftHeight <= height.value - 164) {
+      topLeftHeight.value = _topLeftHeight
     }
-    // document.getElementById('k-line-chart-container').style.pointerEvents = 'none'
-    if (e.clientY < dy) {
-      topLeftHeight.value -= dy - e.clientY
-    } else {
-      topLeftHeight.value += e.clientY - dy
-    }
-    dy = e.clientY
+    dy = clientY
   }
   document.onmouseup = () => {
     // document.getElementById('k-line-chart-container').style.pointerEvents = 'auto'
     canDrag.value = false
     document.onmousemove = null
     document.onmouseup = null
+    // leftDragEvent.emit(topLeftHeight.value)
   }
   return false
 }
 </script>
 
 <template>
-  <div>
+  <div v-show="globalStore.showLeft">
     <div class="relative">
       <TopLeftTable :height="topLeftHeight"/>
       <div
-        class="w-full cursor-row-resize bg-[--d-2D3037-l-F5F5F5] flex items-center justify-center h-6px"
+        class="w-full cursor-row-resize bg-[--d-222-l-F2F2F2] gap-1px hover:bg-[--d-666-l-CCC] flex items-center justify-center h-4px"
         @mousedown.stop.prevent="drag"
       >
-        <Icon name="custom:drag" class="text-4px color-#959A9F"/>
+        <span v-for="i in 4" :key="i" class="bg-#444 w-2px h-2px rounded-full"/>
       </div>
     </div>
-    <BottomLeftTable :topLeftHeight="topLeftHeight"/>
+    <BottomLeftTable/>
   </div>
 </template>
 

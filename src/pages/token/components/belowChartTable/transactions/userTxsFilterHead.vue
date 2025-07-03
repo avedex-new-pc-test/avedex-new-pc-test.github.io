@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BigNumber from 'bignumber.js'
-import {getPairTxs, type GetPairTxsResponse} from '~/api/token'
+import {getUserBalances, type IGetTokenTxsResponse} from '~/api/token'
 
 const props = defineProps({
   makerAddress: {
@@ -10,6 +10,10 @@ const props = defineProps({
   isLiquidity: Boolean,
   pairLiq: {
     type: Array,
+    default: () => []
+  },
+  tokenTxs: {
+    type: Array<IGetTokenTxsResponse>,
     default: () => []
   },
   tagType: {
@@ -36,16 +40,20 @@ const props = defineProps({
     }
   }
 })
+// const emit = defineEmits(['updateTokenTxs'])
 
 const tokenStore = useTokenStore()
-const pairTxs = shallowRef<GetPairTxsResponse[]>([])
-const balanceAmount = shallowRef('0')
+const botStore = useBotStore()
+const route = useRoute()
+// const tokenTxs = shallowRef<IGetTokenTxsResponse[]>([])
+const balanceAmount = shallowRef(0)
+const tokenPrice = shallowRef(0)
 const totalBuySell = computed(() => {
   let buyUSD = 0
   let sellUSD = 0
   let buyAmount = 0
   let sellAmount = 0
-  pairTxs.value.forEach(tx => {
+  props.tokenTxs.forEach(tx => {
     if (props.isBuy(tx)) {
       buyUSD += props.getAmount(tx, true, true)
       buyAmount += props.getAmount(tx)
@@ -58,9 +66,14 @@ const totalBuySell = computed(() => {
     buyUSD, sellUSD, buyAmount, sellAmount
   }
 })
+const tokenValue = computed(() => {
+  let sellTax = (tokenStore.tokenInfoExtra?.sell_tax || 0) / 100
+  sellTax = sellTax > 1 ? 1 : sellTax
+  return (tokenStore.tokenPrice || tokenPrice.value || 0) * (balanceAmount.value || 0) * (1 - sellTax)
+})
 const profit = computed(() => {
   const {buyUSD, sellUSD} = totalBuySell.value
-  return buyUSD + sellUSD
+  return sellUSD + tokenValue.value - buyUSD
 })
 const profitChange = computed(() => {
   const {buyUSD} = totalBuySell.value
@@ -70,62 +83,59 @@ const profitChange = computed(() => {
   return 0
 })
 const avgSellPrice = computed(() => {
+  const {sellAmount, sellUSD} = totalBuySell.value
+  if (sellAmount > 0) {
+    return sellUSD / sellAmount
+  }
   return 0
 })
 const avgBuyPrice = computed(() => {
+  const {buyAmount, buyUSD} = totalBuySell.value
+  if (buyAmount > 0) {
+    return buyUSD / buyAmount
+  }
   return 0
 })
 
 watch(() => props.makerAddress, () => {
-  _getPairTxs()
+  // _getTokenTxs()
   _getTokenBalance()
 }, {
   immediate: true
 })
 
-async function _getPairTxs() {
-  try {
-    const {tagType, chain} = props
-    const getPairTxsParams = {
-      pair: tokenStore.pairAddress + '-' + chain,
-      tag_type: tagType,
-      maker: props.makerAddress
-    }
-    const res = await getPairTxs(getPairTxsParams)
-    pairTxs.value = res || []
-  } catch (e) {
-    console.log('=>(userTxsFilterHead.vue:40) e', e)
-  }
-}
-
-// async function _getTokenBalance() {
+// async function _getTokenTxs() {
+//   const id = route.params.id as string
+//   if (!id) return
 //   try {
-//     const tokenAddress = tokenStore.token?.token
-//     if (tokenAddress) {
-//       const res = await getTokenBalance({
-//         chain: props.chain,
-//         walletAddress: props.makerAddress,
-//         tokens: [tokenAddress]
-//       })
-//       if (Array.isArray(res) && res.length > 0) {
-//         balanceAmount.value = res[0]
-//           ? new BigNumber(res[0].balance).div(new BigNumber(10).pow(res[0].decimals)).toString()
-//           : '0'
-//       }
+//     const {tagType} = props
+//     const getTokenTxsParams = {
+//       token_id: id,
+//       tag_type: tagType,
+//       maker: props.makerAddress
 //     }
+//     const res = await getTokenTxs(getTokenTxsParams)
+//     tokenTxs.value = res || []
 //   } catch (e) {
-//     console.log('=>(userTxsFilterHead.vue:83) e', e)
-//
+//     console.log('=>(userTxsFilterHead.vue:40) e', e)
 //   }
 // }
 
-function getColorClass(val: string) {
-  if (Number(val) > 0) {
-    return 'color-#12b886'
-  } else if (Number(val) < 0) {
-    return 'color-#ff646d'
-  } else {
-    return 'color-#848E9C'
+async function _getTokenBalance() {
+  try {
+    const id = route.params.id as string
+    if (id) {
+      const {chain} = getAddressAndChainFromId(id)
+      const res = await getUserBalances(id, [props.makerAddress + '-' + chain])
+      if (res && res[0]) {
+        const {value, current_price_usd} = res[0]
+        balanceAmount.value = value
+        tokenPrice.value = current_price_usd
+      }
+    }
+
+  } finally {
+    //
   }
 }
 </script>
@@ -134,13 +144,17 @@ function getColorClass(val: string) {
   <div class="px-12px lh-20px flex justify-between items-center mb-12px text-13px">
     <div>
       <span class="color-#959A9F">{{ $t('balance1') }}:</span>
-      <span class="ml-4px">{{ balanceAmount }}</span>
-      <span class="ml-4px">${{ balanceAmount }}</span>
+      <span class="ml-4px">{{ formatNumber(balanceAmount, 3) }}</span>
+      <span class="ml-4px">${{
+          formatNumber((tokenStore.tokenPrice || tokenPrice || 0) * (balanceAmount || 0), 3)
+        }}</span>
     </div>
     <div>
       <span class="color-#959A9F">{{ $t('profit') }}:</span>
-      <span :class="`ml-4px ${getColorClass(profit)}`">{{ formatNumber(profit, 2) }}</span>
-      <span :class="`ml-4px ${getColorClass(profitChange)}`">{{ formatNumber(profitChange * 100, 1) }}%</span>
+      <span :class="`ml-4px ${getColorClass(String(profit))}`">{{ addSign(profit) }}${{
+          formatNumber(Math.abs(profit), 2)
+        }}</span>
+      <span :class="`ml-4px ${getColorClass(String(profitChange))}`">{{ formatNumber(profitChange * 100, 1) }}%</span>
     </div>
     <div>
       <span class="color-#959A9F">{{ $t('totalBuy') }}:</span>

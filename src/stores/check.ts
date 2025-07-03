@@ -12,7 +12,6 @@ export const useCheckStore = defineStore('check', () => {
 
   function getContractCheckResult(token_id: string, user_address: string) {
     _getContractCheckResult(token_id, user_address).then((res) => {
-      console.log('-----getContractCheckResult-------', res)
       const result = res.token_contract
 
       const a = result?.contract_data?.audits_info
@@ -50,6 +49,10 @@ export const useCheckStore = defineStore('check', () => {
       checkResult.value = m
     })
   }
+
+
+
+
   function formatLock(item: PairHoldersRank | null) {
     return item?.lock || /lock|null|(black hole)/gi.test(item?.mark || '')
   }

@@ -42,8 +42,12 @@ export async function botOnResponseError({ response, request }: MyFetchContext) 
   }
   const status = response.status
   if (status === 401) {
-    const botStore = useBotStore()
     const url = request as string
+    const botStore = useBotStore()
+    if (!botStore.refreshToken || url?.includes('refreshNewToken?type=ref')) {
+      botStore.logout()
+      return false
+    }
     const type: 'ref' | 'acc' = url?.includes('refreshNewToken') ? 'ref' : 'acc'
     return botStore.refreshAccessToken(type).then(async () => {
       return true

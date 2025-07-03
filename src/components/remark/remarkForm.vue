@@ -20,7 +20,7 @@
         v-model="form.remark"
         type="text"
         clearable
-        maxlength="50"
+        maxlength="20"
         show-word-limit
         :placeholder="placeholder"
       />
@@ -68,7 +68,7 @@ const form = reactive({
   remark: props.modelValue || ''
 })
 
-const labelText = computed(() => props.label ?? t('remark'))
+const labelText = computed(() => props.label ?? '')
 const placeholder = computed(() => props.placeholder ?? t('placeholderPrefix') + t('remark'))
 const required = computed(() => props.required ?? false)
 

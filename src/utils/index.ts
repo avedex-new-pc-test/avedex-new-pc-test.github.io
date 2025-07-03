@@ -8,7 +8,11 @@ import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
-import { JsonRpcProvider, formatUnits, parseUnits,FixedNumber, ethers } from 'ethers'
+import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
+import type {GetHotTokensResponse} from '~/api/token'
+import BigNumber from 'bignumber.js'
+import type {SearchHot} from '~/api/types/search'
+import type {ConfigType} from 'dayjs'
 
 export function isJSON(str: string) {
   try {
@@ -212,12 +216,12 @@ export function getSwapInfo(
 
 export function getTagTooltip(i: {
   tag?: string
-  smart_money_buy_count_24h: number
-  smart_money_sell_count_24h: number
+  smart_money_buy_count_24h?: number
+  smart_money_sell_count_24h?: number
 }) {
   const $t = getGlobalT()
   if (!i.tag) {
-    if (i.smart_money_buy_count_24h > 0 || i.smart_money_sell_count_24h > 0) {
+    if ((i.smart_money_buy_count_24h??0) > 0 || (i.smart_money_sell_count_24h??0) > 0) {
       return $t('smart_money_tips', {
         b: i.smart_money_buy_count_24h,
         s: i.smart_money_sell_count_24h,
@@ -557,13 +561,13 @@ export function getRemarkByAddress({address, chain}: {address: string, chain: st
   return useRemarksStore().getRemarkByAddress({address, chain})
 }
 
-export function getColorClass(val: string) {
+export function getColorClass(val: string|number) {
   if (Number(val) > 0) {
-    return 'color-#12b886'
+    return 'color-#12B886'
   } else if (Number(val) < 0) {
-    return 'color-#ff646d'
+    return 'color-#FF646D'
   } else {
-    return 'color-[--d-F5F5F5-l-333]'
+    return 'color-[--d-666-l-999]'
   }
 }
 export function desensitizeEmail(email: string) {
@@ -600,12 +604,15 @@ export function getRpcProvider(chain: string) {
   if (!chainInfo || chainInfo?.vm_type !== 'evm') {
     return null
   }
-  const rpcUrl = chainInfo?.rpc_url || ''
+  const RPC: Record<string, string> = {
+    base: 'https://1rpc.io/base',
+    eth: 'https://rpc.mevblocker.io'
+  }
+  const rpcUrl = RPC?.[chain] || chainInfo?.rpc_url || ''
   return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
 }
 
 export const evm_utils = {
-  ...ethers,
   formatUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
     const decimals = Number(arg?.[1])
     if (!decimals) {
@@ -618,7 +625,6 @@ export const evm_utils = {
     if (!decimals) {
       return FixedNumber.fromString(String(arg?.[0] ?? '0')).value
     }
-    // Ensure the value is a string as required by ethers' parseUnits
     const valueStr = String(arg?.[0] ?? '')
     return parseUnits(valueStr, decimals)
   }
@@ -626,7 +632,7 @@ export const evm_utils = {
 export function filterGas(num: number, chain?: string) {
   if (chain === 'bsc') {
     if (num < 1) {
-      return '#848E9C'
+      return '#999'
     } else if (num < 2) {
       return '#EAECEF'
     } else {
@@ -634,7 +640,7 @@ export function filterGas(num: number, chain?: string) {
     }
   } else if (chain === 'eth') {
     if (num < 3) {
-      return '#848E9C'
+      return '#999'
     } else if (num < 6) {
       return '#EAECEF'
     } else {
@@ -642,7 +648,7 @@ export function filterGas(num: number, chain?: string) {
     }
   } else {
     if (num < 0.5) {
-      return '#878fbc'
+      return '#999'
     } else {
       return '#f81111'
     }
@@ -658,10 +664,12 @@ export function addSign(val: number) {
 }
 
 export function getTextWidth(text: string, min = 0) {
+
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')!
-  context.font = '12px DINPro-Medium'
+  context.font = '12px DINPro-regular'
   const metrics = context.measureText(text)
+  console.log('-----text--------', text, Math.max(metrics.width, min))
   return Math.max(metrics.width, min)
 }
 
@@ -701,4 +709,65 @@ export function jumpX() {
     text
   )}+${encodeURIComponent(url)}`
   window.open(share_url)
+}
+
+export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: number) {
+  if (!tabsContainer.value) {
+    return
+  }
+  const container = tabsContainer.value
+  const tab = container.children[index] as HTMLElement
+  if (!tab) return
+
+  const containerWidth = container.offsetWidth
+  const tabLeft = tab.offsetLeft
+  const tabWidth = tab.offsetWidth
+
+  container.scrollTo({
+    left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
+    behavior: 'smooth'
+  })
+}
+
+export function uuid() {
+  return Math.random().toString(36).slice(-8) + Date.now()
+}
+
+export function getMCap(row: GetHotTokensResponse | SearchHot) {
+  const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
+  return amount.gt(0)? amount.multipliedBy(row.current_price_usd).toString() : '0'
+}
+
+export function formatCountdown(time: ConfigType) {
+  const seconds = Math.abs(dayjs(time).diff(dayjs(), 's'))
+  if (seconds < 60) {
+    return `${seconds}s`
+  } else if (seconds < 3600) {
+    // 1h
+    const minutes = Math.floor(seconds / 60)
+    let remainingSeconds = seconds % 60
+    remainingSeconds = Math.floor(remainingSeconds)
+    return `${minutes}min ${
+      remainingSeconds > 0 ? remainingSeconds + 's' : ''
+    }`
+  } else if (seconds < 86400) {
+    // 1d
+    const hours = Math.floor(seconds / 3600)
+    let remainingMinutes = Math.floor((seconds % 3600) / 60)
+    remainingMinutes = Math.floor(remainingMinutes)
+    return `${hours}h ${remainingMinutes > 0 ? remainingMinutes + 'min' : ''}`
+  } else if (seconds < 2592000) {
+    // 1m (30 days)
+    const days = Math.floor(seconds / 86400)
+    let remainingHours = Math.floor((seconds % 86400) / 3600)
+    remainingHours = Math.floor(remainingHours)
+    return `${days}d ${remainingHours > 0 ? remainingHours + 'h' : ''} `
+  } else if (seconds < 31536000) {
+    // 1y (12 months)
+    const months = Math.floor(seconds / 2592000)
+    return `${months}m`
+  } else {
+    const years = Math.floor(seconds / 31536000)
+    return `${years}y`
+  }
 }

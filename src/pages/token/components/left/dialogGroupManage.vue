@@ -5,9 +5,12 @@ import {
   type GetUserFavoriteGroupsResponse, removeFavoriteGroup,
 } from '~/api/fav'
 import {confirmChangeName} from '~/composables/fav'
+import {useEventBus} from "@vueuse/core";
+import {BusEventType} from "~/utils/constants";
 
 const {t} = useI18n()
 const {evmAddress} = useBotStore()
+const favDialogEvent = useEventBus(BusEventType.FAV_DIALOG)
 const props = defineProps({
   list: {
     type: Array<GetUserFavoriteGroupsResponse>,
@@ -44,6 +47,9 @@ async function _changeFavoriteGroupName(name: string, id: number) {
     await changeFavoriteGroupName(name, id, evmAddress)
     ElMessage.success(t('success'))
     props.getData()
+    favDialogEvent.emit({
+      type: 'changeFavoriteGroupName'
+    })
   } catch (e) {
     console.log('=>(dialogGroupManage.vue:31) e', e)
   }
@@ -95,6 +101,10 @@ async function _removeFavoriteGroup(item: GetUserFavoriteGroupsResponse) {
     await removeFavoriteGroup(item.group_id, evmAddress)
     ElMessage.success(t('success'))
     props.getData()
+    favDialogEvent.emit({
+      type: 'removeFavoriteGroup',
+      groupId:item.group_id
+    })
   } catch (e) {
     console.log('=>(dialogGroupManage.vue:92) e', e)
 
@@ -109,11 +119,16 @@ async function _confirmChangeName() {
 </script>
 
 <template>
-  <div class="w-full px-5px">
+  <div class="w-full px-5px [&&]:text-12px">
     <el-table
       v-loading="loading"
       :data="currentList"
+      height="325px"
+      class="[--el-font-size-base:12px]"
     >
+      <template #empty>
+        <AveEmpty/>
+      </template>
       <el-table-column :label="$t('groupName')" prop="name"/>
       <el-table-column :label="$t('rename')" align="center">
         <template #default="{ row }">
@@ -160,7 +175,7 @@ async function _confirmChangeName() {
     </el-table>
     <span
       class="mt-20px cursor-pointer px-26px py-12px text-14px font-500 radius-6px block text-center
-        color-[var(--d-3F80F7-l-EAECEF)] bg-[var(--d-1D2232-l-3F80F7)] hover:opacity-80
+        color-[--d-F5F5F5-l-333] bg-[--d-3F80F7-l-EAECEF] hover:opacity-80
       "
       @click="_confirmChangeName">
       {{ t('newGroup') }}
