@@ -20,7 +20,7 @@
           :value="_chain"
         >
           <div class="flex-center" style="gap: 4px">
-            <ChainToken :_chain="_chain" :width="16"/>
+            <ChainToken :chain="_chain" :width="16"/>
             {{ getChainInfo(_chain)?.name }}
           </div>
         </el-option>

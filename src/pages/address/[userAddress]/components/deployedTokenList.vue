@@ -107,7 +107,7 @@ function onRowClick(row) {
       target_token: row.token,
       token0_address: row.token,
       token0_symbol: row.symbol,
-      token1_symbol: row.token1_symbol,
+      token1_symbol: '',
       pairAddress: '',
     },
     user_address: route.params.userAddress as string,

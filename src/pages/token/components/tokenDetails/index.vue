@@ -178,7 +178,7 @@ async function _getTokenDetailMarks(type: string) {
               }"
               />
               <span class="text-14px ml-4px mr-4px">{{ symbol.target }}</span>
-              <span class="text-12px color-[--d-999-l-666] mr-8px">/ {{ symbol.source }}</span>
+              <span class="text-12px color-[--d-999-l-666] mr-8px" v-if="symbol.source">/ {{ symbol.source }}</span>
               <Icon
                 v-copy="tokenDetailsStore.tokenInfo?.address" name="bxs:copy"
                 class="cursor-pointer text-10px color-[--d-666-l-999]"

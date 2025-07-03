@@ -86,7 +86,7 @@
       <p class="total-profit">
         {{ $t("winRate2") }}（{{ intervalText }}）
         <Number :value="statistics.win_rate">
-          {{ formatNumber(Math.abs(statistics.win_rate ?? 0, 1)) }}%
+          {{ formatNumber(Math.abs(statistics.win_rate ?? 0), 1) }}%
         </Number>
       </p>
     </div>
