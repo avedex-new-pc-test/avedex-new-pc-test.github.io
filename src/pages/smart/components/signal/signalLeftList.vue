@@ -160,7 +160,7 @@ function drag(e: MouseEvent) {
     const _width = clientX < dx
       ? width.value - (dx - clientX)
       : width.value + clientX - dx
-    if (_width >= 546 && _width <= 700) {
+    if (_width >= 536 && _width <= 700) {
       width.value = _width
     }
     dx = clientX
