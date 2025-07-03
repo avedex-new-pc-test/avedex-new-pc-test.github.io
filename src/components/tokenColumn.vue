@@ -1,36 +1,42 @@
 <template>
   <el-table-column v-bind="columnProps">
     <template #default="{ row }">
-
       <div
-        class="flex items-center whitespace-nowrap overflow-hidden text-ellipsis"
+        class="token-info table-item_d flex items-center whitespace-nowrap overflow-hidden text-ellipsis"
         @click.stop.prevent="tableRowClick(row)"
       >
-        <div class="mr-10px">
+        <div class="icon-token-container relative flex mr-2">
           <TokenImg
             :row="{
-              logo_url: row.logo_url ? `${s3BaseUrl}${row.logo_url}`:'',
+              logo_url: `${s3BaseUrl}${row?.logo_url}`,
               chain: row.chain || row.network,
               symbol: row.symbol,
             }"
-            token-class="w-32px h-32px"
+            token-class="w-8 h-8"
           />
+          <img
+            v-if="row?.network || row?.chain"
+            :src="`${s3BaseUrl}chain/${row.chain}.png`"
+            alt=""
+            class="icon-symbol absolute max-w-3 w-full h-3 left-4.5 z-10 top-3.25 rounded-full border border-[var(--custom-primary-lighter-0-color)] bg-[var(--custom-primary-lighter-0-color)]"
+            onerror="this.src='/icon-default.png'"
+            srcset=""
+          >
         </div>
         <div>
-          <div class="flex items-center">
-            <span
-              class="mr-3px max-w-100px whitespace-nowrap overflow-hidden text-ellipsis lh-17px color-[--d-F5F5F5-l-333]">
+          <div class="flex items-start">
+            <span class="token-symbol ellipsis text-sm mr-0.75">
               {{ row.symbol }}
             </span>
-            <Icon
+            <i
               v-if="row.risk_score > 55 || row.risk_level < 0"
-              name="custom:danger"
-              class="text-14px ml-2px color-#F72121"/>
+              class="iconfont icon-danger text-red text-3.5 ml-0.5"
+            />
           </div>
-          <div class="flex items-center mt-2px lh-18px" style="min-width: 110%" @click.stop="() => {}">
-            <span class="text-12px color-[--d-666-l-999]">
+          <div class="flex items-start mt-0.5 min-w-[110%]" @click.stop="() => {}">
+            <span class="token-address text-xs text-gray-600">
               {{ row.token.slice(0, 4) + '...' + row.token.slice(-6) }}
-              <Icon v-copy="row.token" name="bxs:copy" class="mb--1px text-[10px] cursor-pointer"/>
+              <Icon v-copy="row.token" name="bxs:copy" class="mb--0.25 text-2.5 clickable"/>
             </span>
           </div>
         </div>
@@ -42,7 +48,6 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-// import UserAvatar from '@/components/userAvatar.vue'
 const configStore = useConfigStore()
 const s3BaseUrl = configStore.token_logo_url
 
@@ -64,6 +69,3 @@ const tableRowClick = (row) => {
   })
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

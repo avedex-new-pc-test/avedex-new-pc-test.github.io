@@ -1,19 +1,9 @@
 <template>
   <div>
-    <div class="flex-between mt-[20px] mb-[10px]">
-      <h2 class="summary-title">{{ $t('walletActivity') }}</h2>
+    <div class="flex justify-between mt-5 mb-2.5">
+      <h2 class="summary-title text-5 leading-5 font-500 text-[var(--d-fff-l-333)]">{{ $t('walletActivity') }}</h2>
     </div>
-    <div class="activity">
-      <!-- <Loading
-        v-if="loading"
-        v-model:active="loading"
-        :can-cancel="false"
-        loader="dots"
-        :opacity="0.2"
-        :backgroundColor="mode === 'light' ? '#fff' : '#131722'"
-        color="var(--custom-primary-color)"
-        :is-full-page="false"
-      /> -->
+    <div v-loading="loading" class="activity relative p-5 rounded-2 h-[220px] bg-[--d-15171C-l-F6F6F6]">
       <template v-if="activity.dataset.source.length <= 0">
         <AveEmpty
           :style="{
@@ -49,7 +39,6 @@
     />
   </div>
 </template>
-
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import dayjs from 'dayjs'
@@ -327,84 +316,38 @@ function onGetEventsAnalysisDetail() {
       eventsPage.value.loading = false
     })
 }
-
-function createRoundedImage(url, width, height, radius) {
-  return new Promise((resolve, reject) => {
-    const dpr = window.devicePixelRatio || 1
-    const canvas = document.createElement('canvas')
-    canvas.width = width * dpr
-    canvas.height = height * dpr
-    const ctx = canvas.getContext('2d')
-    ctx.scale(dpr, dpr)
-
-    const img = new Image()
-    img.crossOrigin = 'Anonymous'
-    img.onload = function () {
-      ctx.clearRect(0, 0, width, height)
-      ctx.beginPath()
-      ctx.moveTo(radius, 0)
-      ctx.arcTo(width, 0, width, height, radius)
-      ctx.arcTo(width, height, 0, height, radius)
-      ctx.arcTo(0, height, 0, 0, radius)
-      ctx.arcTo(0, 0, width, 0, radius)
-      ctx.closePath()
-      ctx.clip()
-      ctx.drawImage(img, 0, 0, width, height)
-      resolve(canvas.toDataURL())
-    }
-
-    img.onerror = (e) => {
-      reject(e)
-    }
-    img.src = url
-  })
-}
-
 </script>
 
 <style scoped lang="scss">
-.summary-title {
-  font-size: 20px;
-  line-height: 20px;
-  font-weight: 500;
-  color: var(--d-fff-l-333);
+/* Only keep styles that can't be expressed with UnoCSS */
+.activity :deep(.el-card) {
+  border: 0 none;
+  background-color: var(--custom-bg-10-color);
+  border-radius: 12px;
 }
 
-.activity {
-  position: relative;
-  padding: 20px;
-  height: 220px;
-  background-color: #15171c;
+.activity :deep(.el-card__header) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .fixed-tooltip {
-    display: none;
-    position: absolute;
-    top: -30px;
-    border-radius: 4px;
-    color: rgb(102, 102, 102);
-    font: 14px / 21px sans-serif;
-    padding: 8px;
-    background-color: rgba(0, 0, 0, 0.8);
-  }
+.activity :deep(.el-card__body) {
+  padding-top: 0;
+}
 
-  :deep(.el-card) {
-    border: 0 none;
-    background-color: var(--custom-bg-10-color);
-    border-radius: 12px;
-  }
+.activity :deep(.tooltip) {
+  pointer-events: auto !important;
+}
 
-  :deep(.el-card__header) {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  :deep(.el-card__body) {
-    padding-top: 0;
-  }
-
-  :deep(.tooltip) {
-    pointer-events: auto !important;
-  }
+.fixed-tooltip {
+  display: none;
+  position: absolute;
+  top: -30px;
+  border-radius: 4px;
+  color: rgb(102, 102, 102);
+  font: 14px / 21px sans-serif;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 </style>
