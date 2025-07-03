@@ -25,6 +25,8 @@
           v-model="conditions_wallet.hide_small"
           :false-value="0"
           :true-value="1"
+          class="text-14px"
+          style="color: red;"
           @change="onConditionChange('hide_small')"
         >
           {{ $t('hideSmallAssets1') + '<1USD' }}

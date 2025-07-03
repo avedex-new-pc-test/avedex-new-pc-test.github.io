@@ -1,5 +1,5 @@
 <template>
-  <div class="trade flex w-[40vw] rounded-2 bg-[--d-15171C-l-F6F6F6]">
+  <div class="trade flex w-[40vw] rounded-2 bg-[--d-15171C-l-F8F8F8]">
     <div class="trade-pnl min-w-0 flex-1 p-5">
       <div class="flex justify-between mb-7">
         <span class="trade-pnl-title text-3.5 leading-4.25 text-center text-[var(--d-666-l-959A9F)]">

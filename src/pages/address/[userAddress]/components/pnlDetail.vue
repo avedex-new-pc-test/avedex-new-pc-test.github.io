@@ -8,7 +8,7 @@
     <template #header>
       <span class="pnl-title text-[var(--d-fff-l-333)]">{{ $t('pnlDetail') }}</span>
     </template>
-    <el-divider class="!m-0 !mb-5 !border-t-[#33353d]" />
+    <el-divider class="!m-0 !mb-5 !border-t-[--d-33353D-l-F5F5F5]" />
     <div>
       <div class="pnl-row flex justify-between px-5 text-3.5 leading-5 mb-3">
         <span class="pnl-row-name text-[#959a9f]">{{ $t('Txs') }}</span>
@@ -22,7 +22,6 @@
         <span class="pnl-row-name text-[#959a9f]">{{ $t('time') }}</span>
         <span class="pnl-row-value text-[var(--d-fff-l-333)]">{{ time }}</span>
       </div>
-      <el-divider class="!border-t-[#33353d] !mb-2.5"/>
       <div
         v-infinite-scroll="onLoad"
         :infinite-scroll-disabled="loading || finished || error"

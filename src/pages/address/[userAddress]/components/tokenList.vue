@@ -10,7 +10,7 @@
       }"
       fit
       style="width: 100%"
-      header-row-class-name="text-12px"
+      header-row-class-name="text-12px sticky top-0 z-10 font-500"
       cell-class-name="color-#848E9C"
       row-class-name="cursor-pointer"
       @row-click="jumpBalance"
