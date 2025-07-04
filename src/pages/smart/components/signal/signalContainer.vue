@@ -291,7 +291,7 @@ onUnmounted(() => {
       width="540px"
       :class="`[--el-message-close-size:24px]`"
   >
-    <el-table :data="dialogValues.list" :height="400">
+    <el-table row-class-name="[--el-table-tr-bg-color:--d-222-l-FFF]" :data="dialogValues.list" :height="400">
       <el-table-column
           type="index"
           :label="$t('ranking')"
