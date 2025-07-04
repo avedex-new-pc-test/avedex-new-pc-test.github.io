@@ -1,45 +1,37 @@
 <template>
   <div>
-    <span class="flex items-center text-[14px] cursor-pointer color-[--d-FFF-l-333]" @click="showBlackList">
-      <Icon name="custom:black" class="mr-4px"/>
+    <span
+      class="flex items-center text-14px cursor-pointer color-[--d-FFF-l-333]"
+      @click="showBlackList"
+    >
+      <Icon name="custom:black" class="mr-4px" />
       {{ t('BlackList') }}
     </span>
     <el-dialog
       v-model="visible"
       :title="t('blackManage')"
-      class="dialog"
-      width="600"
+      class="w-600px"
       @close="closeDialog"
+
     >
-      <div class="dialog-padding">
+      <div class="flex flex-col gap-10px pt-0">
         <el-input
           v-model="query.q"
-          class="text-[12px]"
+          class="!text-12px"
           :placeholder="t('searchContractORName')"
           clearable
           @clear="getBlackList"
           @keyup.enter="getBlackList"
         >
           <template #prefix>
-            <span class="iconfont icon-search1 pointer" @click="getBlackList" />
+            <Icon class="text-16px text-[var(--d-666-l-999)]" name="ep:search" />
           </template>
         </el-input>
 
         <div class="relative">
-          <!-- <loading
-            v-if="result.loading"
-            v-model:active="result.loading"
-            :backgroundColor="isLight ? '#fff' : '#131722'"
-            :can-cancel="false"
-            :is-full-page="false"
-            :opacity="0.2"
-            color="var(--custom-primary-color)"
-            loader="dots"
-          /> -->
-
-          <el-table :data="result.list" class="black-list-table">
+          <el-table :data="result.list" row-class-name="!bg-[var(--el-bg-color)]" :loading="result.loading">
             <template #empty>
-              <div v-if="!result.loading" class="font-12">
+              <div v-if="!result.loading" class="text-12px">
                 {{ t('emptyNoData') }}
               </div>
             </template>
@@ -62,7 +54,7 @@
 
             <el-table-column :min-width="210" :label="t('address')">
               <template #default="{ row }">
-                <div v-copy="row.token" class="font-12 ellipsis-auto">
+                <div v-copy="row.token" class="text-12px ellipsis-auto">
                   {{ row.token }}
                 </div>
               </template>
@@ -89,7 +81,7 @@
           v-if="result.total"
           v-model:current-page="query.pageNo"
           v-model:page-size="query.pageSize"
-          class="pagination-box"
+          class="pagination-box mx-auto"
           layout="total, prev, pager, next"
           :total="result.total"
           hide-on-single-page
@@ -102,7 +94,6 @@
     </el-dialog>
   </div>
 </template>
-
 <script setup>
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -213,5 +204,6 @@ const updateRowLoading = (token, isLoading) => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+
 </style>

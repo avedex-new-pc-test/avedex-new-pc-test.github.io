@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 flex justify-between mr-5 flex-1 rounded-2 bg-[--d-15171C-l-F6F6F6]">
+  <div class="p-5 flex justify-between mr-5 flex-1 rounded-2 bg-[--d-15171C-l-F8F8F8]">
     <div>
       <div class="flex gap-6 mb-5">
         <UserAvatar
@@ -46,12 +46,12 @@
           </div>
           <div class="flex items-center gap-2">
             <div v-copy="address" class="statistic-address flex gap-2.5 cursor-pointer">
-              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[var(--d-999-l-18181B)] bg-[--d-666-l-CCC]">
+              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[var(--d-999-l-18181B)] bg-[--d-222-l-F2F2F2]">
                 {{ addressText }}
                 <Icon name="bxs:copy" class="text-2.5 clickable text-[var(--d-999-l-333)]"/>
               </div>
             </div>
-            <div class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[--d-666-l-959A9F] bg-[--d-666-l-CCC]">
+            <div class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[--d-666-l-959A9F] bg-[--d-222-l-F2F2F2]">
               <i class="iconfont icon-time text-3" />
               <span>{{ wallet_age?.value }}</span>
               <span>{{ wallet_age?.unit }}</span>
@@ -93,29 +93,29 @@
       <div class="flex justify-end items-center h-15 gap-2 mb-5">
         <a
           v-if="statistics.is_wallet_address_fav === 1"
-          class="w-25 px-0 box-border flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[var(--custom-br-1-color)] text-3 leading-4 cursor-pointer rounded text-[var(--d-666-l-999)] bg-[var(--d-0A0B0C-l-E5E5E5)] hover:opacity-100 hover:border-[#f6465d] hover:bg-[rgba(246,70,93,0.1)]"
+          class="w-25 px-0 box-border flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-666-l-999)] hover:opacity-100  hover:bg-[rgba(246,70,93,0.1)]"
           @click="_deleteAttention"
         >
           <Icon
             name="custom:accountcheck"
             class="text-3.5"
           />
-          <span class="statistic-right-attention-text">{{ $t('followed') }}</span>
-          <span class="statistic-right-attention-cancel hidden text-[#f6465d]">{{ $t('cancelFollowed') }}</span>
+          <span>{{ $t('followed') }}</span>
+          <span class="hidden text-[#f6465d]">{{ $t('cancelFollowed') }}</span>
         </a>
-        <a v-else class="statistic-right-attention flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-666-l-CCC] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]" @click="_addAttention">
+        <a v-else class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]" @click="_addAttention">
           <Icon
             name="custom:accountplus"
-            class="text-3.5"
+            class="text-4"
           />
           {{ $t('follow') }}
         </a>
         <a
-          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-666-l-CCC] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
+          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
           @click="shareComponent&&shareComponent.openDialog()"
         >
-          {{ $t('share') }}
           <Share ref="shareComponent" :statistics="statistics" :address="address" :chain="chain"/>
+          {{ $t('share') }}
         </a>
       </div>
       <div>

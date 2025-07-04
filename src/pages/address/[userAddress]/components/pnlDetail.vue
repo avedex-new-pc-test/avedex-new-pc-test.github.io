@@ -2,13 +2,13 @@
   <el-drawer
     v-model="visible"
     class="bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]"
-    :size="440"
+    :size="480"
     header-class="!mb-5"
   >
     <template #header>
       <span class="pnl-title text-[var(--d-fff-l-333)]">{{ $t('pnlDetail') }}</span>
     </template>
-    <el-divider class="!m-0 !mb-5 !border-t-[#33353d]" />
+    <el-divider class="!m-0 !mb-5 !border-t-[--d-33353D-l-F5F5F5]" />
     <div>
       <div class="pnl-row flex justify-between px-5 text-3.5 leading-5 mb-3">
         <span class="pnl-row-name text-[#959a9f]">{{ $t('Txs') }}</span>
@@ -22,7 +22,6 @@
         <span class="pnl-row-name text-[#959a9f]">{{ $t('time') }}</span>
         <span class="pnl-row-value text-[var(--d-fff-l-333)]">{{ time }}</span>
       </div>
-      <el-divider class="!border-t-[#33353d] !mb-2.5"/>
       <div
         v-infinite-scroll="onLoad"
         :infinite-scroll-disabled="loading || finished || error"
@@ -36,7 +35,7 @@
           :data="eventsDetail.events"
           fit
           style="width: 100%"
-          class="table-container pointer"
+          class="pointer"
           @row-click="tableRowClick"
         >
           <template #empty>
@@ -60,12 +59,12 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column width="60" :label="$t('Vol')">
+          <el-table-column width="75" :label="$t('Vol')">
             <template #default="{ row }">
               <span class="text-3"> {{ formatNumber(row.volume, 1) }}</span>
             </template>
           </el-table-column>
-          <el-table-column width="70" :label="$t('price')">
+          <el-table-column :label="$t('price')">
             <template #default="{ row }">
               <span class="text-3">
                 ${{ row?.token_price_u > 0 ? formatNumber(row?.token_price_u || 0, 2) : 0 }}
