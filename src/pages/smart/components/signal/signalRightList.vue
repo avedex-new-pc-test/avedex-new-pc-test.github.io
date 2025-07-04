@@ -143,7 +143,8 @@ function openDrawer(item: GetSignalV2ListResponse<IActionItem | IActionV3Item>) 
     >
       <SignalRightItem
         v-for="(item,index) in listData"
-        :class="item.actions.length > 3 ? 'border-1px border-solid border-#3F80F7':''"
+        :class="item.actions.length > 3 ? 'border-#3F80F7':'hover:border-#3F80F7'"
+        class="border-1px border-solid border-transparent transition-colors transition-.3s"
         :key="index"
         :item="item"
         :filterToken="filterToken"
