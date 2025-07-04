@@ -408,7 +408,7 @@ function openTokenDetail(el: IActionItem) {
                 {{ $t('MaximumIncrease') }}
               </div>
               <div
-                class="p-8px min-w-67px text-center rounded-tl-2 rounded-br-[10px] text-[32px] leading-[24px] text-white font-500 bg-[linear-gradient(73.74deg,_#8B4FDD_9.69%,_#12B886_91.69%)]"
+                class="p-8px min-w-67px text-center rounded-tl-2 rounded-br-[10px] text-[32px] leading-[24px] text-white font-500 bg-#12B886"
               >
                 {{ Number(max_price_change) < 1 ? '<1' : Math.ceil(Number(max_price_change)) + 'X' }}
               </div>

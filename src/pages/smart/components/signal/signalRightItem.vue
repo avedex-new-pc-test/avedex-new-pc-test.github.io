@@ -24,12 +24,13 @@ const themeStore = useThemeStore()
 
 function getGradientBackground(history_count: number) {
   if (history_count >= 5) {
-    if (themeStore.isDark) {
-      return 'bg-[linear-gradient(273.55deg,#12B88633_1.62%,#12B88699_99.73%)]'
-    }
-    return 'bg-[linear-gradient(273.55deg,#12B886_1.62%,#12B88699_99.73%)] color-#FFF'
+    return themeStore.isDark
+      ? 'bg-[linear-gradient(287.62deg,#8B4FDD_12.05%,#12B886_87.95%)]'
+      : 'bg-[linear-gradient(260.98deg,#8B4FDD_6.85%,#12B886_85.21%)] color-#FFF'
   }
-  return 'bg-[--d-12B8861A-l-12B8862A]'
+  return themeStore.isDark
+    ? 'bg-[linear-gradient(287.62deg,#8B4FDD2A_12.05%,#12B8862A_87.95%)]'
+    : 'bg-[linear-gradient(260.98deg,#8B4FDD2A_6.85%,#12B8862A_85.21%)]'
 }
 
 const increasedOrDecreased = computed(() => {
@@ -90,10 +91,10 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
                 @click="navigateTo(`/token/${item.token}-${item.chain}`)"
               >{{ item.symbol }}</span>
               <div
+                  v-if="item.issue_platform"
                 class="mr-4px w-12px h-12px rounded-2px bg-[--d-1A1A1A-l-F2F2F2] flex items-center justify-center">
                 <img
-                  v-if="item.issue_platform"
-                  v-tooltip="item.issue_platform"
+                    v-tooltip="item.issue_platform"
                   :src="formatIconTag(item.issue_platform)"
                   width="10"
                   height="10"
