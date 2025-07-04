@@ -91,10 +91,10 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
                 @click="navigateTo(`/token/${item.token}-${item.chain}`)"
               >{{ item.symbol }}</span>
               <div
+                  v-if="item.issue_platform"
                 class="mr-4px w-12px h-12px rounded-2px bg-[--d-1A1A1A-l-F2F2F2] flex items-center justify-center">
                 <img
-                  v-if="item.issue_platform"
-                  v-tooltip="item.issue_platform"
+                    v-tooltip="item.issue_platform"
                   :src="formatIconTag(item.issue_platform)"
                   width="10"
                   height="10"
