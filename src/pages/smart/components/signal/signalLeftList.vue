@@ -252,7 +252,7 @@ function openTokenDetail(el: IActionItem) {
           <div class="mb-22px flex justify-between">
             <div class="flex items-center gap-8px">
               <div
-                class="flex items-center gap-4px relative ml--20px p-6px h-26px color-#FFF lh-14px rounded-r-3px rounded-b-3px bg-#333"
+                  class="flex items-center gap-4px relative ml--20px p-6px h-26px color-#FFF lh-14px rounded-rt-3px rounded-rb-3px bg-#333"
               >
                 <span
                   class="absolute bottom--4px left--4px w-0 h-0 border-t-solid border-t-4px border-t-transparent border-r-4px border-r-solid border-r-transparent border-l-4px border-l-solid border-l-#333 transform-scale-x-[-1] transform-scale-y-[-1]"
