@@ -138,7 +138,9 @@ function openDrawer(item: GetSignalV2ListResponse<IActionItem | IActionV3Item>) 
     :height="height-286"
     @scroll="onScroll"
   >
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(454px,1fr))] gap-4px">
+    <div class="grid gap-4px"
+         :class="listData.length>1 ? 'grid-cols-[repeat(auto-fit,minmax(454px,1fr))]':'grid-cols-[454px]'"
+    >
       <SignalRightItem
         v-for="(item,index) in listData"
         :class="item.actions.length > 3 ? 'border-1px border-solid border-#3F80F7':''"
