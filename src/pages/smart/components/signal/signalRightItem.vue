@@ -66,7 +66,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
 </script>
 
 <template>
-  <div class="bg-[--d-111-l-FFF] p-12px rounded-8px flex flex-col">
+  <div class="w-454px bg-[--d-111-l-FFF] p-12px rounded-8px flex flex-col">
     <div class="flex justify-between">
       <div class="flex flex-1 flex-col gap-12px">
         <div class="flex items-center gap-8px">
