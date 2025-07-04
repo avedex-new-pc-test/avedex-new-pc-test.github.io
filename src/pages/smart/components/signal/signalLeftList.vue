@@ -34,9 +34,7 @@ defineExpose({
     if (queryParams) {
       tempQueryParams.value = queryParams
     }
-    listData.value = []
-    pageParams.value.pageNO = 1
-    fetchSignalList()
+    resetAndGet()
   },
   setSelectId: (val: undefined) => {
     selectId.value = val
@@ -46,11 +44,7 @@ defineExpose({
   }
 })
 watch(() => props.activeChain, () => {
-  listData.value = []
-  pageParams.value.pageNO = 1
-  listStatus.value.finished = false
-  listStatus.value.error = false
-  fetchSignalList()
+  resetAndGet()
 })
 
 async function fetchSignalList() {
@@ -82,6 +76,19 @@ async function fetchSignalList() {
   } finally {
     listStatus.value.loading = false
   }
+}
+
+const localStore = useLocaleStore()
+watch(() => localStore.locale, () => {
+  resetAndGet()
+})
+
+function resetAndGet() {
+  listData.value = []
+  pageParams.value.pageNO = 1
+  listStatus.value.finished = false
+  listStatus.value.error = false
+  fetchSignalList()
 }
 
 let hideTimer: number | NodeJS.Timeout
