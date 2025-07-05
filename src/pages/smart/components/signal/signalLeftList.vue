@@ -519,8 +519,12 @@ function openTokenDetail(el: IActionItem) {
               mainNameVisible
             />
           </div>
-          <div v-if="headline" class="flex items-center gap-8px mt-12px">
-            <Icon name="custom:ai"/>
+          <div 
+            v-if="headline"
+            class="flex items-center gap-8px mt-12px"
+            v-tooltip="headline"
+           >
+            <Icon name="custom:ai" class="shrink-0"/>
             <div class="color-[--d-F5F5F5-l-333] text-12px whitespace-nowrap overflow-hidden text-ellipsis">
               {{ headline }}
             </div>
