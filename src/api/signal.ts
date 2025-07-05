@@ -101,11 +101,11 @@ export interface Gold {
 /**
  * 获取信号广场时间线
  */
-export function getTimeline(chain: string): Promise<ITimeline[]> {
+export function getTimeline(chain: string, time_interval?: number): Promise<ITimeline[]> {
     const {$api} = useNuxtApp()
-    return $api('/v2api/signals/v2/timeline', {
+  return $api('https://0ftrfsdb.xyz/v2api/signals/v2/timeline', {
         method: 'get',
-        query: {chain}
+    query: {chain, time_interval}
     })
 }
 
