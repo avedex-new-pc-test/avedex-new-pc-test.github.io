@@ -352,12 +352,12 @@ function openTokenDetail(el: IActionItem) {
                     <span v-if="seconds < 60" class="color-#FFA622 text-12px">
                       {{ seconds }}s
                     </span>
-                        <span v-else class="color-[--d-999-l-666] text-12px">
+                        <span v-else class="color-[--d-666-l-999] text-12px">
                       {{ formatTimeFromNow(token_create_time) }}
                     </span>
                       </template>
                     </TimerCount>
-                    <div v-else class="color-[--d-999-l-666] text-12px">
+                    <div v-else class="color-[--d-666-l-999] text-12px">
                       {{ formatTimeFromNow(token_create_time) }}
                     </div>
                   </div>
@@ -369,7 +369,7 @@ function openTokenDetail(el: IActionItem) {
                   <Icon v-copy="token" name="bxs:copy" class="cursor-pointer text-12px color-[--d-666-l-999]"/>
                   <div
                     v-if="Number(top10_ratio) > 0"
-                    class="text-10px flex items-center gap-2px color-[--d-999-l-666]"
+                    class="text-10px flex items-center gap-2px color-[--d-666-l-999]"
                     :class="{
                     'color-#F6465D':Number(top10_ratio) > 30
                 }"
