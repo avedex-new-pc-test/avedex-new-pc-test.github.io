@@ -37,6 +37,15 @@ watch(() => wsStore.wsResult[WSEventType.GOLD_SIGNAL], (val) => {
 })
 
 const {width} = useWindowSize()
+const startIndex = computed(()=>{
+  let _start = 0
+  if (width.value < 1920) {
+    _start = -hotList.value.length / 2
+  } else if (width.value < 2440) {
+    _start = -hotList.value.length * 0.7
+  }
+  return _start
+})
 async function fetchTimeline() {
   const res = await getTimeline(props.activeChain)
   const data = res || []
@@ -46,13 +55,7 @@ async function fetchTimeline() {
     el.golds = []
   })
   setGolds(golds, data)
-  let startIndex = 0
-  if (width.value < 1920) {
-    startIndex = -data.length / 2
-  } else if (width.value < 2440) {
-    startIndex = -data.length * 0.7
-  }
-  hotList.value = data.slice(startIndex)
+  hotList.value = data
 }
 
 function setGolds(golds: Gold[] = [], data: ITimeline[]) {
@@ -142,9 +145,9 @@ function getLevel(value: number) {
       </div>
       <span class="ml-8px">{{ $t('hot') }}</span>
     </div>
-    <div class="justify-between flex gap-2px">
+    <div class="justify-between flex gap-3px">
       <div
-        v-for="(el) in hotList"
+        v-for="(el) in hotList.slice(startIndex)"
         :key="el.time"
         class="relative w-8px h-8px"
       >
