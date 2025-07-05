@@ -34,7 +34,7 @@
         <li
           v-for="{ label, key, negative } in profitList"
           :key="key"
-          class="flex items-center"
+          class="trade-pnl-stage-item flex items-center"
         >
           <span class="flex-shrink-0 text-3 font-500 text-[var(--d-fff-l-333)]">{{ label }}</span>
           <span
@@ -344,6 +344,14 @@ onMounted(() => {
 
 <style scoped lang="scss">
 /* Add any necessary base styles that can't be expressed with UnoCSS here */
+.trade-pnl-stage-item:before {
+    margin-right: 2px;
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--color-teal-300)
+}
 .trade-pnl-stage-item:nth-child(2):before {
   opacity: 0.6;
 }
