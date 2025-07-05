@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dogCoinImg from 'assets/images/dogcoin.png'
 import {getTimeline, type Gold, type ITimeline} from '~/api/signal'
-import {useWindowSize} from "@vueuse/core";
+import {useWindowSize} from '@vueuse/core'
 
 const emit = defineEmits(['updateFilterToken'])
 const timelineRef = ref()
@@ -40,9 +40,9 @@ const {width} = useWindowSize()
 const startIndex = computed(()=>{
   let _start = 0
   if (width.value < 1920) {
-    _start = -hotList.value.length / 2
+    _start = -hotList.value.length * 0.6
   } else if (width.value < 2440) {
-    _start = -hotList.value.length * 0.7
+    _start = -hotList.value.length * 0.9
   }
   return _start
 })
@@ -145,7 +145,7 @@ function getLevel(value: number) {
       </div>
       <span class="ml-8px">{{ $t('hot') }}</span>
     </div>
-    <div class="justify-between flex gap-3px">
+    <div class="justify-between flex gap-2px">
       <div
         v-for="(el) in hotList.slice(startIndex)"
         :key="el.time"
@@ -225,7 +225,11 @@ function getLevel(value: number) {
               width="16"
               height="16"
               class="border-2px border-solid rounded-full"
-              :class="el.type"
+              :class="({
+                gold:'border-#FFD700',
+                silver:'border-#E0E0E0',
+                bronze:'border-#C77B30'
+              })[el.type]"
               :src="
                    el.logo
                    ? getSymbolDefaultIcon({
