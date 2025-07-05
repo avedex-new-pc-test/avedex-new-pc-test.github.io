@@ -122,7 +122,7 @@
           class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
           @click="shareComponent && shareComponent.openDialog()"
         >
-          <Share ref="shareComponent" :statistics="statistics" :address="address" :chain="chain" />
+          <Share ref="shareComponent" type="walletDetailTop" :statistics="statistics" :address="address" :chain="chain" />
           {{ $t('share') }}
         </a>
       </div>

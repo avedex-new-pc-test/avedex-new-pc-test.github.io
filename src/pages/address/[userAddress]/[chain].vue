@@ -113,7 +113,7 @@ const intervalText = computed(() => {
 const smartChains = computed(() => {
   const chainIds = ['solana', 'bsc']
   // 如果是自己的钱包地址且为 bot 钱包那么展示所有的链，链钱包后面再改
-  if (botStore.evmAddress) {
+  if (botStore.evmAddress && isSelfAddress.value) {
     const botChains = botStore.userInfo?.addresses?.filter?.(el => chainIds.includes(el.chain))
     if (botChains && botChains.length > 0) {
       return botChains
@@ -121,7 +121,7 @@ const smartChains = computed(() => {
   }
   return [
     {
-      chain,
+      chain:chain.value,
     },
   ]
 })
