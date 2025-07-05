@@ -26,17 +26,16 @@
         <template #header>
           <span>{{ $t('time') }}</span>
           <el-popover
-              v-model:visible="filterForm.time.visible"
-            placement="bottom"
+            v-model:visible="filterForm.time.visible"
             :width="430"
             trigger="click"
-              popper-style="--el-text-color-primary:--d-666-l-999"
+            popper-style="--el-text-color-primary:--d-666-l-999"
           >
             <template #reference>
               <Icon
                 name="custom:filter"
                 class="cursor-pointer text-10px ml-3px"
-                :class="trendQuery.block_time_min && trendQuery.block_time_max?'color-[--d-999-l-666]':'color-[--d-666-l-999]'"
+                :class="trendQuery.block_time_min && trendQuery.block_time_max?'color-[--d-3F80F7-l-EAECEF]':'color-[--d-666-l-999]'"
                 @click.stop
               />
             </template>
@@ -121,7 +120,7 @@
               <Icon
                 name="custom:filter"
                 class="cursor-pointer text-10px ml-3px"
-                :class="!trendQuery.checkAll ? 'color-[--d-999-l-666]':'color-[--d-666-l-999]'"
+                :class="!trendQuery.checkAll ? 'color-[--d-3F80F7-l-EAECEF]':'color-[--d-666-l-999]'"
               />
             </template>
             <template #default>
@@ -220,7 +219,7 @@
               <Icon
                 name="custom:filter"
                 class="cursor-pointer text-10px ml-3px"
-                :class="trendQuery.volume_min && trendQuery.volume_max?'color-[--d-999-l-666]':'color-[--d-666-l-999]'"
+                :class="trendQuery.volume_min && trendQuery.volume_max?'color-[--d-3F80F7-l-EAECEF]':'color-[--d-666-l-999]'"
               />
             </template>
             <template #default>
