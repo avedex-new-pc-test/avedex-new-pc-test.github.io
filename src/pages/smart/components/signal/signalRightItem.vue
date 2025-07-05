@@ -66,7 +66,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
 </script>
 
 <template>
-  <div class="w-375px bg-[--d-111-l-FFF] p-12px rounded-8px flex flex-col">
+  <div class="w-375px bg-[--d-1A1A1A-l-FFF] p-12px rounded-8px flex flex-col">
     <div class="flex justify-between">
       <div class="flex flex-1 flex-col gap-12px">
         <div class="flex items-center gap-8px">
@@ -206,8 +206,29 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
           >
             <Icon name="custom:filter"/>
           </div>
-          <Icon name="custom:clock" class="text-10px mr-2px"/>
-          {{ formatDate(item.signal_time) }}
+          <div 
+            class="color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333] flex items-center gap-2px"
+            v-tooltip="formatDate(item.signal_time,'YYYY-MM-DD HH:mm:ss')"
+          >
+            <Icon name="custom:clock" class="text-10px mr-2px"/>
+            <div>
+              <TimerCount
+                v-if="item.signal_time && Number(formatTimeFromNow(item.signal_time, true)) < 60"
+                :key="item.signal_time" :timestamp="item.signal_time" :end-time="60">
+                <template #default="{ seconds }">
+                <span v-if="seconds < 60" class="color-#FFA622 text-12px">
+                  {{ seconds }}s
+                </span>
+                  <span v-else class="text-12px">
+                  {{ formatTimeFromNow(item.signal_time) }}
+                </span>
+                </template>
+              </TimerCount>
+              <div v-else class="text-12px">
+                {{ formatTimeFromNow(item.signal_time) }}
+              </div>
+            </div>
+          </div>
         </div>
         <div
           class="flex items-center lh-24px py-4px px-8px rounded-4px"
