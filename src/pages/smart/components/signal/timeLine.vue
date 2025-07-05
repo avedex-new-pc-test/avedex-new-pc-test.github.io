@@ -40,9 +40,7 @@ const {width} = useWindowSize()
 const startIndex = computed(()=>{
   let _start = 0
   if (width.value < 1920) {
-    _start = -hotList.value.length * 0.6
-  } else if (width.value < 2440) {
-    _start = -hotList.value.length * 0.9
+    _start = -hotList.value.length * 0.8
   }
   return _start
 })
