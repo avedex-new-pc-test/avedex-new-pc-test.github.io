@@ -243,10 +243,10 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
     </div>
     <div class="m-12px bg-[--d-1A1A1A-l-F2F2F2] h-1px"/>
     <div class="flex color-[--d-666-l-999] text-12px mb-8px">
-      <div class="flex-[3]">
+      <div class="flex-[2]">
         {{ $t('wallet') }}
       </div>
-      <div class="flex-[2] text-right">
+      <div class="w-100px text-right">
         {{ $t('operate') }}
       </div>
       <div class="flex-1 text-right" v-if="!filterToken">
@@ -272,7 +272,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
         class="flex color-[--d-999-l-666] text-12px h-40px items-center cursor-pointer"
         @click="openTokenDetail(item.actions[$index])"
       >
-        <div class="flex-[3] flex items-center">
+        <div class="flex-[2] flex items-center">
           <UserAvatar
             icon-size="24px"
             :wallet_logo="{logo:wallet_logo,name:wallet_alias}"
@@ -283,7 +283,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
               wallet_alias || $t('wallet')
             }}</span><span class="color-[--d-999-l-666]">(*{{ wallet_address.slice(-4) }})</span>
         </div>
-        <div class="flex-[2] text-right color-#12B886">
+        <div class="w-100px text-right color-#12B886">
           {{ $t('buy') }}{{ localeStore.locale === 'en' ? ' ' : '' }}<span
           class="decoration-underline decoration-dotted"
           v-tooltip="'$'+formatNumber(quote_token_volume, 2)"
