@@ -47,7 +47,7 @@
         </el-checkbox>
       </div>
     </div>
-    <div ref="listArea">
+    <div ref="listArea" class="mb-[25px]">
       <div
         v-infinite-scroll="onLoad"
         :infinite-scroll-delay="200"
