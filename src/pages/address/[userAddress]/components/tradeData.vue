@@ -1,12 +1,13 @@
 <template>
   <div class="trade flex w-[40vw] rounded-2 bg-[--d-15171C-l-F8F8F8]">
     <div class="trade-pnl min-w-0 flex-1 p-5">
-      <div class="flex justify-between mb-7">
+      <div class="flex justify-between mb-3">
         <span class="trade-pnl-title text-3.5 leading-4.25 text-center text-[var(--d-666-l-959A9F)]">
           {{ $t('bestToken2') }}（{{ intervalText }}）
         </span>
         <ButtonGroup
           v-model:active-value="bestToken.filter"
+          class="mt-[-5px]"
           :options="bestTokenOptions"
           @change="changeFilter"
         />
@@ -27,9 +28,11 @@
       />
     </div>
     <div class="min-w-0 flex-1 p-5">
-      <p class="mb-7 text-3.5 leading-7 text-left text-[var(--d-666-l-959A9F)]">
+      <div class="flex justify-between mb-4">
+        <span class="trade-pnl-title text-3.5 leading-4.25 text-center text-[var(--d-666-l-959A9F)]">
         {{ $t('profit3') }}（{{ intervalText }}）
-      </p>
+        </span>
+      </div>
       <ul class="mb-2.5 flex flex-col gap-2.5">
         <li
           v-for="{ label, key, negative } in profitList"

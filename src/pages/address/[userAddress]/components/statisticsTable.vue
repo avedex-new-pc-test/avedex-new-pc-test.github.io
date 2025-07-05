@@ -47,7 +47,7 @@
         </el-checkbox>
       </div>
     </div>
-    <div ref="listArea" class="mb-[25px]">
+    <div ref="listArea" class="mb-[35px]">
       <div
         v-infinite-scroll="onLoad"
         :infinite-scroll-delay="200"
@@ -83,7 +83,7 @@
         />
         <div
           :style="{ color: mode === 'light' ? '#666' : '#999' }"
-          class="mt-[5px] mb-[5px] text-[12px] text-center"
+          class="mt-[-2px] mb-[5px] text-[12px] text-center"
         >
           <span v-if="tableData.loading && tableData.pageNO > 1">{{ $t('loading') }}</span>
         </div>
