@@ -46,13 +46,13 @@
           </div>
           <div class="flex items-center gap-2">
             <div v-copy="address" class="statistic-address flex gap-2.5 cursor-pointer">
-              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[var(--d-999-l-18181B)] bg-[--d-222-l-F2F2F2]">
+              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[--d-666-l-959A9F] bg-[--d-222-l-F2F2F2]">
                 {{ addressText }}
-                <Icon name="bxs:copy" class="text-2.5 clickable text-[var(--d-999-l-333)]"/>
+                <Icon name="bxs:copy" class="text-2.5 clickable text-[--d-666-l-959A9F]"/>
               </div>
             </div>
             <div class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[--d-666-l-959A9F] bg-[--d-222-l-F2F2F2]">
-              <i class="iconfont icon-time text-3" />
+              <Icon name="custom:cake" class="text5 text-[--d-666-l-959A9F]" />
               <span>{{ wallet_age?.value }}</span>
               <span>{{ wallet_age?.unit }}</span>
             </div>
@@ -331,7 +331,7 @@ const total_balance = computed(() => {
     bsc: 4,
   }
   const { total_balance_without_risk } = balanceAnalysis.value
-  return formatNumber((total_balance_without_risk ?? 0) / main_token_price.value, formatMap[chain.value])
+  return formatNumber2((total_balance_without_risk ?? 0) / main_token_price.value, formatMap[chain.value])
 })
 
 const isUSDT = computed(() => {
