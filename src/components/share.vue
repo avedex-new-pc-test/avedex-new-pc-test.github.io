@@ -251,7 +251,7 @@ function getColorClass(val: string) {
                 </ExcludeError>
               </td>
             </tr>
-            <tr>
+            <tr v-if="type==='walletDetailTop'">
               <td :style="{ width: getTextWidth($t('winRate')) + 20 + 'px' }">
                 {{ $t('winRate') }}
               </td>
