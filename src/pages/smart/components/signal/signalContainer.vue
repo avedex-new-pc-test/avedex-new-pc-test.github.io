@@ -205,14 +205,14 @@ onUnmounted(() => {
           href="https://t.me/AveSignalMonitor"
           target="_blank"
           class="ml-1 underline">
-          {{ $t('EnSubscription') }}
+          TG {{ $t('Subscription') }}
         </a>
         <a
           v-else
           href="https://t.me/AveSignalMonitorCN"
           target="_blank"
           class="underline ml-1">
-          {{ $t('CnSubscription') }}
+          TG{{ $t('Subscription') }}
         </a>
       </div>
       <div
