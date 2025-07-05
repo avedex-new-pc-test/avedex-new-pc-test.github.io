@@ -46,12 +46,16 @@
           </div>
           <div class="flex items-center gap-2">
             <div v-copy="address" class="statistic-address flex gap-2.5 cursor-pointer">
-              <div class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[--d-666-l-959A9F] bg-[--d-222-l-F2F2F2]">
+              <div
+                class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 text-[--d-666-l-959A9F] bg-[--d-222-l-F2F2F2]"
+              >
                 {{ addressText }}
-                <Icon name="bxs:copy" class="text-2.5 clickable text-[--d-666-l-959A9F]"/>
+                <Icon name="bxs:copy" class="text-2.5 clickable text-[--d-666-l-959A9F]" />
               </div>
             </div>
-            <div class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[--d-666-l-959A9F] bg-[--d-222-l-F2F2F2]">
+            <div
+              class="flex items-center gap-1 px-2 py-0 h-6 rounded text-3 text-[--d-666-l-959A9F] bg-[--d-222-l-F2F2F2]"
+            >
               <Icon name="custom:cake" class="text5 text-[--d-666-l-959A9F]" />
               <span>{{ wallet_age?.value }}</span>
               <span>{{ wallet_age?.unit }}</span>
@@ -69,52 +73,54 @@
             <ChainToken :chain="chain" :width="16" />
           </template>
           <template #inactive-action>
-            <span class="flex w-full h-full items-center justify-center text-2.5 rounded-full text-[var(--d-fff-l-333)] bg-[var(--d-666-l-fff)]">$</span>
+            <span
+              class="flex w-full h-full items-center justify-center text-2.5 rounded-full text-[var(--d-fff-l-333)] bg-[var(--d-666-l-fff)]"
+              >$</span
+            >
           </template>
         </el-switch>
       </div>
       <p class="m-0 mb-2 leading-5 text-3.5 text-[var(--d-666-l-959A9F)]">
-        {{ $t("totalPnL") }}（{{ intervalText }}）
+        {{ $t('totalPnL2') }}（{{ intervalText }}）
         <Number :value="statistics.profit" :signVisible="isUSDT">
-          {{ formatNumber(Math.abs((statistics.profit ?? 0) / main_token_price), 2) }} {{ main_token_symbol }}
+          {{ formatNumber(Math.abs((statistics.profit ?? 0) / main_token_price), 2) }}
+          {{ main_token_symbol }}
         </Number>
         <Number :value="statistics.profit_ratio">
           {{ formatNumber(Math.abs((statistics?.profit_ratio ?? 0) * 100), 1) }}%
         </Number>
       </p>
       <p class="m-0 mb-2 leading-5 text-3.5 text-[var(--d-666-l-959A9F)]">
-        {{ $t("winRate2") }}（{{ intervalText }}）
+        {{ $t('winRate2') }}（{{ intervalText }}）
         <Number :value="statistics.win_rate">
           {{ formatNumber(Math.abs(statistics.win_rate ?? 0), 1) }}%
         </Number>
       </p>
     </div>
-    <div class=" flex flex-col justify-between flex-shrink-0">
+    <div class="flex flex-col justify-between flex-shrink-0">
       <div class="flex justify-end items-center h-15 gap-2 mb-5">
         <a
           v-if="statistics.is_wallet_address_fav === 1"
-          class="w-25 px-0 box-border flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-666-l-999)] hover:opacity-100  hover:bg-[rgba(246,70,93,0.1)]"
+          class="w-25 px-0 box-border flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-666-l-999)] hover:opacity-100 hover:bg-[rgba(246,70,93,0.1)]"
           @click="_deleteAttention"
         >
-          <Icon
-            name="custom:accountcheck"
-            class="text-3.5"
-          />
+          <Icon name="custom:accountcheck" class="text-3.5" />
           <span>{{ $t('followed') }}</span>
           <span class="hidden text-[#f6465d]">{{ $t('cancelFollowed') }}</span>
         </a>
-        <a v-else class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]" @click="_addAttention">
-          <Icon
-            name="custom:accountplus"
-            class="text-4"
-          />
+        <a
+          v-else
+          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
+          @click="_addAttention"
+        >
+          <Icon name="custom:accountplus" class="text-4" />
           {{ $t('follow') }}
         </a>
         <a
           class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
-          @click="shareComponent&&shareComponent.openDialog()"
+          @click="shareComponent && shareComponent.openDialog()"
         >
-          <Share ref="shareComponent" :statistics="statistics" :address="address" :chain="chain"/>
+          <Share ref="shareComponent" :statistics="statistics" :address="address" :chain="chain" />
           {{ $t('share') }}
         </a>
       </div>
@@ -152,7 +158,7 @@ import AveEmpty from '@/components/aveEmpty.vue'
 import ChainToken from '@/components/chainToken.vue'
 import Number from '../components/Number.vue'
 import { verifyLogin, formatRemark } from '@/utils'
-import {addAttention, deleteAttention} from "~/api/attention";
+import { addAttention, deleteAttention } from '~/api/attention'
 
 const props = defineProps({
   chain: {
@@ -271,7 +277,8 @@ const pnl = computed(() => {
         return `<div style="font-size: 12px;">
              <div>
                  <span style="color:${color}">${sign}${uSymbol.value}${formatNumber(
-          tooltipData?.absValue / main_token_price.value, 1
+                   tooltipData?.absValue / main_token_price.value,
+                   1
                  )}${main_token_symbol.value}</span>
              </div>
              <div>
@@ -331,7 +338,11 @@ const total_balance = computed(() => {
     bsc: 4,
   }
   const { total_balance_without_risk } = balanceAnalysis.value
-  return formatNumber2((total_balance_without_risk ?? 0) / main_token_price.value, formatMap[chain.value])
+
+  return formatNumber((total_balance_without_risk ?? 0) / main_token_price.value, {
+    decimals: formatMap[chain.value],
+    limit: 20,
+  })
 })
 
 const isUSDT = computed(() => {
@@ -402,7 +413,7 @@ function _deleteAttention() {
   deleteAttention({
     user_chain: chain.value,
     user_address: address.value,
-    address: botStore.getWalletAddress(chain.value)!
+    address: botStore.getWalletAddress(chain.value)!,
   })
     .then(() => {
       ElMessage.success($t('attention1Canceled'))
@@ -420,7 +431,7 @@ async function _addAttention() {
   addAttention({
     user_chain: chain.value,
     user_address: address.value,
-    address: botStore.getWalletAddress(chain.value)!
+    address: botStore.getWalletAddress(chain.value)!,
   })
     .then(() => {
       ElMessage.success($t('attention1Success'))

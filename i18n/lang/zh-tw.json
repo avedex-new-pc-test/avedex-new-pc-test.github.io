@@ -549,7 +549,8 @@
   "lastTx": "最近交易",
   "origin": "來源",
   "totalPnL": "總利潤",
-  "totalPnL2": "利潤",
+  "totalPnL2": "總盈虧",
+
   "bal": "餘額",
   "soldAll": "清倉",
   "ratio": "佔比",
