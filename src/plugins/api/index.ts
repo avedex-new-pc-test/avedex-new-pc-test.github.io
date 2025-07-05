@@ -22,6 +22,9 @@ function getApi() {
       const url = request as string
       if (url?.includes('botapi')) {
         botOnRequest({ options, request })
+      } else if(url?.includes('/signals/v2/public/list/v3')) {
+        const botStore = useBotStore()
+        options.headers.set('Authorization', `Bearer ${botStore.refreshToken}`)
       } else {
         onRequest({ options, request })
       }

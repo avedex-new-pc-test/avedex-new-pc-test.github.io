@@ -165,7 +165,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
                 ${{ formatNumber(item.mc, 1) }}
                 <Icon
                   name="material-symbols:arrow-right-alt"
-                  class="mx-4px color-#999"
+                  class="mx-6px color-#999"
                 />
               </div>
             </div>
@@ -285,7 +285,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
         </div>
         <div class="w-100px text-right color-#12B886">
           {{ $t('buy') }}{{ localeStore.locale === 'en' ? ' ' : '' }}<span
-          class="decoration-underline decoration-dotted"
+          class="decoration-underline decoration-dotted underline-offset-2px"
           v-tooltip="'$'+formatNumber(quote_token_volume, 2)"
         >
           {{ formatNumber(quote_token_amount, 2) }} {{

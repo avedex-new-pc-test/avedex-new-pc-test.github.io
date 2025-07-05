@@ -42,7 +42,7 @@ const quickBuyValue = useStorage('quickBuyValue', '0.01')
   <div class="w-full">
     <div class="p-12px flex justify-between">
       <div class="flex gap-8px">
-        <span class="py-8px px-12px rounded-4px bg-[--d-333-l-CCC] flex items-center justify-center">
+        <span class="py-8px text-14px px-12px rounded-4px bg-[--d-333-l-CCC] flex items-center justify-center">
           {{ $t('signal2') }}
         </span>
       </div>
