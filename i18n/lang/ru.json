@@ -435,5 +435,7 @@
   "tm_start_trade_at_block": "Начать торговлю с блока",
   "mechanism_intro": "Дополнительно",
   "antiWhaleModifiable": "Изменяемый анти-кит",
-  "tax": "Налог"
+  "tax": "Налог",
+  "filter": "Фильтры"
 }
+
