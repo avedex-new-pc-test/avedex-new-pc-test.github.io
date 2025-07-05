@@ -252,7 +252,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
       <div class="flex-1 text-right" v-if="!filterToken">
         {{ $t('positions') }}
       </div>
-      <div class="flex-1 text-right">
+      <div class="w-40px text-right">
         {{ $t('time') }}
       </div>
     </div>
@@ -279,7 +279,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
             :address="wallet_address"
             :chain="activeChain"
           />
-          <span class="ml-4px color-[--d-F5F5F5-l-333] whitespace-nowrap overflow-hidden text-ellipsis max-w-54px">{{
+          <span class="ml-4px color-[--d-F5F5F5-l-333] whitespace-nowrap overflow-hidden text-ellipsis max-w-60px">{{
               wallet_alias || $t('wallet')
             }}</span><span class="color-[--d-999-l-666]">(*{{ wallet_address.slice(-4) }})</span>
         </div>
@@ -306,7 +306,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
           </template>
         </div>
         <div
-          class="flex-1 text-right"
+          class="w-40px text-right"
         >
             <span v-tooltip="formatDate(action_time * 1000, 'MM/DD HH:mm:ss')">{{
                 formatTimeFromNow(action_time)
