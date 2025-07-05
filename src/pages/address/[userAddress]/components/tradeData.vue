@@ -1,7 +1,7 @@
 <template>
   <div class="trade flex w-[40vw] rounded-2 bg-[--d-15171C-l-F8F8F8]">
     <div class="trade-pnl min-w-0 flex-1 p-5">
-      <div class="flex justify-between mb-3">
+      <div class="flex justify-between mb-5">
         <span class="trade-pnl-title text-3.5 leading-4.25 text-center text-[var(--d-666-l-959A9F)]">
           {{ $t('bestToken2') }}（{{ intervalText }}）
         </span>
@@ -16,7 +16,7 @@
       <AveCharts
         v-else
         :containerStyle="{
-          height: '123px',
+          height: '130px',
         }"
         :xAxis="bestToken.xAxis"
         :yAxis="{
@@ -28,12 +28,12 @@
       />
     </div>
     <div class="min-w-0 flex-1 p-5">
-      <div class="flex justify-between mb-4">
+      <div class="flex justify-between mb-6">
         <span class="trade-pnl-title text-3.5 leading-4.25 text-center text-[var(--d-666-l-959A9F)]">
         {{ $t('profit3') }}（{{ intervalText }}）
         </span>
       </div>
-      <ul class="mb-2.5 flex flex-col gap-2.5">
+      <ul class="mb-2.5 flex flex-col gap-3.5">
         <li
           v-for="{ label, key, negative } in profitList"
           :key="key"
@@ -41,7 +41,7 @@
         >
           <span class="flex-shrink-0 text-3 font-500 text-[var(--d-fff-l-333)]">{{ label }}</span>
           <span
-            class="flex-1 text-right"
+            class="flex-1 text-3 text-right"
             :class="{
               'text-[var(--color-teal-300)]': !negative,
               'text-[var(--color-red-500)]': negative,
@@ -332,7 +332,7 @@ const formatWinProfit = () => {
 const getProfitRatio = (key) => {
   const num = txAnalysis.value.profit_range?.[key]
   const sum = txAnalysis.value.profit_range?.total_count
-  return formatNumber(num / sum, 2) + '%'
+  return formatNumber(num*100 / sum, 2) + '%'
 }
 
 // 监听器
