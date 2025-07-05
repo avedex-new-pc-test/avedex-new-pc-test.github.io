@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import dogCoinImg from 'assets/images/dogcoin.png'
 import {getTimeline, type Gold, type ITimeline} from '~/api/signal'
+import {useWindowSize} from "@vueuse/core";
 
 const emit = defineEmits(['updateFilterToken'])
 const timelineRef = ref()
@@ -35,8 +36,9 @@ watch(() => wsStore.wsResult[WSEventType.GOLD_SIGNAL], (val) => {
   setGolds(golds, hotList.value)
 })
 
+// const {width} = useWindowSize()
 async function fetchTimeline() {
-  const res = await getTimeline(props.activeChain)
+  const res = await getTimeline(props.activeChain, 20)
   const data = res || []
   const golds: Gold[] = []
   data.forEach(el => {
@@ -44,6 +46,12 @@ async function fetchTimeline() {
     el.golds = []
   })
   setGolds(golds, data)
+  // let startIndex = 0
+  // if (width.value < 1920) {
+  //   startIndex = -data.length / 2
+  // } else if (width.value < 2440) {
+  //   startIndex = -data.length * 0.7
+  // }
   hotList.value = data
 }
 
@@ -120,12 +128,25 @@ function getLevel(value: number) {
 </script>
 
 <template>
-  <div class="pt-34px px-12px">
-    <div class="justify-between flex">
+  <div class="flex gap-16px items-center">
+    <div class="flex items-center text-12px" style="color:var(--d-999-l-222);">
+      <span class="mr-8px">{{ $t('normal') }}</span>
+      <div class="flex items-center gap-2px">
+        <div
+          v-for="(el,idx) in 4" :key="idx" class="w-8px h-8px rounded-2px bg-[--d-333-l-999]"
+          :class="({
+              1:'bg-#286DFF opacity-20',
+              2:'bg-#286DFF opacity-50',
+              3:'bg-#286DFF'
+            })[idx]"/>
+      </div>
+      <span class="ml-8px">{{ $t('hot') }}</span>
+    </div>
+    <div class="justify-between flex gap-2px">
       <div
         v-for="(el) in hotList"
         :key="el.time"
-        class="relative w-7px h-7px"
+        class="relative w-8px h-8px"
       >
         <i
           class="block w-full h-full bg-[--d-333-l-999]"
@@ -155,53 +176,54 @@ function getLevel(value: number) {
         />
       </div>
     </div>
-    <el-popover
-      ref="squarePopVisible"
-      :width="153"
-      :visible="timeline.visible"
-      :virtual-ref="timelineRef"
-      virtual-triggering
-      append-to-body
+  </div>
+  <el-popover
+    ref="squarePopVisible"
+    :width="153"
+    :visible="timeline.visible"
+    :virtual-ref="timelineRef"
+    virtual-triggering
+    append-to-body
+  >
+    <div class="text-12px">
+      {{ formatDate(timeline.data.time || 0, 'MM-DD HH:mm') }}
+    </div>
+    <div class="text-12px">
+      {{ $t('volume') }}：${{ formatNumber(timeline.data.volume) }}
+    </div>
+  </el-popover>
+  <el-popover
+    ref="popoverRef"
+    :width="390"
+    :visible="dogline.visible"
+    :virtual-ref="dogRef"
+    virtual-triggering
+    append-to-body
+  >
+    <div
+      class="w-full table text-12px"
+      @mouseenter="cancelHide"
+      @mouseleave="hideDogPop"
     >
-      <div class="text-12px">
-        {{ formatDate(timeline.data.time || 0, 'MM-DD HH:mm') }}
+      <div class="w-full table-row color-999 mb-6px">
+        <div class="table-cell">{{ $t('FirstAlert') }}</div>
+        <div class="table-cell">{{ $t('Token') }}</div>
+        <div class="table-cell text-right">{{ $t('MC') }}</div>
       </div>
-      <div class="text-12px">
-        {{ $t('volume') }}：${{ formatNumber(timeline.data.volume) }}
-      </div>
-    </el-popover>
-    <el-popover
-      ref="popoverRef"
-      :width="390"
-      :visible="dogline.visible"
-      :virtual-ref="dogRef"
-      virtual-triggering
-      append-to-body
-    >
       <div
-        class="w-full table text-12px"
-        @mouseenter="cancelHide"
-        @mouseleave="hideDogPop"
+        v-for="el in dogline.data"
+        :key="el.token"
+        class="w-full table-row cursor-pointer"
+        @click="emit('updateFilterToken',el.token)"
       >
-        <div class="w-full table-row color-999 mb-6px">
-          <div class="table-cell">{{ $t('FirstAlert') }}</div>
-          <div class="table-cell">{{ $t('Token') }}</div>
-          <div class="table-cell text-right">{{ $t('MC') }}</div>
-        </div>
-        <div
-          v-for="el in dogline.data"
-          :key="el.token"
-          class="w-full table-row cursor-pointer"
-          @click="emit('updateFilterToken',el.token)"
-        >
-          <div class="py-5px table-cell vertical-mid">
-            <div class="flex items-center gap-4px">
-              <img
-                width="16"
-                height="16"
-                class="border-2px border-solid rounded-full"
-                :class="el.type"
-                :src="
+        <div class="py-5px table-cell vertical-mid">
+          <div class="flex items-center gap-4px">
+            <img
+              width="16"
+              height="16"
+              class="border-2px border-solid rounded-full"
+              :class="el.type"
+              :src="
                    el.logo
                    ? getSymbolDefaultIcon({
                     logo_url:el.logo,
@@ -209,55 +231,36 @@ function getLevel(value: number) {
                     symbol:el.symbol
                    })
                    : dogCoinImg"
-                alt=""
-              >
-              {{
-                el.first_signal_time
-                  ? formatDate(el.first_signal_time, 'MM-DD HH:mm:ss')
-                  : '--'
-              }}
-            </div>
+              alt=""
+            >
+            {{
+              el.first_signal_time
+                ? formatDate(el.first_signal_time, 'MM-DD HH:mm:ss')
+                : '--'
+            }}
           </div>
-          <div class="py-5px table-cell vertical-mid">
-            <div class="flex items-center gap-4px">
-              <TokenImg
-                token-class="w-16px h-16px"
-                chain-class="w-8px h-8px"
-                :row="{
+        </div>
+        <div class="py-5px table-cell vertical-mid">
+          <div class="flex items-center gap-4px">
+            <TokenImg
+              token-class="w-16px h-16px"
+              chain-class="w-8px h-8px"
+              :row="{
                   chain:el.chain,
                   logo_url:el.logo,
                   symbol:el.symbol
                 }"
-              />
-              {{ el.symbol }}
-              <span style="color:#12B886">+{{ formatNumber(Number(el.price_change) * 100, 0) }}%</span>
-            </div>
-          </div>
-          <div class="py-5px table-cell vertical-mid text-right">
-            ${{ formatNumber(el.mc) }}
+            />
+            {{ el.symbol }}
+            <span style="color:#12B886">+{{ formatNumber(Number(el.price_change) * 100, 0) }}%</span>
           </div>
         </div>
-      </div>
-    </el-popover>
-    <div class="flex justify-between mt-10px">
-      <span class="text-12px" style="color:var(--d-999-l-222);">
-        24h {{ $t('hotmap') }}
-      </span>
-      <div class="flex items-center text-12px" style="color:var(--d-999-l-222);">
-        <span class="mr-8px">{{ $t('normal') }}</span>
-        <div class="flex items-center gap-2px">
-          <div
-            v-for="(el,idx) in 4" :key="idx" class="w-8px h-8px rounded-2px bg-[--d-333-l-999]"
-            :class="({
-              1:'bg-#286DFF opacity-20',
-              2:'bg-#286DFF opacity-50',
-              3:'bg-#286DFF'
-            })[idx]"/>
+        <div class="py-5px table-cell vertical-mid text-right">
+          ${{ formatNumber(el.mc) }}
         </div>
-        <span class="ml-8px">{{ $t('hot') }}</span>
       </div>
     </div>
-  </div>
+  </el-popover>
 </template>
 
 <style scoped lang="scss">

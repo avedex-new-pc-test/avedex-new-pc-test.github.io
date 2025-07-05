@@ -66,7 +66,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
 </script>
 
 <template>
-  <div class="w-454px bg-[--d-111-l-FFF] p-12px rounded-8px flex flex-col">
+  <div class="w-375px bg-[--d-111-l-FFF] p-12px rounded-8px flex flex-col">
     <div class="flex justify-between">
       <div class="flex flex-1 flex-col gap-12px">
         <div class="flex items-center gap-8px">
@@ -165,7 +165,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
                 ${{ formatNumber(item.mc, 1) }}
                 <Icon
                   name="material-symbols:arrow-right-alt"
-                  class="mx-12px color-#999"
+                  class="mx-4px color-#999"
                 />
               </div>
             </div>
@@ -243,7 +243,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
     </div>
     <div class="m-12px bg-[--d-1A1A1A-l-F2F2F2] h-1px"/>
     <div class="flex color-[--d-666-l-999] text-12px mb-8px">
-      <div class="flex-[2]">
+      <div class="flex-[3]">
         {{ $t('wallet') }}
       </div>
       <div class="flex-[2] text-right">
@@ -272,7 +272,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
         class="flex color-[--d-999-l-666] text-12px h-40px items-center cursor-pointer"
         @click="openTokenDetail(item.actions[$index])"
       >
-        <div class="flex-[2] flex items-center">
+        <div class="flex-[3] flex items-center">
           <UserAvatar
             icon-size="24px"
             :wallet_logo="{logo:wallet_logo,name:wallet_alias}"
@@ -284,9 +284,15 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
             }}</span><span class="color-[--d-999-l-666]">(*{{ wallet_address.slice(-4) }})</span>
         </div>
         <div class="flex-[2] text-right color-#12B886">
-          {{ $t('buy') }}{{ localeStore.locale === 'en' ? ' ' : '' }}{{ formatNumber(quote_token_amount, 2) }} {{
+          {{ $t('buy') }}{{ localeStore.locale === 'en' ? ' ' : '' }}<span
+          class="decoration-underline decoration-dotted"
+          v-tooltip="'$'+formatNumber(quote_token_volume, 2)"
+        >
+          {{ formatNumber(quote_token_amount, 2) }} {{
             quote_token_symbol.toUpperCase() === 'USDC' ? 'U' : quote_token_symbol
-          }}<span class="color-[--d-999-l-666]">(${{ formatNumber(quote_token_volume, 0) }})</span>
+          }}
+        </span>
+          <!--<span class="color-[&#45;&#45;d-999-l-666]">(${{ formatNumber(quote_token_volume, 0) }})</span>-->
         </div>
         <div class="flex-1 text-right" v-if="!filterToken">
             <span
