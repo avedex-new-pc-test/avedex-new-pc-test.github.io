@@ -2,7 +2,7 @@
   <el-drawer
     v-model="visible"
     class="bg-[--d-222-l-FFF] color-[--d-F5F5F5-l-333]"
-    :size="480"
+    :size="500"
     header-class="!mb-5"
   >
     <template #header>
@@ -39,12 +39,12 @@
           @row-click="tableRowClick"
         >
           <template #empty>
-            <AveEmpty v-if="!loading" class="table-empty" />
+            <AveEmpty v-if="!loading" class="table-empty mt-10" />
           </template>
           <TokenColumn
             :columnProps="{
               label: $t('walletToken'),
-              width: '152',
+              width: '158',
             }"
           />
           <el-table-column width="60" :label="$t('type')">
@@ -59,7 +59,7 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column width="75" :label="$t('Vol')">
+          <el-table-column width="78" :label="$t('Vol')">
             <template #default="{ row }">
               <span class="text-3"> {{ formatNumber(row.volume, 1) }}</span>
             </template>
