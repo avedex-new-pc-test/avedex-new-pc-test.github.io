@@ -279,7 +279,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
             :address="wallet_address"
             :chain="activeChain"
           />
-          <span class="ml-4px color-[--d-F5F5F5-l-333] whitespace-nowrap overflow-hidden text-ellipsis max-w-60px">{{
+          <span class="ml-4px color-[--d-F5F5F5-l-333] whitespace-nowrap overflow-hidden text-ellipsis max-w-54px">{{
               wallet_alias || $t('wallet')
             }}</span><span class="color-[--d-999-l-666]">(*{{ wallet_address.slice(-4) }})</span>
         </div>
