@@ -1,5 +1,5 @@
 <template>
-  <div className="flex flex-col gap-3 p-[20px] pt-[10px]  pb-0">
+  <div className="flex flex-col w-full gap-3 p-[20px] pt-[10px]  pb-0">
     <div class="flex-between">
       <el-select
         :style="{ width: '120px' }"
