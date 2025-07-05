@@ -149,7 +149,7 @@ function getLevel(value: number) {
       <div
         v-for="(el) in hotList.slice(startIndex)"
         :key="el.time"
-        class="relative w-8px h-8px"
+        class="relative w-6px h-6px"
       >
         <i
           class="block w-full h-full bg-[--d-333-l-999]"
@@ -159,7 +159,7 @@ function getLevel(value: number) {
         />
         <span
           v-if="el.golds?.length>0"
-          class="absolute top--28px left-50% ml--10px w-24px h-24px border-2px border-solid rounded-full bg-cover"
+          class="absolute top--26px left-50% ml--10px w-20px h-20px border-2px border-solid rounded-full bg-cover"
           :class="({
             gold:'border-#FFD700',
             silver:'border-#E0E0E0',
