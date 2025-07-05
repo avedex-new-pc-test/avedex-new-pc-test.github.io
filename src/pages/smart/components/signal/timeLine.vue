@@ -36,9 +36,9 @@ watch(() => wsStore.wsResult[WSEventType.GOLD_SIGNAL], (val) => {
   setGolds(golds, hotList.value)
 })
 
-// const {width} = useWindowSize()
+const {width} = useWindowSize()
 async function fetchTimeline() {
-  const res = await getTimeline(props.activeChain, 20)
+  const res = await getTimeline(props.activeChain)
   const data = res || []
   const golds: Gold[] = []
   data.forEach(el => {
@@ -46,17 +46,17 @@ async function fetchTimeline() {
     el.golds = []
   })
   setGolds(golds, data)
-  // let startIndex = 0
-  // if (width.value < 1920) {
-  //   startIndex = -data.length / 2
-  // } else if (width.value < 2440) {
-  //   startIndex = -data.length * 0.7
-  // }
-  hotList.value = data
+  let startIndex = 0
+  if (width.value < 1920) {
+    startIndex = -data.length / 2
+  } else if (width.value < 2440) {
+    startIndex = -data.length * 0.7
+  }
+  hotList.value = data.slice(startIndex)
 }
 
 function setGolds(golds: Gold[] = [], data: ITimeline[]) {
-  const sortedGolds = golds.sort((a, b) => {
+  const sortedGolds = golds.toSorted((a, b) => {
     return Number(b.mc) - Number(a.mc)
   })
   const map: Record<string, any> = {}
