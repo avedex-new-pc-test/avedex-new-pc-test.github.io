@@ -37,10 +37,12 @@
             </a>
             <a
               v-else-if="isSelfAddress"
-              class="flex items-center justify-center pointer"
+              class="flex items-center justify-center ml-6 gap-1 px-2 py-1 h-6 rounded text-3 cursor-pointer text-[var(--d-fff-l-18181B)] bg-gradient-to-r from-[rgba(18,184,134,0.1)] to-[rgba(139,79,221,0.1)]"
               @click="_bindTwitter"
             >
-              <i class="iconfont icon-twitter2" />
+              <Icon
+                name="custom:twitterx"
+                class="text-3 text-[var(--d-fff-l-18181B)]"/>
               {{ $t('connect') }}
             </a>
           </div>

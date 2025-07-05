@@ -741,5 +741,6 @@
   "ContractAddress": "Contract Address",
   "Recover": "Recover",
   "Hide": "Hide",
-  "BlockTips": "After blocking, the token will be hidden from your asset list. You can view and restore it in Blacklist Management."
+  "BlockTips": "After blocking, the token will be hidden from your asset list. You can view and restore it in Blacklist Management.",
+  "connect": "connect",
 }
