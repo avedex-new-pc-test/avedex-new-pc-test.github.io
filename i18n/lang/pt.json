@@ -262,5 +262,8 @@
   "mechanism_intro": "Adicional",
   "antiWhaleModifiable": "Anti-baleia modificável",
   "tax": "Imposto",
-  "filter": "Filtros"
+  "filter": "Filtros",
+  "audited": "AUDITADO",
+  "check": "Verificar ",
+  "copyTip": "O endereço atual {address} é um endereço de contrato. Por favor, não faça transferências, caso contrário, os ativos não poderão ser recuperados."
 }

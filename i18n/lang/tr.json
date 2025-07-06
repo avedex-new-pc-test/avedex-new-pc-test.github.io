@@ -257,5 +257,8 @@
   "mechanism_intro": "Ek",
   "antiWhaleModifiable": "Değiştirilebilir büyük işlem kısıtlaması",
   "tax": "Vergi",
-  "filter": "Filtre"
+  "filter": "Filtre",
+  "audited": "Denetim tamamlandı",
+  "check": "Kontrol Et",
+  "copyTip": "Geçerli adres {address} bir sözleşme adresidir, lütfen para transferi yapmayın, aksi takdirde varlık geri alınamaz."
 }

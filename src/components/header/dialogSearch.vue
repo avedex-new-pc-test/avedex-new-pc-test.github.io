@@ -73,12 +73,13 @@
           :loading="loading"
           @close="visible = false"
         />
-        <WalletTable v-else :tokens="smartTop10List || []" :loading="loading" />
+        <WalletTable v-else :tokens="smartTop10List || []" :loading="loading"  @close="visible = false" />
       </template>
       <WalletTable
         v-else-if="tabActive === 'wallet'"
         :tokens="searchResult?.wallet_list || []"
         :loading="loading"
+        @close="visible = false"
       />
       <SearchTable
         v-else
