@@ -12,20 +12,21 @@ export default defineNuxtRouteMiddleware((to) => {
       return navigateTo(redirectUrl, { replace: true })
     }
   }
-  // const needRedirectToOld = redirectToOldUrls.find((url) => to.fullPath.includes(url))
-  // if(needRedirectToOld){
-  //   let query = ''
-  //   const botStore = useBotStore()
-  //   if (botStore.accessToken &&  botStore.refreshToken) {
-  //     query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
-  //   }
-  //   navigateTo('https://ave.ai'+to.path + query,{
-  //     open:{
-  //       target:'_blank'
-  //     }
-  //   })
-  //   return abortNavigation()
-  // }
+  const needRedirectToOld = redirectToOldUrls.find((url) => to.fullPath.includes(url))
+  const isBtcOrSolana = ['bsc', 'solana'].includes(to.params.chain as string);
+  if(needRedirectToOld && !isBtcOrSolana) {
+    let query = ''
+    const botStore = useBotStore()
+    if (botStore.accessToken &&  botStore.refreshToken) {
+      query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+    }
+    navigateTo('https://ave.ai'+to.path + query,{
+      open:{
+        target:'_blank'
+      }
+    })
+    return abortNavigation()
+  }
   if (!to.fullPath?.includes('/token')) {
     useHead({ title: 'Ave.ai' })
   } else if (to.fullPath?.includes(NATIVE_TOKEN)) {

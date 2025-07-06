@@ -340,12 +340,12 @@ onMounted(() => {
 })
 
 function navigateToWallet (path: string, chain:string) {
-  if(chain === 'solana' || chain === 'bsc') {
+  // if(chain === 'solana' || chain === 'bsc') {
     path = `/address/${path}/${chain}`
     navigateTo(path)
-  } else {
-    window.open(`https://ave.ai/address/${path}/${chain}`, '_blank')
-  }
+  // } else {
+  //   window.open(`https://ave.ai/address/${path}/${chain}`, '_blank')
+  // }
 }
 function switchWallet(item: any) {
   // Implement wallet switching logic here, for example:
