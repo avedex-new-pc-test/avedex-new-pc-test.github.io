@@ -343,8 +343,9 @@ function navigateToWallet (path: string, chain:string) {
   if(chain === 'solana' || chain === 'bsc') {
     path = `/address/${path}/${chain}`
     navigateTo(path)
+  } else {
+    window.open(`https://ave.ai/address/${path}/${chain}`, '_blank')
   }
-  return
 }
 function switchWallet(item: any) {
   // Implement wallet switching logic here, for example:
