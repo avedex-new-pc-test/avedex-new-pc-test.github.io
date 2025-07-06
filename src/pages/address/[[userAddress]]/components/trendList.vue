@@ -33,9 +33,9 @@
           >
             <template #reference>
               <Icon
-                name="custom:filter"
-                class="cursor-pointer text-10px ml-3px"
-                :class="trendQuery.block_time_min && trendQuery.block_time_max?'color-[--d-3F80F7-l-EAECEF]':'color-[--d-666-l-999]'"
+                name="mingcute:filter-2-fill"
+                class="cursor-pointer text-12px ml-3px mb-[-2px]"
+                :class="trendQuery.block_time_min && trendQuery.block_time_max?'color-[#3F80F7]':'color-[--d-666-l-999]'"
                 @click.stop
               />
             </template>
@@ -49,8 +49,8 @@
                   <span class="flex-1">{{ $t('endTime2') }}</span>
                 </div>
                 <el-date-picker
-                    v-model="filterForm.time.value"
-                    class="mt-5px w-full [--el-font-size-base:12px]"
+                  v-model="filterForm.time.value"
+                  class="mt-5px w-full [--el-font-size-base:12px]"
                   type="datetimerange"
                   range-separator="To"
                   start-placeholder="yyyy/mm/dd hh:mm"
@@ -118,9 +118,9 @@
           >
             <template #reference>
               <Icon
-                name="custom:filter"
-                class="cursor-pointer text-10px ml-3px"
-                :class="!trendQuery.checkAll ? 'color-[--d-3F80F7-l-EAECEF]':'color-[--d-666-l-999]'"
+                name="mingcute:filter-2-fill"
+                class="cursor-pointer text-12px ml-3px mb-[-2px]"
+                :class="!trendQuery.checkAll ? 'color-[#3F80F7]':'color-[--d-666-l-999]'"
               />
             </template>
             <template #default>
@@ -210,16 +210,16 @@
         <template #header>
           <span>{{ $t('value') }}</span>
           <el-popover
-              v-model:visible="filterForm.price.visible"
+            v-model:visible="filterForm.price.visible"
             placement="bottom"
             :width="300"
             trigger="click"
           >
             <template #reference>
               <Icon
-                name="custom:filter"
-                class="cursor-pointer text-10px ml-3px"
-                :class="trendQuery.volume_min && trendQuery.volume_max?'color-[--d-3F80F7-l-EAECEF]':'color-[--d-666-l-999]'"
+                name="mingcute:filter-2-fill"
+                class="cursor-pointer text-12px ml-3px mb-[-2px]"
+                :class="trendQuery.volume_min && trendQuery.volume_max?'color-[#3F80F7]':'color-[--d-666-l-999]'"
               />
             </template>
             <template #default>

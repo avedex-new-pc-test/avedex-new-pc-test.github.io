@@ -20,9 +20,10 @@
             <span class="token-symbol ellipsis text-sm mr-0.75">
               {{ row.symbol }}
             </span>
-            <i
+            <Icon
               v-if="row.risk_score > 55 || row.risk_level < 0"
-              class="iconfont icon-danger text-red text-3.5 ml-0.5"
+              name="mynaui:danger-triangle"
+              class="text-red text-3.5 ml-0.5 mt-[4px]"
             />
           </div>
           <div class="flex items-start mt-0.5 min-w-[110%]" @click.stop="() => {}">
