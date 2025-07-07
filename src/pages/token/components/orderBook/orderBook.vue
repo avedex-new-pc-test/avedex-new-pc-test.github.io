@@ -53,7 +53,10 @@
         </div>
 
         <!-- 表格内容 -->
-        <div class="overflow-y-auto" :style="{ height: `${(klineHeight ?? 200) - 120}px`}">
+        <el-scrollbar
+          style="margin-right: -12px;padding-right: 12px;"
+          :height="`${(klineHeight ?? 200) - 120}px`"
+        >
           <div
             v-for="(row, index) in filterTableList.slice(0, 50)"
             :key="index"
@@ -80,7 +83,6 @@
             <div class="text-center">
               <div class="flex items-center justify-center gap-4px">
                 <UserRemark
-                  v-if="MAKER_SUPPORT_CHAINS.includes(row.chain)"
                   :remark="row.remark"
                   :address="row.wallet_address"
                   :chain="row.chain"
@@ -124,7 +126,7 @@
               <img src="@/assets/images/empty-black.svg" alt="">
             </div>
           </template>
-        </div>
+        </el-scrollbar>
       </div>
     </div>
 
@@ -134,7 +136,7 @@
       :currentRow="currentRow"
       :addressAndChain="addressAndChain"
     >
-      <template v-if="['solana','bsc'].includes(currentRow.chain) && currentRow.senderProfile">
+      <template v-if="currentRow.senderProfile">
         <Icon
           v-if="hasNewAccount(currentRow)"
           v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`"
@@ -179,8 +181,9 @@ import UserRemark from '~/components/userRemark.vue'
 import MarkerTooltip from '../belowChartTable/transactions/markerTooltip.vue'
 import TimerCount from '~/components/timerCount.vue'
 import dayjs from 'dayjs'
+import { ElScrollbar } from 'element-plus'
 
-const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
+// const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 
 // 扩展的交易数据类型
 type ExtendedTxResponse = GetPairTxsResponse & {
@@ -458,7 +461,7 @@ function updateRemark() {
 }
 
 function openMarkerTooltip(row: ExtendedTxResponse, e: MouseEvent) {
-  if (row && MAKER_SUPPORT_CHAINS.includes(row.chain)) {
+  if (row) {
     makerTooltip.value = e.currentTarget
     if (currentRow.value?.wallet_address === row.wallet_address) {
       return
