@@ -306,5 +306,8 @@
   "pauseMonitor": "Duraklat İzleme",
   "enableMonitor": "İzlemeyi aç",
   "sniper": "Keskin nişancı",
-  "snipers": "Keskin nişancı sayısı"
+  "snipers": "Keskin nişancı sayısı",
+  "audited": "Denetim tamamlandı",
+  "check": "Kontrol Et",
+  "copyTip": "Geçerli adres {address} bir sözleşme adresidir, lütfen para transferi yapmayın, aksi takdirde varlık geri alınamaz."
 }

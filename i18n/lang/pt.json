@@ -311,5 +311,8 @@
   "pauseMonitor": "PAUSE MONITORIONAMENTO",
   "enableMonitor": "Ligue o monitoramento",
   "sniper": "Snipers",
-  "snipers": "Snipers"
+  "snipers": "Snipers",
+  "audited": "AUDITADO",
+  "check": "Verificar ",
+  "copyTip": "O endereço atual {address} é um endereço de contrato. Por favor, não faça transferências, caso contrário, os ativos não poderão ser recuperados."
 }

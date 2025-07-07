@@ -9,7 +9,7 @@ import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
 import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
-import type {GetHotTokensResponse} from '~/api/token'
+import type { GetHotTokensResponse } from '~/api/token'
 import BigNumber from 'bignumber.js'
 import type {SearchHot} from '~/api/types/search'
 import type { ConfigType } from 'dayjs'
@@ -26,10 +26,7 @@ export function isJSON(str: string) {
   return true
 }
 
-export function formatDate(
-  val: string | number | Date,
-  dateType = 'YYYY-MM-DD HH:mm:ss'
-) {
+export function formatDate(val: string | number | Date, dateType = 'YYYY-MM-DD HH:mm:ss') {
   let dateStr: Date | null = null
   let timeStamp: number | string = 0
   let str
@@ -48,26 +45,11 @@ export function formatDate(
   }
 
   str = dateType.replace('YYYY', String(dateStr.getFullYear()))
-  str = str.replace(
-    'MM',
-    (dateStr.getMonth() + 1 < 10 ? '0' : '') + (dateStr.getMonth() + 1)
-  )
-  str = str.replace(
-    'DD',
-    (dateStr.getDate() < 10 ? '0' : '') + dateStr.getDate()
-  )
-  str = str.replace(
-    'HH',
-    (dateStr.getHours() < 10 ? '0' : '') + dateStr.getHours()
-  )
-  str = str.replace(
-    'mm',
-    (dateStr.getMinutes() < 10 ? '0' : '') + dateStr.getMinutes()
-  )
-  str = str.replace(
-    'ss',
-    (dateStr.getSeconds() < 10 ? '0' : '') + dateStr.getSeconds()
-  )
+  str = str.replace('MM', (dateStr.getMonth() + 1 < 10 ? '0' : '') + (dateStr.getMonth() + 1))
+  str = str.replace('DD', (dateStr.getDate() < 10 ? '0' : '') + dateStr.getDate())
+  str = str.replace('HH', (dateStr.getHours() < 10 ? '0' : '') + dateStr.getHours())
+  str = str.replace('mm', (dateStr.getMinutes() < 10 ? '0' : '') + dateStr.getMinutes())
+  str = str.replace('ss', (dateStr.getSeconds() < 10 ? '0' : '') + dateStr.getSeconds())
 
   return str
 }
@@ -196,10 +178,7 @@ export function getChainInfo(chain: string, isChainId = false) {
   return chainInfo
 }
 
-export function getSwapInfo(
-  chain: string | { chain: string; amm: string },
-  amm?: string
-) {
+export function getSwapInfo(chain: string | { chain: string; amm: string }, amm?: string) {
   const chainConfig = useConfigStore().chainConfig
   if (typeof chain === 'string') {
     const chainInfo = chainConfig?.find((item) => item.net_name === chain)
@@ -223,7 +202,7 @@ export function getTagTooltip(i: {
 }) {
   const $t = getGlobalT()
   if (!i.tag) {
-    if ((i.smart_money_buy_count_24h??0) > 0 || (i.smart_money_sell_count_24h??0) > 0) {
+    if ((i.smart_money_buy_count_24h ?? 0) > 0 || (i.smart_money_sell_count_24h ?? 0) > 0) {
       return $t('smart_money_tips', {
         b: i.smart_money_buy_count_24h,
         s: i.smart_money_sell_count_24h,
@@ -420,11 +399,7 @@ export function formatExplorerUrl(
   return `${n}/${type1}/${address}`
 }
 
-export function openBrowser(
-  url: string,
-  type: 'token' | 'address' | 'tx',
-  chain: string
-) {
+export function openBrowser(url: string, type: 'token' | 'address' | 'tx', chain: string) {
   let newUrl = url
   if (type) {
     newUrl = formatExplorerUrl(chain, url, type)
@@ -470,10 +445,7 @@ export function getChainDefaultIcon(chain?: string, text = '', type?: string) {
     </svg>`
     const defaultSvg = type === 'rect' ? rect : circle
     try {
-      return (
-        'data:image/svg+xml;base64,' +
-        window.btoa(unescape(encodeURIComponent(defaultSvg)))
-      )
+      return 'data:image/svg+xml;base64,' + window.btoa(unescape(encodeURIComponent(defaultSvg)))
     } catch (err) {
       console.log(err)
       return ''
@@ -487,11 +459,7 @@ export function getSymbolDefaultIcon(tokenInfo: {
   logo_url?: string
 }| undefined , type= 'circle') {
   const domain = useConfigStore().token_logo_url
-  if (
-    tokenInfo &&
-    tokenInfo.logo_url !== undefined &&
-    tokenInfo.logo_url !== ''
-  ) {
+  if (tokenInfo && tokenInfo.logo_url !== undefined && tokenInfo.logo_url !== '') {
     if (/^https?:\/\//.test(tokenInfo.logo_url)) {
       return tokenInfo.logo_url
     }
@@ -501,11 +469,8 @@ export function getSymbolDefaultIcon(tokenInfo: {
 }
 
 export function formatIconTag(src: string) {
-  const urlPrefix =
-    useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
-  return src && src !== 'unknown'
-    ? `${urlPrefix}signals/${src}.png`
-    : IconUnknown
+  const urlPrefix = useConfigStore().globalConfig?.token_logo_url || 'https://www.iconaves.com/'
+  return src && src !== 'unknown' ? `${urlPrefix}signals/${src}.png` : IconUnknown
 }
 export function formatImgUrl(type: string, src: string) {
   if (!type || !src) {
@@ -545,7 +510,7 @@ export function formatIconSwap(src?: string) {
     : IconUnknown
 }
 
-export function formatNewTags(src?:string) {
+export function formatNewTags(src?: string) {
   return src && src !== 'unknown'
     ? `${useConfigStore().token_logo_url}address_portrait/${src}`
     : IconUnknown
@@ -580,22 +545,22 @@ export function verifyLogin() {
   return true
 }
 
-export function formatRemark(val = '', n = 10, suffix = '...'){
+export function formatRemark(val = '', n = 10, suffix = '...') {
   if (typeof val !== 'string') return val
   if (val.length > n) {
-    return val.slice(0,n) + suffix
+    return val.slice(0, n) + suffix
   }
   return val
 }
 
-export function getRemarkByAddress({address, chain}: {address: string, chain: string}) {
+export function getRemarkByAddress({ address, chain }: { address: string; chain: string }) {
   if (!address || !chain) {
     return ''
   }
-  return useRemarksStore().getRemarkByAddress({address, chain})
+  return useRemarksStore().getRemarkByAddress({ address, chain })
 }
 
-export function getColorClass(val: string|number) {
+export function getColorClass(val: string | number) {
   if (Number(val) > 0) {
     return 'color-#12B886'
   } else if (Number(val) < 0) {
@@ -640,7 +605,7 @@ export function getRpcProvider(chain: string) {
   }
   const RPC: Record<string, string> = {
     base: 'https://1rpc.io/base',
-    eth: 'https://rpc.mevblocker.io'
+    eth: 'https://rpc.mevblocker.io',
   }
   const rpcUrl = RPC?.[chain] || chainInfo?.rpc_url || ''
   return new JsonRpcProvider(rpcUrl, Number(chainInfo.chain_id))
@@ -661,7 +626,7 @@ export const evm_utils = {
     }
     const valueStr = String(arg?.[0] ?? '')
     return parseUnits(valueStr, decimals)
-  }
+  },
 }
 export function filterGas(num: number, chain?: string) {
   if (chain === 'bsc') {
@@ -698,7 +663,6 @@ export function addSign(val: number) {
 }
 
 export function getTextWidth(text: string, min = 0) {
-
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')!
   context.font = '12px DINPro-regular'
@@ -708,8 +672,7 @@ export function getTextWidth(text: string, min = 0) {
 }
 
 export function jumpTg() {
-  const inviterUrl =
-    config.inviter_url_v2 || 'https://share.ave.ai'
+  const inviterUrl = config.inviter_url_v2 || 'https://share.ave.ai'
   const text =
     useLocaleStore().locale == 'zh-cn'
       ? '我正在Ave.ai挖百倍金狗，现在注册并交易，跟我一起探寻百倍Meme。'
@@ -726,8 +689,7 @@ export function jumpTg() {
 }
 
 export function jumpX() {
-  const inviterUrl =
-    config.inviter_url_v2 || 'https://share.ave.ai'
+  const inviterUrl = config.inviter_url_v2 || 'https://share.ave.ai'
   const text =
     useLocaleStore().locale == 'zh-cn'
       ? `我正在Ave.ai挖百倍金狗，现在注册并交易，跟我一起探寻百倍Meme。
@@ -745,7 +707,7 @@ export function jumpX() {
   window.open(share_url)
 }
 
-export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: number) {
+export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>, index: number) {
   if (!tabsContainer.value) {
     return
   }
@@ -758,8 +720,8 @@ export function scrollTabToCenter(tabsContainer: Ref<HTMLElement | null>,index: 
   const tabWidth = tab.offsetWidth
 
   container.scrollTo({
-    left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
-    behavior: 'smooth'
+    left: tabLeft - containerWidth / 2 + tabWidth / 2,
+    behavior: 'smooth',
   })
 }
 
@@ -768,8 +730,11 @@ export function uuid() {
 }
 
 export function getMCap(row: GetHotTokensResponse | SearchHot) {
-  const amount = new BigNumber(row.total).minus(row.lock_amount).minus(row.burn_amount).minus(row.other_amount)
-  return amount.gt(0)? amount.multipliedBy(row.current_price_usd).toString() : '0'
+  const amount = new BigNumber(row.total)
+    .minus(row.lock_amount)
+    .minus(row.burn_amount)
+    .minus(row.other_amount)
+  return amount.gt(0) ? amount.multipliedBy(row.current_price_usd).toString() : '0'
 }
 
 export function formatCountdown(time: ConfigType) {
@@ -781,9 +746,7 @@ export function formatCountdown(time: ConfigType) {
     const minutes = Math.floor(seconds / 60)
     let remainingSeconds = seconds % 60
     remainingSeconds = Math.floor(remainingSeconds)
-    return `${minutes}min ${
-      remainingSeconds > 0 ? remainingSeconds + 's' : ''
-    }`
+    return `${minutes}min ${remainingSeconds > 0 ? remainingSeconds + 's' : ''}`
   } else if (seconds < 86400) {
     // 1d
     const hours = Math.floor(seconds / 3600)
@@ -850,15 +813,12 @@ export function usePumpTableDataFetching(key = '') {
     { mergeDefaults: true }
   )
 }
-export function getValueType(val) {
-  return Object.prototype.toString.call(val)
-}
-export function _isString(val) {
-  return getValueType(val) === '[object String]'
+export function _isString(val: any){
+  return  typeof val === 'string'
 }
 
-export function _isArray(val) {
-  return getValueType(val) === '[object Array]'
+export function _isArray(val:any) {
+  return Array.isArray(val)
 }
 
 

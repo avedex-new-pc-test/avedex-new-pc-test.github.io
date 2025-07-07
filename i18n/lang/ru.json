@@ -324,6 +324,7 @@
   "lastTx": "Последняя транзакция",
   "origin": "Источник",
   "totalPnL": "Общий P&L",
+  "totalPnL2": "P&L",
   "bal": "Баланс",
   "soldAll": "Продано всё",
   "ratio": "Соотношение",
@@ -491,5 +492,9 @@
   "enableMonitor": "Включите мониторинг",
   "sniper": "Снайперы",
   "ranking": "Рейтинг",
-  "snipers": "Снайперы"
+  "snipers": "Снайперы",
+  "audited": "АУДИРОВАНО",
+  "check": "Проверка",
+  "copyTip": "Адрес {address} - контракт",
+  "wallet_detail_transfer_count": "Количество переводов"
 }

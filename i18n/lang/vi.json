@@ -324,6 +324,7 @@
   "lastTx": "Giao dịch cuối",
   "origin": "Nguồn",
   "totalPnL": "Tổng lãi/lỗ",
+  "totalPnL2": "lãi/lỗ",
   "bal": "Số dư",
   "soldAll": "Bán hết",
   "ratio": "Tỷ lệ",
@@ -491,5 +492,9 @@
   "enableMonitor": "Bật giám sát",
   "sniper": "Người săn",
   "ranking": "Xếp hạng",
-  "snipers": "Số lượng săn"
+  "snipers": "Số lượng săn",
+  "audited": "ĐÃ KIỂM TOÁN",
+  "check": "Kiểm tra",
+  "copyTip": "Địa chỉ {address} là hợp đồng",
+  "wallet_detail_transfer_count": "Số lần chuyển"
 }

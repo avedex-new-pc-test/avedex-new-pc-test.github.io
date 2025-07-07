@@ -151,7 +151,7 @@ const profitItems = computed(() => [
   {
     label: `${t('tokenValue')}${
       tokenInfoExtra?.value?.sell_tax ?? 0 > 0
-        ? ` (-${t('sellTax1')} ${formatNumber2(
+        ? ` (-${t('sellTax1')} ${formatNumber(
             tokenInfoExtra?.value?.sell_tax || 0,
             2
           )}%)`
