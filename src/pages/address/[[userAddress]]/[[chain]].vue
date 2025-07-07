@@ -1,5 +1,5 @@
 <template>
-  <div className="flex flex-col w-full gap-3 p-[20px] pt-[10px] bg-[var(--d-111-l-FFF)] pb-0">
+  <div v-if="userAddress && chain" className="flex flex-col w-full gap-3 p-[20px] pt-[10px] bg-[var(--d-111-l-FFF)] pb-0">
     <div class="flex-between">
       <el-select
         :style="{ width: '120px' }"
@@ -72,6 +72,26 @@
       :isSelfAddress="isSelfAddress"
     />
   </div>
+
+  <div v-else class="flex flex-col w-full h-full p-[10%] bg-[var(--d-111-l-FFF)] items-center pb-0">
+    <div
+      :class="`color-[var(--d-F5F5F5-l-333)] bg-[--d-111-l-FFF] rounded-2px text-14px overflow-hidden`"
+    >
+      <AveEmpty  class="overflow-hidden">
+        <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
+        <el-button
+          class="mt-10px"
+          @click="
+            botStore.$patch({
+              connectVisible: true,
+            })
+          "
+        >
+          {{ $t('connectWallet') }}
+        </el-button>
+      </AveEmpty>
+    </div>
+  </div>
 </template>
 <script setup>
 import Statistic from './components/statistic.vue'
@@ -82,6 +102,7 @@ import { getChainInfo } from '@/utils'
 
 const interval = ref('7D')
 const route = useRoute()
+const botStore = useBotStore()
 const chain = computed(() => route.params.chain)
 const userAddress = computed(() => route.params.userAddress)
 const $t = getGlobalT()
@@ -103,7 +124,7 @@ const options = [
     id: '30D',
   },
 ]
-const botStore = useBotStore()
+
 const isSelfAddress = computed(() => {
   return userAddress.value === botStore.getWalletAddress(chain.value)
 })
