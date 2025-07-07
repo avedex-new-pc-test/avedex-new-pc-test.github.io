@@ -309,5 +309,6 @@
   "snipers": "Keskin nişancı sayısı",
   "audited": "Denetim tamamlandı",
   "check": "Kontrol Et",
-  "copyTip": "Geçerli adres {address} bir sözleşme adresidir, lütfen para transferi yapmayın, aksi takdirde varlık geri alınamaz."
+  "copyTip": "Geçerli adres {address} bir sözleşme adresidir, lütfen para transferi yapmayın, aksi takdirde varlık geri alınamaz.",
+  "tokenHolders": "Token Sahipleri"
 }

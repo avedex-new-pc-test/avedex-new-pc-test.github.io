@@ -22,8 +22,12 @@
     width="780"
     height="590"
     :show-close="true"
-    class="search-dialog"
+    class="search-dialog custom-dialog"
     header-class="p-0!"
+    append-to-body
+    lock-scroll
+    draggable
+    :destroy-on-close="true"
     @opened="openDialog"
   >
     <template #header>
@@ -111,7 +115,7 @@
           <span>{{ $t('operate') }}</span>
         </div>
 
-        <el-scrollbar v-if="list?.length > 0" height="500px" min-height="400px">
+        <el-scrollbar v-if="list?.length > 0" height="400px" min-height="400px">
           <ul class="content1 mb-20px">
             <li v-for="(row, $index) in list" :key="$index">
               <a href="" class="flex no-underline h-50px" @click.stop.prevent>
@@ -395,4 +399,22 @@ function restore(item: { address: string, type: string }) {
   left: 0;
   bottom: 0;
 }
+/* 防止 el-dialog__body 撑开 dialog 本体 */
+.custom-dialog .el-dialog__body {
+  padding: 0;
+  max-height: 70vh; /* 限制最大高度 */
+  overflow: hidden; /* 避免双滚动 */
+}
+
+/* el-scrollbar 内部设置滚动区域 */
+.dialog-scrollbar {
+  height: 70vh;            /* 或你希望的最大高度 */
+  overflow: hidden;        /* el-scrollbar 控制滚动 */
+}
+
+/* 可选内容样式 */
+.dialog-content {
+  padding: 20px;
+}
+
 </style>

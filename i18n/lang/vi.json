@@ -496,5 +496,6 @@
   "audited": "ĐÃ KIỂM TOÁN",
   "check": "Kiểm tra",
   "copyTip": "Địa chỉ {address} là hợp đồng",
-  "wallet_detail_transfer_count": "Số lần chuyển"
+  "wallet_detail_transfer_count": "Số lần chuyển",
+  "tokenHolders": "Người nắm giữ"
 }

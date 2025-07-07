@@ -15,7 +15,7 @@
             name="custom:filter"
             class="mr-3px text-12px cursor-pointer"
           />
-          <span>{{ $t('filters') }}</span>
+          <span>{{ $t('filter') }}</span>
           <span v-if="filterNumber > 0" class="filter-number">{{ filterNumber }}</span>
         </div>
       </template>
@@ -328,7 +328,7 @@ const tabs = computed(() => {
           tab: 'tag'
         },
         {
-          label: `${t('holders4')}`,
+          label: `${t('tokenHolders')}`,
           prop: ['holder_min', 'holder_max'],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',

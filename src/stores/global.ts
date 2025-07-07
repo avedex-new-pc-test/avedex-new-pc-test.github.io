@@ -54,7 +54,7 @@ export const useGlobalStore = defineStore('global', () => {
     avatar_isCircle: 'circle',
     isGutter: false,
     isRight: false,
-    isBlacklist: false,
+    isBlacklist: true,
     define: ['name', 'txs', 'vol', 'holder', 'mcap', 'media', 'smart', 'top','dev','cabal','insider', 'sniper', 'rug', 'kol'],
   })
 

@@ -679,7 +679,6 @@
   "holders_top10_ratio_tips": "Top 10 持仓占比：分析前十大持仓地址的资产比例",
   "sniper_balance_ratio_cur_tips": "狙击者持仓占比：评估狙击地址的持仓情况",
   "graduated": "新外盘",
-  "filters": "筛选",
   "holders4": "持有人",
   "smarterTxs": "聪明钱交易数",
   "aiSummary": "AI叙事",
@@ -902,10 +901,11 @@
   "buyTxs": "买入交易数",
   "chainToken": "链上画像",
   "marketIndices": "市场指数",
-  "snipers": "狙击数",
+  "snipers": "狙击人数",
   "KOLTraders": "KOL交易人数",
   "searchTip": "搜索关键词(最多3个)",
   "Vol": "成交量",
   "sellAll": "全部卖出",
-  "H": "小时"
+  "H": "小时",
+  "migraged": "迁移次数"
 }

@@ -235,7 +235,7 @@
   "enterSlippage": "Please enter slippage",
   "slippageMaxTip": "Exceeded maximum slippage by 49.99%",
   "slippageTip1": "Trading with extremely low slip point limit may be failed due to market fluctuation",
-  "autoSellHalf": "Sell half at double",
+  "autoSellHalf": "Double",
   "protection": "Protection",
   "custom": "Custom",
   "priorityFee": "Priority Fee",
@@ -675,7 +675,6 @@
   "holders_top10_ratio_tips": "Top 10 Holding Ratio: Analyze assets of the top ten addresses",
   "sniper_balance_ratio_cur_tips": "Sniper Holding Ratio: Assess the holdings of sniper addresses",
   "graduated": "Graduated",
-  "filters": "Filter",
   "MC": "MC",
   "holders4": "Holder",
   "smarterTxs": "Smarter Txs",
@@ -855,7 +854,6 @@
   "showBlackList": "Show BlackList",
   "defineCard": "Define Card",
   "tokenName1": "Token Name",
-  "media": "Media",
   "runPull": "Run Pull",
   "insiders": "Insiders",
   "sniper": "Snipers",
@@ -911,5 +909,6 @@
   "copyTip": "The current address {address} is contract address, please do not transfer funds, otherwise the asset will not be retrieved.",
   "sellAll": "Sell all",
   "wallet_detail_transfer_count": "Transfers Count",
-  "H": "H"
+  "H": "H",
+  "migraged": "Migrated"
 }

@@ -65,6 +65,7 @@ export interface PumpObj {
   cabal_tag_count: string
   kol_tag_count: number
   smart_wallet_tag_count: string
+  sniper_count: string
 }
 
 interface Pair {

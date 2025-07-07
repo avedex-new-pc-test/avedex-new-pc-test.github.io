@@ -314,5 +314,6 @@
   "snipers": "Snipers",
   "audited": "AUDITADO",
   "check": "Verificar ",
-  "copyTip": "O endereço atual {address} é um endereço de contrato. Por favor, não faça transferências, caso contrário, os ativos não poderão ser recuperados."
+  "copyTip": "O endereço atual {address} é um endereço de contrato. Por favor, não faça transferências, caso contrário, os ativos não poderão ser recuperados.",
+  "tokenHolders": "Detentores de Token"
 }

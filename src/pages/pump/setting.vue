@@ -190,11 +190,11 @@ const defineList = computed(() => {
     { name: 'KOL', id: 'kol' },
     { name: 'Top 10', id: 'top' },
     { name: 'DEV', id: 'dev' },
-    // { name: '迁移次数', id: '' },
     { name: t('runPull'), id: 'rug' },
     { name: t('insiders'), id: 'insider' },
     { name: t('sniper'), id: 'sniper' },
     { name: t('cabal'), id: 'cabal' },
+    // { name: t('migraged'), id: 'migraged' },
   ]
 })
 

@@ -678,7 +678,6 @@
   "holders_top10_ratio_tips": "Top 10 持倉佔比：分析前十大持倉地址的資產比例",
   "sniper_balance_ratio_cur_tips": "狙擊者持倉佔比：評估狙擊地址的持倉情況",
   "graduated": "新外盤",
-  "filters": "篩選",
   "MC": "市值",
   "holders4": "持有人",
   "smarterTxs": "聰明錢交易數",
@@ -890,12 +889,13 @@
   "buyTxs": "買入交易數",
   "chainToken": "鏈上畫像",
   "marketIndices": "市場指數",
-  "snipers": "狙擊數",
+  "snipers": "狙擊人數",
   "KOLTraders": "KOL交易人數",
   "searchTip": "蒐索關鍵字(最多3個)",
   "Vol": "成交量",
   "copyTip": "當前地址{address}是合約地址，請勿轉帳，否則資產將無法找回。",
   "sellAll": "全部賣出",
   "smart_money_tips": "24h內聰明錢買入{b}次,賣出{s}次",
-  "H": "小時"
+  "H": "小時",
+  "migraged": "遷移次數"
 }

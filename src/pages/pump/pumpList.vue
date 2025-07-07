@@ -15,7 +15,7 @@
 
         >
           <div>
-            <Icon  v-if="pumpBlackList?.findIndex(i=> (i.address == row.token || i.address == row.symbol) && (i.type=='ca' || i.type=='keyword')) !==-1"  name="custom:key-invisible" class="text-8px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
+            <Icon  v-if="pumpBlackList?.findIndex(i=> (i.address == row.token && i.type=='ca' || i.address == row.symbol && i.type=='keyword')) !==-1"  name="custom:key-invisible" class="text-10px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
             <Icon v-else name="custom:key-visible" class="text-8px eye" @click.stop="addOrRemoveBlaclList(row,'ca')"/>
             <div class="token-logo">
               <el-image class="token-icon" :src="getSymbolDefaultIcon(row, pumpSetting.avatar_isCircle=='rect'? 'rect' :'circle')" :style="{ 'border-radius': pumpSetting.avatar_isCircle=='circle' ? '100%' : '0'}">
@@ -80,6 +80,7 @@
               </el-tooltip>
               <el-image
                 v-if="row.amm"
+                v-tooltip="row.amm"
                 class="mr-5px rounded-100% bg-[--d-1A1A1A-l-FFF]  chain"
                 style="
                   position: absolute;
@@ -93,6 +94,7 @@
 
               <el-image
                 v-if="row.issue_platform && isOut"
+                v-tooltip="row.issue_platform"
                 class="ml-5px rounded-100% bg-[--d-1A1A1A-l-FFF]  chain"
                 style="
                   position: absolute;
@@ -246,11 +248,7 @@
                 </div>
                 <div
                   v-else
-                  :class="
-                    row?.holders > 4
-                      ? 'color-[--d-666-l-999]'
-                      : 'color-[--d-999-l-666]'
-                  "
+                  class="color-[--d-999-l-666]"
                 >
                   {{ formatNumber(row.holders || 0, 2) }}
                 </div>
@@ -285,7 +283,7 @@
                   </span>
                 </template>
               </template> -->
-              <div v-if="row?.medias?.length > 0 && pumpSetting?.define?.some(i=> i=== 'media')" class="flex text-12px ml-5px">
+              <div v-if="row?.medias?.length > 0 && pumpSetting?.define?.some(i=> i=== 'media')" class="flex text-12px">
                 <div
                   v-for="(item, $index) in row?.medias"
                   :key="$index"
@@ -329,7 +327,7 @@
                 />
               </a>
               <div
-                v-show="Number(row?.rug_rate) > 0 && pumpSetting?.define?.some(i=> i=== 'rug')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'rug')"
                 v-tooltip="$t('rug_rate_tips')"
                 class="flex mr-5px items-center bg-btn"
                 :style="{
@@ -351,7 +349,7 @@
                 }}</span>
               </div>
               <div
-                v-show=" Number(row?.kol_tag_count) > 0 && pumpSetting?.define?.some(i=> i=== 'kol')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'kol')"
                 v-tooltip="`KOL`"
                 class="flex mr-5px items-center bg-btn color-[--d-999-l-666]"
               >
@@ -363,10 +361,10 @@
                       row?.kol_tag_count > 0 ? '#1C9BEF' : 'var(--d-666-l-999)',
                   }"
                 />
-                <span>{{ formatNumber(row?.kol_tag_count || 0, 2) }}</span>
+                <span class="color-[--d-999-l-666]">{{ formatNumber(row?.kol_tag_count || 0, 2) }}</span>
               </div>
               <div
-                v-show="row?.smart_wallet_tag_count >0 && pumpSetting?.define?.some(i=> i=== 'smart')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'smart')"
                 v-tooltip="$t('smarter')"
                 class="flex mr-5px items-center bg-btn color-#12B886"
               >
@@ -375,15 +373,26 @@
                   name="custom:wallet"
                   :style="{
                     color:
-                      row?.smart_wallet_tag_count > 0 ? '#12B886' : 'var(--d-666-l-999)',
+                      Number(row?.smart_wallet_tag_count || 0) > 0 ? '#12B886' : 'var(--d-666-l-999)',
                   }"
                 />
-                <span>{{ formatNumber(row?.smart_wallet_tag_count || 0, 2) }}</span>
+                <span class="color-[--d-999-l-666]">{{ formatNumber(row?.smart_wallet_tag_count || 0, 2) }}</span>
               </div>
-              <template v-if="row.normal_tag?.length > 0">
+              <!-- <div
+                v-show="pumpSetting?.define?.some(i=> i=== 'migraged')"
+                v-tooltip="$t('migraged')"
+                class="flex mr-5px items-center bg-btn"
+              >
+                <Icon
+                  class="iconfont icon-rug mr-2px text-10px vertical-middle color-[--d-666-l-999]"
+                  name="custom:migraged"
+                />
+                <span class="color-[--d-999-l-666]">0</span>
+              </div> -->
+              <!-- <template v-if="row.normal_tag?.length > 0">
                 <div class="bg-btn" v-for="(i, index) in row.normal_tag" :key="index">
                   <el-image
-                    v-tooltip="$t(`${i.tag}`)"
+                    v-tooltip="$t(`${i.tag}`)
                     class="token-icon-tag"
                     :src="formatIconTag(i.tag)"
                     lazy
@@ -404,8 +413,8 @@
                     >{{ $t(i?.tag) }}
                   </span>
                 </div>
-              </template>
-              <template v-if="row.signal_arr?.length > 0">
+              </template> -->
+              <!-- <template v-if="row.signal_arr?.length > 0">
                 <div
                   v-for="(i, index) in row.signal_arr"
                   :key="index"
@@ -430,40 +439,6 @@
                       />
                     </template>
                   </el-image>
-                  <!-- <div
-                    v-if="
-                      (i.tag == 'smarter_buy' || i.tag == 'smarter_sell') &&
-                      (row?.smart_money_buy_count_24h > 0 ||
-                        row?.smart_money_sell_count_24h > 0) &&
-                        pumpSetting?.define?.some(i=> i=== 'smart')
-                    "
-                    class="ml-2px"
-                    style="color: #959a9f"
-                  >
-                    <span
-                      :style="{
-                        color:
-                          row?.smart_money_buy_count_24h > 0
-                            ? upColor[0]
-                            : 'var(--custom-text-3-color)',
-                      }"
-                    >
-                      {{ formatNumber(row?.smart_money_buy_count_24h || 0, 0) }}
-                    </span>
-                    /
-                    <span
-                      :style="{
-                        color:
-                          row?.smart_money_sell_count_24h > 0
-                            ? '#F6465D'
-                            : 'var(--custom-text-3-color)',
-                      }"
-                    >
-                      {{
-                        formatNumber(row?.smart_money_sell_count_24h || 0, 0)
-                      }}
-                    </span>
-                  </div> -->
                   <span
                     class="ml-2px"
                     :style="{
@@ -473,11 +448,11 @@
                     <template v-if="i.tag">{{ $t(i.tag) }}</template>
                   </span>
                 </div>
-              </template>
+              </template> -->
             </div>
             <div class="flex-start mt-10px text-12px" style="width: 100%">
               <div
-                v-show="Number(row?.holders_top10_ratio) > 0.1 && pumpSetting?.define?.some(i=> i=== 'top')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'top')"
                 v-tooltip="$t('holders_top10_ratio_tips')"
                 class="flex-start mr-5px bg-btn"
               >
@@ -498,11 +473,11 @@
                         ? '#F6465D'
                         : 'var(--d-999-l-666)',
                   }"
-                  >{{ formatNumber(row?.holders_top10_ratio || 0, 1) }}%</span
+                  >{{ formatNumber(Number(row?.holders_top10_ratio)> 0.001 ? row?.holders_top10_ratio || 0 : 0, 1) }}%</span
                 >
               </div>
               <div
-                v-show="Number(row?.dev_balance_ratio_cur) > 0.1 && pumpSetting?.define?.some(i=> i=== 'dev')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'dev')"
                 v-tooltip="$t('dev_balance_ratio_cur_tips')"
                 class="flex mr-5px bg-btn"
               >
@@ -514,11 +489,11 @@
                         ? '#F6465D'
                         : 'var(--d-999-l-666)',
                   }"
-                  >{{ formatNumber(row?.dev_balance_ratio_cur || 0, 2) }}%</span
+                  >{{ formatNumber(Number(row?.dev_balance_ratio_cur)> 0.001 ? row?.dev_balance_ratio_cur || 0 : 0, 2) }}%</span
                 >
               </div>
               <div
-                v-show="Number(row?.insider_balance_ratio_cur) > 0.1 && pumpSetting?.define?.some(i=> i=== 'insider')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'insider')"
                 v-tooltip="$t('insider_balance_ratio_cur_tips')"
                 class="flex mr-5px bg-btn"
               >
@@ -536,19 +511,17 @@
                   :style="{
                     color:
                       Number(row?.insider_balance_ratio_cur) > 10
-                        ? '#F6465D'
+                        ? '#D741E3'
                         : 'var(--d-999-l-666)',
                   }"
                   >{{
-                    formatNumber(row?.insider_balance_ratio_cur || 0, 2)
+                    formatNumber(Number(row?.insider_balance_ratio_cur)> 0.001 ? row?.insider_balance_ratio_cur || 0 : 0, 2)
                   }}%</span
                 >
               </div>
               <div
-                v-show="
-                  Number(row?.sniper_balance_ratio_cur) > 0.1 && pumpSetting?.define?.some(i=> i=== 'sniper')
-                "
-                v-tooltip="$t('sniper_balance_ratio_cur_tips')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'sniper')"
+                v-tooltip="$t('snipers')"
                 class="flex mr-5px bg-btn"
               >
                 <Icon
@@ -556,27 +529,29 @@
                   name="custom:gun"
                   :style="{
                     color:
-                      Number(row?.sniper_balance_ratio_cur) > 30
+                      Number(row?.sniper_count) > 30
                         ? '#1296DB'
                         : 'var(--d-666-l-999)',
                   }"
                 />
                 <span
+                class="color-[--d-999-l-666]"
                   >{{
-                    formatNumber(row?.sniper_balance_ratio_cur || 0, 2)
-                  }}%</span
+                    formatNumber(Number(row?.sniper_count)> 0.001 ? row?.sniper_count || 0: 0, 2)
+                  }}</span
                 >
               </div>
 
               <div
-                v-show="Number(row?.cabal_tag_count) > 0 && pumpSetting?.define?.some(i=> i=== 'cabal')"
+                v-show="pumpSetting?.define?.some(i=> i=== 'cabal')"
                 v-tooltip="$t('cabal')"
                 class="flex mr-5px bg-btn"
               >
-                <img :src="`${token_logo_url}address_portrait/Cabal11.png`" :width="11" alt="">
+                <img  v-if="Number(row?.cabal_tag_count) > 0" class="mr-2px" src="@/assets/images/cabal.svg" :width="11" alt="" >
+                <img  v-else class="mr-2px" :src="`${token_logo_url}address_portrait/Cabal11.png`" :width="11" alt="">
                 <span class="color-[--d-999-l-666]">{{
-                    formatNumber(row?.cabal_tag_count || 0, 2)
-                  }}%</span
+                    formatNumber(Number(row?.cabal_tag_count)> 0.001 ?  row?.cabal_tag_count || 0 : 0, 2)
+                  }}</span
                 >
               </div>
               <div class="flex-1" />
@@ -620,7 +595,14 @@
       popper-class="text-center"
     >
 
-      <span class="color-#12B886">{{ $t('progress') }}:{{ formatNumber(selected,2)}}%</span>
+      <span class="color-#12B886" >
+        <template v-if="isOut">
+          {{ selected }}
+        </template>
+        <template v-else>
+          {{ $t('progress') }}:{{ formatNumber(selected,2)}}%
+        </template>
+        </span>
     </el-popover>
 
   </div>
@@ -717,14 +699,14 @@ function setBtnRef(el: HTMLElement | null) {
     // console.log('-------el?.id----',el?.id)
   }
 }
-function showPopover(item: {progress: string, id: string}) {
-  if (!isOut.value) {
+function showPopover(item: {progress: string, id: string, issue_platform: string}) {
+  // if (!isOut.value) {
     console.log('-----[item.id--',item.id)
-    selected.value = item.progress
+    selected.value = isOut.value? item.issue_platform  || '' : item.progress || ''
     currentBtnRef.value = btnRefs.value[item.id] || null
     console.log('-----currentBtnRef.value ---',currentBtnRef.value )
     showPop.value = true
-  }
+  // }
 }
 </script>
 

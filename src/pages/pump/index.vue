@@ -461,8 +461,7 @@ const list1 = computed(() => {
       (item) =>
         !pumpBlackList.value?.some(
           (i) =>
-            (i.address == item.token ||
-            i.address == item.symbol) && (i.type=='ca' || i.type=='keyword')
+            (i.address == item.token  && i.type=='ca' || i.address == item.symbol && i.type=='keyword')
         )
     )
   }
@@ -473,11 +472,9 @@ const list1 = computed(() => {
 
   const wsList = getFilterData(list1, pumpFilter_new)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
-  if(pump_notice.value[activeChain.value].new && pumpAudio.value && wsList1.length >0) {
-    pumpAudio.value.play()
-  }
   return [...wsList1, ...list]
 })
+
 const list2 = computed(() => {
   let list = fourmemeListObj?.[activeChain.value]?.soon || []
   if (pumpSetting.value.isBlacklist && pumpBlackList.value?.length > 0) {
@@ -485,8 +482,7 @@ const list2 = computed(() => {
       (item) =>
         !pumpBlackList.value?.some(
           (i) =>
-          ( i.address == item.token ||
-            i.address == item.symbol) && (i.type=='ca' || i.type=='keyword')
+          (i.address == item.token  && i.type=='ca' || i.address == item.symbol && i.type=='keyword')
         )
     )
   }
@@ -496,9 +492,6 @@ const list2 = computed(() => {
   )
   const wsList = getFilterData(list1, pumpFilter_soon)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
-  if(pump_notice.value[activeChain.value].soon && pumpAudio.value && wsList1.length >0) {
-    pumpAudio.value.play()
-  }
   return [...wsList1, ...list]
 })
 const list3 = computed(() => {
@@ -508,8 +501,7 @@ const list3 = computed(() => {
       (item) =>
         !pumpBlackList.value?.some(
           (i) =>
-          (i.address == item.token ||
-          i.address == item.symbol) && (i.type=='ca' || i.type=='keyword')
+          (i.address == item.token  && i.type=='ca' || i.address == item.symbol && i.type=='keyword')
         )
     )
   }
@@ -519,15 +511,27 @@ const list3 = computed(() => {
   )
   const wsList = getFilterData(list1, pumpFilter_graduated)
   const wsList1 = wsList?.filter(i => !list?.some(j => j.pair === i.pair))
-  if(pump_notice.value[activeChain.value].graduated && pumpAudio.value && wsList1.length >0) {
+  return [...wsList1, ...list]
+})
+watch(() => list1.value?.[0]?.target_token, (val) => {
+  if(pump_notice.value[activeChain.value].new && pumpAudio.value && val) {
     pumpAudio.value.play()
   }
-  return [...wsList1, ...list]
+})
+watch(() => list2.value?.[0]?.target_token, (val) => {
+  if(pump_notice.value[activeChain.value].new && pumpAudio.value && val) {
+    pumpAudio.value.play()
+  }
+})
+watch(() => list3.value?.[0]?.target_token, (val) => {
+  if(pump_notice.value[activeChain.value].new && pumpAudio.value && val) {
+    pumpAudio.value.play()
+  }
 })
 watch(pump_solana_platforms, () => {
   getPumpList()
 })
-watch(activeChain, (val) => {
+watch(activeChain, () => {
   getPumpList()
   wsTableListCache.value = []
   wsTableList.value = []
@@ -1196,12 +1200,15 @@ function getFilterData(list, conditions) {
 :deep().search-input1 {
   background: var(--d-222-l-F2F2F2);
   padding: 2px;
-  border: none;
   width: 200px;
   border-radius: 4px;
+  border: none;
   .el-input__wrapper {
     background-color: transparent;
     box-shadow: none;
+    &.is-focus {
+      box-shadow: 0 0 0 1px #3F80F7 inset;
+    }
     .el-input__inner::placeholder {
       color: var(--d-666-l-999);
     }

@@ -496,5 +496,6 @@
   "audited": "АУДИРОВАНО",
   "check": "Проверка",
   "copyTip": "Адрес {address} - контракт",
-  "wallet_detail_transfer_count": "Количество переводов"
+  "wallet_detail_transfer_count": "Количество переводов",
+  "tokenHolders": "Держатели токенов"
 }
