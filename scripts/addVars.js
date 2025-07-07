@@ -60,6 +60,12 @@ function updateBlock(css, blockSelector, varName, value) {
   let found = false
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith(varName + ':')) {
+      // 检查值是否相同
+      const currentValue = lines[i].split(':')[1].replace(';', '').trim()
+      if (currentValue === value) {
+        // 已存在且值相同，直接返回原 css
+        return css
+      }
       lines[i] = `${varName}: ${value};`
       found = true
       break
@@ -76,7 +82,7 @@ function updateBlock(css, blockSelector, varName, value) {
     '  }' +
     css.slice(block.end + 1)
   )
-}
+} 
 
 function updateCssVars(cssFile, varName) {
   const { dark, light, name } = parseVarName(varName)

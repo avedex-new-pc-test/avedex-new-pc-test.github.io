@@ -28,6 +28,7 @@ export type WSTx = {
   tx_seq: string
   wallet_address: string
   wallet_tag: null | string
+  tx_type?: string
 }
 
 export interface KLineBar {

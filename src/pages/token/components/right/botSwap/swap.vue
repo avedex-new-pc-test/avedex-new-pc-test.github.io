@@ -54,12 +54,12 @@
       </el-input>
       <div class="slider-swap" :class="activeTab">
         <div class="slider-swap_left">
-          <el-slider v-model="priceLimitRange" :show-tooltip="false" :show-input-controls="false" :min="-100" :max="100" />
+          <el-slider :model-value="priceLimitRange1" :show-tooltip="false" :show-input-controls="false" :min="-100" :max="100" @input="onSliderInput" />
           <div class="slider-swap_left-mark">
-            <span v-for="(item, index) in [-100, -50, 0, 50, 100]" :key="index" class="clickable" @click.stop="priceLimitRange=item">{{item}}%</span>
+            <span v-for="(item, index) in [-100, -50, 0, 50, 100]" :key="index" class="clickable" @click.stop="priceLimitRange1=item">{{item}}%</span>
           </div>
         </div>
-        <el-input v-model.number="priceLimitRange" placeholder="0" class="input-number max-w-70px ml-15px text-14px" @update:model-value="value => priceLimit = value?.replace?.(/\-|[^\d.]/g, '')">
+        <el-input v-model.number="priceLimitRange" placeholder="0" class="input-number max-w-70px ml-15px text-14px!" @update:model-value="value => priceLimit = value?.replace?.(/\-|[^\d.]/g, '')">
           <template #prefix>
             <div class="w-10px" />
           </template>
@@ -71,7 +71,7 @@
     </template>
 
     <template v-if="isSupportSwap">
-      <el-button v-if="!isApprove || loadingAllowance" :color="swapButtonColor" class="submit-btn" native-type="button" :loading="loadingApprove || loadingSwap || loadingAllowance" :disabled="Number(fromToken.balance) < Number(fromAmount)" @click.stop="approve">{{ Number(fromToken.balance) === 0 || Number(fromToken.balance) < Number(fromAmount) ? (checkAmountMessage() || $t('approve')) : $t('approve') }}</el-button>
+      <el-button v-if="!isApprove" :color="swapButtonColor" class="submit-btn" native-type="button" :loading="loadingApprove || loadingSwap || loadingAllowance" :disabled="Number(fromToken.balance) < Number(fromAmount)" @click.stop="approve">{{ Number(fromToken.balance) === 0 || Number(fromToken.balance) < Number(fromAmount) ? (checkAmountMessage() || $t('approve')) : $t('approve') }}</el-button>
 
       <el-button
         v-else-if="activeTab === 'buy' && (Number(fromToken.balance) === 0 || Number(fromToken.balance) < Number(fromAmount))"
@@ -93,10 +93,46 @@
         native-type="button"
         @click.stop="submitBotSwap"
       >
-      {{ checkAmountMessage() }}
         {{ checkAmountMessage() || (activeTab === 'buy' ? $t('buy') : $t('sell')) }}
       </el-button>
-      <ul class="swap-label">
+      <div class="mt-10px flex items-center text-11px color-[--d-F5F5F5-l-333]">
+        <template v-if="botSettings[chain || ''] && isCanMev">
+          <span class=" color-[--d-666-l-999] mr-4px cursor-pointer">{{ $t('mev') }}</span>
+          <el-switch
+            v-if="chain === 'solana'"
+            v-model="botSettings.solana![botSettings.solana!.selected as 's1' | 's2' | 's3']!.mev"
+            style="--el-switch-on-color: #3c6cf6;zoom: 0.9;height: 14px;"
+            size="small"
+            :before-change="solanaMevBeforeChange"
+          />
+          <el-switch
+            v-else-if="isEvmChain(chain || '')"
+            v-model="botSettings[chain as string]![botSettings[chain as string]!.selected as 's1' | 's2' | 's3'].mev"
+            style="--el-switch-on-color: #3c6cf6;zoom: 0.9;height: 14px"
+            size="small"
+          />
+        </template>
+        <Icon v-tooltip="$t('slippage')" name="custom:slippage" class="text-12px color-[--d-666-l-999] ml-auto mr-4px cursor-pointer" />
+        <span v-if="botSettings?.[chain || '']?.[selected]?.slippage !== 'auto'">{{ botSettings?.[chain || '']?.[selected]?.slippage }}%</span>
+        <span v-else>{{ $t('auto') }}</span>
+        <template v-if="isEvmChain(chain || '')">
+          <Icon v-tooltip="$t('estimatedGas')" name="custom:gas" class="text-12px color-[--d-666-l-999] ml-auto mr-4px cursor-pointer" />
+          <span>${{ getEstimatedGas() }}</span>
+        </template>
+        <template v-if="chain === 'solana'">
+          <Icon v-tooltip="$t('priorityFee')" name="custom:gas" class="text-12px color-[--d-666-l-999] ml-auto mr-4px cursor-pointer" />
+          <span>{{ botPriorityFee }} SOL</span>
+        </template>
+        <template v-if="activeTab === 'buy' && swapType === 'market' && botSettings?.[chain || '']">
+          <span class="mr-4px ml-auto color-[--d-666-l-999]">{{ $t('autoSellHalf') }}</span>
+          <el-switch
+            v-model="botSettings[chain as string]![botSettings[chain as string]!.selected as 's1' | 's2' | 's3'].autoSell"
+            size="small"
+            style="--el-switch-on-color: #3c6cf6;zoom: 0.9;height: 14px;"
+          />
+        </template>
+      </div>
+      <!-- <ul class="swap-label">
         <li v-if="activeTab === 'buy' && swapType === 'market' && botSettings?.[chain || '']" class="slippage-container">
           <span class="mr-auto color-[--d-666-l-999]">{{ $t('autoSellHalf') }}</span>
           <el-switch
@@ -142,7 +178,7 @@
             size="small"
           />
         </li>
-      </ul>
+      </ul> -->
     </template>
 
     <div v-else-if="!botStore?.userInfo?.evmAddress" class="connect-wallet-btn">
@@ -178,6 +214,7 @@ import { useBotSwap } from '~/composables/botSwap'
 import { bot_createSolTx, bot_createSwapEvmTx, bot_createSolLimitTx, bot_createEvmLimitTx } from '@/api/bot'
 import RefreshBalance from './refreshBalance.vue'
 import { formatDec, formatNumber } from '@/utils/formatNumber'
+import { useEventBus } from '@vueuse/core'
 
 interface Token {
   address?: string
@@ -224,10 +261,30 @@ const isPriceLimit = ref(true)
 const priceLimit = ref('')
 const priceLimitRange = ref<undefined | number>(undefined)
 
+const priceLimitRange1 = computed(() => {
+  return Number(priceLimitRange.value) > 100 ? 100 : priceLimitRange.value
+})
+
+function onSliderInput(val: number) {
+  priceLimitRange.value = val
+}
+
 watch(priceLimitRange, (val) => {
   if (props.swapType !== 'limit') return
   if (!Number.isNaN(Number(val))) {
     priceLimit.value = formatDec(new BigNumber(tokenStore.price || 0).times(isPriceLimit.value ? 1 : tokenStore.circulation).times(1 + ((Number(val) || 0) / 100)).toFixed(), 4)
+  }
+})
+
+let isLineChange = false
+useEventBus<string>('priceLimit_move').on((price) => {
+  if (props.swapType !== 'limit') return
+  if (!Number.isNaN(Number(price))) {
+    isLineChange = true
+    priceLimitRange.value = Number(new BigNumber(price || 0).minus(tokenStore.price || 0).div(tokenStore.price || 0).times(100).toFixed(0))
+    nextTick(() => {
+      isLineChange = false
+    })
   }
 })
 
@@ -239,8 +296,9 @@ watch(priceLimit, () => {
 
 watch(() => props.swapType, (val) => {
   if (val !== 'limit') {
-    botSwapStore.priceLimit = 0
+    useEventBus<number>('priceLimit').emit(0)
   } else {
+    initPriceLimit()
     updateStorePriceLimit()
   }
 })
@@ -256,11 +314,17 @@ watch(isPriceLimit, (val) => {
   }
 })
 
+useEventBus('klineDataReady').on(() => {
+  if (props.swapType !== 'limit') return
+  updateStorePriceLimit()
+})
+
 function updateStorePriceLimit() {
-   if(!isPriceLimit.value) {
-    botSwapStore.priceLimit = Number(formatDec(new BigNumber(priceLimit.value).div(tokenStore.circulation || 1).toFixed(), 4))
+  if (isLineChange) return
+  if(!isPriceLimit.value) {
+    useEventBus<number>('priceLimit').emit(Number(formatDec(new BigNumber(priceLimit.value).div(tokenStore.circulation || 1).toFixed(), 4)))
   } else {
-    botSwapStore.priceLimit = Number(priceLimit.value)
+    useEventBus<number>('priceLimit').emit(Number(priceLimit.value))
   }
 }
 
@@ -444,7 +508,7 @@ async function quoteBot(chain: string, type = props.activeTab, isGetPrice = true
   if (isGetPrice) {
     await _getTokensPrice()
   }
-  const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain)?.current_price_usd || 0
+  const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain && item.token === getChainInfo(chain)?.wmain_wrapper)?.current_price_usd || tokenStore.swap.native.price || 0
 
   let price: number = tokenStore.price || tokenStore.swap.token?.price || 0
   if (props.swapType === 'limit') {
@@ -619,6 +683,7 @@ async function submitBotSwap() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.historyUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
           // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'myBotHistory'
@@ -637,25 +702,14 @@ async function submitBotSwap() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
               loadingSwap.value = false
-              setTimeout(() => {
-                // this.getTokenDetails()
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-              }, 1000)
             }
           }
         })
@@ -704,11 +758,8 @@ async function submitBotSwap() {
     bot_createSwapEvmTx(data).then(res => {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
-          // this.$store.state.bot.historyUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('transactionsSubmitted') })
-          // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-          //   this.$store.state.tabActive = 'myBotHistory'
-          // }
           loadingSwap.value = false
           amountNative.value = ''
           amountNativeOut.value = ''
@@ -723,16 +774,10 @@ async function submitBotSwap() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotPosition'
-                // }
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
@@ -806,6 +851,7 @@ function submitBotLimit() {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
           // this.$store.state.bot.limitHistoryUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('limitSubmitted') })
           //  if (!['myBotPosition', 'botLimitOrder']?.includes(this.$store.state.tabActive)) {
           //   this.$store.state.tabActive = 'botLimitOrder'
@@ -827,25 +873,14 @@ function submitBotLimit() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
               loadingSwap.value = false
-              setTimeout(() => {
-                // this.getTokenDetails()
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-              }, 1000)
             }
           }
         })
@@ -886,20 +921,13 @@ function submitBotLimit() {
     bot_createEvmLimitTx(data).then(res => {
       if (res) {
         let Timer: null | ReturnType<typeof setTimeout> = setTimeout(() => {
-          // this.$store.state.bot.limitHistoryUpdate++
+          tokenStore.placeOrderUpdate++
           ElNotification({ type: 'success', message: t('limitSubmitted') })
-          //  if (!['myBotPosition', 'botLimitOrder']?.includes(this.$store.state.tabActive)) {
-          //   this.$store.state.tabActive = 'botLimitOrder'
-          // }
           loadingSwap.value = false
           amountToken.value = ''
           amountNative.value = ''
           amountTokenOut.value = ''
           amountNativeOut.value = ''
-          // this.dialogVisibleSwap = false
-          // if (this.$store.state.tabActive === 'botLimitOrder') {
-          //   this.$store.state.bot.orderTabActive = 'my'
-          // }
         }, 500)
         const unwatch = watch(() => wsStore?.wsResult.tgbot, (subscribeResult) => {
           const batchId = subscribeResult.batchId
@@ -908,25 +936,14 @@ function submitBotLimit() {
               clearTimeout(Timer)
               Timer = null
             }
+            tokenStore.placeOrderSuccess++
             if (subscribeResult?.txList?.[0]?.success) {
               ElNotification({ type: 'success', message: t('tradeSuccess') })
               unwatch()
-              setTimeout(() => {
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-                // if (!['myBotHistory', 'myBotPosition']?.includes(this.$store.state.tabActive)) {
-                //   this.$store.state.tabActive = 'myBotHistory'
-                // }
-              }, 1000)
             } else {
               handleBotError(subscribeResult?.txList?.[0]?.failMessage || 'swap error')
               unwatch()
               loadingSwap.value = false
-              setTimeout(() => {
-                // this.getTokenDetails()
-                emit('getTokenBalance')
-                // this.$store.state.bot.historyUpdate++
-              }, 1000)
             }
           }
         })
@@ -957,7 +974,7 @@ function getEstimatedGas() {
     // let botSettings = this.botSettings?.[this.chain]?.[] || {}
     const botSettings = botSettingStore.botSettings?.[chain]?.[botSettingStore.botSettings?.[chain]?.selected as 's1' | 's2' | 's3']
     const mev = botSettings?.mev
-    const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain)?.current_price_usd || tokenStore.swap.native.price || 0
+    const nativePrice = botSwapStore.mainTokensPrice?.find(item => item.chain === chain && item.token === getChainInfo(chain)?.wmain_wrapper)?.current_price_usd || tokenStore.swap.native.price || 0
     const { gasTip1List, gasTip2List } = formatBotGasTips(botSwapStore.gasTip, chain)
     const gasTips = mev ? gasTip1List : gasTip2List
     const settings = mev ? botSettings?.gas[0] : botSettings?.gas[1]
@@ -1014,23 +1031,31 @@ watch(() => tokenStore.price, (val) => {
 })
 
 function botTopUp(chain?: string) {
-  //
-  console.log(chain)
+  useEventBus<string>('botTopUp').emit(chain)
 }
 
 const now = Date.now()
+let Timer: null | ReturnType<typeof setTimeout> = null
 function initPriceLimit() {
   if (props.swapType === 'market') {
     if (Date.now() - now > 5000) {
       return
     }
     if (!tokenStore.price) {
-      setTimeout(initPriceLimit, 1000)
+      if (Timer) {
+        clearTimeout(Timer)
+        Timer = null
+      }
+      Timer = setTimeout(initPriceLimit, 1000)
       return
     }
   } else {
     if (!tokenStore.price) {
-      setTimeout(initPriceLimit, 1000)
+      if (Timer) {
+        clearTimeout(Timer)
+        Timer = null
+      }
+      Timer = setTimeout(initPriceLimit, 1000)
       return
     }
   }
@@ -1040,6 +1065,12 @@ function initPriceLimit() {
 
 watch(() => tokenStore.token?.token, () => {
   initPriceLimit()
+})
+
+watch(() => tokenStore.placeOrderSuccess, () => {
+  setTimeout(() => {
+    emit('getTokenBalance')
+  }, 1000)
 })
 
 // 生命周期钩子
@@ -1148,6 +1179,8 @@ onMounted(() => {
     --el-input-border-color: transparent;
     --el-input-focus-border-color: transparent;
     --el-input-hover-border-color: transparent;
+    font-size: 18px;
+    font-weight: 500;
     :deep() .el-input-group__append, .el-input-group__prepend {
       padding: 0 10px;
     }
@@ -1166,8 +1199,9 @@ onMounted(() => {
     border-radius: 6px;
     margin-top: 20px;
     width: 100%;
-    --el-button-text-color: var(--d-F5F5F5-l-333) !important;
-    --el-button-hover-text-color: var(--d-F5F5F5-l-333) !important;
+    // --el-button-text-color: var(--d-F5F5F5-l-333) !important;
+    // --el-button-hover-text-color: var(--d-F5F5F5-l-333) !important;
+    --el-color-black: #F5F5F5;
   }
 
   .slippage-container {

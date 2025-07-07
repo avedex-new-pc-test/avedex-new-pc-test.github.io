@@ -1,4 +1,5 @@
 // src/middleware/router.global.ts
+const redirectToOldUrls = ['/address']
 export default defineNuxtRouteMiddleware((to) => {
   // console.log('to', from, to)
   if (to.fullPath?.includes('/login')) {
@@ -11,7 +12,27 @@ export default defineNuxtRouteMiddleware((to) => {
       return navigateTo(redirectUrl, { replace: true })
     }
   }
+  const needRedirectToOld = redirectToOldUrls.find((url) => to.fullPath.includes(url))
+  if(needRedirectToOld){
+    let query = ''
+    const botStore = useBotStore()
+    if (botStore.accessToken &&  botStore.refreshToken) {
+      query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+    }
+    navigateTo('https://ave.ai'+to.path + query,{
+      open:{
+        target:'_blank'
+      }
+    })
+    return abortNavigation()
+  }
   if (!to.fullPath?.includes('/token')) {
     useHead({ title: 'Ave.ai' })
+  } else if (to.fullPath?.includes(NATIVE_TOKEN)) {
+    const {chain} = getAddressAndChainFromId(to.params.id as string)
+    const mainUrl = getChainInfo(chain)?.wmain_wrapper
+    if (mainUrl) {
+      return navigateTo(`/token/${mainUrl}-${chain}`, {replace: true})
+    }
   }
 })

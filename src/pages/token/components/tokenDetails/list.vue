@@ -14,7 +14,8 @@ const props = defineProps({
   tableList: {
     type: Array<GetTokenDetailsListResponse>,
     default: () => []
-  }
+  },
+  loading:Boolean
 })
 const isShowDate = ref(false)
 const isVolUSDT = ref(true)
@@ -54,7 +55,7 @@ function handleCheckedChange(val: any[]) {
   isIndeterminate.value = checkedCount > 0 && checkedCount < list.value.length
 }
 
-function filterType(type) {
+function filterType(type: 'swap_buy' | 'swap_sell' | 'AUTHORITY' | 'ADD_LIQUIDITY' | 'NEW_COIN' | 'MINT' | 'FREEZE' | 'transfer_in' | 'transfer_out' | 'BURN' | 'NEW_PAIR') {
   const o = {
     swap_buy: {
       name: t('swap_buy'),
@@ -115,12 +116,16 @@ function filterType(type) {
   }
   return o[type]
 }
+
+function tableRowClick(row: GetTokenDetailsListResponse) {
+  window.open(formatExplorerUrl(row.chain, row.tx_hash, 'tx'))
+}
 </script>
 
 <template>
-  <div>
+  <div class="min-h-400px">
     <div
-      class="flex justify-between items-center py-8px text-10px border-b-0.5px border-b-solid border-b-[--d-333-l-F2F2F2]"
+      class="flex justify-between items-center py-8px text-12px border-b-0.5px border-b-solid border-b-[--d-333-l-F2F2F2] color-[--d-666-l-999] h-32px"
     >
       <div class="flex items-center flex-[2] gap-3px">
         <span>{{ $t('time') }}</span>
@@ -178,8 +183,8 @@ function filterType(type) {
       <div class="flex items-center flex-[2] justify-end gap-3px">
         <span>{{ $t('swapPrice') }}</span>
         <Icon
-          :name="`${isVolUSDT?'custom:u':'custom:b'}`"
-          class="color-[--d-666-l-999] cursor-pointer"
+          name="custom:price"
+          :class="`${isVolUSDT?'color-[--d-F5F5F5-l-222]' : 'color-#666'} cursor-pointer`"
           @click.self="isVolUSDT=!isVolUSDT"
         />
       </div>
@@ -187,7 +192,9 @@ function filterType(type) {
     </div>
     <div
       v-for="(row, $index) in tableList" :key="$index"
-      class="text-13px flex h-42px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2]">
+      class="text-13px flex h-40px items-center border-b-solid border-b-0.5px border-b-[--d-333-l-F2F2F2] hover:bg-[var(--d-222-l-F2F2F2)] cursor-pointer"
+      @click="tableRowClick(row)"
+    >
       <div class="flex items-center flex-[2]">
         <TimerCount
           v-if="!isShowDate && row.block_time && Number(formatTimeFromNow(row.block_time,true)) < 60"
@@ -246,13 +253,17 @@ function filterType(type) {
             ${{ formatNumber(row.token_price_u || 0, 2) }}
           </template>
           <template v-else>
-            ${{ formatNumber(Number(row.token_price_u) / Number(row.main_token_price) || 0, 2) }}
+            {{ formatNumber(Number(row.token_price_u) / Number(row.main_token_price) || 0, 2) }}
             <span class="color-[--d-666-l-999]">{{ row.main_token_symbol }}</span>
           </template>
         </div>
       </div>
       <!--<div class="flex items-center w-50px text-right"/>-->
     </div>
+    <AveEmpty
+      class="pt-50px"
+      v-if="!loading && tableList.length === 0"
+    />
   </div>
 </template>
 

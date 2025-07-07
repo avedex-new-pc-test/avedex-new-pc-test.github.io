@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const {isDark} = useThemeStore()
+const {isDark} = storeToRefs(useThemeStore())
 const props = defineProps({
   visible: Boolean,
   modelValue: {
@@ -25,14 +25,14 @@ const filterTime = ref([])
     placement="bottom"
     :width="420"
     trigger="click"
-    :teleported="false"
-    popper-style="max-width: 420px"
+    teleported
+    popper-style="max-width: 420px;--el-text-color-primary:--d-666-l-999"
     popper-class="transaction-popover"
   >
     <template #reference>
       <Icon
         name="custom:filter"
-        :class="`${modelValue.length?'color-[--d-F5F5F5-l-222]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
+        :class="`${modelValue.length?'color-[--d-999-l-666]':'color-[--d-666-l-999]'} cursor-pointer text-10px`"
       />
     </template>
     <template #default>
@@ -65,8 +65,8 @@ const filterTime = ref([])
           {{ $t('reset') }}
         </el-button>
         <el-button
+          type="primary"
           class="h-30px flex-1 m-l-auto"
-          :color="isDark ? '#F5F5F5':'#222'"
           @click="emit('confirm',filterTime.slice())"
         >
           {{ $t('confirm') }}

@@ -1,5 +1,6 @@
 :root {
   --primary-color: #3F80F7;
+  --color-red-500: #F6465D;
   &.dark {
     // 规范：颜色相同省略为 3 位，所有都用大写
     --d-333-l-ECECEC: #333;
@@ -7,7 +8,7 @@
     --d-111-l-FFF: #111;
     --d-222-l-F2F2F2: #222;
     --d-666-l-999: #666;
-    --d-F5F5F5-l-333: #f5f5f5;
+    --d-F5F5F5-l-333: #F5F5F5;
     --d-999-l-666: #999;
     --d-333-l-DDD: #333;
     --d-000-l-F6F6F6: #000;
@@ -29,16 +30,39 @@
     --d-F5F5F5-l-222: #F5F5F5;
     --d-0A0B0C-l-F5F5F5: #0A0B0C;
     --d-17191C-l-F2F2F2: #17191C;
-    --d-1f242a-l-F5f5f5: #1F242A;
+    --d-1F242A-l-F5F5F5: #1F242A;
     --d-282e35-l-e5e5e5: #282E35;
     --d-15171C-l-F6F6F6: #15171c;
     --d-FFF-l-000:#FFF;
+    --d-FFF-l-F5F5F5: #FFF;
     --d-33353D-l-F5F5F5:#33353D;
     --d-999-l-959A9F:#999;
     --d-999-l-959A9F: #999;
     --d-666-l-696E7C: #666;
     --d-33353D-l-f5f5f5: #33353D;
     --d-111-l-FFF: #111;
+    --d-2A2A2A-l-F2F2F2: #2A2A2A;
+    --d-FFFFFF0D-l-F2F2F2: #FFFFFF0D;
+    --d-0C111C-l-E9F0FF: #0C111C;
+    --d-0A1514-l-E7F8F3: #0A1514;
+    --d-180F12-l-FEECEF: #180F12;
+    --d-333333-l-eaecef: #333333;
+    --d-eaecef-l-333333: #eaecef;
+    --d-666-l-CCC:#666;
+    --d-2D3037-l-999: #2D3037;
+    --d-696E7C-l-fff: #696E7C;
+    --d-222222-l-f5f5f5: #222;
+    --d-222-l-f5f5f5: #222;
+    --d-0a0b0d-l-fff: #0a0b0d;
+    --d-333-l-666:#333;
+    --d-F5F5F5-l-FFF:#F5F5F5;
+    --d-666-l-333:#666;
+    --d-1A1A1A-l-F2F2F2:#1A1A1A;
+    --d-FFF-l-333: #FFF;
+    --d-1A1A1A-l-FFF: #1A1A1A;
+    --d-1A1A1A-l-F2F2F2: #1A1A1A;
+    --d-FFFFFF14-l-00000014: #FFFFFF14;
+    --d-333-l-CCC: #333;
   }
 
   &.light {
@@ -52,7 +76,7 @@
     --d-666-l-999: #999;
     --d-F5F5F5-l-333: #333;
     --d-999-l-666: #666;
-    --d-333-l-DDD: #ddd;
+    --d-333-l-DDD: #DDD;
     --d-000-l-F6F6F6: #f6f6f6;
     --d-151517-l-F6F6F6: #f6f6f6;
     --d-333-l-DDD: #DDD;
@@ -74,7 +98,7 @@
     --d-BCBED2-l-222: #222;
     --d-0A0B0C-l-F5F5F5: #F5F5F5;
     --d-17191C-l-F2F2F2: #F2F2F2;
-    --d-1f242a-l-F5f5f5: #F5F5F5;
+    --d-1F242A-l-F5F5F5: #F5F5F5;
     --d-282e35-l-e5e5e5: #E5E5E5;
     --d-111-l-FFF: #fff;
     --d-15171C-l-F6F6F6: #F6F6F6;
@@ -85,6 +109,28 @@
     --d-999-l-959A9F: #959A9F;
     --d-666-l-696E7C: #696E7C;
     --d-33353D-l-f5f5f5: #F5F5F5;
+    --d-2A2A2A-l-F2F2F2: #F2F2F2;
+    --d-FFFFFF0D-l-F2F2F2: #F2F2F2;
+    --d-0C111C-l-E9F0FF: #E9F0FF;
+    --d-0A1514-l-E7F8F3: #E7F8F3;
+    --d-180F12-l-FEECEF: #FEECEF;
+    --d-333333-l-eaecef: #eaecef;
+    --d-eaecef-l-333333: #333333;
+    --d-666-l-CCC:#CCC;
+    --d-2D3037-l-999: #999;
+    --d-696E7C-l-fff: #FFF;
+    --d-222222-l-f5f5f5: #F5F5F5;
+    --d-222-l-f5f5f5: #F5F5F5;
+    --d-0a0b0d-l-fff: #fff;
+    --d-333-l-666:#666;
+    --d-F5F5F5-l-FFF:#FFF;
+    --d-666-l-333:#333;
+    --d-1A1A1A-l-F2F2F2:#F2F2F2;
+    --d-FFF-l-333: #333;
+    --d-1A1A1A-l-FFF: #FFF;
+    --d-1A1A1A-l-F2F2F2: #F2F2F2;
+    --d-FFFFFF14-l-00000014: #00000014;
+    --d-333-l-CCC: #CCC;
   }
 }
 

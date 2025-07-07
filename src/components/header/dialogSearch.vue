@@ -1,39 +1,45 @@
 <template>
   <el-dialog
     v-model="visible"
-    width="860"
-    height="600"
+    width="780"
+    height="590"
     :show-close="false"
     class="search-dialog"
     header-class="p-0!"
+    @opened="openDialog"
 
   >
     <el-input
+      ref="inputSearch"
       v-model.trim="query"
-      class="search-input"
+      class="search-input px-20px "
       :placeholder="$t('enterAddress/token')"
       clearable
+      autofocus
       @keydown.enter="tokenSearch"
     >
       <template #prefix>
         <Icon
           class="text-20px text-[var(--d-666-l-999)]"
-          name="material-symbols:search-rounded"
+          name="ep:search"
         />
+      </template>
+      <template #suffix>
+        <Icon v-if="query" name="pajamas:clear" class="color-[--d-666-l-999] text-12px hover:opacity-70% cursor-pointer" @click="query=''"/>
       </template>
     </el-input>
 
     <div
       v-if="query === '' && historyList?.length > 0"
-      class="search-history-container mt-24px"
+      class="search-history-container mt-24px px-20px"
     >
       <div class="header-title flex items-center justify-between">
         <span class="color-[--d-666-l-999] text-12px">{{
           $t('searchHistory')
         }}</span>
         <Icon
-          class="text-12px text-[--d-666-l-999] cursor-pointer"
-          name="tabler:trash"
+          class="text-14px text-[--d-666-l-999] cursor-pointer"
+          name="ic:baseline-delete"
           @click.stop="confirm"
         />
       </div>
@@ -48,11 +54,11 @@
         </button>
       </div>
     </div>
-    <div class="tabs mt-20px">
+    <div class="tabs mt-20px px-20px">
       <button
         v-for="item in tabs"
         :key="item.id"
-        class="tab-button clickable-btn"
+        class="tab-button clickable-btn px-0 mr-24px"
         :class="{ active: tabActive === item.id }"
         @click="tabActive = item.id"
       >
@@ -61,20 +67,20 @@
     </div>
     <div class="search-content">
       <template v-if="query === ''">
-        <searchTable
+        <SearchTable
           v-if="tabActive === 'token'"
-          :tokens="hotStore.hotList?.slice?.(0, 200) || []"
+          :tokens="hotTokenList.slice(0, 200) || []"
           :loading="loading"
           @close="visible = false"
         />
-        <walletTable v-else :tokens="smartTop10List || []" :loading="loading" />
+        <WalletTable v-else :tokens="smartTop10List || []" :loading="loading" />
       </template>
-      <walletTable
+      <WalletTable
         v-else-if="tabActive === 'wallet'"
         :tokens="searchResult?.wallet_list || []"
         :loading="loading"
       />
-      <searchTable
+      <SearchTable
         v-else
         :tokens="searchResult?.token_list?.slice?.(0, 200) || []"
         :loading="loading"
@@ -88,15 +94,16 @@
 import SearchTable from './searchTable.vue'
 import WalletTable from './walletTable.vue'
 import { _getSmartTop10, _tokenSearchV3 } from '@/api/hot'
-import type { SearchWalletInfo, SearchInfo } from '@/api/types/search'
+import type {SearchWalletInfo, SearchInfo } from '@/api/types/search'
 import { useDebounceFn, useLocalStorage } from '@vueuse/core'
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, type ElInput } from 'element-plus'
+import { ProvideType } from '~/utils/constants'
+import type{ GetHotTokensResponse } from '@/api/token'
 const { modelValue } = defineProps({
   modelValue: Boolean,
 })
 const $emit = defineEmits(['update:modelValue'])
 const i18n = useI18n()
-const hotStore = useHotStore()
 const themeStore = useThemeStore()
 const visible = computed({
   get() {
@@ -107,14 +114,24 @@ const visible = computed({
   },
 })
 const tabActive = shallowRef('token')
+const inputSearch = useTemplateRef<HTMLElement | null>('inputSearch')
 const tabs = computed(() => {
   return [
     { id: 'token', name: i18n.t('popularSearches') },
     { id: 'wallet', name: i18n.t('wallet') },
   ]
 })
+const hotTokens = inject<{
+  value: Ref<GetHotTokensResponse[]>;
+  setVal: (val: GetHotTokensResponse[]) => void
+}>(ProvideType.HOT_TOKENS)
+const hotTokenList = computed(() => {
+  if (hotTokens) {
+    return hotTokens.value.value
+  }
+  return []
+})
 onMounted(() => {
-  useHotStore().getHot()
   getSmartTop10()
 })
 
@@ -136,6 +153,8 @@ function getSmartTop10() {
 const query = shallowRef('')
 const searchResult = shallowRef<SearchInfo | null>(null)
 function tokenSearch() {
+  if(!query.value)
+  return
   const data = {
     query: query.value,
     self_address: botStore.evmAddress ? botStore.evmAddress : undefined,
@@ -150,6 +169,12 @@ function tokenSearch() {
           return {
             ...i,
             id: i.token + '-' + i.chain,
+          }
+        }),
+        wallet_list:  res?.wallet_list?.map?.((i) => {
+          return {
+            ...i,
+            total_profit_rate: i.total_profit_ratio || 0
           }
         }),
       }
@@ -187,6 +212,14 @@ watch(query, (newval) => {
   }
 })
 
+watch(visible, (val) => {
+  if (val) {
+    query.value = ''
+  }
+})
+function openDialog() {
+  inputSearch.value?.focus()
+}
 function formatLength(item: string) {
   if (item.length <= 10) {
     return item

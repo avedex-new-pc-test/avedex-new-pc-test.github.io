@@ -17,7 +17,7 @@ export interface OwnerTxs {
   method_code?: string
   timestamp?: number
   params?: Array<{
-    name?: string
+    name: string
     type?: string
     value?: any
     is_trader_addr?: any
@@ -134,6 +134,19 @@ interface ContractData {
     is_lp?: string | number
     is_contract?: string | number | null
   }>
+  buy_max_amount_per_tx?: string | number
+  sell_max_amount_per_tx?: string | number
+  tm_max_hold_amount_per_wallet?: string | number
+  tm_bonus_token_name?: string
+  tm_bonus_token_for_lp_holders?: string
+  market_wallet?: string
+  team_wallet?: string
+  tm_kill_block_after_open?: string | number
+  tm_start_trade_at_block?: string | number
+  mechanism_intro?: string
+  tm_bonus_token_for_holders?: string
+  tm_bonus_token_name_for_lp?: string
+  creator_address?: string
 }
 interface TokenContract {
   chain?: string
@@ -199,5 +212,33 @@ export function _getVote(token_id: string, user_address?: string) {
       token_id: token_id,
       user_address: user_address,
     },
+  })
+}
+
+// getLPHolders
+export function getLPHolders(tokenId: string): Promise<Array<{
+  address: string
+  quantity: string
+  mark: string
+  lock: null | Array<{
+    id: number
+    token: string
+    owner: string
+    amount: number
+    lockDate: number
+    unlockDate: number
+    vesting_end?: number
+  }>
+  percent: string
+  analysis_show_creator?: string
+  analysis_show_warning?: string
+  is_contract?: number
+}>> {
+  const { $api } = useNuxtApp()
+  return $api('/v1api/v2/tokens/lp_holders', {
+    method: 'get',
+    query: {
+      token_id: tokenId,
+    }
   })
 }

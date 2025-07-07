@@ -1,5 +1,6 @@
 <template>
   <div class="bot-swap-container">
+    <Holding />
     <div class="tabs">
       <button v-for="(item, index) in tabs" :key="index" class="tab-item" :class="{ active: item.value === activeTab, [`tab-${item.value}`]: true }" type="button" @click="activeTab = item.value">
         <span>{{ item.name }}</span>
@@ -25,6 +26,7 @@ import SlippageSet from './slippageSet.vue'
 import Swap from './swap.vue'
 import Bignumber from 'bignumber.js'
 import { useBotSwap } from '~/composables/botSwap'
+import Holding from './holding.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -82,28 +84,12 @@ function onSelectBotSwapSet(item: string) {
   }
 }
 
-function onSubmitBotSwapSet(setting: typeof botSettingStore.botSettings) {
-  if (setting?.setting) {
-    if (chain.value === 'solana') {
-      botSettingStore.botSettings = {
-        ...botSettingStore.botSettings,
-        solana: {...setting.setting}
-      }
-    } else {
-      botSettingStore.botSettings = {
-        ...botSettingStore.botSettings,
-        [chain.value]: {...setting.setting}
-      }
-    }
-  }
-}
-
 const walletAddress = computed(() => {
   const chain = getAddressAndChainFromId(route.params?.id as string)?.chain || tokenStore.token?.chain
   return botStore.userInfo?.addresses?.find?.(i => i?.chain === chain)?.address
 })
 
-watch(walletAddress, (val) => {
+watch([walletAddress, () => route.params?.id], (val) => {
   if (!val) return
   getTokenBalance()
 })
@@ -128,10 +114,10 @@ watch(() => route.params?.id as string, (val) => {
 })
 
 
-
 onMounted(() => {
   getTokenBalance()
   initToken()
+  // getWalletTxData()
 })
 
 

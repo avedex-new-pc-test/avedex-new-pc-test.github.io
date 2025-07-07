@@ -41,8 +41,8 @@ const emit = defineEmits<{
 const isCountdown = ref(false)
 const countdownTargetMs = ref(0)
 
-const now = Date.now()
-const currentTimeMs = () => Date.now()
+const now = Math.floor(Date.now() / 1000) * 1000
+const currentTimeMs = () => Math.floor(Date.now() / 1000) * 1000
 
 // 如果 timestamp 存在并且是将来的时间，则进入倒计时
 if (props.timestamp !== undefined && props.timestamp * 1000 > now) {

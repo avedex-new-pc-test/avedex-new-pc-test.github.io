@@ -1,11 +1,40 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
+  <el-alert
+    v-if="(tokenStore?.token?.risk_level ?? 0) < 0"
+    class="myTxs-notice"
+    type="warning"
+    :title="$t('riskWarning') + ': ' + $t('riskWarningContent1')"
+    show-icon
+    :style="{
+      backgroundColor: mode === 'light' ? '#ffa94d0d' : '#36131C',
+      color: '#f00',
+      border: 'none',
+      fontSize: '12px'
+    }"
+    :closable="false"
+  />
+  <el-alert
+    v-else-if="tokenStore.warningStatus"
+    class="myTxs-notice"
+    type="warning"
+    :title="t('alertNotice')"
+    show-icon
+    closable
+    :style="{
+      backgroundColor: mode === 'light' ? '#ffa94d0d' : '#3b1e0c',
+      color: '#ED6A0C',
+      border: 'none',
+      fontSize: '12px'
+    }"
+    @close="handleNoticeClose"
+  />
   <div
-    class="info flex items-center bg-[--d-111-l-FFF] mb-4px h-64px p-x-16px text-12px font-500 color-[--d-666-l-999]"
+    class="info flex items-center bg-[--d-111-l-FFF] mb-1px h-64px p-x-16px text-12px color-[--d-666-l-999]"
   >
     <Icon
       name="material-symbols:kid-star"
-      class="color-#696E7C h-16px w-16px clickable"
+      class="color-var(--d-999-l-666) h-16px w-16px clickable"
       :class="collected ? 'color-#ffbb19' : ''"
       @click="collect"
     />
@@ -23,20 +52,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            >
+            />
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        >
+        />
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -44,77 +73,106 @@
             class="text-16px leading-[1.25] color-[--d-F5F5F5-l-333] font-500"
             >{{ token?.symbol }}</span
           >
-          <span class="ml-8px text-12px font-500">{{ token?.name }}</span>
-          <div v-if="medias?.length > 0" class="ml-46px flex">
-            <div v-for="(item, index) in medias" :key="index" class="tag-btn">
-              <template v-if="item.url">
+          <span class="ml-8px text-12px font-500 mr-8px">{{
+            token?.name
+          }}</span>
+          <div class="flex items-center justify-start">
+            <img v-if="(token?.risk_level??0) < 0" class="bg-btn" src="@/assets/images/fengxian.png" :width="12">
+            <template v-if="pair && getTags(pair)?.normal_tag?.length > 0">
+              <div
+                v-for="(i, index) in getTags(pair)?.normal_tag"
+                :key="index"
+                class="bg-btn flex h-16px tag-btn"
+              >
+                <el-image
+                  v-tooltip="$t(`${i.tag}`)"
+                  class="token-icon-tag cursor-pointer h-100%"
+                  :src="formatIconTag(i.tag)"
+                  lazy
+                >
+                  <template #error>
+                    <img
+                      class="token-icon-tag h-16px"
+                      src="/icon-default.png"
+                    />
+                  </template>
+                  <template #placeholder>
+                    <img
+                      class="token-icon-tag h-16px"
+                      src="/icon-default.png"
+                    />
+                  </template>
+                </el-image>
                 <span
-                  v-if="item.name === 'QQ'"
-                  v-tooltip="item.url"
-                  class="bg-btn"
+                  v-if="i?.showText"
+                  :style="{
+                    color: i?.color == 'green' ? upColor[0] : downColor[0],
+                  }"
+                  class="text-10px mr-4px"
                 >
-                  <Icon
-                    :name="`custom:${item.icon}`"
-                    class="text-[--d-666-l-999] h-16px w-16px"
-                  />
+                  {{ $t(i?.tag) }}
                 </span>
-                <a
-                  v-else
-                  v-tooltip="item.url"
-                  :href="item.url"
-                  target="_blank"
-                  class="bg-btn"
-                  @click.stop
-                >
-                  <Icon
-                    :name="`custom:${item.icon}`"
-                    class="text-[--d-666-l-999] h-16px w-16px"
-                  />
-                </a>
-              </template>
+              </div>
+            </template>
+            <div v-if="medias?.length > 0" class="flex text-10px">
+              <div v-for="(item, index) in medias" :key="index" class="tag-btn">
+                <template v-if="item.url">
+                  <span
+                    v-if="item.name === 'QQ'"
+                    v-tooltip="item.url"
+                    class="bg-btn"
+                  >
+                    <Icon
+                      :name="`custom:${item.icon}`"
+                      class="text-[--d-666-l-999] h-10px"
+                    />
+                  </span>
+                  <a
+                    v-else
+                    v-tooltip="item.url"
+                    :href="item.url"
+                    target="_blank"
+                    class="bg-btn"
+                    @click.stop
+                  >
+                    <Icon
+                      :name="`custom:${item.icon}`"
+                      class="text-[--d-666-l-999] h-10px"
+                    />
+                  </a>
+                </template>
+              </div>
             </div>
-          </div>
-          <a
-            class="media-item bg-btn"
-            :href="`https://x.com/search?q=($${token?.symbol} OR ${token?.token})&src=typed_query&f=live`"
-            target="_blank"
-          >
-            <Icon
-              class="text-[--d-666-l-999] h-16px w-16px"
-              name="material-symbols:search-rounded"
-            />
-          </a>
-          <template v-if="getTags(pair)?.normal_tag?.length > 0">
-            <div
-              v-for="(i, index) in getTags(pair)?.normal_tag"
-              :key="index"
-              class="bg-btn flex h-16px"
+            <img
+              v-if="token?.launchpad"
+              v-tooltip="token.launchpad"
+              class="bg-btn cursor-pointer"
+              :src="formatIconTag(token.launchpad)"
+              alt=""
+              :width="10"
             >
-              <el-image
-                v-tooltip="$t(`${i.tag}`)"
-                class="token-icon-tag cursor-pointer h-100%"
-                :src="formatIconTag(i.tag)"
-                lazy
-              >
-                <template #error>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
-                </template>
-                <template #placeholder>
-                  <img class="token-icon-tag h-16px" src="/icon-default.png" >
-                </template>
-              </el-image>
-              <span
-                v-if="i?.showText"
-                :style="{
-                  color: i?.color == 'green' ? upColor[0] : downColor[0],
-                }"
-                class="text-10px ml-4px"
-              >
-                {{ $t(i?.tag) }}
-              </span>
-            </div>
-          </template>
-
+            <a
+              class="media-item bg-btn"
+              :href="`https://x.com/search?q=($${token?.symbol} OR ${token?.token})&src=typed_query&f=live`"
+              target="_blank"
+            >
+              <Icon
+                class="text-[--d-666-l-999] h-16px w-10px"
+                name="ep:search"
+              />
+            </a>
+            <a
+              v-if="aiSummary?.headline || aiSummary?.summary"
+              v-tooltip.raw="{
+                content: `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>`,
+                props:{
+                  placement:'top-start'
+                }
+              }"
+              class="media-item bg-btn clickable">
+              <Icon name="custom:ai" class="text-14px"/>
+            </a>
+          </div>
           <el-popover
             v-if="collected"
             v-model:visible="editableGroup"
@@ -242,7 +300,7 @@
                       min-width: 70px;
                       --el-button-font-weight: 400;
                     "
-                    @click.stop="confirmEditRemark(remark2, id)"
+                    @click.stop="confirmEditRemark(id, remark2)"
                   >
                     {{ $t('confirm') }}
                   </el-button>
@@ -251,10 +309,10 @@
             </template>
           </el-popover>
         </div>
-        <div class="clickable text-12px font-500 flex items-center">
+        <div class="text-12px font-500 flex items-center mt-4px">
           <a
             v-if="token?.token !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'"
-            class="hover:color-[--d-F5F5F5-l-333]"
+            class="hover:color-[--d-F5F5F5-l-333] leading-12px font-500"
             :href="formatExplorerUrl(token?.chain as string, token?.token as string)"
             target="_blank"
           >
@@ -262,14 +320,38 @@
               token?.token?.replace(new RegExp('(.{4})(.+)(.{4}$)'), '$1...$3')
             }}
           </a>
-          <Icon v-copy="token?.token" name="bxs:copy" class="ml-5px" />
+          <Icon
+            v-copy="token?.token"
+            name="bxs:copy"
+            class="ml-5px clickable"
+          />
           <span
             v-if="pair"
             v-tooltip="formatDate(pair?.created_at)"
-            class="ml-5px hover:color-[--d-F5F5F5-l-333]"
+            class="ml-5px hover:color-[--d-F5F5F5-l-333] leading-12px font-400 mr-8px"
             >{{ dayjs(pair?.created_at * 1000).fromNow() }}</span
           >
-          <template v-if="getTags(pair)?.signal_arr?.length > 0">
+          <div
+            v-if="(tokenInfoExtra?.buy_tax??0) > 0 || (tokenInfoExtra?.sell_tax??0) > 0"
+            class="flex-start bg-btn"
+          >
+            <span>{{ $t('tax') }}:</span>
+            <span
+            v-if="(tokenInfoExtra?.buy_tax??0) > 0"
+              class="text-12px tax-text"
+              :style="{ color: upColor[0] }"
+            >
+              {{ formatNumber(tokenInfoExtra?.buy_tax ||0, 1) }}%
+            </span>
+            <span
+              v-if="(tokenInfoExtra?.sell_tax??0) > 0"
+              class="text-12px tax-text ml-4px"
+              :style="{ color: downColor[0] }"
+            >
+              {{ formatNumber(tokenInfoExtra?.sell_tax ||0, 1) }}%
+            </span>
+          </div>
+          <template v-if="pair && getTags(pair)?.signal_arr?.length > 0">
             <div
               v-for="(i, index) in getTags(pair)?.signal_arr?.slice(0, 3)"
               :key="index"
@@ -279,10 +361,10 @@
                   ? `（${$t('amountU')}>$10)`
                   : '')
               "
-              class="flex bg-btn signal pointer ml-4px"
+              class="flex bg-btn signal pointer mr-4px text-10px"
             >
               <el-image
-                class="token-icon-signal-tag h-16px"
+                class="token-icon-signal-tag h-10px"
                 :src="formatIconTag(i.tag)"
                 lazy
               >
@@ -302,34 +384,38 @@
               <div
                 v-if="
                   (i?.tag == 'smarter_buy' || i?.tag == 'smarter_sell') &&
-                  (pair?.smart_money_buy_count_24h > 0 ||
-                    pair?.smart_money_sell_count_24h > 0)
+                  ((pair?.smart_money_buy_count_24h ?? 0) > 0 ||
+                    (pair?.smart_money_sell_count_24h ?? 0 > 0))
                 "
-                class="ml-2"
+                class="ml-2px"
                 style="color: #959a9f"
               >
                 <span
                   :style="{
-                    color: pair?.smart_money_buy_count_24h > 0 ? upColor : '',
+                    color:
+                      (pair?.smart_money_buy_count_24h ?? 0) > 0
+                        ? upColor[0]
+                        : '',
                   }"
                 >
-                  {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
-                </span>
-                /
-                <span
+                  {{
+                    formatNumber(pair?.smart_money_buy_count_24h || 0, 0)
+                  }} </span
+                >/<span
                   :style="{
                     color:
-                      pair?.smart_money_sell_count_24h > 0 ? downColor : '',
+                      (pair?.smart_money_sell_count_24h ?? 0) > 0
+                        ? downColor[0]
+                        : '',
                   }"
                 >
                   {{ formatNumber(pair?.smart_money_sell_count_24h || 0, 0) }}
                 </span>
               </div>
-
               <span
-                class="ml-2"
+                class="ml-2px"
                 :style="{
-                  color: i.color == 'green' ? upColor : downColor,
+                  color: i.color == 'green' ? upColor[0] : downColor[0],
                 }"
               >
                 <template v-if="i.tag">
@@ -350,22 +436,24 @@
           </template>
           <div
             v-if="
+              pair &&
               getTags(pair)?.signal_arr?.findIndex(
-                (i) => i.tag == 'smarter_buy'
+                (i) => i?.tag === 'smarter_buy'
               ) == -1 &&
               getTags(pair)?.signal_arr?.findIndex(
-                (i) => i.tag == 'smarter_sell'
+                (i) => i?.tag == 'smarter_sell'
               ) == -1 &&
-              (pair?.smart_money_buy_count_24h > 0 ||
-                pair?.smart_money_sell_count_24h)
+              ((pair?.smart_money_buy_count_24h ?? 0) > 0 ||
+                (pair?.smart_money_sell_count_24h ?? 0) > 0)
             "
             v-tooltip="
               getTagTooltip({
-                smart_money_buy_count_24h: pair?.smart_money_buy_count_24h,
-                smart_money_sell_count_24h: pair?.smart_money_sell_count_24h,
+                smart_money_buy_count_24h: pair?.smart_money_buy_count_24h || 0,
+                smart_money_sell_count_24h:
+                  pair?.smart_money_sell_count_24h || 0,
               })
             "
-            class="minor flex-end color-text-2 tag-btn signal cursor-pointer ml-4px"
+            class="minor flex-end color-text-2 tag-btn signal cursor-pointer mr-4px bg-btn"
           >
             <Icon
               class="text-[--d-666-l-999] h-12px w-12px mr-2px"
@@ -375,19 +463,17 @@
             <span
               :style="{
                 color:
-                  pair?.smart_money_buy_count_24h > 0
-                    ? upColor
+                  (pair?.smart_money_buy_count_24h ?? 0) > 0
+                    ? upColor[0]
                     : 'var(--custom-text-3-color)',
               }"
             >
-              {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }}
-            </span>
-            /
-            <span
+              {{ formatNumber(pair?.smart_money_buy_count_24h || 0, 0) }} </span
+            >/<span
               :style="{
                 color:
-                  pair?.smart_money_sell_count_24h > 0
-                    ? downColor
+                  (pair?.smart_money_sell_count_24h ?? 0) > 0
+                    ? downColor[0]
                     : 'var(--custom-text-3-color)',
               }"
             >
@@ -401,10 +487,10 @@
 
     <div class="flex-1" />
     <div
-      v-if="pair?.progress || (0 > 0 && pair?.progress) || 0 < 100"
+      v-if="(pair?.progress ?? 0) > 0 && (pair?.progress ?? 0) < 100"
       class="item"
     >
-      <div class="flex items-center">
+      <div class="flex items-center min-w-90px justify-between">
         <span>{{ $t('progress') }}</span
         ><span class="ml-5px">{{ formatNumber(pair?.progress || 0, 2) }}%</span>
         <Icon
@@ -415,13 +501,17 @@
         />
         <a
           v-else
-          v-tooltip="pair?.amm"
+          v-tooltip="
+            getSwapInfo(pair?.chain || '', pair?.amm || '')?.show_name ||
+            pair?.amm ||
+            ''
+          "
           :href="pair?.swap_url || '' + pair?.target_token || ''"
           target="_blank"
           class="ml-5px"
         >
           <img
-            class="rounded-50% h-16px w-16px"
+            class="rd-50% h-16px w-16px"
             :src="formatIconSwap(pair?.amm)"
             onerror="this.src='/icon-default.png'"
             height="16"
@@ -434,51 +524,70 @@
         :stroke-width="4"
         color="#1CC982"
         :show-text="false"
-        style="width: 70px"
+        style="width: 90px"
       />
     </div>
-    <div class="item ml-24px">
+    <div class="item ml-24px items-end!">
       <span class="text-20px color-[--d-F5F5F5-l-333]">
-        ${{ formatNumber(price || 0) }}</span
+        ${{ formatNumber(price || 0, { decimals: 4, limit: 6 }) }}</span
       >
       <span
         class="block mt-4px"
-        :class="priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`"
-        >{{ priceChange > 0 ? '+' : '' }}{{ formatNumber(priceChange, 2) }}%</span
+        :class="
+          priceChange > 0 ? `color-${upColor[0]}` : `color-${downColor[0]}`
+        "
+        >{{ priceChange > 0 ? '+' : ''
+        }}{{ formatNumber(priceChange, 2) }}%</span
       >
     </div>
 
     <div class="item ml-24px">
       <span>{{ $t('mcap') }}</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{
-        formatNumber(marketCap, 2)
-      }}</span>
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]"
+        >${{ formatNumber(marketCap, 2) }}</span
+      >
     </div>
     <div class="item ml-24px">
       <span>{{ $t('24Volume') }}</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{
-        formatNumber(volume24, 2)
-      }}</span>
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]"
+        >${{ formatNumber(volume24, 2) }}</span
+      >
     </div>
     <div class="item ml-24px">
       <span>{{ $t('holders') }}</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">{{
-        formatNumber(token?.holders || 0, 2)
+      <span class="block mt-8px color-[--d-F5F5F5-l-333]">{{
+        formatNumber(token?.holders || 0, { limit: 10 })
       }}</span>
     </div>
     <div class="item ml-24px">
       <span>DEV</span>
-      <span class="block mt-4px color-[--d-F5F5F5-l-333]">--</span>
+      <span
+        class="block mt-8px color-[--d-F5F5F5-l-333]"
+        :style="{
+          color:
+            Number(token?.dev_balance_ratio_cur || 0) * 100 < 0.1
+              ? 'var(--d-666-l-999)'
+              : (token?.dev_balance_ratio_cur ?? 0) * 100 > 10
+              ? '#FFA622'
+              : '',
+        }"
+        >{{
+          (token?.dev_balance_ratio_cur ?? 0) > 0 &&
+          (token?.dev_balance_ratio_cur ?? 0) * 100 < 0.1
+            ? '<0.1'
+            : formatNumber((token?.dev_balance_ratio_cur ?? 0) * 100, 2)
+        }}%</span
+      >
     </div>
-    <div class="item ml-24px">
-      <span class="cursor-pointer" @click="showCheck = !showCheck">
+    <div class="item ml-24px cursor-pointer" @click="showCheck = !showCheck">
+      <span class="flex-start">
         {{ $t('audit1') }}
         <Icon
           name="material-symbols:arrow-forward-ios-rounded"
           class="text-12px"
         />
       </span>
-      <div class="color-text-1 mt-5px font-500 text-14px flex-start">
+      <div class="color-text-1 mt-8px font-500 text-14px flex-start">
         <img
           v-if="
             token?.risk_level == -1 ||
@@ -497,33 +606,75 @@
         />
         <img
           v-else-if="
-            !statistics_risk_store && !statistics_warning_store && !statistics_unknown_store
+            !statistics_risk_store &&
+            !statistics_warning_store &&
+            !statistics_unknown_store
           "
           :width="12"
           class="icon-svg1"
           src="@/assets/images/安全.svg"
         />
 
-        <img v-else class="icon-svg1" src="@/assets/images/zhuyi1.svg" />
+        <img
+          v-else
+          class="icon-svg1"
+          :width="12"
+          src="@/assets/images/zhuyi1.svg"
+        />
         <span
-          v-if="statistics_risk_store || statistics_warning_store || statistics_unknown_store"
-          class="ml-5"
+          v-if="
+            statistics_risk_store ||
+            statistics_warning_store ||
+            statistics_unknown_store
+          "
+          class="ml-5px"
           style="font-weight: 600"
           :style="{ color: getRiskColor(token) }"
         >
           {{
-            statistics_risk_store || statistics_warning_store || statistics_unknown_store || ''
+            statistics_risk_store ||
+            statistics_warning_store ||
+            statistics_unknown_store ||
+            ''
           }}
         </span>
-        <!-- __{{ checkStore?.statistics_risk_store || checkStore?.statistics_warning_store || checkStore?.statistics_unknown_store || ''}} -->
       </div>
       <Check v-model="showCheck" />
     </div>
-    <div class="item ml-24px">
-      <span>跑路</span>
-      <Run :v-model="showRun" :obj="rugPull"/>
+    <div
+      v-if="chain === 'solana'"
+      class="item ml-24px cursor-pointer"
+      @click="showRun = !showRun"
+    >
+      <span class="flex-start"
+        >{{ t('flag_rug_pull') }}
+        <Icon
+          v-if="
+            (rugPull?.rates?.rugged_rate ?? 0) > 0 ||
+            (rugPull?.rates?.rugged_rate ?? 0) == -1
+          "
+          name="material-symbols:arrow-forward-ios-rounded"
+          class="text-12px"
+        />
+      </span>
+      <div
+        class="mt-8px font-500 flex-start text-12px"
+        :style="{
+          color:
+            (rugPull?.rates?.rugged_rate ?? 0) > 60
+              ? '#F6465D'
+              : 'var(--d-999-l-666)',
+        }"
+      >
+        <Icon name="custom:rug" class="text-12px mr-2px" />
+        {{
+          rugPull?.rates?.rugged_rate == -1
+            ? t('unKnown1')
+            : formatNumber(rugPull?.rates?.rugged_rate || 0, 2) + '%'
+        }}
+      </div>
+      <Run v-model="showRun" :obj="rugPull" />
     </div>
-
   </div>
 </template>
 
@@ -539,7 +690,8 @@ import {
   formatIconSwap,
   isJSON,
   formatIconTag,
-  getAddressAndChainFromId
+  getAddressAndChainFromId,
+  getTagTooltip,
 } from '@/utils/index'
 import {
   type GetUserFavoriteGroupsResponse,
@@ -547,23 +699,30 @@ import {
   addFavorite,
   removeFavorite,
   getUserFavoriteGroups,
-  getCheckFavoriteGroup,
   moveFavoriteGroup,
   editTokenFavRemark,
 } from '@/api/fav'
-import { _getRugPull } from '@/api/run'
-import type { Token } from '@/api/types/token'
-import { upColor, downColor } from '@/utils/constants'
+import { _getRugPull, type ResultRugPull } from '@/api/run'
+import type { Token, Pair } from '@/api/types/token'
+import {
+  upColor,
+  downColor,
+  BusEventType,
+  type IFavDialogEventArgs,
+} from '@/utils/constants'
 import { formatNumber } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
+import { useEventBus } from '@vueuse/core'
+import { verifyLogin } from '@/utils'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
-const { evmAddress } = useBotStore()
+const { evmAddress } = storeToRefs(useBotStore())
 const { theme } = useThemeStore()
 const { t } = useI18n()
 const route = useRoute()
-const id = route.params?.id as string
+const { mode } = storeToRefs(useGlobalStore())
+
 const editableGroup = shallowRef(false)
 const groupId = shallowRef(0)
 const selectedGroup = shallowRef(0)
@@ -573,17 +732,43 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
-const rugPull = shallowRef(null)
+const rugPull = ref<ResultRugPull>({
+  all_tag_rate: 0,
+  rates: {
+    rugged_rate: 0,
+  },
+})
 
 const loadingRun = shallowRef(false)
+const favDialogEvent = useEventBus<IFavDialogEventArgs>(BusEventType.FAV_DIALOG)
+favDialogEvent.on(handleFavDialogEvent)
+const topEventBus = useEventBus(BusEventType.TOP_FAV_CHANGE)
+onUnmounted(() => {
+  favDialogEvent.off(handleFavDialogEvent)
+})
 
-const { statistics_risk_store, statistics_warning_store, statistics_unknown_store } = storeToRefs(
-  useCheckStore()
-)
-const checkStore  = useCheckStore()
+function handleFavDialogEvent({ tokenId, type, groupId }: IFavDialogEventArgs) {
+  if (type === 'changeFavoriteGroupName' || type === 'removeFavoriteGroup') {
+    getTokenUserFavoriteGroups()
+  } else if (tokenId === id.value) {
+    getTokenFavoriteCheck()
+  }
+  if (groupId && Number(groupId) === selectedGroup.value) {
+    selectedGroup.value = 0
+  }
+}
+
+const {
+  statistics_risk_store,
+  statistics_warning_store,
+  statistics_unknown_store,
+} = storeToRefs(useCheckStore())
+// const id = route.params?.id as string
+const id = computed(() => route.params.id as string)
 
 const token = computed(() => {
   return tokenStore.token
@@ -602,8 +787,7 @@ const marketCap = computed(() => {
 })
 
 const volume24 = computed(() => {
-  // console.log('-------tokenInfoExtra---------', tokenStore.tokenInfoExtra)
-  return tokenStore.tokenInfoExtra?.volume_24 || 0
+  return tokenStore.pair?.volume_u || tokenStore.tokenInfoExtra?.volume_24 || 0
 })
 const appendix = computed(() => {
   if (token.value?.appendix && isJSON(token.value?.appendix)) {
@@ -611,8 +795,10 @@ const appendix = computed(() => {
   }
   return {}
 })
+const tokenInfoExtra= computed(()=>{
+  return tokenStore.tokenInfoExtra
+})
 const medias = computed(() => {
-  console.log('--------appendix----', appendix.value)
   return [
     { name: t('website'), icon: 'web', url: appendix.value?.website },
     { name: 'Btok', icon: 'btok', url: appendix.value?.btok },
@@ -627,7 +813,7 @@ const currentGroup = computed(() => {
     : userFavoriteGroups.value?.find((i) => i.group_id == groupId.value)?.name
 })
 const chain = computed(() => {
-  const { chain } = getAddressAndChainFromId(id,0)
+  const { chain } = getAddressAndChainFromId(id.value, 0)
   return chain
 })
 // const tokenInfo = computed(() => {
@@ -636,30 +822,51 @@ const chain = computed(() => {
 // console.log('-------tokenInfo---------', tokenInfo)
 // console.log('-------token---------', token)
 onMounted(() => {
-  if (evmAddress) {
+  if (evmAddress.value) {
     getTokenFavoriteCheck()
-    getTokenCheckFavoriteGroup() //获取当前分组
     getTokenUserFavoriteGroups() //获取分组数组
   }
-  useCheckStore().getContractCheckResult(id, evmAddress)
-  if (chain.value  == 'solana') {
+  useCheckStore().getContractCheckResult(id.value, evmAddress?.value)
+  if (chain.value == 'solana') {
     getRugPull()
   }
 })
+watch(evmAddress, (val) => {
+  if (val) {
+    getTokenFavoriteCheck()
+    getTokenUserFavoriteGroups() //获取分组数组
+  } else {
+    collected.value = false
+    remark.value = ''
+    remark2.value = ''
+    groupId.value = 0
+    selectedGroup.value = 0
+  }
+})
 watch(
-  () => evmAddress,
+  () => route.params.id,
   () => {
-    getTokenUserFavoriteGroups()
+    if (evmAddress.value) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    }
+    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
+    if (chain.value == 'solana') {
+      getRugPull()
+    }
   }
 )
 const collected = shallowRef(false)
 const loading = shallowRef(false)
 
 function getTokenFavoriteCheck() {
-  getFavoriteCheck(id, evmAddress)
+  getFavoriteCheck(id.value, evmAddress.value)
     .then((res) => {
-      console.log('------getFavoriteCheck---------', res, typeof res)
-      collected.value = res == true ? true : false
+      collected.value = res?.address ? true : false
+      remark.value = res?.remark || ''
+      remark2.value = res?.remark || ''
+      groupId.value = res?.group_id || 0
+      selectedGroup.value = res?.group_id || 0
     })
     .catch((err) => {
       console.log(err)
@@ -669,10 +876,11 @@ function getTokenFavoriteCheck() {
 
 function addTokenFavorite() {
   loading.value = true
-  addFavorite(id, evmAddress)
+  addFavorite(id.value, evmAddress.value)
     .then(() => {
       ElMessage.success('收藏成功！')
       collected.value = true
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -683,10 +891,11 @@ function addTokenFavorite() {
 }
 function removeTokenFavorite() {
   loading.value = true
-  removeFavorite(id, evmAddress)
+  removeFavorite(id.value, evmAddress.value)
     .then(() => {
       ElMessage.success('已取消收藏！')
       collected.value = false
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
@@ -696,20 +905,20 @@ function removeTokenFavorite() {
     })
 }
 function collect() {
-  if (evmAddress) {
+  if (evmAddress.value) {
     if (collected.value) {
       removeTokenFavorite()
     } else {
       addTokenFavorite()
     }
   } else {
-    ElMessage.error('请链接钱包')
+    verifyLogin()
   }
 }
 async function getTokenUserFavoriteGroups() {
   try {
     loadingGroup.value = true
-    const res = await getUserFavoriteGroups(evmAddress)
+    const res = await getUserFavoriteGroups(evmAddress.value)
     userFavoriteGroups.value = (res || []).filter(
       (el) => !!el.name && el.type === 'token'
     )
@@ -719,20 +928,8 @@ async function getTokenUserFavoriteGroups() {
     loadingGroup.value = false
   }
 }
-//获取用户当前分组
-function getTokenCheckFavoriteGroup() {
-  getCheckFavoriteGroup(id, evmAddress)
-    .then((res) => {
-      groupId.value = typeof res == 'number' ? res : 0
-      selectedGroup.value = typeof res == 'number' ? res : 0
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-    .finally(() => {})
-}
 
-function confirmSwitchGroup(tokenId, id, evmAddress) {
+function confirmSwitchGroup(tokenId: string, id: number, evmAddress: string) {
   if (!evmAddress) {
     return
   }
@@ -741,7 +938,9 @@ function confirmSwitchGroup(tokenId, id, evmAddress) {
     moveFavoriteGroup(tokenId, id, evmAddress)
       .then(() => {
         ElMessage.success(t('success'))
-        getTokenCheckFavoriteGroup()
+        editableGroup.value = false
+        getTokenFavoriteCheck()
+        topEventBus.emit()
       })
       .catch((err) => {
         console.log(err)
@@ -749,7 +948,6 @@ function confirmSwitchGroup(tokenId, id, evmAddress) {
       })
       .finally(() => {
         loadingGroupEdit.value = false
-        editableGroup.value = false
       })
   } else {
     loadingGroupEdit.value = false
@@ -762,38 +960,51 @@ function handleReset() {
     selectedGroup.value = groupId.value
   }
   if (editableRemark.value) {
-    editable2 = false
+    editableRemark.value = false
     remark2.value = remark.value
   }
 }
-function confirmEditRemark(remark, tokenId, evmAddress) {
-  if (evmAddress) {
+function confirmEditRemark(tokenId: string, remark2: string) {
+  if (!evmAddress.value) {
+    verifyLogin()
     return
   }
-  if (remark?.length > 50) {
-    return this.$message.error(this.$t('maximum10characters'))
+  if (remark2?.length > 50) {
+    return ElMessage.error(t('maximum10characters'))
   }
-  editTokenFavRemark(tokenId, remark, evmAddress)
+  editTokenFavRemark(tokenId, remark2, evmAddress.value)
     .then(() => {
-      ElMessage.success(this.$t('success'))
-      remark2.value = remark
+      ElMessage.success(t('success'))
+      remark.value = remark2
+      editableRemark.value = false
+      topEventBus.emit()
     })
     .catch((err) => {
       console.log(err)
-      tElMessage.error(this.$t('fail'))
+      ElMessage.error(t('fail'))
     })
-    .finally(() => {
-      this.editableRemark = false
-    })
+    .finally(() => {})
 }
 
-function getTags(i) {
-  let signal_arr = []
-  let normal_tag = []
+function getTags(i: Pair) {
+  type Signal = {
+    tag: string
+    color: string
+    n: string
+    timestamp: number
+  }
+  type Normal = {
+    tag: string
+    color: string
+    showText?: boolean
+  }
+  let signal_arr: Array<Signal> = []
+  let normal_tag: Array<Normal> = []
+  let normal_str: Array<string> = []
   if (i?.dynamic_tag) {
     const tag_arr = JSON.parse(i?.dynamic_tag) || []
-    signal_arr = tag_arr?.filter((i) => i?.startsWith('signal'))
-    signal_arr = signal_arr?.map((y) => ({
+    const signal_str = tag_arr?.filter((i: string) => i?.startsWith('signal'))
+    signal_arr = signal_str?.map((y: string) => ({
       tag:
         y?.split('-')[5] &&
         (y?.split('-')[1] == 'whale_sell' || y?.split('-')[1] == 'whale_buy')
@@ -837,15 +1048,15 @@ function getTags(i) {
       ?.concat(whale_arr)
       ?.concat(other_arr)
     signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
-    normal_tag = tag_arr.filter((i) => !i?.startsWith('signal'))
+    normal_str = tag_arr.filter((i: string) => !i?.startsWith('signal'))
   }
-  if (i?.tag) {
-    const tag = i.tag?.split(',') || []
-    const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
-    normal_tag = tag1.concat(normal_tag)
-  }
+  // if (i?.tag) {
+  //   const tag = i.tag?.split(',') || []
+  //   const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
+  //   normal_str = tag1.concat(normal_str)
+  // }
   normal_tag =
-    normal_tag?.map((i) => ({
+    normal_str?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
@@ -856,7 +1067,7 @@ function getTags(i) {
   const is_shit_coins =
     signal_arr?.some((i) => new RegExp('shitcoin', 'gi').test(i?.tag)) ||
     normal_tag?.some((i) => new RegExp('shitcoin', 'gi').test(i.tag))
-  if (i?.risk_score >= 100 && i?.chain == 'solana') {
+  if ((i?.risk_score ?? 0) >= 100 && i?.chain == 'solana') {
     i.lp_locked_percent = 0
     signal_arr = []
     normal_tag = [
@@ -890,13 +1101,13 @@ function getTags(i) {
 
   if (token?.value?.tag) {
     const tagti = token?.value?.tag?.split(',') || []
-    let tag_t = tagti?.filter((i) => i !== '' && i !== 'newcommunity')
-    tag_t = tag_t?.map((i) => ({
+    const tag_t = tagti?.filter((i) => i !== '' && i !== 'newcommunity')
+    const tag_t1: Array<Normal> = tag_t?.map((i) => ({
       tag: i,
       color: 'green',
       showText: false,
     }))
-    normal_tag = tag_t.concat(normal_tag)
+    normal_tag = tag_t1.concat(normal_tag)
   }
   const extra_tag = token?.value?.tag?.split(',') || []
   const newcommunity = extra_tag?.includes?.('newcommunity')
@@ -924,62 +1135,57 @@ function getTags(i) {
     signal_arr,
   }
 }
-function getTagTooltip(i) {
-  if (!i.tag) {
-    if (i.smart_money_buy_count_24h > 0 || i.smart_money_sell_count_24h > 0) {
-      return t('smart_money_tips', {
-        b: i.smart_money_buy_count_24h,
-        s: i.smart_money_sell_count_24h,
-      })
-    }
-    return ''
-  }
-  const tips = {
-    kol_sell: t('kol_sell_tips'),
-    kol_buy: t('kol_buy_tips'),
-    smarter_buy: t('smarter_buy_tips'),
-    smarter_sell: t('smarter_sell_tips'),
-  }
-  return tips?.[i.tag] || t(i.tag)
-}
 function getRiskColor(token?: Token | null) {
   if (
     (token?.risk_level ?? 0) == -1 ||
     (token?.risk_score ?? 0) >= 60 ||
-    statistics_risk_store > 0
+    statistics_risk_store?.value > 0
   ) {
     return '#e74e54'
   } else if (statistics_warning_store ?? 0 > 0) {
     return '#f8be46'
-  } else if (!statistics_risk_store && !statistics_warning_store && !statistics_unknown_store) {
+  } else if (
+    !statistics_risk_store &&
+    !statistics_warning_store &&
+    !statistics_unknown_store
+  ) {
     return '#81c54e'
   } else {
     return '#507eef'
   }
 }
 
-function  getRugPull () {
-      loadingRun.value = true
-      _getRugPull(id)
-        .then(res => {
-          rugPull.value = res
-          rugPull.value.all_tag_rate = rugPull.value.rates?.rateList?.filter(i => i.icon == 'icon_all_tag_rate')?.[0].rate
-          rugPull.value.all_tag_rate = rugPull.value.all_tag_rate?.toFixed(1) || 0
-          rugPull.value.rateList = rugPull.value?.rates?.rateList?.filter(i => i.icon !== 'icon_all_tag_rate')
-          rugPull.value.rateList = rugPull.value.rateList?.map(i => ({
-            ...i,
-            rate: Number(i.rate?.toFixed(1) || 0)
-          }))
-          console.log('-----getRugPull------', res)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-        .finally(() => {
-          loadingRun.value = false
-        })
-    }
-
+function getRugPull() {
+  loadingRun.value = true
+  _getRugPull(id.value)
+    .then((res) => {
+      rugPull.value.dev = res?.dev || ''
+      rugPull.value.all_tag_rate = res?.rates?.rateList?.find(
+        (i) => i?.icon == 'icon_all_tag_rate'
+      )?.rate
+      rugPull.value.all_tag_rate =
+        Number(rugPull.value.all_tag_rate?.toFixed(1) || 0) || 0
+      rugPull.value.rates = res?.rates
+      rugPull.value.rateList = res?.rates?.rateList?.filter(
+        (i) => i.icon !== 'icon_all_tag_rate'
+      )
+      rugPull.value.rateList = rugPull.value?.rateList?.map((i) => ({
+        ...i,
+        rate: Number(i.rate?.toFixed(1) || 0),
+      }))
+      console.log('-----getRugPull------', rugPull.value)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+    .finally(() => {
+      loadingRun.value = false
+    })
+}
+function handleNoticeClose() {
+  const id = route.params.id as string
+  tokenStore.tokenWarningObj[id] = true
+}
 </script>
 
 <style scoped lang="scss">
@@ -998,5 +1204,11 @@ function  getRugPull () {
 .bg-btn {
   --uno: bg-[--d-222-l-F2F2F2] rounded-2px mr-4px flex items-center
     justify-center h-16px min-w-16px p-2px;
+}
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>

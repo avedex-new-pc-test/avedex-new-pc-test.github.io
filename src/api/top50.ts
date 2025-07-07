@@ -12,7 +12,7 @@ interface NewTags {
   tw: 'string'
   type: 'string'
 }
-interface EarlyHolders {
+export interface EarlyHolders {
   account_address: string
   new_tags: Array<NewTags>
   tag: string

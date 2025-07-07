@@ -39,7 +39,8 @@
         :remark="remark"
         @confirm="_updateWhaleRemark"
       />
-      <Icon v-else name="custom:remark" class="text-12px ml-5px clickable icon-remark"  @click.stop.prevent="verifyLogin" />
+      <Icon v-else name="custom:remark" class="text-12px ml-5px clickable icon-remark shrink-0"
+            @click.stop.prevent="verifyLogin"/>
     </template>
   </div>
 </template>
@@ -139,7 +140,7 @@ const remark2 = computed(() => {
 // Methods
 function _updateWhaleRemark(data: { remark: string }) {
   const remark = data.remark
-  if (remark.length <= 50) {
+  if (remark.length <= 20) {
     sendRemarkToServer(remark)
   } else {
     ElMessage.error(t('maximum10characters'))

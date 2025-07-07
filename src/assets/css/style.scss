@@ -15,11 +15,16 @@
     }
   }
 }
+.el-dialog__headerbtn:hover> .el-dialog__close {
+  color: inherit !important;
+}
 .search-dialog.el-dialog {
   background: var(--d-222-l-FFF);
+  padding: 20px 0;
   .search-input {
     .el-input__wrapper {
-      background-color: var(--d-333-l-F2F2F2);
+      background-color: transparent;
+      border-bottom: 1px solid var(--d-333-l-ECECEC);
       box-shadow: none;
       & :hover {
         box-shadow: none;
@@ -59,4 +64,92 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
+}
+.checkbox-old{
+  .el-checkbox__label{
+    color: var(--d-999-l-666);
+  }
+  .el-checkbox__input.is-checked {
+    &+.el-checkbox__label{
+      color: var(--d-999-l-666);
+    }
+  }
+  .checkbox-FFCC00{
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background-color: #FFCC00;
+        border-color: #FFCC00;
+      }
+    }
+  }
+  .checkbox-FFB6300{
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background-color: #FB6300;
+        border-color: #FB6300;
+      }
+    }
+  }
+
+  .checkbox-D741E3{
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background-color: #D741E3;
+        border-color: #D741E3;
+      }
+    }
+  }
+  .checkbox-3F80F7{
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background-color: #3F80F7;
+        border-color: #3F80F7;
+      }
+    }
+  }
+  .checkbox-41CEE3{
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background-color: #41CEE3;
+        border-color: #41CEE3;
+      }
+    }
+  }
+
+  .checkbox-C23531{
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background-color: #C23531;
+        border-color: #C23531;
+      }
+    }
+  }
+
+  .checkbox-5E5CE6{
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background-color: #5E5CE6;
+        border-color: #5E5CE6;
+      }
+    }
+  }
+
+}
+.ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100px;
+}
+/* 隐藏原生清除图标 */
+.search-input .el-input__clear {
+  display: none !important;
+}
+
+.hide-scrollbar {
+  > .el-scrollbar {
+    > .el-scrollbar__bar {
+      --at-apply: hidden;
+    }
+  }
 }

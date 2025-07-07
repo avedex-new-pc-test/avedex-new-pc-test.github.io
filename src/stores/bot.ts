@@ -14,7 +14,7 @@ import { getTokensPrice  } from '@/api/token'
 import { createCacheRequest } from '@/utils/cacheRequest'
 import { tgLogin } from '@/utils/bot'
 import { useBotSettingStore } from './botSetting'
-import { deepMerge,evm_utils as utils } from '@/utils'
+import { deepMerge, evm_utils as utils } from '@/utils'
 import { NATIVE_TOKEN } from '@/utils/constants'
 
 type AddressItem = { chain: string; address: string; price?: number; balance?: string; decimals?: number; logo_url?: string };
@@ -34,7 +34,7 @@ export const useBotStore = defineStore('bot', () => {
 
   const connectVisible = ref(false)
   const connectWalletTab = ref(0)
-  const walletList = shallowRef<Awaited<ReturnType<typeof bot_getWalletsAllChain>>>([])
+  const walletList = ref<Awaited<ReturnType<typeof bot_getWalletsAllChain>>>([])
   const botSwapStore = useBotSwapStore()
   const wsStore = useWSStore()
   const userInfo = computed(() => {
@@ -162,7 +162,7 @@ export const useBotStore = defineStore('bot', () => {
           //     evmAddress.value = walletList.value?.[0]?.evmAddress || ''
           //   }
           //   switchWallet(item)
-          // } 
+          // }
           const isWallet = walletList.value?.find?.(
             (i) =>
               evmAddress.value === i?.evmAddress &&

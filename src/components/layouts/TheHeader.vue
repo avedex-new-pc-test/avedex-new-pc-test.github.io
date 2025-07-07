@@ -2,26 +2,26 @@
   <header
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
-    <NuxtLink to="/"><img src="~/assets/images/logo.svg" ></NuxtLink>
+    <a :href="homeUrl" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
     <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
-        <NuxtLink :to="item.src" :class="{ active: item.id == route?.name }">
+        <a :href="item.src" target="_blank" :class="{ active: item.id == route?.name }">
           {{ item.name }}
-        </NuxtLink>
+        </a>
       </li>
     </ul>
     <div class="flex-1" />
     <a
-      class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px w-320px flex no-underline"
+      class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px w-320px flex items-center no-underline"
       href=""
       @click.stop.prevent="dialogVisible_search = !dialogVisible_search"
     >
       <Icon
-        class="text-20px text-[var(--d-666-l-999)]"
-        name="material-symbols:search-rounded"
+        class="text-16px text-[var(--d-666-l-999)]"
+        name="ep:search"
       />
-      <span class="text-12px font-500 ml-4px text-[var(--d-666-l-999)]">
-        Search Token Name/Contract
+      <span class="text-12px ml-4px text-[var(--d-666-l-999)]">
+        {{ $t('enterAddress/token') }}
       </span>
     </a>
     <div class="flex-1" />
@@ -46,16 +46,11 @@
         退出登录
       </div>
     </el-popover> -->
-    <wallet v-else/>
-    <a
-      class="bg-[var(--d-222-l-F2F2F2)] rounded-4px p-8px ml-8px h-32px flex items-center"
-      href=""
-    >
-      <Icon
-        class="text-20px text-[--d-999-l-666]"
-        name="material-symbols:notifications"
-      />
-    </a>
+    <template v-else>
+      <positions/>
+      <wallet/>
+    </template>
+    <Notice/>
     <el-dropdown
       trigger="click"
       placement="bottom"
@@ -97,31 +92,68 @@
       />
     </a>
     <dialog-search v-model="dialogVisible_search" />
-    <connect-wallet v-model="botStore.connectVisible" />
+    <component :is="lazyComponent" v-model="botStore.connectVisible"/>
   </header>
 </template>
 <script lang="ts" setup>
 import dialogSearch from '@/components/header/dialogSearch.vue'
-import connectWallet from '@/components/header/connectWallet/index.vue'
 import wallet from '@/components/header/wallet/index.vue'
-// const connectWallet = defineAsyncComponent(() => import('~/components/header/connectWallet/index.vue'))
+import Notice from '~/components/layouts/components/notice.vue'
+// const connectWallet = shallowRef<Component | null>(null)
+import positions from '@/components/header/positions/index.vue'
+// import connectWallet from '@/components/header/connectWallet/index.vue'
+// const connectWallet = shallowRef<Component | null>(null)
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()
 const route = useRoute()
 const langStore = useLocaleStore()
-const list = shallowRef([
-  { id: 'index', name: 'Market', src: '/' },
-  { id: 'pump', name: 'PUMP', src: '/' },
-  { id: 'follow', name: 'Follow', src: '/' },
-  { id: 'smart', name: 'Smart', src: '/' },
-  { id: 'assets', name: 'Assets', src: '/' },
-])
+const {t } = useI18n()
+const list = computed(() => {
+  let query = ''
+  if (botStore.accessToken && botStore.refreshToken) {
+    query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+  }
+  return [
+    { id: 'index', name: t('markets'), src: 'https://ave.ai/' + query },
+    { id: 'pump', name: t('pump1'), src: 'https://ave.ai/pump' + query },
+    { id: 'smart', name: t('smarter2'), src: 'https://ave.ai/smart' + query },
+    { id: 'assets', name: t('balances'), src: 'https://ave.ai/address' + query },
+  ]
+})
+
+const homeUrl = computed(() => {
+  let query = ''
+  if (botStore.accessToken && botStore.refreshToken) {
+    query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+  }
+  return 'https://ave.ai/' + query
+})
+
 const dialogVisible_search = shallowRef(false)
 
+const lazyComponent = shallowRef<Component | null>(null)
+const loadComponent = async () => {
+  const component = await import('@/components/header/connectWallet/index.vue')
+  lazyComponent.value = component.default
+}
+
+watch(
+  () => botStore.connectVisible,
+  (newVal) => {
+    if (newVal) {
+      loadComponent()
+    }
+  }
+)
 const openConnect = () => {
   botStore.changeConnectVisible(true)
 }
+onMounted(() => {
+  setTimeout(() => {
+    loadComponent()
+  }, 3000)
+})
 </script>
 <style lang="scss" scoped>
 header {

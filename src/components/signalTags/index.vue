@@ -1,20 +1,20 @@
 <template>
   <div
-      v-if="newTags?.length > 0"
-      class="flex cursor-pointer"
-      @mouseover.stop="onEnter"
-      @mouseleave.stop="onLeave">
+    v-if="newTags?.length > 0"
+    class="flex cursor-pointer"
+    @mouseover.stop="onEnter"
+    @mouseleave.stop="onLeave">
     <template v-for="(i, index) in newTags" :key="index">
       <img
-          v-if="i.type?.includes('TOP') && i.type?.slice(3) <25 || Number(i.type)"
-          style="pointer-events: none;"
-          :class="tagClass" :src="formatNewTags(i.icon)" alt=""
-          height="15">
+        v-if="i.type?.includes('TOP') && i.type?.slice(3) <25 || Number(i.type)"
+        style="pointer-events: none;"
+        :class="tagClass" :src="formatNewTags(i.icon)" alt=""
+        height="15">
     </template>
   </div>
 </template>
 <script setup lang="ts">
-import TagsContent from './tagsContent'
+import TagsContent from './tagsContent.vue'
 import {formatNewTags} from '~/utils'
 
 const {$tooltip} = useNuxtApp()
@@ -44,8 +44,8 @@ const newTags = computed(() => {
   return tags || []
 })
 
-function onEnter(e) {
-  if (!newTags.value.some(i => Number(i.type))) {
+function onEnter(e: { target: any }) {
+  if (!newTags.value.some((i: { type: any }) => Number(i.type))) {
     return
   }
   $tooltip.show({

@@ -2,19 +2,21 @@
 import FavoriteTable from './favoriteTable.vue'
 
 const {t} = useI18n()
-defineProps({
+const props = defineProps({
   height: {
-    type: [Number, String],
+    type: Number,
     default: 370
   }
 })
 const botStore = useBotStore()
 const activeTab = shallowRef<keyof typeof components>('FavoriteTable')
-const tabs = shallowRef([
+const tabs = computed(() => {
+  return [
   {name: t('favorites'), component: 'FavoriteTable' as const},
   {name: t('positions'), component: 'PositionsTable' as const},
   // {name: t('attention1'),  component: 'MyAttentionTable' as const},
-])
+  ]
+})
 const components = {
   FavoriteTable,
   PositionsTable: defineAsyncComponent(() => import('./positionsTable.vue')),
@@ -23,31 +25,40 @@ const components = {
 const Component = computed(() => {
   return components[activeTab.value]
 })
+const activeHeight = computed(() => {
+  if (activeTab.value === 'PositionsTable') {
+    return props.height - 4
+  }
+  return props.height
+})
 </script>
 
 <template>
   <div
-    :class="`bg-[--d-111-l-FFF] rounded-2px text-14px pt-10px
+    :style="`height: ${Math.max(height,0)}px;`"
+    :class="`color-[var(--d-F5F5F5-l-333)] bg-[--d-111-l-FFF] rounded-2px text-14px overflow-hidden
     `">
-    <div class="flex items-center px-12px gap-20px">
+    <div class="pt-10px flex items-center px-12px gap-20px border-b-solid border-b-1px border-b-#FFFFFF08">
       <a
         v-for="(item) in tabs"
         :key="item.component" href="javascript:;"
-        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-999-l-666] b-b-solid b-b-2px
-         ${activeTab===item.component ? 'color-[--d-E9E9E9-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
+        :class="`decoration-none text-12px lh-16px pb-8px text-center color-[--d-666-l-999] b-b-solid b-b-2px font-500
+         ${activeTab===item.component ? 'color-[--d-F5F5F5-l-222] b-b-[--d-F5F5F5-l-333]':'b-b-transparent'}`"
         @click="activeTab=item.component"
       >
         {{ item.name }}
       </a>
     </div>
-    <component
-      :is="Component"
-      v-if="botStore.evmAddress"
-      :height="height"
-    />
+    <KeepAlive v-if="botStore.evmAddress">
+      <component
+        :is="Component"
+        :height="activeHeight"
+      />
+    </KeepAlive>
     <AveEmpty
       v-else
-      :style="{height:`${height}px`}"
+      :style="{height:`${props.height-50}px`}"
+      class="overflow-hidden"
     >
       <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
       <el-button

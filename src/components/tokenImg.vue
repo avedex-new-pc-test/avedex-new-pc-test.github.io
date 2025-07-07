@@ -3,11 +3,13 @@ const {row} = defineProps({
   row: {
     type: Object as PropType<{
       chain: string;
-      logo_url: string
+      logo_url: string;
+      symbol?: string;
     }>,
     default: () => ({
       chain: '',
-      logo_url: ''
+      logo_url: '',
+      symbol: ''
     })
   },
   tokenClass: {
@@ -26,6 +28,14 @@ const shouldAddPrefix = computed(() => {
   }
   return false
 })
+const tokenLogoUrl = computed(() => {
+  if (row.logo_url) {
+    return shouldAddPrefix.value
+      ? `${token_logo_url}${row.logo_url}`
+      : row.logo_url
+  }
+  return getSymbolDefaultIcon(row)
+})
 </script>
 
 <template>
@@ -35,9 +45,7 @@ const shouldAddPrefix = computed(() => {
       :style="{
          display:'block'
        }"
-      :src="shouldAddPrefix
-      ?`${token_logo_url}${row.logo_url}`
-      : row.logo_url"
+      :src="tokenLogoUrl"
     >
       <template #error>
         <img class="w-full block" src="@/assets/images/icon-default.png" alt="">

@@ -453,7 +453,20 @@ export function bot_approve(data: {
   })
 }
 
-
+export interface IBotTxRequest {
+  batchId?: string
+  swapList: Array<{
+    creatorAddress: string
+    inAmount: string
+  }>
+  inTokenAddress: string
+  outTokenAddress: string
+  swapType: 1 | 2
+  isPrivate: boolean
+  priorityFee: string
+  autoSell?: boolean
+  slippage: number
+}
 // 创建 Solana 市价交易
 export function bot_createSolTx(params: {
   batchId?: string
@@ -631,5 +644,93 @@ export function bot_getTransferGasFee(params: { chain: 'eth' | 'base' | 'bsc' | 
   return $api('/botapi/swap/getTransferGasFee', {
     method: 'get',
     query: params
+  })
+}
+
+export interface IGetMarketCompletedLimitResponse {
+  id: number;
+  status: string;
+  createTime: Date;
+  updateTime: Date;
+  tgUid: string;
+  batchId: string;
+  chain: string;
+  swapType: number;
+  creatorAddress: string;
+  inTokenAddress: string;
+  inTokenDecimals: number;
+  inTokenSymbol: string;
+  inTokenName: string;
+  outTokenAddress: string;
+  outTokenDecimals: number;
+  outTokenSymbol: string;
+  outTokenName: string;
+  txValue: string;
+  txType: number;
+  txGasTipCap: string;
+  txGasLimit: number;
+  txToAddress: string;
+  txNonce: number;
+  txExtraGas: number;
+  slippage: number;
+  txHash: string;
+  inAmount: string;
+  inPrice: string;
+  outputAmount: string;
+  outPrice: string;
+  outPriceLimit: string;
+  createPrice: string;
+  triggerPrice: string;
+  blockNumber: number;
+  blockTime: number;
+  usePrivate: boolean;
+  inTokenLogoUrl: string;
+  outTokenLogoUrl: string;
+  inValue: string;
+  outValue: string;
+  tradeValueExpected: string;
+  followAddress: string;
+  followHash: string;
+  followType: number;
+  followId: number;
+  errorLog: string;
+  amm: string;
+}
+
+// 查询该代币的全部限价单委托(二期)
+// /swap/getTokenPendingTx GET
+// curl --location 'http://18.166.11.27:8081/v2/swap/getTokenPendingTx?chain=solana&token=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr
+export function getCompletedLimitTx(evmAddress: string): Promise<IGetMarketCompletedLimitResponse[]> {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/getCompletedLimitTx', {
+    method: 'get',
+    query: {
+      evmAddress
+    }
+  })
+}
+
+//  /swap/getAddressAllBalances
+export function bot_getAddressAllBalances(query: {
+  evmAddress: string
+  chains?: string
+  pinToken?: string
+  ignoreHighRisk?: boolean
+}): Promise<Array<{
+  avgPrice: string
+  chain: string
+  token: string
+  value_decimal: string
+  value: number
+  symbol: string
+  logo_url: string
+  current_price_usd: string
+  profit: string
+  profitRate: number
+}>> {
+  const {$api} = useNuxtApp()
+  return $api('/botapi/swap/getAddressAllBalancesV2', {
+    method: 'get',
+    query
   })
 }

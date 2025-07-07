@@ -1,4 +1,11 @@
 export const NATIVE_TOKEN = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+
+export function getNativeToken(chain: string) {
+  return ({
+    solana: 'sol',
+    ton: 'TON',
+  } as any)[chain] || NATIVE_TOKEN
+}
 export const MAIN_COIN: {
   [key: string]: string
 } = {
@@ -17,7 +24,7 @@ export const downColor = ['#F6465D']
 // WebSocket 事件类型常量
 export const WSEventType = {
   KLINE: 'kline',
-  SWITCH_MAIN_PAIR: 'switch_main_pair',
+  SWITCH_MAIN_PAIR_V2: 'switch_main_pair_v2',
   TX: 'tx',
   LIQ: 'liq',
   PRICE: 'price',
@@ -72,3 +79,32 @@ export const NATIVE_TOKENS = [
   '0xe9e7cea3dedca5984780bafc599bd69add087d56',
   '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'
 ]
+
+export interface IFavDialogEventArgs {
+  type: 'confirmSwitchGroup' | 'remark' | 'order' | 'changeFavoriteGroupName'|'removeFavoriteGroup',
+  tokenId?: string,
+  groupId?: string,
+}
+export const BusEventType = {
+  TOP_FAV_CHANGE: 'top-favorite-change',
+  FAV_DIALOG: 'fav-dialog',
+  // LEFT_DRAG: 'left-drag',
+}
+
+export const ProvideType = {
+  HOT_TOKENS: 'hot-tokens',
+}
+export const SupportFullDataChain = ['solana', 'bsc']
+
+export const defaultPaginationParams = {
+  pageNO: 1,
+  pageSize: 10,
+  loaded: false,
+  finished: false,
+}
+
+// 设置默认高度，有多个地方需要用到
+export const DefaultHeight = {
+  TOPLEFT: window.innerHeight / 2,
+  KLINE: window.innerHeight / 2
+}

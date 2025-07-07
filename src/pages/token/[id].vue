@@ -1,5 +1,5 @@
 <template>
-  <div class="flex bg-[--d-000-l-F6F6F6] gap-4px pt-4px w-100%" style="min-height: calc(100vh - 100px);">
+  <div class="flex bg-[--d-000-l-F6F6F6] gap-1px flex min-w-0 w-full" style="min-height: calc(100vh - 92px);">
     <div class="flex-1 min-w-0">
       <Top />
       <div class="flex gap-4px">
@@ -31,6 +31,7 @@ import { Left } from './components/left'
 import { BelowChartTable } from './components/belowChartTable'
 import KLine from '~/pages/token/components/kLine/index.vue'
 import {OrderBook} from './components/orderBook'
+import  { getAiSummary } from '@/api/token'
 
 definePageMeta({
   name: 'token-id',
@@ -39,7 +40,17 @@ definePageMeta({
   },
 })
 const route = useRoute()
+const localeStore  = useLocaleStore()
+const tagStore = useTagStore()
 const tokenStore = useTokenStore()
+const botStore = useBotStore()
+const addresses = computed(() => {
+  const result = botStore.userInfo?.addresses
+  if (Array.isArray(result)) {
+    return Array.from(new Set(result.map(el => el.address)))
+  }
+  return []
+})
 const wsStore = useWSStore()
 
 // 订单簿显示状态
@@ -49,10 +60,58 @@ provide('orderBookVisible', orderBookVisible)
 // KLine 高度监听
 const klineContainer = ref()
 const { height: klineHeight } = useElementSize(() => klineContainer.value?.$el)
+const aiSummary = shallowRef({summary:'', headline:''})
+
+ function _getAiSummary() {
+  const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+  getAiSummary(id)
+    .then((res) => {
+      aiSummary.value = res ?? { summary: '', headline: '' }
+    })
+    .catch((err: any) => {
+      console.log(err)
+    })
+    .finally(() => {})
+}
+
+onMounted(() => {
+  _getAiSummary()
+})
+watch([() => route.params.id, () => localeStore.locale],
+  () => {
+    _getAiSummary()
+  }
+)
+//顶层提供aisummary数据，给子组件top和right使用
+provide('aiSummary', aiSummary)
 
 const documentVisible = shallowRef(true)
 provide('documentVisible', documentVisible)
-const botSwapStore = useBotSwapStore()
+
+watch(() => addresses.value, () => {
+  if (addresses.value?.length) {
+    subBalanceChange()
+  }
+}, {
+  immediate: true
+})
+
+function subBalanceChange() {
+  wsStore.send({
+    jsonrpc: '2.0',
+    method: 'unsubscribe',
+    params: [
+      'asset'
+    ],
+    id: 1
+  })
+  wsStore.send({
+    jsonrpc: '2.0',
+    method: 'subscribe',
+    params: ['asset', addresses.value],
+    id: 1,
+  })
+}
 
 
 function _getTokenInfo() {
@@ -74,9 +133,9 @@ function init() {
   tokenStore.tokenPrice = 0
   _getTokenInfo()
   _getTokenInfoExtra()
-  wsStore.onmessageTxUpdateToken()
+  // wsStore.onmessageTxUpdateToken()
   tokenStore._getTotalHolders()
-  botSwapStore.sendNativePriceWs()
+  tagStore.getTagArr()
 }
 
 watch(() => route.params.id, () => {
@@ -94,7 +153,7 @@ onBeforeMount(() => {
 })
 
 onBeforeRouteLeave(() => {
-  tokenStore.reset()
+  // tokenStore.reset()
   wsStore.getWSInstance()?.offMessage(['tx_update_token', 'kline', 'price'])
   document.removeEventListener('visibilitychange', visibilitychangeFn)
 })

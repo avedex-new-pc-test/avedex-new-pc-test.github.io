@@ -8,12 +8,13 @@ defineProps({
     default: () => []
   }
 })
-const {userInfo, isSupportChains} = useBotStore()
+const {userInfo} = storeToRefs(useBotStore())
+const {isSupportChains} = useBotStore()
 const visible = shallowRef(false)
 const options = shallowRef(isSupportChains)
 const selectedChains = shallowRef<string[]>([...isSupportChains])
 
-const {isDark} = useThemeStore()
+const {isDark} = storeToRefs(useThemeStore())
 const displayChains = computed(() => {
   return selectedChains.value.slice(0, 2)
 })
@@ -23,9 +24,9 @@ function getDisabled(val: string) {
 }
 
 function onConfirm() {
-  if (userInfo && Array.isArray(userInfo.addresses)) {
+  if (userInfo.value && Array.isArray(userInfo.value.addresses)) {
     const arr: string[] = []
-    userInfo.addresses.map(el => {
+    userInfo.value.addresses.map(el => {
       if (selectedChains.value.includes(el.chain)) {
         arr.push(el.address + '-' + el.chain)
       }
@@ -42,7 +43,7 @@ function onCancel() {
 
 <template>
   <div
-      class="flex h-20px"
+      class="flex"
   >
     <el-popover
         ref="popoverRef"
@@ -57,16 +58,16 @@ function onCancel() {
         <div>
           <el-button
               size="small"
-              class="[&&]:px-3px [&&]:py-4px justify-between"
+              class="[&&]:px-3px [&&]:py-4px justify-between [--el-button-size:20px!important] [--el-button-font-weight: 400]"
           >
             <img
-                v-for="item in displayChains"
-                :key="item"
-                height="14"
-                class="rounded-50%"
-                :src="formatImgUrl('chain',item)"
-                alt="">
-            <span>{{ selectedChains.length }}</span>
+              v-for="(item, index) in displayChains"
+              :key="item"
+              height="14"
+              :class="['rounded-50% mr--4px relative','z-'+(index+1), (index === displayChains.length - 1) && 'mr-0']"
+              :src="formatImgUrl('chain',item)"
+              alt="">
+            <span class="inline-block bg-[#333] text-[#fff] min-w-14px h-14px lh-14px text-12px ml-4px border-rd-4px">{{ selectedChains.length }}</span>
           </el-button>
         </div>
       </template>
