@@ -152,6 +152,12 @@ function txAnalysisChange(data) {
     statisticRef.value.mergeStatistics(data) // 调用子组件方法
   }
 }
+watch(
+  () => botStore.evmAddress, () => {
+    const token = botStore.getWalletAddress('solana')
+    navigateTo(`/address/${token}/sonala`)
+  }
+)
 
 // Watchers
 // watch(
