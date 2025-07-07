@@ -271,7 +271,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
         {{ $t('operate') }}
       </div>
       <div class="flex-1 text-right" v-if="!filterToken">
-        {{ $t('positions') }}
+        {{ $t('balance1') }}
       </div>
       <div class="w-40px text-right">
         {{ $t('time') }}
@@ -375,7 +375,7 @@ function openTokenDetail(el: IActionItem | IActionV3Item) {
               :span="8"
             >
               <div class="color-[--d-666-l-999] mb-4px">
-                {{ $t('holding') }}
+                {{ $t('balance1') }}
               </div>
               <div class="color-[--d-F5F5F5-l-333]">
                 ${{ formatNumber(item.self_wallet_info?.balance || 0, 1) }}
