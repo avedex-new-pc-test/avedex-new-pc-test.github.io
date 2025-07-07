@@ -39,6 +39,8 @@ export const useFollowStore = defineStore('follow', () => {
   // } = storeToRefs(botStore)
   // const { getUserInfo } = botStore
   // const email = useLocalStorage('email', '')
+  const monitorVisible = ref(false)
+  const showBatchAddressDetails = ref(false)
   const botStore = useBotStore()
   const walletStore = useWalletStore()
   const addressGroups = useLocalStorage<{ group_id: number; name: string; show_index: number; }[]>('addressGroups', [])
@@ -48,6 +50,7 @@ export const useFollowStore = defineStore('follow', () => {
   })
   return {
     addressGroups,
+    monitorVisible,
     async getUserFavoriteGroups2(data: Parameters<typeof getUserFavoriteGroups2>[0] = currentAddress.value): Promise<Awaited<ReturnType<typeof getUserFavoriteGroups2>> | undefined> {
       let res: Awaited<ReturnType<typeof getUserFavoriteGroups2>> =[]
       try {
@@ -60,6 +63,8 @@ export const useFollowStore = defineStore('follow', () => {
     },
     initAddressGroups() {
       this.getUserFavoriteGroups2(currentAddress.value)
-    }
+    },
+    currentAddress,
+    showBatchAddressDetails
   }
 })

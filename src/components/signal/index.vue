@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useStorage} from '@vueuse/core'
+import {useStorage, useThrottleFn} from '@vueuse/core'
 import {getSignalV2List, type GetSignalV2ListResponse, type IActionItem} from '~/api/signal'
 import SlippageSet from '~/pages/token/components/right/botSwap/slippageSet.vue'
 import Filter from '~/components/signal/filter.vue'
@@ -17,16 +17,9 @@ const props = defineProps<{
 const configStore = useConfigStore()
 const botSettingStore = useBotSettingStore()
 const localeStore = useLocaleStore()
-const signalList = shallowRef<GetSignalV2ListResponse[]>([])
-const pageParams = shallowRef({
-  pageNO: 1,
-  pageSize: 20,
-})
 const chainOptions = shallowRef(['solana', 'bsc'])
-const activeChain = shallowRef('solana')
-
 function setActiveChain(chain: string) {
-  activeChain.value = chain
+  signalStore.activeChain = chain
   resetAndGet()
 }
 
@@ -34,19 +27,10 @@ const sortParams = shallowRef({
   sortBy: undefined,
   activeSort: 0
 })
-// token: 筛选 token
-// history_count：筛选信号数，对应值2, 5, 15
-// 市值：mc_curr，市值过滤，
-// 市值方向：mc_curr_sign， 默认 > 大于号，可选 <
-const filterParams = useStorage('signalParams', {
-  token: '',
-  history_count: undefined as undefined | number,
-  mc_curr: undefined as undefined | number,
-  mc_curr_sign: '<'
-})
+
 const filterSignalList = computed(() => {
   const {sortBy, activeSort} = sortParams.value
-  return signalList.value.filter(filterCallback).toSorted((a, b) => {
+  return signalStore.signalList.filter(filterCallback).toSorted((a, b) => {
     if (sortBy) {
       return (Number((b[sortBy] || 0)) - Number((a[sortBy] || 0))) * activeSort
     }
@@ -55,7 +39,7 @@ const filterSignalList = computed(() => {
 })
 
 function filterCallback(el: GetSignalV2ListResponse) {
-  const {token, history_count, mc_curr} = filterParams.value
+  const {token, history_count, mc_curr} = signalStore.filterParams
   const tokenMatched = !token || el.token === token
   const countMatched = el.history_count > (history_count || 0)
   const mcMatched = !mc_curr || Number(el.mc_cur) < mc_curr
@@ -63,21 +47,30 @@ function filterCallback(el: GetSignalV2ListResponse) {
 }
 
 function resetFilterParams() {
-  filterParams.value.token = ''
-  filterParams.value.history_count = undefined
-  filterParams.value.mc_curr = undefined
+  signalStore.$patch({
+    filterParams: {
+      token: '',
+      history_count: undefined,
+      mc_curr: undefined,
+      mc_curr_sign: '<'
+    }
+  })
   resetAndGet()
 }
-const listStatus = ref({
-  loading: false,
-  finished: false,
-  error: false
-})
 
 function resetAndGet() {
-  listStatus.value.finished = false
-  listStatus.value.error = false
-  pageParams.value.pageNO = 1
+  signalStore.$patch({
+    listStatus: {
+      finished: false,
+      error: false,
+      loading: true
+    },
+    pageParams: {
+      pageNO: 1,
+      pageSize: 20
+    },
+    signalList: []
+  })
   fetchSignalList()
 }
 
@@ -94,13 +87,16 @@ const isLargeScreen = computed(() => {
   return props.containerWidth >= 760
 })
 onMounted(() => {
-  fetchSignalList()
+  if (signalStore.pageParams.pageNO === 1) {
+    fetchSignalList()
+  }
   initTimer()
   initWs()
 })
 let timer: number
-watch(activeChain, () => {
-  pageParams.value.pageNO = 1
+watch(() => signalStore.activeChain, () => {
+  signalStore.signalList = []
+  signalStore.pageParams.pageNO = 1
   fetchSignalList()
   initWs()
 })
@@ -113,7 +109,7 @@ function initWs() {
     method: 'unsubscribe',
     'params': [
       'signalsv2_public_monitor',
-      activeChain.value
+      signalStore.activeChain
     ],
     'id': 1
   })
@@ -123,7 +119,7 @@ function initWs() {
     method: 'subscribe',
     'params': [
       'signalsv2_public_monitor',
-      activeChain.value
+      signalStore.activeChain
     ],
     'id': 1
   })
@@ -146,22 +142,23 @@ onUnmounted(() => {
 })
 
 const signalAudio = useTemplateRef('signalAudio')
-watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData: GetSignalV2ListResponse) => {
+watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], ({msg: _signalData}: {
+  msg: GetSignalV2ListResponse
+}) => {
   if (shouldAlert.value === '1' && signalAudio.value && filterCallback(_signalData)) {
     signalAudio.value.currentTime = 0
     signalAudio.value.play()
   }
-  const matchIndex = signalList.value.findIndex((p) =>
+  const matchIndex = signalStore.signalList.findIndex((p) =>
     p.token === _signalData.token && p.chain === _signalData.chain
   )
   if (matchIndex !== -1) {
-    signalList.value.splice(matchIndex, 1)
-    signalList.value.unshift(_signalData)
-    triggerRef(signalList)
+    signalStore.signalList.splice(matchIndex, 1)
+    signalStore.signalList.unshift(_signalData)
   } else if (_signalData.history_count === 1) {
-    signalList.value.unshift(_signalData)
-    triggerRef(signalList)
+    signalStore.signalList.unshift(_signalData)
   }
+  signalStore.updateList()
 })
 
 /**
@@ -170,7 +167,7 @@ watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], (_signalData
 async function updateListData() {
   try {
     const res = await getSignalV2List({
-      chain: activeChain.value,
+      chain: signalStore.activeChain,
       pageNO: 1,
       pageSize: 50,
       fold: true
@@ -181,7 +178,7 @@ async function updateListData() {
         addressMap[item.token + item.chain] = item
       }
     })
-    signalList.value = signalList.value.map(item => {
+    signalStore.signalList = signalStore.signalList.map(item => {
       const updateKeys = ['mc_cur', 'holders_cur', 'top10_ratio', 'dev_ratio', 'insider_ratio', 'max_price_change'] as const
       const matchedNewData = addressMap[item.token + item.chain]
       if (matchedNewData) {
@@ -201,8 +198,19 @@ async function updateListData() {
   }
 }
 
+const scrollbar = useTemplateRef('scrollbar')
+
+const onScroll = useThrottleFn(({scrollTop}: { scrollTop: number }) => {
+  if (scrollbar.value) {
+    const scrollElement = scrollbar.value.wrapRef
+    if (scrollElement && scrollElement.scrollHeight - scrollTop - props.scrollHeight < 30) {
+      endReached('bottom')
+    }
+  }
+}, 100, true, false)
+
 function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
-  if (listStatus.value.finished) {
+  if (signalStore.listStatus.finished || signalStore.listStatus.loading) {
     return
   }
   if (direction === 'bottom') {
@@ -211,29 +219,29 @@ function endReached(direction: 'top' | 'bottom' | 'left' | 'right') {
 }
 async function fetchSignalList() {
   try {
-    listStatus.value.loading = true
+    signalStore.listStatus.loading = true
     const res = await getSignalV2List({
-      ...pageParams.value,
-      chain: activeChain.value,
+      ...signalStore.pageParams,
+      chain: signalStore.activeChain,
       fold: true,
-      ...filterParams.value
+      ...signalStore.filterParams
     })
-    if (pageParams.value.pageNO === 1) {
-      signalList.value = res || []
+    if (signalStore.pageParams.pageNO === 1) {
+      signalStore.signalList = res || []
     } else {
-      signalList.value = signalList.value.concat(res || [])
+      signalStore.signalList = signalStore.signalList.concat(res || [])
     }
-    const finished = res?.length < pageParams.value.pageSize
-    listStatus.value.finished = finished
+    const finished = res?.length < signalStore.pageParams.pageSize
+    signalStore.listStatus.finished = finished
     if (!finished) {
-      pageParams.value.pageNO++
+      signalStore.pageParams.pageNO++
     }
   } catch (e) {
     console.log('=>(index.vue:224) e', e)
-    listStatus.value.error = true
-    signalList.value = []
+    signalStore.listStatus.error = true
+    signalStore.signalList.length = 0
   } finally {
-    listStatus.value.loading = false
+    signalStore.listStatus.loading = false
   }
 }
 
@@ -241,17 +249,17 @@ let hideTimer: number | NodeJS.Timeout
 const buttonRef = ref<null | HTMLElement>(null)
 const currentActions = shallowRef<IActionItem[]>([])
 
-// const popVisible = shallowRef(false)
+const popVisible = shallowRef(false)
 
 function showPopover(e: MouseEvent, actions: IActionItem[]) {
   buttonRef.value = e.currentTarget as HTMLElement | null
   currentActions.value = actions || []
-  // popVisible.value = true
+  popVisible.value = true
 }
 
 function hidePopover() {
   buttonRef.value = null
-  // popVisible.value = false
+  popVisible.value = false
 }
 
 function scheduleHide() {
@@ -270,33 +278,37 @@ const isShowDate = ref(true)
 
 <template>
   <div
-    class="bg-[--d-111-l-FFF] p-12px relative shrink-0 signal shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)] cursor-move h-full"
+      class="bg-[--d-111-l-FFF] p-12px pt-0 relative shrink-0 signal h-full"
   >
+    <Icon
+        name="custom:drag2"
+        class="absolute top-3px left-50% ml--6px text-6px bg-[--d-333-l-F2F2F2]"
+    />
     <div
-      class="flex items-center justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5]">
+        class="flex items-center pt-12px justify-between mb-16px pb-12px border-b-solid border-b-1px border-b-[--d-333-l-F5F5F5] cursor-move">
       <span class="color-[--d-FFF-l-222] text-14px">{{ $t('signal') }}</span>
       <div class="flex items-center gap-12px">
         <Filter
           v-if="isLargeScreen"
           v-model="shouldAlert"
-          :filter-params="filterParams"
-          @onConfirm="val=>{filterParams={...val};resetAndGet();}"
+          :filter-params="signalStore.filterParams"
+          @onConfirm="val=>{signalStore.filterParams={...val};resetAndGet();}"
           @onReset="resetFilterParams"
         />
         <el-select
           size="small"
           placeholder=""
           :suffix-icon="SelectIcon"
-          popper-class="[&&]:[--el-fill-color-light:--d-222-l-F2F2F2] [--el-bg-color-overlay:--d-1A1A1A-l-FFF]"
+          popper-class="[&&]:[--el-fill-color-light:--d-333-l-F2F2F2] [--el-bg-color-overlay:--d-1A1A1A-l-FFF]"
           @change="setActiveChain"
         >
           <template #prefix>
             <el-image
               class="flex items-center rounded-full w-12px h-12px"
-              :src="`${configStore.token_logo_url}chain/${activeChain}.png`"
+              :src="`${configStore.token_logo_url}chain/${signalStore.activeChain}.png`"
             />
             <span class="text-10px color-[--d-FFF-l-333]">
-              {{ activeChain.slice(0, 3).toUpperCase() }}
+              {{ signalStore.activeChain.slice(0, 3).toUpperCase() }}
             </span>
           </template>
           <el-option
@@ -319,67 +331,74 @@ const isShowDate = ref(true)
           class="[--el-border-color:transparent]"
         />
         <SlippageSet
-          :chain="activeChain"
-          :setting="botSettingStore?.botSettings[activeChain]"
+          id="drag-settings"
+          :showQuickAmount="false"
+          :chain="signalStore.activeChain"
+          :setting="botSettingStore?.botSettings[signalStore.activeChain]"
         />
         <Icon
           name="custom:close"
-          class="text-14px shrink-0 cursor-pointer"
+          class="text-14px shrink-0 cursor-pointer color-[--d-FFF-l-333]"
           @click.self="signalStore.signalVisible=false"
         />
       </div>
     </div>
-    <div
-      v-if="!isLargeScreen"
-      class="flex items-center justify-between mb-18px"
-    >
-      <Filter
-        v-model="shouldAlert"
-        :filter-params="filterParams"
-        @onConfirm="val=>{filterParams={...val};resetAndGet();}"
-        @onReset="resetFilterParams"
-      />
-      <QuickBuyInput
-        v-model="quickBuyValue"
-        size="small"
-        class="[--el-border-color:transparent]"
-      />
-    </div>
-    <el-scrollbar
-      v-if="!isLargeScreen"
-      :height="scrollHeight"
-      @endReached="endReached"
-    >
-      <SmallSignalList
-        v-if="isSmallScreen"
-        :signalList="filterSignalList"
-        :quickBuyValue="quickBuyValue"
-      />
-      <MiddleSignalList
-        v-else-if="isMiddleScreen"
+    <div id="drag-disabled">
+      <div
+        v-if="!isLargeScreen"
+        class="flex items-center justify-between mb-18px"
+      >
+        <Filter
+          v-model="shouldAlert"
+          :filter-params="signalStore.filterParams"
+          @onConfirm="val=>{signalStore.filterParams={...val};resetAndGet();}"
+          @onReset="resetFilterParams"
+        />
+        <QuickBuyInput
+          v-model="quickBuyValue"
+          size="small"
+          class="[--el-border-color:transparent]"
+        />
+      </div>
+      <el-scrollbar
+          ref="scrollbar"
+        v-if="!isLargeScreen"
+        style="margin-right: -12px;padding-right: 12px;"
+        :height="scrollHeight"
+          @scroll="onScroll"
+      >
+        <SmallSignalList
+          v-if="isSmallScreen"
+          :signalList="filterSignalList"
+          :quickBuyValue="quickBuyValue"
+        />
+        <MiddleSignalList
+          v-else-if="isMiddleScreen"
+          :quickBuyValue="quickBuyValue"
+          :signalList="filterSignalList"
+          :showPop="showPopover"
+          :hidePop="scheduleHide"
+        />
+        <AveEmpty v-if="signalStore.signalList.length===0&&!signalStore.listStatus.loading" class="pt-10px"/>
+        <div
+          v-if="signalStore.listStatus.loading"
+          class="flex justify-center text-12px text-[#959a9f]"
+        >
+          {{ $t('loading') }}
+        </div>
+      </el-scrollbar>
+      <LargeSignalList
+        v-else
+        v-model="sortParams"
+        :loading="signalStore.listStatus.loading"
         :quickBuyValue="quickBuyValue"
         :signalList="filterSignalList"
         :showPop="showPopover"
         :hidePop="scheduleHide"
+        :height="signalStore.signalBoundingRect.height-100"
+        @endReached="endReached"
       />
-      <div
-        v-if="listStatus.loading"
-        class="flex justify-center text-12px text-[#959a9f]"
-      >
-        {{ $t('loading') }}
-      </div>
-    </el-scrollbar>
-    <LargeSignalList
-      v-else
-      v-model="sortParams"
-      :loading="listStatus.loading"
-      :quickBuyValue="quickBuyValue"
-      :signalList="filterSignalList"
-      :showPop="showPopover"
-      :hidePop="scheduleHide"
-      :height="signalStore.signalBoundingRect.height-96"
-      @endReached="endReached"
-    />
+    </div>
     <audio
       ref="signalAudio" controls style="display: none"
       src="/signal.mp3"
@@ -389,10 +408,10 @@ const isShowDate = ref(true)
     <el-popover
       :width="390"
       :virtual-ref="buttonRef"
+      :visible="popVisible"
       popper-class="[--el-bg-color-overlay:--d-1A1A1A-l-FFF] max-h-200px"
       virtual-triggering
       append-to-body
-      trigger="click"
     >
       <div
         @mouseenter="cancelHide"
@@ -457,7 +476,8 @@ const isShowDate = ref(true)
 .signal {
   .el-select {
     --el-select-width: 60px;
-    --el-fill-color-blank: var(--d-222-l-FFF);
+    --el-fill-color-blank: var(--d-222-l-F2F2F2);
+    --el-bg-color-overlay: var(--d-222-l-F2F2F2);
   }
 
   .el-select--small .el-select__wrapper {

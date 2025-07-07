@@ -52,20 +52,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        />
+        >
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -94,13 +94,13 @@
                     <img
                       class="token-icon-tag h-16px"
                       src="/icon-default.png"
-                    />
+                    >
                   </template>
                   <template #placeholder>
                     <img
                       class="token-icon-tag h-16px"
                       src="/icon-default.png"
-                    />
+                    >
                   </template>
                 </el-image>
                 <span
@@ -162,13 +162,14 @@
               />
             </a>
             <a
+              v-if="aiSummary?.headline || aiSummary?.summary"
               v-tooltip.raw="{
-                content: aiSummary?.headline ? `<div class='max-w-[400px]'>${aiSummary.headline}</div>` : `${$t('aiIsAnalyzing')}`,
+                content: `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>`,
                 props:{
                   placement:'top-start'
                 }
               }"
-              class="media-item bg-btn">
+              class="media-item bg-btn clickable">
               <Icon name="custom:ai" class="text-14px"/>
             </a>
           </div>
@@ -371,13 +372,13 @@
                   <img
                     class="token-icon-signal-tag h-16px"
                     src="/icon-default.png"
-                  />
+                  >
                 </template>
                 <template #placeholder>
                   <img
                     class="token-icon-signal-tag h-16px"
                     src="/icon-default.png"
-                  />
+                  >
                 </template>
               </el-image>
               <div
@@ -514,7 +515,7 @@
             :src="formatIconSwap(pair?.amm)"
             onerror="this.src='/icon-default.png'"
             height="16"
-          />
+          >
         </a>
       </div>
       <el-progress
@@ -596,13 +597,13 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/risk-gaoliang.svg"
-        />
+        >
         <img
           v-else-if="statistics_warning_store > 0"
           :width="12"
           class="icon-svg1"
           src="@/assets/images/yichang1-gaoliang.svg"
-        />
+        >
         <img
           v-else-if="
             !statistics_risk_store &&
@@ -612,14 +613,14 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/安全.svg"
-        />
+        >
 
         <img
           v-else
           class="icon-svg1"
           :width="12"
           src="@/assets/images/zhuyi1.svg"
-        />
+        >
         <span
           v-if="
             statistics_risk_store ||
@@ -714,7 +715,6 @@ import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
 import { useEventBus } from '@vueuse/core'
 import { verifyLogin } from '@/utils'
-import type { content } from 'html2canvas/dist/types/css/property-descriptors/content'
 const { token_logo_url } = useConfigStore()
 const tokenStore = useTokenStore()
 const { evmAddress } = storeToRefs(useBotStore())
@@ -843,6 +843,19 @@ watch(evmAddress, (val) => {
     selectedGroup.value = 0
   }
 })
+watch(
+  () => route.params.id,
+  () => {
+    if (evmAddress.value) {
+      getTokenFavoriteCheck()
+      getTokenUserFavoriteGroups() //获取分组数组
+    }
+    useCheckStore().getContractCheckResult(id.value, evmAddress.value)
+    if (chain.value == 'solana') {
+      getRugPull()
+    }
+  }
+)
 const collected = shallowRef(false)
 const loading = shallowRef(false)
 
@@ -864,7 +877,7 @@ function addTokenFavorite() {
   loading.value = true
   addFavorite(id.value, evmAddress.value)
     .then(() => {
-      ElMessage.success('收藏成功！')
+      ElMessage.success(t('collected'))
       collected.value = true
       topEventBus.emit()
     })
@@ -879,7 +892,7 @@ function removeTokenFavorite() {
   loading.value = true
   removeFavorite(id.value, evmAddress.value)
     .then(() => {
-      ElMessage.success('已取消收藏！')
+      ElMessage.success(t('cancelled1'))
       collected.value = false
       topEventBus.emit()
     })

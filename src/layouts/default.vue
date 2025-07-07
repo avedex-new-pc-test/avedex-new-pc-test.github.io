@@ -2,20 +2,22 @@
   <div class="relative">
     <div :style="botStore.connectVisible&&[{filter: 'url(#blur)'}]">
       <TheHeader />
-      <div class="flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px">
+      <div
+        class="relative flex bg-[--d-000-l-F6F6F6] gap-1px pt-1px transition-transform transition-duration-300 overflow-hidden"
+        :style="signalStore.translateStyle"
+      >
         <Draggable
           v-if="signalStore.isLeftFixed&&signalStore.signalVisible"
           class="[&&]:relative shrink-0"
           :min-width="240"
           :max-width="360"
-          :x="0"
           :initial-width="signalStore.fixedWidth"
-          :initial-height="signalStore.winHeight-150"
+          :initial-height="signalStore.winHeight-95"
           :handles="[
           'mr',
           ]"
-          parent
-          @onDragStop="signalStore.onResetPosition"
+          drag-cancel="#drag-disabled"
+          @onDragStop="signalStore.onLeftDragStop"
           @onResizing="signalStore.onFixedResizing"
         >
           <Signal
@@ -31,11 +33,12 @@
           :max-width="360"
           :x="0"
           :initial-width="signalStore.fixedWidth"
-          :initial-height="signalStore.winHeight-150"
+          :initial-height="signalStore.winHeight-95"
           :handles="[
           'ml',
           ]"
-          @onDragStop="signalStore.onResetPosition"
+          drag-cancel="#drag-disabled"
+          @onDragStop="signalStore.onRightDragStop"
           @onResizing="signalStore.onFixedResizing"
         >
           <Signal
@@ -72,13 +75,15 @@
           'bl',
           'ml',
     ]"
+      drag-cancel="#drag-disabled,#drag-settings,#custom-filter"
       @onDragStop="signalStore.onDragStop"
       @onResizing="signalStore.onResizing"
+      @onDrag="signalStore.onDrag"
     >
       <Signal
         :container-width="signalStore.signalBoundingRect.width"
         :scroll-height="signalStore.signalBoundingRect.height-117"
-        class="border-1px border-solid border-[--d-1A1A1A-l-F2F2F2]"
+        class="border-1px border-solid border-[--d-1A1A1A-l-F2F2F2] shadow-[0_5px_10px_0_var(--d-FFFFFF14-l-00000014)]"
       />
     </Draggable>
   </div>

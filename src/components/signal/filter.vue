@@ -48,6 +48,7 @@ const themeStore = useThemeStore()
     >
       <template #reference>
         <Icon
+          id="custom-filter"
           name="custom:filter"
           class="mr-8px text-12px cursor-pointer"
         />
@@ -61,6 +62,7 @@ const themeStore = useThemeStore()
           <el-input
             v-model="tempFilterParams.token"
             size="large"
+            clearable
             :placeholder="$t('searchPlaceholder')"
             class="[&&]:[--el-input-bg-color:--d-333-l-F2F2F2] [&&]:[--el-input-border-color:transparent] [&&]:[--el-input-hover-border-color:--primary-color] [&&]:text-12px"
           />
@@ -75,7 +77,13 @@ const themeStore = useThemeStore()
               :class="{
                 'color-#3f80f7 border-color-#3f80f7':tempFilterParams.history_count === item
               }"
-              @click="tempFilterParams.history_count = item"
+              @click="()=>{
+                if(tempFilterParams.history_count !== item){
+                  tempFilterParams.history_count = item
+                } else {
+                  tempFilterParams.history_count = undefined
+                }
+              }"
             >
               >{{ item }}
             </div>
@@ -91,7 +99,13 @@ const themeStore = useThemeStore()
               :class="{
                 'color-#3f80f7 border-color-#3f80f7':tempFilterParams.mc_curr === item.value
               }"
-              @click="tempFilterParams.mc_curr = item.value"
+              @click="()=>{
+                if(tempFilterParams.mc_curr !== item.value){
+                  tempFilterParams.mc_curr = item.value
+                } else {
+                  tempFilterParams.mc_curr = undefined
+                }
+              }"
             >
               {{ item.label }}
             </div>

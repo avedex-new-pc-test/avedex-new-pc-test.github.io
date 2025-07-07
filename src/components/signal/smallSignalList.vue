@@ -17,24 +17,23 @@ const botStore = useBotStore()
     <div
       v-for="({chain,logo,symbol,id,token,issue_platform,mc,signal_time,price_change_24h},index) in signalList"
       :key="id"
-      class="pb-12px border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2]"
+      class="pb-12px border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2] cursor-pointer"
+      @click="navigateTo(`/token/${token}-${chain}`)"
     >
       <div class="flex justify-between mb-4px">
         <div class="flex items-center gap-8px">
-          <NuxtLink
-            :to="`/token/${token}-${chain}`"
-          >
-            <TokenImg
-              token-class="w-32px h-32px"
-              :row="{
+          <TokenImg
+            token-class="w-32px h-32px"
+            :row="{
               chain,
               logo_url:logo,
               symbol
            }"
-            />
-          </NuxtLink>
+          />
           <div class="flex flex-col gap-4px">
-            <span class="font-500 color-[--d-F5F5F5-l-333] text-16px">{{ symbol }}</span>
+            <span
+                class="font-500 color-[--d-F5F5F5-l-333] text-16px cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis max-w-90px"
+            >{{ symbol }}</span>
             <div class="color-[--d-666-l-999] flex items-center gap-8px">
               <Icon v-copy="token" name="bxs:copy" class="clickable text-10px"/>
               <a
