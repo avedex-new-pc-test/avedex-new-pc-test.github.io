@@ -96,7 +96,26 @@
             <!-- Time -->
             <div class="text-right">
               <div class="color-[--d-999-l-666]">
-                {{ formatTimeFromNow(row.time) }}
+                <TimerCount
+                  v-if="row.time && Number(formatTimeFromNow(row.time, true)) < 60"
+                  :key="row.time"
+                  :timestamp="row.time"
+                  :end-time="60"
+                >
+                  <template #default="{seconds}">
+                    <span>
+                      <template v-if="seconds < 60">
+                        {{ seconds }}{{ t('ss') }}
+                      </template>
+                      <template v-else>
+                        {{ dayjs(row.time * 1000).fromNow() }}
+                      </template>
+                    </span>
+                  </template>
+                </TimerCount>
+                <span v-else>
+                  {{ dayjs(row.time * 1000).fromNow() }}
+                </span>
               </div>
             </div>
           </div>
@@ -153,6 +172,8 @@ import { WSEventType } from '~/utils/constants'
 import { useThrottleFn } from '@vueuse/core'
 import UserRemark from '~/components/userRemark.vue'
 import MarkerTooltip from '../belowChartTable/transactions/markerTooltip.vue'
+import TimerCount from '~/components/timerCount.vue'
+import dayjs from 'dayjs'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 
