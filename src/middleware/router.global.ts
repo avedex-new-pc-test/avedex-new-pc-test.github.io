@@ -13,7 +13,7 @@ export default defineNuxtRouteMiddleware((to) => {
     }
   }
   const needRedirectToOld = redirectToOldUrls.find((url) => to.fullPath.includes(url))
-  const isBtcOrSolana = ['bsc', 'solana'].includes(to.params.chain as string);
+  const isBtcOrSolana = ['bsc', 'solana'].includes(to.params.chain as string)
   if(needRedirectToOld && !isBtcOrSolana) {
     let query = ''
     const botStore = useBotStore()
