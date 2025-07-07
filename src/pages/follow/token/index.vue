@@ -5,7 +5,7 @@ import { VueDraggableNext } from 'vue-draggable-next'
 import { formatNumber2 } from '~/utils/formatNumber'
 import { getChainDefaultIcon } from '~/utils'
 import ArcProgress from '~/components/arcProgress.vue'
-import { getNewFavoriteList, getUserFavoriteGroups, removeFavorite, removeFavoriteGroup, addFavoriteGroup, changeFavoriteGroupName, moveFavoriteGroup, editTokenFavRemark } from '~/api/fav'
+import { getNewFavoriteList, getUserFavoriteGroups, removeFavorite, removeFavoriteGroup, addFavoriteGroup, changeFavoriteGroupName, moveFavoriteGroup, editTokenFavRemark, getGroupChangeIndex } from '~/api/fav'
 
 const botStore = useBotStore()
 const walletStore = useWalletStore()
@@ -53,9 +53,9 @@ const rowData = ref<any>({})
 
 const loading = ref(false)
 const pageData = ref({
-  total: 10,
+  total: 0,
   page: 1,
-  pageSize: 50
+  pageSize: 20
 })
 const tableList = ref<any[]>([])
 const { mode } = storeToRefs(useGlobalStore())
@@ -90,13 +90,6 @@ watch(() => walletStore.address, (newVal) => {
     tabsGroup.value = []
   }
 })
-
-const appendix = (row: any) => {
-  if (row.value?.appendix && isJSON(row.value?.appendix)) {
-    return JSON.parse(row.value?.appendix)
-  }
-  return {}
-}
 
 // 选择分组
 const setActiveTab = (val: number) => {
@@ -159,11 +152,22 @@ const handleMoveGroup = () => {
 }
 
 // 移动分组确认
-const handleMoveGroupConfirm = () => {
+const handleMoveGroupConfirm = async () => {
   console.log(moveList.value)
-  moveGroupPopoverRef.value?.hide()
-  tabsGroup.value = cloneDeep(moveList.value)
-  ElMessage.success(t('success'))
+  const loading = ElLoading.service()
+  try {
+    moveGroupPopoverRef.value?.hide()
+    await getGroupChangeIndex({
+      address: addressValue.value,
+      group: moveList.value.map((item) => item.group_id)
+    })
+    loading.close()
+    tabsGroup.value = cloneDeep(moveList.value)
+    ElMessage.success(t('success'))
+  }catch(err){
+    loading.close()
+    console.log(err)
+  }
 }
 
 const handleRemarkShow = (row: any, event: any) => {
@@ -237,15 +241,16 @@ const getRowGroupChange = async (val: number, row: any) => {
 
 // 获取列表
 const getList = async () => {
-  const res = await getNewFavoriteList({
+  const res: any = await getNewFavoriteList({
     address: addressValue.value,
     group: activeTab.value,
     pageNO: pageData.value.page,
     pageSize: pageData.value.pageSize
   })
+
   const tableData =
-    (res &&
-      res?.map(i => ({
+    (res.data &&
+      res.data?.map((i: any) => ({
         id: `${i.token}-${i.chain}`,
         ...i,
         price_change_24h:
@@ -254,6 +259,7 @@ const getList = async () => {
         group_id: activeTab.value,
       }))) ||
     []
+  pageData.value.total = res.total
   tableList.value = tableData
 }
 
@@ -437,11 +443,11 @@ onMounted(() => {
                   </div>
                   <Icon @click.stop.prevent v-copy="row?.token" name="bxs:copy"
                     class="ml-5px clickable text-[--d-666-l-999]" />
-                  <a class="flex items-center" v-tooltip="appendix(row)?.twitter" :href="appendix(row)?.twitter"
+                  <a class="flex items-center" v-if="row?.twitter" v-tooltip="row?.twitter" :href="row?.twitter"
                     target="_blank" @click.stop>
                     <Icon :name="`custom:twitter`" class="text-[--d-666-l-999] h-14px w-14px" />
                   </a>
-                  <a class="flex items-center" v-tooltip="appendix(row)?.telegram" :href="appendix(row)?.telegram"
+                  <a class="flex items-center" v-if="row?.telegram" v-tooltip="row?.telegram" :href="row?.telegram"
                     target="_blank" @click.stop>
                     <Icon :name="`custom:tg`" class="text-[--d-666-l-999] h-14px w-14px" />
                   </a>
@@ -509,7 +515,7 @@ onMounted(() => {
     </el-table>
 
     <el-pagination class="mt-15px" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
-      layout="prev, pager, next, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" />
+      layout="prev, pager, next, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" @change="getList" />
 
     <el-popover :visible="visibleShow" :virtual-ref="virtualRef" virtual-triggering trigger="click" :width="250">
       <div>
