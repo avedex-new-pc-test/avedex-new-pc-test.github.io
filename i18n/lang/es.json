@@ -262,5 +262,8 @@
   "mechanism_intro": "Adicional",
   "antiWhaleModifiable": "Antiballena modificable",
   "tax": "Impuesto",
-  "filter": "Filtros"
+  "filter": "Filtros",
+  "audited": "Auditado",
+  "check": "Verificar",
+  "copyTip": "La dirección actual {address} es una dirección de contrato, por favor no transfieras fondos, de lo contrario, no se podrán recuperar los activos."
 }

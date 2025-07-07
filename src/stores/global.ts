@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import type{ GetHotTokensResponse } from '@/api/token'
 export const useGlobalStore = defineStore('global', () => {
   const wsStore = useWSStore()
   const localeStore = useLocaleStore()
@@ -35,6 +36,8 @@ export const useGlobalStore = defineStore('global', () => {
       price_change: 0
     }
   ])
+
+   const hotList = shallowRef<GetHotTokensResponse[]>([])
    function sendFooterPriceWs() {
     const data = {
       jsonrpc: '2.0',
@@ -83,6 +86,7 @@ export const useGlobalStore = defineStore('global', () => {
     onmessageFooterPrice,
     footerTokensPrice,
     footerTokensPriceIds,
-    showLeft
+    showLeft,
+    hotList
   }
 })

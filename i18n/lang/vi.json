@@ -324,6 +324,7 @@
   "lastTx": "Giao dịch cuối",
   "origin": "Nguồn",
   "totalPnL": "Tổng lãi/lỗ",
+  "totalPnL2": "lãi/lỗ",
   "bal": "Số dư",
   "soldAll": "Bán hết",
   "ratio": "Tỷ lệ",
@@ -439,5 +440,9 @@
   "MC": "Vốn hóa",
   "default": "Mặc định",
   "ranking": "Xếp hạng",
-  "quick": "Mua nhanh"
+  "quick": "Mua nhanh",
+  "audited": "ĐÃ KIỂM TOÁN",
+  "check": "Kiểm tra",
+  "copyTip": "Địa chỉ {address} là hợp đồng",
+  "wallet_detail_transfer_count": "Số lần chuyển"
 }

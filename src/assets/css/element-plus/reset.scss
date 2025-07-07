@@ -33,8 +33,9 @@
     --el-table-tr-bg-color: var(--d-111-l-FFF);
     thead{
       .el-table__cell{
-        height: 32px;
+        height: 42px;
         padding: 0;
+        font-weight: 400;
       }
     }
     .descending .sort-caret.descending{
@@ -66,7 +67,6 @@
   --el-fill-color-blank: var(--d-FFFFFF0D-l-F2F2F2);
   --el-text-color-regular: var(--d-F5F5F5-l-333);
   --el-table-text-color: var(--d-F5F5F5-l-333);
-
   .el-select__wrapper {
     font-size: 12px;
   }
@@ -87,6 +87,9 @@
   }
 }
 
+.el-button {
+  --el-font-weight-primary: normal;
+}
 .el-button:disabled.is-disabled, .el-button:disabled.is-disabled:hover {
   // color:  var(--el-button-text-color);
   background-color: var(--el-button-bg-color);
@@ -122,8 +125,9 @@
   --el-border-color-light: transparent;
 }
 
-.el-checkbox.el-checkbox {
+.el-checkbox{
   --el-checkbox-font-weight: 400;
+  --el-checkbox-text-color:#000;
 }
 
 .el-select--small .el-select__wrapper.el-select__wrapper {
