@@ -213,7 +213,7 @@ function getCheckFavoriteGroup(token_id: string, address: string) {
 
 function getNewFavoriteList(query: any): Promise<GetFavListResponse[]> {
   const { $api } = useNuxtApp()
-  return $api('https://0ftrfsdb.xyz/v2api/fav_tokens/v1/favorite/v2', {
+  return $api('/v2api/fav_tokens/v1/favorite/v2', {
     method: 'get',
     query
   })
@@ -221,7 +221,7 @@ function getNewFavoriteList(query: any): Promise<GetFavListResponse[]> {
 
 function getRemarksDetail(query: any): Promise<GetFavListResponse[]> {
   const { $api } = useNuxtApp()
-  return $api('https://0ftrfsdb.xyz/v2api/fav_remarks/v1/remarks_detail', {
+  return $api('/v2api/fav_remarks/v1/remarks_detail', {
     method: 'get',
     query
   })
@@ -229,7 +229,7 @@ function getRemarksDetail(query: any): Promise<GetFavListResponse[]> {
 
 function getGroupChangeIndex(data: any): Promise<any> {
   const { $api } = useNuxtApp()
-  return $api('https://0ftrfsdb.xyz/v2api/fav_tokens/v1/favorite/group/changeIndex/v2', {
+  return $api('/v2api/fav_tokens/v1/favorite/group/changeIndex/v2', {
     method: 'post',
     body: data
   })
