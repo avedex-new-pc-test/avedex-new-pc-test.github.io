@@ -21,7 +21,7 @@ type Features = {
     disconnect: () => Promise<void>
   },
   'solana:signAndSendTransaction': {
-    signAndSendTransaction: (data: {transaction: any, account?: any, chain?: string}, options?: {maxRetries?: number, preflightCommitment?: string}) => Promise<[{
+    signAndSendTransaction: (data: {transaction: any, account?: any, chain?: string, options?: {maxRetries?: number, preflightCommitment?: string}}) => Promise<[{
       signature: Uint8Array | string
     }] | {
       signature: Uint8Array | string
@@ -421,7 +421,7 @@ export async function sendSolanaSwapTransaction(quoteResponse: { transaction?: a
   const { referralTokenAccountPubKey, referralTokenAccount } = await getReferralTokenAccountPubKey(mint)
   const params: any = {userPublicKey: fromPubkey.toString(), quoteResponse, dynamicComputeUnitLimit: true,
     prioritizationFeeLamports: {
-      autoMultiplier: 10,
+      autoMultiplier: 1,
       // priorityLevelWithMaxLamports: {"priorityLevel": "veryHigh", "maxLamports": 2123423}
     }
   }
@@ -470,13 +470,14 @@ async function signAndSend(tx: VersionedTransaction | Transaction): Promise<stri
     }) || Promise.resolve('')
   }
 
+  const account = wallet?.accounts?.find(i => i?.address === walletStore.address)
   const result = await wallet?.features?.['solana:signAndSendTransaction']?.signAndSendTransaction({
     transaction: serialized,
-    account: wallet?.accounts?.[0] || '',
-    chain: 'solana:mainnet'
-  }, {
-    // maxRetries: 2,
-    preflightCommitment: 'processed',
+    account: account || '',
+    chain: 'solana:mainnet',
+    options: {
+      preflightCommitment: 'processed',
+    }
   })
 
   const signature = Array.isArray(result) ? result?.[0]?.signature : result?.signature

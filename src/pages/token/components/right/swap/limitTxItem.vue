@@ -257,6 +257,7 @@ const walletStore = useWalletStore()
 const localeStore = useLocaleStore()
 const ConfigStore = useConfigStore()
 const themeStore = useThemeStore()
+const swapStore = useSwapStore()
 const { t } = useI18n()
 
 const loadingSolana = ref<Record<string, boolean>>({})
@@ -344,7 +345,7 @@ function _cancelLimitOrder(item: { chain: string; from_token?: string; from_amou
     })
 }
 
-function cancelSolanaLimitOrder(item: { chain?: string; orderKey?: any; version?: any }, fun?: () => void) {
+function cancelSolanaLimitOrder(item: any, fun?: () => void) {
   loadingSolana.value[item.orderKey] = true
   const cancelFun = item?.version === 'v1' ? cancelSolanaLimitOrderTxV1 : cancelSolanaLimitOrderTx
   return cancelFun(item.orderKey).then((res: { wait: () => any }) => {
@@ -355,6 +356,7 @@ function cancelSolanaLimitOrder(item: { chain?: string; orderKey?: any; version?
     return res.wait()
   }).then((res: any) => {
     console.log(res)
+    refreshTokenBalance(item)
     setTimeout(() => {
       emit('refresh', item, loadingSolana.value)
     }, 3000)
@@ -364,6 +366,13 @@ function cancelSolanaLimitOrder(item: { chain?: string; orderKey?: any; version?
   }).finally(() => {
     // this.loading = false
   })
+}
+
+function refreshTokenBalance(item: { chain: string; from_token: string }) {
+  if (!(item.chain === 'solana' || item.from_token === NATIVE_TOKEN)) {
+    return
+  }
+  swapStore.getTokenDetails()
 }
 
 function formatStatus(item: { status: number; created_at: number }) {
