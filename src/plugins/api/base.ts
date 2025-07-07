@@ -30,7 +30,7 @@ export function onRequest({ options, request }: MyFetchContext) {
     if (analogDeviceId && !url?.includes('/botapi')) {
       options.headers.set('ave-udid', analogDeviceId)
     }
-    const currentAccount = localStorage.getItem('currentAccount')
+    const currentAccount = useWalletStore().address
     if (currentAccount) {
       const signature = useWalletStore().walletSignature?.[currentAccount] || ''
       if (signature) {
