@@ -72,7 +72,10 @@
     />
   </div>
   <!-- <PageBlank v-else /> -->
-  <PageOther :address="userAddress" :chain="chain"/>
+  <PageOther
+    :address="userAddress"
+    :chain="chain"
+  />
 </template>
 <script setup>
 import Statistic from './components/statistic.vue'

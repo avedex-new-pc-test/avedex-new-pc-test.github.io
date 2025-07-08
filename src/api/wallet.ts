@@ -160,3 +160,13 @@ export function setUserTokenStatus(
     }
   })
 }
+
+// 获取黑白名单
+export function getUserTokenList(address:string,chain:string) {
+  const { $api } = useNuxtApp()
+  return $api(`/v1api/v3/users/balance/token?address=${address}&chain=${chain}`, {
+    method: 'get',
+  })
+}
+
+

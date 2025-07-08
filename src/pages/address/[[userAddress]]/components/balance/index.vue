@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <div class="w-full px-25px font-500 text-16px">
+    <div class="w-full px-20px font-500 text-16px">
       <div class=" my-10px mb-0">{{ $t('balanceOverview') }}</div>
       <div class="mb-10px">
         <label
@@ -35,7 +35,7 @@
         </label>
       </div>
     </div>
-    <div class="content px-25px">
+    <div class="content px-20px">
       <AssetOverview
       :is="componentActive"
       :ref="componentActive"
@@ -47,7 +47,6 @@
 <script setup>
 import AssetOverview from './assetOverview.vue'
 // import AddToken from './addToken.vue'
-
 const isHide = ref(true)
 </script>
 
