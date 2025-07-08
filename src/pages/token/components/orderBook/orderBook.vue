@@ -21,9 +21,12 @@
 
     <!-- 筛选标签 -->
     <div class="px-12px mb-10px">
-      <div class="flex items-center gap-8px overflow-x-auto scrollbar-hide">
+      <div 
+        ref="tabsContainer"
+        class="flex items-center gap-8px whitespace-nowrap overflow-x-auto scrollbar-hide"
+      >
         <button
-          v-for="tab in tabs"
+          v-for="(tab, index) in tabs"
           :key="tab.value"
           :class="[
             'shrink-0 text-12px px-12px py-4px rounded-4px border-none cursor-pointer',
@@ -31,7 +34,7 @@
               ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]'
               : 'bg-transparent color-[--d-999-l-666]'
           ]"
-          @click="setActiveTab(tab.value)"
+          @click="setActiveTab(tab.value, index)"
         >
           {{ tab.label }}
         </button>
@@ -44,10 +47,23 @@
         <!-- 表格头部 -->
         <div class="grid grid-cols-4 gap-8px py-8px border-b-1px border-b-solid border-b-[rgba(255,255,255,.03)] text-12px color-[--d-999-l-666]">
           <div class="text-left flex items-center gap-2px">
-            {{ t('amount') }} 
-            <Icon name="i-f7:money-dollar-circle-fill" class="text-md"/>
+            {{ tableView.isAmount ? t('amountB') : t('swapPrice') }}
+            <Icon 
+              name="i-f7:money-dollar-circle-fill" 
+              :class="`${tableView.isAmount ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'} text-md cursor-pointer`"
+              @click="tableView.isAmount = !tableView.isAmount"
+            />
           </div>
-          <div class="text-center">{{ t('price') }}</div>
+          <div class="text-center">
+            <div class="flex items-center justify-center gap-2px">
+              <span>{{ t('amountU') }}</span>
+              <Icon
+                name="i-f7:money-dollar-circle-fill"
+                :class="`${tableView.isVolUSDT ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'} cursor-pointer text-md`"
+                @click="tableView.isVolUSDT = !tableView.isVolUSDT"
+              />
+            </div>
+          </div>
           <div class="text-center">{{ t('makers') }}</div>
           <div class="text-right">{{ t('time') }}</div>
         </div>
@@ -63,25 +79,51 @@
             class="grid grid-cols-4 gap-8px py-2 hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
             @mouseenter="isPausedTxs = true"
             @mouseleave="isPausedTxs = false"
-            @click="onRowClick(row)"
+            @click="onRowClick({ rowData: row} as any)"
           >
             <!-- Amount -->
             <div class="text-left">
-              <div :class="getRowColor(row)" class="font-medium">
-                ${{ formatNumber(getAmount(row, true, true), 2) }}
+              <div class="color-[--d-E9E9E9-l-222]">
+                <template v-if="tableView.isAmount">
+                  {{ formatNumber(getAmount(row), 2) }}
+                </template>
+                <template v-else>
+                  {{ formatNumber(getPrice(row), 2) }}
+                </template>
               </div>
             </div>
 
             <!-- Price -->
             <div class="text-center">
-              <div class="color-[--d-E9E9E9-l-222]">
-                ${{ formatNumber(getPrice(row), 4) }}
+              <div :class="getRowColor(row)" class="font-medium">
+                <template v-if="tableView.isVolUSDT">
+                  ${{ formatNumber(getAmount(row, true, true), 2) }}
+                </template>
+                <template v-else>
+                  {{ formatNumber(getAmount(row, true, false), 4) }} ETH
+                </template>
               </div>
             </div>
 
             <!-- Trader -->
             <div class="text-center">
               <div class="flex items-center justify-center gap-4px">
+                <template v-if="['solana', 'bsc'].includes(row.chain) && row.senderProfile">
+                  <Icon
+                    v-if="hasNewAccount(row)"
+                    v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`" name="custom:new-account"
+                    class="mr-3px shrink-0"/>
+                  <Icon
+                    v-if="hasClearedAccount(row)" v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
+                    name="custom:cleared-account" class="mr-3px shrink-0"/>
+                  <Icon
+                    v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
+                    name="custom:big" class="mr-3px shrink-0"/>
+                </template>
+                <SignalTags
+                    tagClass="mr-3px" 
+                    :tags="(row.newTags||[]).map((el: any)=> tagStore.matchTag(el.type))"
+                    :walletAddress="row.wallet_address" :chain="row.chain"/>
                 <UserRemark
                   :remark="row.remark"
                   :address="row.wallet_address"
@@ -171,8 +213,8 @@ import { computed, ref, shallowRef, watch, onMounted, onUnmounted, triggerRef } 
 import { storeToRefs } from 'pinia'
 import { useTokenStore } from '~/stores/token'
 import { useWSStore } from '~/stores/ws'
-import { getPairTxs, type GetPairTxsResponse } from '~/api/token'
-import { getAddressAndChainFromId, formatTimeFromNow, getWSMessage } from '~/utils'
+import { getTokenTxs, type IGetTokenTxsResponse } from '~/api/token'
+import { getAddressAndChainFromId, formatTimeFromNow, getWSMessage, uuid } from '~/utils'
 import { useRoute } from 'vue-router'
 import { filterLanguage } from '~/pages/token/components/kLine/utils'
 import { WSEventType } from '~/utils/constants'
@@ -181,12 +223,12 @@ import UserRemark from '~/components/userRemark.vue'
 import MarkerTooltip from '../belowChartTable/transactions/markerTooltip.vue'
 import TimerCount from '~/components/timerCount.vue'
 import dayjs from 'dayjs'
-import { ElScrollbar } from 'element-plus'
+import { ElScrollbar, type RowEventHandlerParams } from 'element-plus'
 
 // const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 
 // 扩展的交易数据类型
-type ExtendedTxResponse = GetPairTxsResponse & {
+type ExtendedTxResponse = IGetTokenTxsResponse & {
   count?: number
   senderProfile?: any
   wallet_tag?: string[]
@@ -205,18 +247,21 @@ defineEmits<{
 
 const { t } = useI18n()
 const route = useRoute()
-const { totalHolders, pairAddress, token } = storeToRefs(useTokenStore())
+const { totalHolders, pairAddress, pair, token } = storeToRefs(useTokenStore())
 
 const wsStore = useWSStore()
+const tagStore = useTagStore()
+const tokenDetailSStore = useTokenDetailsStore()
 
 // 状态管理
+const tabsContainer = ref<HTMLElement | null>(null)
 const activeTab = shallowRef('all')
 const isPausedTxs = shallowRef(false)
 const isMeActive = ref(false)
 const listStatus = ref({
   loadingTxs: false
 })
-const pairTxs = shallowRef<ExtendedTxResponse[]>([])
+const tokenTxs = shallowRef<ExtendedTxResponse[]>([])
 const wsPairCache = shallowRef<ExtendedTxResponse[]>([])
 const tableFilter = ref({
   markerAddress: '',
@@ -226,6 +271,11 @@ const txCount = shallowRef<{ [key: string]: number }>({})
 const makerTooltip = ref()
 const currentRow = shallowRef<ExtendedTxResponse>({} as any)
 
+// 表格视图状态
+const tableView = ref({
+  isVolUSDT: true,
+  isAmount: true,
+})
 
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
@@ -246,6 +296,14 @@ const tabs = computed(() => {
     value: 'all'
   },
   {
+    label: t('buy3'),
+    value: 'buy'
+  },
+  {
+    label: t('sell3'),
+    value: 'sell'
+  },
+  {
     label: 'Smarter',
     value: 'smarter'
   },
@@ -263,18 +321,19 @@ const addressAndChain = computed(() => {
   }
 })
 
-const filterTableList = computed(() => {
-  let tableList = [...pairTxs.value]
+const filterTableListMap = {
+  all: () => [...tokenTxs.value].toSorted((a, b) => b.time - a.time),
+  buy: () => tokenTxs.value.filter(el => isBuy((el))),
+  sell: () => tokenTxs.value.filter(el => !isBuy(el))
+}
 
-  // 根据 activeTab 筛选
-  if (activeTab.value !== 'all') {
-    if (activeTab.value === 'smarter') {
-      // 智能钱包筛选逻辑
-      tableList = tableList.filter(item => item.wallet_tag_v2?.includes('smart'))
-    } else {
-      // 其他标签筛选
-      tableList = tableList.filter(item => item.wallet_tag_v2?.includes(activeTab.value))
-    }
+const filterTableList = computed(() => {
+  let tableList = [...tokenTxs.value]
+
+  if (activeTab.value in filterTableListMap) {
+    tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
+  } else {
+    tableList = tokenTxs.value
   }
 
   // Maker 地址筛选
@@ -283,7 +342,7 @@ const filterTableList = computed(() => {
       item.wallet_address.toLowerCase() === tableFilter.value.markerAddress.toLowerCase()
     )
   }
-
+  console.log('%c [ tableList ]-318', 'font-size:13px; background:pink; color:#bf2c9f;', tableList)
   return tableList
 })
 
@@ -291,7 +350,7 @@ const filterTableList = computed(() => {
 watch(() => pairAddress.value, () => {
   if (pairAddress.value && props.modelValue) {
     txCount.value = {}
-    _getPairTxs()
+    _getTokenTxs()
     subscribeToTxs()
   }
 })
@@ -301,7 +360,7 @@ watch(() => props.modelValue, (isOpen) => {
   if (isOpen && pairAddress.value) {
     // orderBook 打开时，获取数据并订阅
     txCount.value = {}
-    _getPairTxs()
+    _getTokenTxs()
     subscribeToTxs()
   } else if (!isOpen) {
     // orderBook 关闭时，取消订阅
@@ -339,16 +398,17 @@ function unsubscribeFromTxs() {
   })
 }
 
-async function _getPairTxs() {
+async function _getTokenTxs() {
   try {
     listStatus.value.loadingTxs = true
     const { tag_type } = tableFilter.value
-    const getPairTxsParams = {
-      pair: pairAddress.value + '-' + addressAndChain.value.chain,
-      tag_type
+    const getTokenTxsParams = {
+      token_id: route.params.id as string,
+      tag_type,
+      maker: tableFilter.value.markerAddress
     }
-    const res = await getPairTxs(getPairTxsParams)
-    pairTxs.value = (res || []).reverse().map(val => {
+    const res = await getTokenTxs(getTokenTxsParams)
+    tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       const { wallet_tag, topN } = getWalletTag(val)
       return {
@@ -356,7 +416,8 @@ async function _getPairTxs() {
         wallet_tag,
         topN,
         count: txCount.value[val.wallet_address],
-        senderProfile: JSON.parse(val.profile || '{}')
+        senderProfile: JSON.parse(val.profile || '{}'),
+        uuid: uuid()
       }
     }).reverse()
   } catch (e) {
@@ -366,7 +427,7 @@ async function _getPairTxs() {
   }
 }
 
-function getWalletTag(val: GetPairTxsResponse) {
+function getWalletTag(val: IGetTokenTxsResponse) {
   const wallet_tagStr = val.wallet_tag_v2 || ''
   let topN = ''
   let wallet_tag: string[] = []
@@ -386,7 +447,7 @@ function getWalletTag(val: GetPairTxsResponse) {
   }
 }
 
-function isBuy(row: GetPairTxsResponse) {
+function isBuy(row: IGetTokenTxsResponse) {
   if (row.from_address &&
       addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
     return false
@@ -398,24 +459,35 @@ function isBuy(row: GetPairTxsResponse) {
   return false
 }
 
-function getRowColor(row: GetPairTxsResponse) {
+function getRowColor(row: IGetTokenTxsResponse) {
   return isBuy(row) ? 'color-#12B886' : 'color-#FF646D'
 }
 
-function getPrice(row: GetPairTxsResponse) {
+
+function getPrice(row: IGetTokenTxsResponse, isShowToken = false) {
+  // route.params。id 同步更改，而接口异步请求，此时更新该值变成了 0
   const tokenAddress = addressAndChain.value.address
-  if (row.from_address &&
-      tokenAddress.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
-    return row.from_price_usd
+  if ('from_address' in row) {
+    if (
+      row.from_address &&
+      tokenAddress.toLowerCase?.() === row.from_address?.toLowerCase?.()
+    ) {
+      return isShowToken ? row.from_price_eth : row.from_price_usd
+    }
   }
-  if (row.to_address &&
-      tokenAddress.toLowerCase?.() === row.to_address?.toLowerCase?.()) {
-    return row.to_price_usd
+
+  if ('to_address' in row) {
+    if (
+      row.to_address &&
+      tokenAddress.toLowerCase?.() === row.to_address?.toLowerCase?.()
+    ) {
+      return isShowToken ? row.to_price_eth : row.to_price_usd
+    }
   }
+
   return 0
 }
-
-function getAmount(row: GetPairTxsResponse, needPrice = false, isVolUSDT = false) {
+function getAmount(row: IGetTokenTxsResponse, needPrice = false, isVolUSDT = false) {
   if (row.from_address &&
       addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
     return row.from_amount * (
@@ -432,12 +504,12 @@ function getAmount(row: GetPairTxsResponse, needPrice = false, isVolUSDT = false
 }
 
 
-
-function setActiveTab(val: string) {
+function setActiveTab(val: string, index: number) {
   activeTab.value = val
   txCount.value = {}
   tableFilter.value.tag_type = val
-  _getPairTxs()
+  _getTokenTxs()
+  scrollTabToCenter(tabsContainer,index)
 }
 
 function toggleClickMe() {
@@ -451,9 +523,38 @@ function toggleClickMe() {
 }
 
 
-function onRowClick(row: GetPairTxsResponse) {
-  // 处理行点击事件
-  console.log('Row clicked:', row)
+function onRowClick({rowData}: RowEventHandlerParams) {
+  console.log('%c [ rowData ]-527', 'font-size:13px; background:pink; color:#bf2c9f;', rowData)
+  
+  if (!token.value) {
+    return
+  }
+  if (SupportFullDataChain.includes(token.value.chain)) {
+    const { symbol, logo_url, chain, token: _token } = token.value
+    const { target_token, token0_address, token0_symbol, token1_symbol, pair: pairAddress } = pair.value!
+    tokenDetailSStore.$patch({
+      drawerVisible: true,
+      tokenInfo: {
+        id: route.params.id! as string,
+        symbol,
+        logo_url,
+        chain,
+        address: _token,
+        remark: rowData.remark!,
+      },
+      pairInfo: {
+        target_token,
+        token0_address,
+        token0_symbol,
+        token1_symbol,
+        pairAddress
+      },
+      user_address: rowData.wallet_address
+    })
+  } else {
+    window.open(formatExplorerUrl(token.value.chain, rowData.transaction, 'tx'))
+  }
+
 }
 
 function updateRemark() {
@@ -510,7 +611,7 @@ onMounted(() => {
   onTxsLiqMessage()
   // 如果组件挂载时 orderBook 已经打开，则获取数据
   if (props.modelValue && pairAddress.value) {
-    _getPairTxs()
+    _getTokenTxs()
     subscribeToTxs()
   }
 })
@@ -544,16 +645,16 @@ function onTxsLiqMessage() {
       wsPairCache.value.unshift(item)
       console.log(isPausedTxs.value)
       if (!isPausedTxs.value) {
-        updatePairTxs()
+        updatetokenTxs()
       }
     }
   }, 'tx_history')
 }
 
-const updatePairTxs = useThrottleFn(() => {
-  pairTxs.value.unshift(...wsPairCache.value)
+const updatetokenTxs = useThrottleFn(() => {
+  tokenTxs.value.unshift(...wsPairCache.value)
   wsPairCache.value.length = 0
-  triggerRef(pairTxs)
+  triggerRef(tokenTxs)
 }, 500)
 
 </script>

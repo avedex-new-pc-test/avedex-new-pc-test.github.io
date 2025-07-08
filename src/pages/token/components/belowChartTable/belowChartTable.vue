@@ -22,7 +22,7 @@ const components = {
   Holders: defineAsyncComponent(() => import('./holders/index.vue')),
   LP: defineAsyncComponent(() => import('./lp/index.vue')),
   Attention: '',
-  // Orders: defineAsyncComponent(() => import('./orders/index.vue')),
+  Orders: defineAsyncComponent(() => import('./orders/index.vue')),
   MySwap: defineAsyncComponent(() => import('./mySwap/index.vue')),
 }
 const tabs = computed(() => {
@@ -54,9 +54,27 @@ watch(
   }
 )
 
+// 监听 orderBook 显示状态变化
+watch(
+  () => orderBookVisible.value,
+  (isVisible) => {
+    if (isVisible) {
+      // 当 orderBook 打开时，如果当前是 Orders 或 Transactions tab，切换到 Holders
+      if (activeTab.value === 'Orders' || activeTab.value === 'Transactions') {
+        activeTab.value = 'Holders'
+      }
+    }
+  },
+  { immediate: true }
+)
+
 const tabsList = computed(() => {
   return tabs.value.filter(item => {
     if (item.component === 'Orders' && !botStore?.userInfo?.evmAddress) {
+      return false
+    }
+    // 当 orderBook 显示时，隐藏 Transactions tab
+    if (item.component === 'Transactions' && orderBookVisible.value) {
       return false
     }
     return true
