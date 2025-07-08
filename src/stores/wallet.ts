@@ -121,7 +121,8 @@ export const useWalletStore = defineStore('wallet', () => {
   function signMessage(msg: string) {
     if (!provider.value) return
     if (chain.value === 'solana' || chain.value === 'sui') {
-      return (provider.value as Wallet)?.signMessage?.({
+      const _provider = (chain.value === 'solana' ? solanaWallets.value?.find(i => i.name === walletName.value) : suiWallets.value?.find(i => i.name === walletName.value)) || provider.value
+      return (_provider as Wallet)?.signMessage?.({
         message: decodeUTF8(msg),
       }).then(async res => bs58.encode(res.signature))
     } else if (chain.value === 'tron') {
@@ -132,7 +133,7 @@ export const useWalletStore = defineStore('wallet', () => {
   }
 
   function signMessageForFavorite() {
-    if (!address.value) return Promise.resolve('')
+    if (!address.value || !provider.value) return Promise.resolve('')
     if (walletSignature.value[address.value]) return Promise.resolve('')
     const msg = `Ave.ai requests ${address.value} address signature to bind favorite list`
     return signMessage(msg)?.then((res) => {
