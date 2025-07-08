@@ -7,7 +7,7 @@ import { getTokensPrice } from '@/api/token'
 import { getRaydiumReferralTokenAccountPubKey, getSolanaPumpSwapTx, getSolanaMoonshotSwapQuote, quoteSolanaRaydiumSwap, getReferralTokenAccountPubKey } from './utils/solana'
 import { getSolanaSwapQuote, getSolanaSwapTransaction } from '@/api/swap/solana'
 import BigNumber from 'bignumber.js'
-import bs58 from 'bs58'
+// import bs58 from 'bs58'
 
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 type Features = {
@@ -29,6 +29,14 @@ type Features = {
   },
   'solana:signTransaction': {
     signTransaction: (data: {transaction: any, account?: any, chain?: string}) => Promise<Array<{ signedTransaction: Uint8Array }> | { signedTransaction: Uint8Array }>
+  },
+  'solana:signMessage': {
+    signMessage: (msg: {
+      message: Uint8Array
+      account?: any
+    }) => Promise<{
+      signature: Uint8Array
+    }>
   }
 }
 
@@ -36,7 +44,8 @@ export type Wallet = MakeOptional<ReturnType<Wallets['get']>[number], 'features'
   url?: string
   features?: Features
   signMessage?: (msg: {
-    message: Uint8Array
+    message: Uint8Array,
+    account?: any
   }) => Promise<{
     signature: Uint8Array
   }>

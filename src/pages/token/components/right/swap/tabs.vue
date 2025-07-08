@@ -1,6 +1,6 @@
 <template>
   <div class="tabs">
-    <button v-for="(item, index) in tabs" :key="index" class="tab-item" :class="{ active: item.value === activeTab, [`tab-${item.value}`]: true }" type="button" :disabled="getChainInfo(walletStore?.chain || '')?.vm_type !== 'evm' && walletStore.chain !== 'solana'" @click="switchTab(item.value as TabItem)">
+    <button v-for="(item, index) in tabs" :key="index" class="tab-item" :class="{ active: item.value === activeTab, [`tab-${item.value}`]: true }" type="button" :disabled="getChainInfo(walletStore?.chain || '')?.vm_type !== 'evm' && !SupportChains.includes(walletStore?.chain || '')" @click="switchTab(item.value as TabItem)">
       <span>{{ item.name }}</span>
     </button>
   </div>
@@ -17,6 +17,8 @@ defineProps({
   }
 })
 const emit = defineEmits(['update:activeTab'])
+
+const SupportChains = ['sui', 'solana']
 
 const tabs = computed(() => {
   return [

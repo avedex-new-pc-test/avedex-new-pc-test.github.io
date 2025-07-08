@@ -69,8 +69,9 @@ export function onResponse({ response, request }: MyFetchContext) {
   if ((request as string)?.includes('/aveswap/v1/sui/')) {
     if (data?.status === 0) {
       response._data = data?.data || data
+      return
     } else {
-       throw new Error(data?.msg)
+      throw new Error(data?.msg)
     }
   } else {
     if (data?.status === 0 && data?.msg !== 'Success') {

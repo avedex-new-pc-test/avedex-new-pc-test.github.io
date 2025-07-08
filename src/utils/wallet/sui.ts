@@ -21,6 +21,14 @@ type Features = {
       chain: string
       account?: any
     }) => Promise<{ digest: string }>
+  },
+  'sui:signMessage': {
+    signMessage: (msg: {
+      message: Uint8Array
+      account?: any
+    }) => Promise<{
+      signature: Uint8Array
+    }>
   }
 }
 export type Wallet = MakeOptional<ReturnType<Wallets['get']>[number], 'features' | 'accounts'> & {
