@@ -456,37 +456,49 @@ async function signAndSend(tx: VersionedTransaction | Transaction): Promise<stri
       requireAllSignatures: false
     })
   }
-  if (wallet.name === 'Trust') {
-    return wallet?.features?.['solana:signTransaction']?.signTransaction({
-      transaction: serialized,
-      account: wallet?.accounts?.[0] || '',
-      chain: 'solana:mainnet'
-    }).then(async(res) => {
-      const signedTransaction = Array.isArray(res) ? res?.[0]?.signedTransaction : res?.signedTransaction
-      // VersionedTransaction.deserialize(msg)
-      const signatureTx = VersionedTransaction.deserialize(signedTransaction)
-      const signatureStr = await sendRawTransaction(signatureTx.serialize())
-      return signatureStr as string
-    }) || Promise.resolve('')
-  }
+  // if (wallet.name === 'Trust') {
+  //   return wallet?.features?.['solana:signTransaction']?.signTransaction({
+  //     transaction: serialized,
+  //     account: wallet?.accounts?.[0] || '',
+  //     chain: 'solana:mainnet'
+  //   }).then(async(res) => {
+  //     const signedTransaction = Array.isArray(res) ? res?.[0]?.signedTransaction : res?.signedTransaction
+  //     // VersionedTransaction.deserialize(msg)
+  //     const signatureTx = VersionedTransaction.deserialize(signedTransaction)
+  //     const signatureStr = await sendRawTransaction(signatureTx.serialize())
+  //     return signatureStr as string
+  //   }) || Promise.resolve('')
+  // }
 
-  const account = wallet?.accounts?.find(i => i?.address === walletStore.address)
-  const result = await wallet?.features?.['solana:signAndSendTransaction']?.signAndSendTransaction({
+  // const account = wallet?.accounts?.find(i => i?.address === walletStore.address)
+  // const result = await wallet?.features?.['solana:signAndSendTransaction']?.signAndSendTransaction({
+  //   transaction: serialized,
+  //   account: account || '',
+  //   chain: 'solana:mainnet',
+  //   options: {
+  //     preflightCommitment: 'processed',
+  //   }
+  // })
+
+
+  // const signature = Array.isArray(result) ? result?.[0]?.signature : result?.signature
+  // // 👇 统一转换为 base58 哈希
+  // const signatureStr = typeof signature === 'string'
+  //   ? signature
+  //   : bs58.encode(signature as Uint8Array)
+
+  // return signatureStr
+  return wallet?.features?.['solana:signTransaction']?.signTransaction({
     transaction: serialized,
-    account: account || '',
-    chain: 'solana:mainnet',
-    options: {
-      preflightCommitment: 'processed',
-    }
-  })
-
-  const signature = Array.isArray(result) ? result?.[0]?.signature : result?.signature
-  // 👇 统一转换为 base58 哈希
-  const signatureStr = typeof signature === 'string'
-    ? signature
-    : bs58.encode(signature as Uint8Array)
-
-  return signatureStr
+    account: wallet?.accounts?.[0] || '',
+    chain: 'solana:mainnet'
+  }).then(async(res) => {
+    const signedTransaction = Array.isArray(res) ? res?.[0]?.signedTransaction : res?.signedTransaction
+    // VersionedTransaction.deserialize(msg)
+    const signatureTx = VersionedTransaction.deserialize(signedTransaction)
+    const signatureStr = await sendRawTransaction(signatureTx.serialize())
+    return signatureStr as string
+  }) || Promise.resolve('')
 }
 
 async function sendRawTransaction (signedTx: Parameters<Connection['sendRawTransaction']>[0]) {
