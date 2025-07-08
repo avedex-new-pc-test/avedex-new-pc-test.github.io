@@ -100,7 +100,10 @@
                   ${{ formatNumber(getAmount(row, true, true), 2) }}
                 </template>
                 <template v-else>
-                  {{ formatNumber(getAmount(row, true, false), 4) }} ETH
+                  {{ formatNumber(getAmount(row, true, false), 4) }}
+                  <span class="color-[--d-999-l-666]">
+                    {{ getChainInfo(row.chain)?.main_name }}
+                  </span>
                 </template>
               </div>
             </div>
@@ -177,6 +180,7 @@
       :virtual-ref="makerTooltip"
       :currentRow="currentRow"
       :addressAndChain="addressAndChain"
+      v-model="markerTooltipVisible"
     >
       <template v-if="currentRow.senderProfile">
         <Icon
@@ -257,6 +261,7 @@ const tokenDetailSStore = useTokenDetailsStore()
 const tabsContainer = ref<HTMLElement | null>(null)
 const activeTab = shallowRef('all')
 const isPausedTxs = shallowRef(false)
+const markerTooltipVisible = shallowRef(false)
 const isMeActive = ref(false)
 const listStatus = ref({
   loadingTxs: false
@@ -276,6 +281,9 @@ const tableView = ref({
   isVolUSDT: true,
   isAmount: true,
 })
+
+// 只在交易历史接口更新之后更新，防止 route 地址更新导致列表数据更新异常
+const realAddress = shallowRef(getAddressAndChainFromId(route.params.id as string).address)
 
 const tabs = computed(() => {
   const arr: Array<{ label: string, value: string }> = []
@@ -329,7 +337,8 @@ const filterTableListMap = {
 
 const filterTableList = computed(() => {
   let tableList = [...tokenTxs.value]
-
+  console.log('%c [ tableList ]-338', 'font-size:13px; background:pink; color:#bf2c9f;', tableList)
+  
   if (activeTab.value in filterTableListMap) {
     tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
   } else {
@@ -354,6 +363,7 @@ watch(() => pairAddress.value, () => {
     subscribeToTxs()
   }
 })
+console.log('%c [ props.modelValue ]-359', 'font-size:13px; background:pink; color:#bf2c9f;', props.modelValue)
 
 // 监听 modelValue 变化（orderBook 打开/关闭）
 watch(() => props.modelValue, (isOpen) => {
@@ -365,6 +375,31 @@ watch(() => props.modelValue, (isOpen) => {
   } else if (!isOpen) {
     // orderBook 关闭时，取消订阅
     unsubscribeFromTxs()
+  }
+})
+
+watch(() => wsStore.wsResult[WSEventType.TX], data => {
+  if (!data || listStatus.value.loadingTxs) {
+    return
+  }
+  const {wallet_address, from_address, to_address} = data.tx
+  // 不是当前币种的数据
+  if (from_address !== realAddress.value && to_address !== realAddress.value) {
+    return
+  }
+  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
+  const { topN, wallet_tag } = getWalletTag(data.tx)
+  const item = {
+    ...data.tx,
+    topN, wallet_tag,
+    senderProfile: JSON.parse(data.tx.profile || '{}'),
+    count: txCount.value[wallet_address],
+    time: Math.min(Math.floor(Date.now() / 1000), data.tx.time),
+    uuid: uuid()
+  }
+  wsPairCache.value.unshift(item)
+  if (!isPausedTxs.value) {
+    updatetokenTxs()
   }
 })
 
@@ -509,7 +544,39 @@ function setActiveTab(val: string, index: number) {
   txCount.value = {}
   tableFilter.value.tag_type = val
   _getTokenTxs()
-  scrollTabToCenter(tabsContainer,index)
+
+  // 滚动到 tab 中心位置
+  if (tabsContainer.value) {
+    const container = tabsContainer.value
+    const tab = container.children[index] as HTMLElement
+    if (tab) {
+      // 获取容器的可视区域宽度
+      const containerWidth = container.clientWidth
+
+      // 获取 tab 的位置和宽度
+      const tabRect = tab.getBoundingClientRect()
+      const containerRect = container.getBoundingClientRect()
+
+      // 计算 tab 相对于容器的位置
+      const tabRelativeLeft = tabRect.left - containerRect.left + container.scrollLeft
+      const tabWidth = tabRect.width
+
+      // 计算 tab 的中心点
+      const tabCenter = tabRelativeLeft + (tabWidth / 2)
+
+      // 计算目标滚动位置（让 tab 中心对齐到容器中心）
+      const targetScrollLeft = tabCenter - (containerWidth / 2)
+
+      // 限制滚动范围
+      const maxScrollLeft = container.scrollWidth - containerWidth
+      const finalScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScrollLeft))
+
+      container.scrollTo({
+        left: finalScrollLeft,
+        behavior: 'smooth'
+      })
+    }
+  }
 }
 
 function toggleClickMe() {
@@ -564,6 +631,7 @@ function updateRemark() {
 function openMarkerTooltip(row: ExtendedTxResponse, e: MouseEvent) {
   if (row) {
     makerTooltip.value = e.currentTarget
+    console.log(row)
     if (currentRow.value?.wallet_address === row.wallet_address) {
       return
     }
@@ -643,7 +711,7 @@ function onTxsLiqMessage() {
         count: txCount.value[wallet_address]
       }
       wsPairCache.value.unshift(item)
-      console.log(isPausedTxs.value)
+
       if (!isPausedTxs.value) {
         updatetokenTxs()
       }
