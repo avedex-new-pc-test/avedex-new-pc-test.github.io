@@ -938,7 +938,7 @@ function _getSolanaLimitOrder(orderKey: string, type = 1) {
       getSolanaLimitOrder({wallet: walletStore.address}),
       getSolanaLimitOrderHistory({wallet: walletStore.address, take: 100}),
     ]).then(async res => {
-      const ids1 = res?.[0]?.map?.((i: { account: { inputMint: string; outputMint: string } }) => ([i?.account?.inputMint + '-solana', i?.account?.outputMint + '-solana'])) || []
+      const ids1 = res?.[0]?.map?.(i => ([i?.inputMint + '-solana', i?.outputMint + '-solana'])) || []
       const ids2 = res?.[1]?.map?.(i => ([i?.inputMint + '-solana', i?.outputMint + '-solana'])) || []
       // eslint-disable-next-line no-unsafe-optional-chaining
       const ids = Array.from(new Set([...ids1?.flat?.(), ...ids2?.flat()]))
@@ -972,7 +972,6 @@ function _getSolanaLimitOrder(orderKey: string, type = 1) {
           state: 'Pending'
         }
       })
-      console.log('limitOrders', _limitOrders)
       const limitOrderHistory = res?.[1]?.map?.(i => {
         const fromDecimals =  prices[i.inputMint + '-solana']?.decimal
         const toDecimals = prices[i.outputMint + '-solana']?.decimal
@@ -1034,21 +1033,9 @@ function refreshLimit(item: { chain: string; publicKey: string; from_token: stri
       if (loading) {
         loading[item.publicKey] = false
       }
-      if (item.from_token === swapStore.token1.address) {
-        swapStore.getToken1Info()
-      } else if (item.from_token === swapStore.token2.address) {
-        swapStore.getToken2Info()
-      }
     })
   } else {
     _getLimitOrder()
-    if (item.from_token === NATIVE_TOKEN) {
-      if (item.from_token === swapStore.token1.address) {
-        swapStore.getToken1Info()
-      } else if (item.from_token === swapStore.token2.address) {
-        swapStore.getToken2Info()
-      }
-    }
   }
 }
 

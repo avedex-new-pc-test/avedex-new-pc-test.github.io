@@ -172,7 +172,7 @@ export function createSolanaLimitOrder(data: {
 }
 
 
-export const getSolanaLimitOrder = createCacheRequest(function(params: { wallet: string }) {
+export const getSolanaLimitOrder = createCacheRequest(function(params: { wallet: string }): Promise<Order[]> {
   // wallet	string	No
   // inputMint	string	No
   // outputMint	string	No
