@@ -167,7 +167,10 @@
             </div>
           </div>
           <template v-if="filterTableList.length === 0">
-            <div class="h-full flex flex-col items-center justify-center ">
+            <div 
+              class="h-full flex flex-col items-center justify-center "
+              :style="{ height: `${(klineHeight ?? 200) - 120}px` }"
+            >
               <img src="@/assets/images/empty-black.svg" alt="">
             </div>
           </template>
@@ -337,7 +340,6 @@ const filterTableListMap = {
 
 const filterTableList = computed(() => {
   let tableList = [...tokenTxs.value]
-  console.log('%c [ tableList ]-338', 'font-size:13px; background:pink; color:#bf2c9f;', tableList)
   
   if (activeTab.value in filterTableListMap) {
     tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
@@ -351,7 +353,7 @@ const filterTableList = computed(() => {
       item.wallet_address.toLowerCase() === tableFilter.value.markerAddress.toLowerCase()
     )
   }
-  console.log('%c [ tableList ]-318', 'font-size:13px; background:pink; color:#bf2c9f;', tableList)
+
   return tableList
 })
 
@@ -363,7 +365,6 @@ watch(() => pairAddress.value, () => {
     subscribeToTxs()
   }
 })
-console.log('%c [ props.modelValue ]-359', 'font-size:13px; background:pink; color:#bf2c9f;', props.modelValue)
 
 // 监听 modelValue 变化（orderBook 打开/关闭）
 watch(() => props.modelValue, (isOpen) => {
@@ -587,11 +588,11 @@ function toggleClickMe() {
     isMeActive.value = true
     tableFilter.value.markerAddress = addressAndChain.value.address
   }
+  _getTokenTxs()
 }
 
 
 function onRowClick({rowData}: RowEventHandlerParams) {
-  console.log('%c [ rowData ]-527', 'font-size:13px; background:pink; color:#bf2c9f;', rowData)
   
   if (!token.value) {
     return
