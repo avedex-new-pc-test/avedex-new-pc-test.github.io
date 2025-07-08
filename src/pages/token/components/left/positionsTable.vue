@@ -7,6 +7,7 @@ import {ElNotification} from 'element-plus'
 import {formatBotGasTips} from '~/utils/bot'
 import BigNumber from 'bignumber.js'
 import {useDebounceFn, useThrottleFn} from '@vueuse/core'
+import {useWalletStore} from "~/stores/wallet";
 
 const {t} = useI18n()
 const wsStore = useWSStore()
@@ -152,9 +153,12 @@ function resetStatus() {
   listStatus.value.finished = false
 }
 
+const walletStore = useWalletStore()
 let userIds: string[] = []
 if (botStore.userInfo) {
   userIds = botStore.userInfo.addresses.map(({address, chain}) => address + '-' + chain)
+} else if (walletStore.address) {
+  userIds = [walletStore.address + '-' + walletStore.chain]
 }
 const tableFilter = ref({
   hide_risk: 1,
@@ -223,7 +227,6 @@ const listData = shallowRef<(GetUserBalanceResponse & { index: string })[]>([])
 onMounted(() => {
   _getUserBalance()
 })
-const walletStore = useWalletStore()
 watch(() => [
   backendSort.value,
   tableFilter.value.hide_risk,
