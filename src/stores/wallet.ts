@@ -50,8 +50,8 @@ export const useWalletStore = defineStore('wallet', () => {
         wallets[index].provider = value.provider
       }
     }
-    return wallets?.sort((a) => {
-      if (a.provider) {
+    return wallets?.sort((a, b) => {
+      if (a.provider && !b.provider) {
         return -1
       }
       return 0
@@ -159,7 +159,7 @@ export const useWalletStore = defineStore('wallet', () => {
         if (walletName.value.startsWith('wc:')) {
           // walletConnect(chain.value, walletName.value)
           connectEvmWallet(walletName.value, chain.value)
-        } else if (walletName.value?.startsWith?.('wc:')) {
+        } else {
           let wallet: typeof evmWallets.value[number] | null = null
           for (const [, value] of evmWalletMap.value) {
             if (value.info.name === walletName.value) {

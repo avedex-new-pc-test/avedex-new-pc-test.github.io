@@ -12,17 +12,12 @@ const walletStore = useWalletStore()
 const swapStore = useSwapStore()
 const tokenStore = useTokenStore()
 
-watch([() => tokenStore.token?.token || '', () => walletStore.chain], () => {
+watch([() => tokenStore.token?.token || '', () => walletStore.chain, () => walletStore.address], () => {
   if (tokenStore.token?.token) {
     swapStore.init()
   }
 })
 
-watch(() => walletStore.address, () => {
-  if (walletStore.address && tokenStore.token?.token) {
-    swapStore.getTokenDetails()
-  }
-})
 
 
 onMounted(() => {

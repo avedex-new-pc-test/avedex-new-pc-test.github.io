@@ -9,7 +9,7 @@
       </div>
       <div class="flex justify-between items-center mt-10px">
         <el-input v-if="(swapStore.activeTab === 0)" v-model="toAmount" placeholder="0.0" size="large" clearable class="input-number" input-style="text-align:right"  :readonly="isOnlyGetAmountsOut" @update:model-value="value => {toAmount = value?.replace?.(/\-|[^\d.]/g, '');watchToAmount()}" @focus="percentStepRef?.handleClick(0, true)" />
-        <el-input v-if="(swapStore.activeTab === 1)" v-model="fromAmount" placeholder="0.0" size="large" clearable class="input-number" input-style="text-align:right"  :readonly="isOnlyGetAmountsOut" @update:model-value="value => {fromAmount = value?.replace?.(/\-|[^\d.]/g, '');watchFromAmount()}" @focus="percentStepRef?.handleClick(0, true)" />
+        <el-input v-if="(swapStore.activeTab === 1)" v-model="fromAmount" placeholder="0.0" size="large" clearable class="input-number" input-style="text-align:right"  @update:model-value="value => {fromAmount = value?.replace?.(/\-|[^\d.]/g, '');watchFromAmount()}" @focus="percentStepRef?.handleClick(0, true)" />
       </div>
     </div>
     <div class="card-container bottom mt-10px">
@@ -1840,6 +1840,7 @@ async function submitSuiSwap() {
     // if (isRetryQuote) {
     //   await this.quoteTon(this.isAmount, 'ton')
     // }
+    activeShow.value = 2
     const _swapInfo = swapInfo.value
     const txInfo = {
       from_address: _swapInfo.fromToken.address,
@@ -1931,7 +1932,8 @@ async function submitSuiSwap() {
         toAmount.value = ''
         // this.$refs?.percentStep?.handleClick?.(0)
         percentStepRef.value?.handleClick?.(0)
-        dialogVisibleSwap.value = false
+        // dialogVisibleSwap.value = false
+        activeShow.value = 3
         return res.wait()
       }
     }).then(res => {
@@ -1984,6 +1986,7 @@ async function submitSuiSwap() {
       // } else {
       //   this.suiTxs = this.suiTxs?.filter?.(i => i.transaction !== txInfo.transaction) || []
       // }
+      activeShow.value = 1
       loadingSwap.value = false
       loadingConfirmSwap.value = false
       handleError(err, 'solana')
@@ -1991,6 +1994,7 @@ async function submitSuiSwap() {
     })
   } catch (err) {
     // this.tonSwapBaseTokenPrice = 0
+    activeShow.value = 1
     loadingSwap.value = false
     loadingConfirmSwap.value = false
     handleError(err, 'solana')

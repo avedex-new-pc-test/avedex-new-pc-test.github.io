@@ -104,7 +104,12 @@ export function getSolanaWallets() {
       wallets.push(i)
     }
   })
-  return wallets
+  return wallets.sort((a, b) => {
+    if (a.features && b.features) {
+      return DefaultSolanaWallets.findIndex(i => i.name === b.name) -  DefaultSolanaWallets.findIndex(i => i.name === a.name)
+    }
+    return 0
+  })
 }
 
 

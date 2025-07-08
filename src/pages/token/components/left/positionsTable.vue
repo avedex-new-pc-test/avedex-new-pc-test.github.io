@@ -154,16 +154,24 @@ function resetStatus() {
 }
 
 const walletStore = useWalletStore()
-let userIds: string[] = []
-if (botStore.userInfo) {
-  userIds = botStore.userInfo.addresses.map(({address, chain}) => address + '-' + chain)
-} else if (walletStore.address) {
-  userIds = [walletStore.address + '-' + walletStore.chain]
-}
+
+const userIds = computed(() => {
+  if (botStore.userInfo) {
+    return botStore.userInfo.addresses.map(({address, chain}) => address + '-' + chain)
+  } else if (walletStore.address) {
+    return [walletStore.address + '-' + walletStore.chain]
+  }
+  return []
+})
+
+watch(() => userIds.value, () => {
+  tableFilter.value.user_ids = userIds.value
+})
+
 const tableFilter = ref({
   hide_risk: 1,
   hide_small: 0,
-  user_ids: userIds
+  user_ids: userIds.value
 })
 const loadingSwap = ref<{ [key: string]: boolean }>({})
 const props = defineProps({
@@ -232,7 +240,8 @@ watch(() => [
   tableFilter.value.hide_risk,
   tableFilter.value.hide_small,
   botStore.evmAddress,
-  walletStore.walletSignature[walletStore.address]
+  () => walletStore.address,
+  () => walletStore.walletSignature[walletStore.address]
 ], () => {
   resetStatus()
   _getUserBalance()
