@@ -149,8 +149,8 @@ function _connectSuiWallet(item: typeof walletStore.suiWallets[number]) {
 }
 
 async function _signMessageForFavorite() {
-  // await sleep(1000)
-  // walletStore.signMessageForFavorite()
+  await sleep(1000)
+  walletStore.signMessageForFavorite()
 }
 
 

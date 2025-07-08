@@ -124,6 +124,10 @@ watch(() => walletAddress.value, () => {
   _getUserFavoriteGroups()
   setActiveTab(0,0)
 })
+watch(() => walletStore.walletSignature[walletStore.address], () => {
+  resetListStatus()
+  loadMoreFavorites()
+})
 
 async function _getUserFavoriteGroups() {
   try {

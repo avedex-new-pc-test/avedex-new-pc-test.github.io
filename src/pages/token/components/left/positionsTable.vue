@@ -223,7 +223,14 @@ const listData = shallowRef<(GetUserBalanceResponse & { index: string })[]>([])
 onMounted(() => {
   _getUserBalance()
 })
-watch(() => [backendSort.value, tableFilter.value.hide_risk, tableFilter.value.hide_small,botStore.evmAddress], () => {
+const walletStore = useWalletStore()
+watch(() => [
+  backendSort.value,
+  tableFilter.value.hide_risk,
+  tableFilter.value.hide_small,
+  botStore.evmAddress,
+  walletStore.walletSignature[walletStore.address]
+], () => {
   resetStatus()
   _getUserBalance()
 })
