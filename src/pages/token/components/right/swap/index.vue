@@ -18,7 +18,7 @@ watch([() => tokenStore.token?.token || '', () => walletStore.chain], () => {
   }
 })
 
-watch(() => () => walletStore.address, () => {
+watch(() => walletStore.address, () => {
   if (walletStore.address && tokenStore.token?.token) {
     swapStore.getTokenDetails()
   }
