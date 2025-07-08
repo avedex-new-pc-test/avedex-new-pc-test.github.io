@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-16px py-12px color-#999">{{ $t('tokenInfo') }}</div>
+    <div class="text-16px py-12px color-#999">{{ $t('tokenInfo') }} </div>
     <ul class="text-12px mt-10px">
       <li class="flex justify-between mb-12px">
         <span class="color-[--d-666-l-999]">{{ $t('name') }}</span>
@@ -120,9 +120,7 @@ const pair = computed(() => tokenStore.pair)
 const token = computed(() => tokenStore.token)
 const localeStore = useLocaleStore()
 // const { t } = useI18n()
-
 const showAll = ref(false)
-
 const owner = computed(() => {
   const owner = checkStore?.checkResult?.owner || token.value?.owner || ''
   return owner

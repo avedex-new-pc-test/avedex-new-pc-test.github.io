@@ -48,7 +48,7 @@
       </el-result>
       <el-form-item :class="['mb-0px!']">
         <el-button
-          :color="'#3F80F7'" class="btn"
+          :color="'#3F80F7'" class="h-48px!"
           size="large" :loading="loading" style="width: 100%" @click="submitForm">{{ startSubmitText }}</el-button>
       </el-form-item>
       <p v-if="step === 2" class="tip">*&nbsp;{{ $t('startResetTip') }}</p>
@@ -285,15 +285,14 @@ function sendVerificationCode() {
 <style scoped lang='scss'>
 .w-reset {
   .title {
-    position: relative;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: flex-start;
     font-family: PingFang SC;
     font-weight: 600;
     font-size: 24px;
     line-height: 100%;
-    letter-spacing: 0%;
+    letter-spacing: 0;
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
@@ -369,13 +368,6 @@ function sendVerificationCode() {
     margin-bottom: 0;
   }
 
-  .btn {
-    height: 48px;
-    :deep() &.el-button {}
-
-    :deep() &.el-button.is-disabled,
-    :deep() &.el-button.is-disabled:hover {}
-  }
 
   .countdownBtn {
     &.el-button.is-link {

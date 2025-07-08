@@ -107,6 +107,7 @@ export default defineNuxtConfig({
     '@/plugins/tradingview.client.ts',
     '@/plugins/tooltip.client.ts',
     '@/plugins/popover.client.ts',
+    '@/plugins/dialog.client.ts',
   ],
   // unocss: {
   //   nuxtLayers: true,
@@ -154,9 +155,9 @@ export default defineNuxtConfig({
         include: ['lodash-unified'],
       }
     },
-    // optimizeDeps: {
-    //   include: ['lodash-unified'],
-    // },
+    optimizeDeps: {
+      include: ['lodash-unified'],
+    },
     build: {
       minify: 'terser',
       sourcemap: !isProd,
@@ -213,7 +214,7 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: null,
       globPatterns: ['**/*.{js,css,ico,png,jpg,jpeg,svg,webp,json,woff2,otf,ttf,woff}'],
-      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 设置为 3 MiB
+      maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 设置为 3 MiB
       cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
@@ -262,6 +263,7 @@ export default defineNuxtConfig({
           pages.splice(i, 1)
         }
       }
+      // console.log('pages', JSON.stringify(pages))
     }
   }
 })
