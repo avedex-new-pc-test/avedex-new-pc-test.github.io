@@ -203,12 +203,22 @@ onMounted(() => {
     <el-table class='mt-12px' height="calc(100vh - 210px)" v-loading="loading" row-class-name="group" :data="tableList"
       fit @sort-change="handleSortChange" @row-click="tableRowClick">
       <template #empty>
-        <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
-          <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
-          <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
-          <span>{{ t('emptyNoData') }}</span>
+        <div v-if="botStore.evmAddress || walletStore.address">
+          <div v-if="!loading" class="flex flex-col items-center justify-center py-30px">
+            <img v-if="mode === 'light'" src="@/assets/images/empty-white.svg">
+            <img v-if="mode === 'dark'" src="@/assets/images/empty-black.svg">
+            <span>{{ t('emptyNoData') }}</span>
+          </div>
+          <span v-else />
         </div>
-        <span v-else />
+        <AveEmpty v-else>
+          <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
+          <el-button type="primary" class="mt-10px" @click="botStore.$patch({
+            connectVisible: true
+          })">
+            {{ $t('connectWallet') }}
+          </el-button>
+        </AveEmpty>
       </template>
       <el-table-column :label="t('address')" min-width="160" show-overflow-tooltip>
         <template #default="{ row, $index }">
@@ -286,7 +296,7 @@ onMounted(() => {
               <Icon name="custom:monitor-icon" class="text-16px mr-2px" />
               <span
                 class="overflow-hidden whitespace-nowrap max-w-0 group-hover:max-w-[100px] transition-all duration-500 ease-in-out">
-                {{ row?.is_monitored === 1 ? t('pause') : t('openMonitor') }}
+                {{ row?.is_monitored === 1 ? t('pauseMonitor') : t('openMonitor') }}
               </span>
             </div>
             <div class="flex items-center mr-12px color-[#666] cursor-not-allowed" v-else>
