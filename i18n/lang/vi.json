@@ -497,5 +497,6 @@
   "check": "Kiểm tra",
   "copyTip": "Địa chỉ {address} là hợp đồng",
   "wallet_detail_transfer_count": "Số lần chuyển",
-  "tokenHolders": "Người nắm giữ"
+  "tokenHolders": "Người nắm giữ",
+  "24Volume": "KL 24h"
 }

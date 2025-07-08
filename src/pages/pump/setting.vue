@@ -206,7 +206,6 @@ function switchAvatar() {
   }
 }
 const isExit = computed(() => {
-  console.log('------111--------------',localStorage.getItem('pumpSetting'))
   return localStorage.getItem('pumpSetting') !== undefined  || false
 })
 function switchProgress() {

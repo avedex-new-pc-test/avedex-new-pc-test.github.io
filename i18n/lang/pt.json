@@ -315,5 +315,6 @@
   "audited": "AUDITADO",
   "check": "Verificar ",
   "copyTip": "O endereço atual {address} é um endereço de contrato. Por favor, não faça transferências, caso contrário, os ativos não poderão ser recuperados.",
-  "tokenHolders": "Detentores de Token"
+  "tokenHolders": "Detentores de Token",
+  "24Volume": "24 horas volu"
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="mt-20px mb-30px">
-    <el-scrollbar v-loading="loading" height="calc(100vh - 180px)">
+    <el-scrollbar v-loading="loading" height="calc(100vh - 215px)">
       <ul v-if="tableList?.length >0" class="pump-item_list">
         <li
           v-for="row in tableList"
@@ -65,11 +65,6 @@
                   )}`"
                   target="_blank"
                   class="token-mark clickable"
-                  :style="{
-                    background: isDark
-                      ? 'rgba(0, 0, 0, 0.5)'
-                      : 'rgba(255, 255, 255, 0.5)',
-                  }"
                   @click.stop
                 >
                   <Icon
@@ -103,7 +98,7 @@
                   bottom: 0;
                   left: 0;
                 "
-                :src="`${token_logo_url}swap/${row.issue_platform}.jpeg`"
+                :src="formatIconTag(row.issue_platform)"
               />
               <Icon
                 v-if="row.issue_platform && isOut"
@@ -170,24 +165,87 @@
           </div>
 
           <div class="flex-1">
-            <div class="flex-start">
-              <span class="text-18px font-500 mr-5px">{{ row.symbol }}</span>
-              <span v-if="pumpSetting?.define?.some(i=> i=== 'name')" class="text-10px font-500 mr-5px color-[--d-666-l-999]">{{ row.name }}</span>
-              <Icon
-                v-copy="row.token"
-                name="bxs:copy"
-                class="text-10px ml-2px cursor-pointer color-[--d-666-l-999] ml-4px"
-                @click.stop.prevent
-              />
+            <div class="flex-start" style="align-items:flex-start">
+              <div class="flex-start">
+                <span class="text-18px font-500 mr-5px symbol-ellipsis ellipsis-auto block">{{ row.symbol }}</span>
+                <span v-if="pumpSetting?.define?.some(i=> i=== 'name')" class="text-10px font-500 mr-5px color-[--d-666-l-999] symbol-ellipsis ellipsis-auto block">{{ row.name }}</span>
+                <Icon
+                  v-copy="row.token"
+                  name="bxs:copy"
+                  class="text-10px ml-2px cursor-pointer color-[--d-666-l-999] ml-4px"
+                  @click.stop.prevent
+                />
+              </div>
               <div
                 style="margin-left: auto; flex-wrap: wrap"
-                class="flex-end text-12px"
+                class="text-12px"
               >
                 <!-- <div class="mr-5 color-text-4">Liq</div>
                 <div class="text-12px color-text-10">{{ formatNumber((row?.target_token === row?.token0_address ? row?.reserve1 : row?.reserve0) || 0, { decimals: 1 }) }} {{ row?.target_token === row?.token0_address ? row?.token1_symbol : row?.token0_symbol }}</div>
                 <div class="color-[--d-666-l-999]"  style="margin: 0 2px;">|</div> -->
-                <template v-if="pumpSetting?.define?.some(i=> i=== 'mcap')">
-                  <div class="mr-5px color-[--d-666-l-999]" :style="{ 'font-size': pumpSetting.fontSize_mc }">MC</div>
+                <div class="flex-end">
+                  <template v-if="pumpSetting?.define?.some(i=> i=== 'vol')">
+                    <!-- <div
+                      v-if="pumpSetting?.define?.some(i=> i=== 'mcap')"
+                      :style="{ color: isDark ? '#333333' : '#d9d9d9' }"
+                      style="margin: 0 2px"
+                    >
+                      |
+                    </div> -->
+                    <div class="mr-5px color-[--d-666-l-999]" :style="{ 'font-size': pumpSetting.fontSize_mc }">V</div>
+                    <div
+                      :class="
+                        !row?.volume_u_24h
+                          ? 'color-[--d-666-l-999]'
+                          : 'color-[--d-999-l-666]'
+                      "
+                      :style="{ 'font-size': pumpSetting.fontSize_mc }"
+                    >
+                      ${{ formatNumber(row?.volume_u_24h || 0, 2) }}
+                    </div>
+                  </template>
+
+                    <template v-if="pumpSetting?.define?.some(i=> i=== 'txs')">
+                      <div
+                        :style="{ color: isDark ? '#333333' : '#d9d9d9' }"
+                        style="margin: 0 2px"
+                      >
+                        |
+                      </div>
+                      <div class="mr-5px color-[--d-666-l-999]">Txs</div>
+                      <div
+                        :class="
+                          !row?.tx_24h_count
+                            ? 'color-[--d-666-l-999]'
+                            : 'color-[--d-999-l-666]'
+                        "
+                      >
+                        {{ formatNumber(row?.tx_24h_count || 0, 2) }}
+                      </div>
+                  </template>
+                  <template v-if="pumpSetting?.define?.some(i=> i=== 'holder')">
+                    <div
+                      :style="{ color: isDark ? '#333333' : '#d9d9d9' }"
+                      style="margin: 0 2px"
+                    >
+                      |
+                    </div>
+                    <div class="mr-5px color-[--d-666-l-999]">H</div>
+                    <div v-if="row?.holders > 800" style="color: #ffa622">
+                      {{ formatNumber(row.holders || 0, 2) }}
+                    </div>
+                    <div
+                      v-else
+                      class="color-[--d-999-l-666]"
+                    >
+                      {{ formatNumber(row.holders || 0, 2) }}
+                    </div>
+                  </template>
+                </div>
+
+
+              <div class="flex-end mt-4px" v-if="pumpSetting?.define?.some(i=> i=== 'mcap')">
+                  <div class="color-[--d-666-l-999] mr-5px" :style="{ 'font-size': pumpSetting.fontSize_mc }">MC</div>
                   <span
                   :style="{ 'font-size': pumpSetting.fontSize_mc }"
                     :class="
@@ -195,68 +253,11 @@
                     "
                     >${{ formatNumber(row.market_cap || 0, 2) }}</span
                   >
-                </template>
-                <template v-if="pumpSetting?.define?.some(i=> i=== 'vol')">
-                  <div
-                    v-if="pumpSetting?.define?.some(i=> i=== 'mcap')"
-                    :style="{ color: isDark ? '#333333' : '#d9d9d9' }"
-                    style="margin: 0 2px"
-                  >
-                    |
-                  </div>
-                  <div class="mr-5px color-[--d-666-l-999]" :style="{ 'font-size': pumpSetting.fontSize_mc }">V</div>
-                  <div
-                    :class="
-                      !row?.volume_u_24h
-                        ? 'color-[--d-666-l-999]'
-                        : 'color-[--d-999-l-666]'
-                    "
-                    :style="{ 'font-size': pumpSetting.fontSize_mc }"
-                  >
-                    ${{ formatNumber(row?.volume_u_24h || 0, 2) }}
-                  </div>
-                </template>
-
-                <template v-if="pumpSetting?.define?.some(i=> i=== 'txs')">
-                  <div
-                    :style="{ color: isDark ? '#333333' : '#d9d9d9' }"
-                    style="margin: 0 2px"
-                  >
-                    |
-                  </div>
-                  <div class="mr-5px color-[--d-666-l-999]">Txs</div>
-                  <div
-                    :class="
-                      !row?.tx_24h_count
-                        ? 'color-[--d-666-l-999]'
-                        : 'color-[--d-999-l-666]'
-                    "
-                  >
-                    {{ formatNumber(row?.tx_24h_count || 0, 2) }}
-                  </div>
-              </template>
-              <template v-if="pumpSetting?.define?.some(i=> i=== 'holder')">
-                <div
-                  :style="{ color: isDark ? '#333333' : '#d9d9d9' }"
-                  style="margin: 0 2px"
-                >
-                  |
                 </div>
-                <div class="mr-5px color-[--d-666-l-999]">H</div>
-                <div v-if="row?.holders > 800" style="color: #ffa622">
-                  {{ formatNumber(row.holders || 0, 2) }}
-                </div>
-                <div
-                  v-else
-                  class="color-[--d-999-l-666]"
-                >
-                  {{ formatNumber(row.holders || 0, 2) }}
-                </div>
-              </template>
               </div>
             </div>
 
-            <div class="flex-start text-12px mt-10px">
+            <div class="flex-start text-12px">
               <!-- <span v-if="!isOut" style="color: #FFA622">{{ formatNumber(row?.progress || 0,1) }}%</span> -->
               <!-- <template v-if="row.tag_arr?.length > 0">
                 <template v-for="(i, index) in row.tag_arr" :key="index">
@@ -450,7 +451,7 @@
                 </div>
               </template> -->
             </div>
-            <div class="flex-start mt-10px text-12px" style="width: 100%">
+            <div class="flex-start text-12px" style="width: 100%">
               <div
                 v-show="pumpSetting?.define?.some(i=> i=== 'top')"
                 v-tooltip="$t('holders_top10_ratio_tips')"
@@ -581,6 +582,7 @@
               </div>
               <QuickSwap :quickBuyValue="quickBuyValue" :row="row" :size="pumpSetting.size_swap"/>
             </div>
+
           </div>
         </li>
       </ul>
@@ -617,7 +619,7 @@ import {
   formatIconTag,
 } from '@/utils/index'
 import { formatNumber } from '@/utils/formatNumber'
-import { upColor } from '@/utils/constants'
+// import { upColor } from '@/utils/constants'
 import { Icon } from '#components'
 import type { PumpObj } from '@/api/types/pump'
 const props = defineProps({
@@ -648,7 +650,7 @@ const showPop = ref(false)
 const selected = ref('')
 const btnRefs = ref<Record<string, HTMLElement | null>>({})
 const currentBtnRef = ref<HTMLElement | null>(null)
-const { tableList, quickBuyValue, isPaused, loading, isOut } = toRefs(props)
+const { tableList, quickBuyValue, loading, isOut } = toRefs(props)
 const router = useRouter()
 const { token_logo_url } = useConfigStore()
 const globalStore = useGlobalStore()
@@ -725,7 +727,7 @@ function showPopover(item: {progress: string, id: string, issue_platform: string
     display: flex;
     align-items: center;
     color: var(--a-text-1-color);
-    padding: 20px;
+    padding:20px 12px;
     &:hover {
       background-color: var(--d-1A1A1A-l-F2F2F2);
     .eye{
@@ -793,12 +795,19 @@ function showPopover(item: {progress: string, id: string, issue_platform: string
       align-items: center;
       inset: 0;
       // border-radius: 50%;
-      opacity: 1;
-      .iconfont {
-        color: var(--a-text-2-color);
-        font-weight: 800;
-        font-size: 24px;
+      &:hover {
+        .iconify {
+          color: #f5f5f5;
+          opacity: 1;
+        }
       }
+      opacity: 1;
+      .iconify {
+        // color: var(--a-text-2-color);
+        // font-weight: 800;
+        // font-size: 24px;
+      }
+
     }
   }
   .token-icon-signal-tag {
@@ -836,5 +845,20 @@ function showPopover(item: {progress: string, id: string, issue_platform: string
   .el-image__inner {
     border-radius: 100%;
   }
+}
+@media (max-width: 1920px) {
+  .symbol-ellipsis{
+    max-width: 100px
+  }
+}
+@media (min-width: 1920px) {
+  .symbol-ellipsis{
+    max-width: 200px
+  }
+}
+.ellipsis-auto {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 </style>

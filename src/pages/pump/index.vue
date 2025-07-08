@@ -122,7 +122,7 @@
     <el-row :gutter="pumpSetting.isGutter ? 10 : 2" class="w-full bg-[--d-1A1A1A-l-FFF]">
       <el-col :span="8">
         <div class="pump-item bg-[--d-111-l-FFF]  rounded-4px" style="padding-top: 15px;">
-          <div class="pump-item_header flex-start px-10px">
+          <div class="pump-item_header flex-start px-12px">
             <img
               class="mr-5px"
               src="@/assets/images/pump/new.svg"
@@ -138,7 +138,6 @@
               ref="inputSearch"
               v-model.trim="pump_query[activeChain].new"
               class="search-input1 px-20px ml-auto mr-4px"
-              autofocus
               size="small"
               :placeholder="$t('search')"
               @input="(val) => pump_query[activeChain].new = val.replace(/\s/g, '')"
@@ -182,7 +181,7 @@
       </el-col>
       <el-col :span="8">
         <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
-          <div class="pump-item_header flex-start px-10px rounded-4px">
+          <div class="pump-item_header flex-start px-12px rounded-4px">
             <img
               class="mr-5px"
               src="@/assets/images/pump/soon.svg"
@@ -198,7 +197,6 @@
               ref="inputSearch"
               v-model.trim="pump_query[activeChain].soon"
               class="search-input1 px-20px ml-auto mr-4px"
-              autofocus
               size="small"
               :placeholder="$t('search')"
               @input="(val) => pump_query[activeChain].soon = val.replace(/\s/g, '')"
@@ -239,7 +237,7 @@
       </el-col>
       <el-col :span="8">
         <div class="pump-item bg-[--d-111-l-FFF]" style="padding-top: 15px;">
-          <div class="pump-item_header flex-start px-10px rounded-4px">
+          <div class="pump-item_header flex-start px-12px rounded-4px">
             <img
               class="mr-5px"
               src="@/assets/images/pump/graduated.svg"
@@ -255,7 +253,6 @@
               ref="inputSearch"
               v-model.trim="pump_query[activeChain].graduated"
               class="search-input1 px-20px ml-auto mr-4px"
-              autofocus
               size="small"
               :placeholder="$t('search')"
               @input="(val) => pump_query[activeChain].graduated = val.replace(/\s/g, '')"
@@ -384,7 +381,7 @@ const pumpFilter_solana_graduated = usePumpTableDataFetching(
 )
 const pump_solana_platforms = useStorage(
   'pump_solana_platforms',
-  ['pump', 'moonshot', 'raydium'],
+  ['pump', 'moonshot', 'raydium','believe', 'jupstudio','moon_new','cookingcity', 'bonk'],
   localStorage
 )
 
@@ -809,7 +806,6 @@ function getPump(params, isFilter = false) {
   } else {
     params.platforms = undefined
   }
-  console.log('-------pump_query[chain][params.category]----------',pump_query.value[chain][params.category])
 
   if (pump_query.value[chain][params.category]) {
     if (isFilter) {
@@ -833,116 +829,111 @@ function getPump(params, isFilter = false) {
   _getPumpList(params)
     .then((res) => {
       const list = (res || [])?.map?.((i) => {
-        let signal_arr = []
-        let normal_tag = []
-        if (i.dynamic_tag) {
-          const tag_arr = JSON.parse(i.dynamic_tag) || []
-          signal_arr = tag_arr?.filter((i) => i?.startsWith('signal'))
-          signal_arr = signal_arr?.map((y) => ({
-            tag:
-              y?.split('-')[5] &&
-              (y?.split('-')[1] == 'whale_sell' ||
-                y?.split('-')[1] == 'whale_buy')
-                ? `${y?.split('-')[1]}_trump`
-                : y?.split('-')[1],
-            color: y?.split('-')[2],
-            n: y?.split('-')[3],
-            timestamp: y?.split('-')[4],
-          }))
-          signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
-          const kol_arr = signal_arr.filter(
-            (item, index) =>
-              signal_arr.findIndex((el) =>
-                new RegExp('^kol_.*$', 'gi').test(el.tag)
-              ) == index
-          )
-          const dev_arr = signal_arr.filter(
-            (item, index) =>
-              signal_arr.findIndex((el) =>
-                new RegExp('^dev_.*$', 'gi').test(el.tag)
-              ) == index
-          )
-          const smarter_arr = signal_arr.filter(
-            (item, index) =>
-              signal_arr.findIndex((el) =>
-                new RegExp('^smarter_.*$', 'gi').test(el?.tag)
-              ) == index
-          )
-          const whale_arr = signal_arr.filter(
-            (item, index) =>
-              signal_arr.findIndex((el) =>
-                new RegExp('^whale_.*$', 'gi').test(el.tag)
-              ) == index
-          )
-          const other_arr = signal_arr?.filter(
-            (el) =>
-              !new RegExp('^dev_|kol_|smarter_|whale_.*$', 'gi').test(el.tag)
-          )
-          signal_arr = kol_arr
-            ?.concat(dev_arr)
-            ?.concat(smarter_arr)
-            ?.concat(whale_arr)
-            ?.concat(other_arr)
-          signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
-          normal_tag = tag_arr.filter((i) => !i?.startsWith('signal'))
-        }
-        // if (i.tag) {
-        //   let tag = i.tag?.split(',') || []
-        //   let tag1 = tag.filter(i=> i !=='pump' && i !=='moonshot')  || []
-        //   normal_tag = tag1.concat(normal_tag)
+        // let signal_arr = []
+        // let normal_tag = []
+        // if (i.dynamic_tag) {
+        //   const tag_arr = JSON.parse(i.dynamic_tag) || []
+        //   signal_arr = tag_arr?.filter((i) => i?.startsWith('signal'))
+        //   signal_arr = signal_arr?.map((y) => ({
+        //     tag:
+        //       y?.split('-')[5] &&
+        //       (y?.split('-')[1] == 'whale_sell' ||
+        //         y?.split('-')[1] == 'whale_buy')
+        //         ? `${y?.split('-')[1]}_trump`
+        //         : y?.split('-')[1],
+        //     color: y?.split('-')[2],
+        //     n: y?.split('-')[3],
+        //     timestamp: y?.split('-')[4],
+        //   }))
+        //   signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
+        //   const kol_arr = signal_arr.filter(
+        //     (item, index) =>
+        //       signal_arr.findIndex((el) =>
+        //         new RegExp('^kol_.*$', 'gi').test(el.tag)
+        //       ) == index
+        //   )
+        //   const dev_arr = signal_arr.filter(
+        //     (item, index) =>
+        //       signal_arr.findIndex((el) =>
+        //         new RegExp('^dev_.*$', 'gi').test(el.tag)
+        //       ) == index
+        //   )
+        //   const smarter_arr = signal_arr.filter(
+        //     (item, index) =>
+        //       signal_arr.findIndex((el) =>
+        //         new RegExp('^smarter_.*$', 'gi').test(el?.tag)
+        //       ) == index
+        //   )
+        //   const whale_arr = signal_arr.filter(
+        //     (item, index) =>
+        //       signal_arr.findIndex((el) =>
+        //         new RegExp('^whale_.*$', 'gi').test(el.tag)
+        //       ) == index
+        //   )
+        //   const other_arr = signal_arr?.filter(
+        //     (el) =>
+        //       !new RegExp('^dev_|kol_|smarter_|whale_.*$', 'gi').test(el.tag)
+        //   )
+        //   signal_arr = kol_arr
+        //     ?.concat(dev_arr)
+        //     ?.concat(smarter_arr)
+        //     ?.concat(whale_arr)
+        //     ?.concat(other_arr)
+        //   signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
+        //   normal_tag = tag_arr.filter((i) => !i?.startsWith('signal'))
         // }
-        normal_tag =
-          normal_tag?.map((i) => ({
-            tag: i,
-            color: 'green',
-            showText: false,
-          })) || []
+        // normal_tag =
+        //   normal_tag?.map((i) => ({
+        //     tag: i,
+        //     color: 'green',
+        //     showText: false,
+        //   })) || []
 
-        let tag_arr = []
-        if (i.tag) {
-          tag_arr = i.tag?.split(',') || []
-        }
-        const is_rug_pull =
-          signal_arr?.some((i) => new RegExp('rug_pull', 'gi').test(i?.tag)) ||
-          normal_tag?.some((i) => new RegExp('rug_pull', 'gi').test(i?.tag))
-        const is_shit_coins =
-          signal_arr?.some((i) => new RegExp('shitcoin', 'gi').test(i?.tag)) ||
-          normal_tag?.some((i) => new RegExp('shitcoin', 'gi').test(i.tag))
-        if (i.risk_score >= 100 && i.chain == 'solana') {
-          signal_arr = []
-          normal_tag = [
-            {
-              tag: 'flag_dangerous',
-              color: 'red',
-              showText: true,
-            },
-          ]
-        } else if (is_rug_pull) {
-          signal_arr = []
-          normal_tag = [
-            {
-              tag: 'flag_rug_pull',
-              color: 'red',
-              showText: true,
-            },
-          ]
-        } else if (is_shit_coins) {
-          signal_arr = []
-          normal_tag = [
-            {
-              tag: 'flag_shit_coins',
-              color: 'red',
-              showText: true,
-            },
-          ]
-        }
-        if (i.cto_flag == 1) {
-          normal_tag.unshift({
-            tag: 'cto_flag',
-            color: 'green',
-            showText: false,
-          })
-        }
+        // let tag_arr = []
+        // if (i.tag) {
+        //   tag_arr = i.tag?.split(',') || []
+        // }
+        // const is_rug_pull =
+        //   signal_arr?.some((i) => new RegExp('rug_pull', 'gi').test(i?.tag)) ||
+        //   normal_tag?.some((i) => new RegExp('rug_pull', 'gi').test(i?.tag))
+        // const is_shit_coins =
+        //   signal_arr?.some((i) => new RegExp('shitcoin', 'gi').test(i?.tag)) ||
+        //   normal_tag?.some((i) => new RegExp('shitcoin', 'gi').test(i.tag))
+        // if (i.risk_score >= 100 && i.chain == 'solana') {
+        //   signal_arr = []
+        //   normal_tag = [
+        //     {
+        //       tag: 'flag_dangerous',
+        //       color: 'red',
+        //       showText: true,
+        //     },
+        //   ]
+        // } else if (is_rug_pull) {
+        //   signal_arr = []
+        //   normal_tag = [
+        //     {
+        //       tag: 'flag_rug_pull',
+        //       color: 'red',
+        //       showText: true,
+        //     },
+        //   ]
+        // } else if (is_shit_coins) {
+        //   signal_arr = []
+        //   normal_tag = [
+        //     {
+        //       tag: 'flag_shit_coins',
+        //       color: 'red',
+        //       showText: true,
+        //     },
+        //   ]
+        // }
+        // if (i.cto_flag == 1) {
+        //   normal_tag.unshift({
+        //     tag: 'cto_flag',
+        //     color: 'green',
+        //     showText: false,
+        //   })
+        // }
         return {
           ...i,
           id: `${i.target_token}-${i.chain}`,
@@ -975,9 +966,9 @@ function getPump(params, isFilter = false) {
               ? i.reserve0 * i.token0_price_usd * 2
               : i.reserve1 * i.token1_price_usd * 2,
           medias: getMedias(i.appendix),
-          normal_tag: normal_tag?.slice(0, 3) || [],
-          signal_arr: signal_arr?.slice(0, 1) || [],
-          tag_arr,
+          // normal_tag: normal_tag?.slice(0, 3) || [],
+          // signal_arr: signal_arr?.slice(0, 1) || [],
+          // tag_arr,
         }
       })
       fourmemeListObj[activeChain.value][params.category as CategoryKey] = list
@@ -985,7 +976,6 @@ function getPump(params, isFilter = false) {
         wsTableListCache?.value.filter?.(
           (i) => !list?.some?.((j) => j?.pair === i?.pair)
         ) || []
-      console.log('------res--------', res)
     })
     .finally(() => {
       loading[chain + '-' + params.category] = false
@@ -1030,42 +1020,6 @@ function getMedias(appendix: string) {
   return []
 }
 function getFilterData(list, conditions) {
-      // 筛选条件
-      // q: '',
-      // dev_sale_out: 0,
-      // platforms: 'pump,moonshot',
-      // platforms_pump: true,
-      // platforms_moonshot: true,
-      // progress_min: '', //进度
-      // progress_max: '',
-
-      // lage: '', //代币时长
-      // rage: '',
-      // dev_balance_ratio_cur_min: '', //dev 持仓%
-      // dev_balance_ratio_cur_max: '',
-      // holder_min: '', //持有人
-      // holder_max: '',
-      // holders_top10_ratio_min: '', //top10 持仓%
-      // holders_top10_ratio_max: '',
-      // lsnip: '',   //狙击人数
-      // rsnip: '',
-      // smart_money_tx_count_24h_min: '', // 聪明钱交易数 （买入数+卖出数）
-      // smart_money_tx_count_24h_max: '',
-      // lins: '',  //老鼠仓
-      // rins: '',
-      // lkol: '',  //KOL交易人数
-      // rkol: '',
-      // lrug: '', //跑路概率
-      // rrug:'',
-
-      // market_cap_min: '', // 市值
-      // market_cap_max: '',
-      // volume_u_24h_min: '', //交易额
-      // volume_u_24h_max: '',
-      // lbtx: '' ,//买入交易数
-      // rbtx: '',
-      // lstx: '', //卖出交易数
-  // rstx: '',
       conditions = JSON.parse(conditions)
       return list?.filter((i) => {
         let pass = true
@@ -1214,4 +1168,18 @@ function getFilterData(list, conditions) {
     }
   }
 }
+/* 修改 hover 效果：背景色 + 字体颜色 */
+// ::v-deep(.el-checkbox) {
+//   width: 100%;
+//   &:hover {
+//     color: #409EFF;
+//     background-color: #f0f9ff;
+//     border-radius: 4px;
+//     transition: all 0.2s;
+//   }
+
+// }
+// ::v-deep(.el-checkbox:hover .el-checkbox__input) {
+//   border-color: #409EFF;
+// }
 </style>

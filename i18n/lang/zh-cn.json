@@ -897,8 +897,8 @@
   "runPullRatio": "跑路概率",
   "tokenDuration": "代币时长",
   "oneOfficial": "至少有一个官方账号",
-  "sellTxs": "卖出交易数",
-  "buyTxs": "买入交易数",
+  "sellTxs": "24h卖出交易数",
+  "buyTxs": "24h买入交易数",
   "chainToken": "链上画像",
   "marketIndices": "市场指数",
   "snipers": "狙击人数",
@@ -907,5 +907,7 @@
   "Vol": "成交量",
   "sellAll": "全部卖出",
   "H": "小时",
-  "migraged": "迁移次数"
+  "migraged": "迁移次数",
+  "blacklistExists": "黑名单已存在",
+  "removedBacklist": "已从黑名单移除"
 }

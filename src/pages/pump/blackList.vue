@@ -157,13 +157,17 @@ const { pumpBlackList } = storeToRefs(globalStore)
 const visible = shallowRef(false)
 const visible_popper = shallowRef(false)
 
-// const query = useStorage('pump', {})
 
 const query = shallowRef('')
 
 const isRotate = shallowRef(false)
 const active = shallowRef('all')
-const typeList = computed(() => {
+type TypeValue = 'all' | 'dev' | 'ca' | 'keyword'
+type TypeItem = {
+  name: string
+  value: TypeValue
+}
+const typeList = computed<TypeItem[]>(() => {
   return [
     {
       name: t('all'),
@@ -183,6 +187,7 @@ const typeList = computed(() => {
     },
   ]
 })
+
 const list = computed(() => {
   const list = pumpBlackList.value?.slice() || []
   if (active.value == 'dev') {
@@ -198,10 +203,10 @@ const list = computed(() => {
 
 
 function openDialog() {}
-function switchItem(item: { value: string }) {
+function switchItem(item: { value: 'all' | 'dev' | 'ca' | 'keyword' }) {
   active.value = item.value
 }
-function add(item: { value: 'ca' | 'dev' | 'keyword' }) {
+function add(item: { value:  'dev' | 'ca' | 'keyword' }) {
   if (pumpBlackList.value?.length > 499) {
     ElMessage.error(t('blacklistLimit'))
     return

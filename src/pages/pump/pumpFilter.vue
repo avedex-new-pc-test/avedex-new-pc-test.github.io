@@ -53,6 +53,7 @@
           </el-form-item>
 
           <el-form-item
+              v-if="!props.storage?.includes('_graduated')"
               :label="`${t('progress')}(%)`"
               class="border pb-20px"
             >
@@ -289,7 +290,8 @@ const { t } = useI18n()
 }
 const visible = ref(false)
 const formRef = ref()
-const form = ref(initForm)
+type FormType = typeof initForm
+const form = ref<FormType>(initForm)
 const tableFilter = usePumpTableDataFetching(props.storage)
 const active = shallowRef('tag')
 const tabs = computed(() => {
@@ -404,7 +406,7 @@ const tabs = computed(() => {
           tab: 'market'
         },
         {
-          label: `${t('volume4')}($)`,
+          label: `${t('24Volume')}($)`,
           prop: ['volume_u_24h_min', 'volume_u_24h_max'],
           placeholder: [t('minor'), t('max1')],
           type: 'inputRange',
@@ -474,7 +476,7 @@ const tabs = computed(() => {
         //   type: 'inputRange'
         // },
       ]
-    return c.filter(i => !(i.type1 === 'progress' && props.storage?.includes('_graduated')))
+    return c || []
   })
 
   const filterNumber = computed(() => {
@@ -520,17 +522,9 @@ const tabs = computed(() => {
         filterList.splice(index, 1)
       }
     }
-    if (filterList.includes('lbtx') && filterList.includes('lbtx')) {
+    if (filterList.includes('lbtx') && filterList.includes('rbtx')) {
       // 任选其一删除，这里以删除 'lage' 为例
       const index = filterList.indexOf('lbtx')
-      if (index !== -1) {
-        filterList.splice(index, 1)
-      }
-    }
-
-    if (filterList.includes('rbtx') && filterList.includes('rbtx')) {
-      // 任选其一删除，这里以删除 'lage' 为例
-      const index = filterList.indexOf('rbtx')
       if (index !== -1) {
         filterList.splice(index, 1)
       }
@@ -550,6 +544,7 @@ const tabs = computed(() => {
         filterList.splice(index, 1)
       }
     }
+
 
       filterList = filterList?.filter(i => i !== 'platforms' )
     return filterList?.length || 0
@@ -626,8 +621,8 @@ const tabs = computed(() => {
   }
 
   function switchForm(f: any) {
-    let form = { ...f }
-    let platforms = []
+    const form = { ...f }
+    const platforms = []
     if (form.platforms_pump) platforms.push('pump')
     if (form.platforms_moonshot) platforms.push('moonshot')
     form.platforms = platforms.join(',')

@@ -310,5 +310,6 @@
   "audited": "Denetim tamamlandı",
   "check": "Kontrol Et",
   "copyTip": "Geçerli adres {address} bir sözleşme adresidir, lütfen para transferi yapmayın, aksi takdirde varlık geri alınamaz.",
-  "tokenHolders": "Token Sahipleri"
+  "tokenHolders": "Token Sahipleri",
+  "24Volume": "24 Saatlik Hacim"
 }
