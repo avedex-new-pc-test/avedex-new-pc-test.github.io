@@ -805,5 +805,10 @@
   "FilterTips": "过滤内容为左侧实时流",
   "Vol": "成交量",
   "sellAll": "全部卖出",
-  "H": "小时"
+  "H": "小时",
+  "totalBalance": "资产折合",
+  "balanceDetails": "资产明细",
+  "balanceOverview": "资产总览",
+  "hideSmallAssets": "隐藏小额资产(<$1)",
+  "showSmallAssets": "显示小额资产(<$1)",
 }

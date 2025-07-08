@@ -143,8 +143,6 @@ export function bindTwitter(params) {
   })
 }
 
-
-
 // 修改钱包备注
 export function setUserTokenStatus(
   { token, type }: { token: string; type: string },

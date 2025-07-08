@@ -1,5 +1,8 @@
 <template>
-  <div v-if="userAddress && chain" className="flex flex-col w-full gap-3 p-[20px] pt-[10px] bg-[var(--d-111-l-FFF)] pb-0">
+  <div
+    v-if="0"
+    className="flex flex-col w-full gap-3 p-[20px] pt-[10px] bg-[var(--d-111-l-FFF)] pb-0"
+  >
     <div class="flex-between">
       <el-select
         :style="{ width: '120px' }"
@@ -14,13 +17,13 @@
           <ChainToken :chain="chain" :width="16" />
         </template>
         <el-option
-          v-for="{ chain:_chain } in smartChains"
+          v-for="{ chain: _chain } in smartChains"
           :key="_chain"
           :label="getChainInfo(_chain)?.name"
           :value="_chain"
         >
           <div class="flex-center" style="gap: 4px">
-            <ChainToken :chain="_chain" :width="16"/>
+            <ChainToken :chain="_chain" :width="16" />
             {{ getChainInfo(_chain)?.name }}
           </div>
         </el-option>
@@ -60,11 +63,7 @@
         @txAnalysisChange="txAnalysisChange"
       />
     </div>
-    <ActivityCharts
-      :interval="interval"
-      :address="userAddress"
-      :chain="chain"
-    />
+    <ActivityCharts :interval="interval" :address="userAddress" :chain="chain" />
     <StatisticsTable
       ref="statisticsTable"
       :address="userAddress"
@@ -72,32 +71,16 @@
       :isSelfAddress="isSelfAddress"
     />
   </div>
-
-  <div v-else class="flex flex-col w-full h-full p-[10%] bg-[var(--d-111-l-FFF)] items-center pb-0">
-    <div
-      :class="`color-[var(--d-F5F5F5-l-333)] bg-[--d-111-l-FFF] rounded-2px text-14px overflow-hidden`"
-    >
-      <AveEmpty  class="overflow-hidden">
-        <span class="text-12px mt-10px">{{ $t('noWalletTip') }}</span>
-        <el-button
-          class="mt-10px"
-          @click="
-            botStore.$patch({
-              connectVisible: true,
-            })
-          "
-        >
-          {{ $t('connectWallet') }}
-        </el-button>
-      </AveEmpty>
-    </div>
-  </div>
+  <!-- <PageBlank v-else /> -->
+  <PageOther :address="userAddress" :chain="chain"/>
 </template>
 <script setup>
 import Statistic from './components/statistic.vue'
 import TradeData from './components/tradeData.vue'
 import StatisticsTable from './components/statisticsTable.vue'
 import ActivityCharts from './components/activityCharts.vue'
+import PageBlank from './components/pageBlank.vue'
+import PageOther from './components/PageOther.vue'
 import { getChainInfo } from '@/utils'
 
 const interval = ref('7D')
@@ -135,14 +118,14 @@ const smartChains = computed(() => {
   const chainIds = ['solana', 'bsc']
   // 如果是自己的钱包地址且为 bot 钱包那么展示所有的链，链钱包后面再改
   if (botStore.evmAddress && isSelfAddress.value) {
-    const botChains = botStore.userInfo?.addresses?.filter?.(el => chainIds.includes(el.chain))
+    const botChains = botStore.userInfo?.addresses?.filter?.((el) => chainIds.includes(el.chain))
     if (botChains && botChains.length > 0) {
       return botChains
     }
   }
   return [
     {
-      chain:chain.value,
+      chain: chain.value,
     },
   ]
 })
@@ -154,11 +137,14 @@ function txAnalysisChange(data) {
 }
 
 const router = useRouter()
-watch(() => botStore.getWalletAddress('solana'), (address, old) => {
-  if (!old && address) {
-    router.replace('/address/' + address + '/solana')
+watch(
+  () => botStore.getWalletAddress('solana'),
+  (address, old) => {
+    if (!old && address) {
+      router.replace('/address/' + address + '/solana')
+    }
   }
-})
+)
 
 // Watchers
 // watch(
