@@ -48,7 +48,7 @@ const Swap = defineAsyncComponent(() => import('./swap/index.vue'))
 const walletStore = useWalletStore()
 
 const SwapCom = computed(() => {
-  if (walletStore.address && walletStore.provider) {
+  if (walletStore.address) {
     return Swap
   } else {
     return BotSwap

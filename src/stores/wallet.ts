@@ -136,7 +136,7 @@ export const useWalletStore = defineStore('wallet', () => {
   function signMessageForFavorite() {
     if (!address.value || !provider.value) return Promise.resolve('')
     if (!isEvmChain(chain.value) && chain.value !== 'solana') return Promise.resolve('')
-    if (walletSignature.value[address.value]) return Promise.resolve('')
+    if (walletSignature.value[address.value]) return Promise.resolve(walletSignature.value[address.value])
     const msg = `Ave.ai requests ${address.value} address signature to bind favorite list`
     return signMessage(msg)?.then((res) => {
       if (res) {
@@ -152,10 +152,11 @@ export const useWalletStore = defineStore('wallet', () => {
   function initWallet() {
     // evm init
     getEvmWalletList().then(() => {
-      if (!(address.value && chain.value && isEvmChain(chain.value) && walletName.value)) {
+      const extraName = ['WatchWallet', 'appCode']
+      if (!(address.value && chain.value && isEvmChain(chain.value) && walletName.value && !extraName.includes(walletName.value))) {
         return
       }
-      if (walletName.value && provider.value && isEvmChain(chain.value)) {
+      if (walletName.value && isEvmChain(chain.value)) {
         if (walletName.value.startsWith('wc:')) {
           // walletConnect(chain.value, walletName.value)
           connectEvmWallet(walletName.value, chain.value)

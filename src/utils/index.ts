@@ -530,10 +530,11 @@ export function getWSMessage(e: MessageEvent) {
   return null
 }
 
-export function verifyLogin() {
+export function verifyLogin(isBot=false) {
   const bottStore = useBotStore()
+  const walletStore = useWalletStore()
   const userInfo = bottStore.userInfo
-  if (!userInfo?.evmAddress) {
+  if (!userInfo?.evmAddress && (!walletStore.address || isBot)) {
     bottStore.changeConnectVisible(true)
     // 连接钱包
     return false

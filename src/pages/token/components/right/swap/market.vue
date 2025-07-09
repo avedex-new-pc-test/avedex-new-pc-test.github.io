@@ -1642,12 +1642,13 @@ async function submitSwap(_swapSubmitInfo = swapSubmitInfo.value) {
       // this.dialogVisibleSwap = false
       activeShow.value = 3
       return res.wait()
-    }).then((res: { hash: string }) => {
+    }).then((res: { hash: string, to: string }) => {
       console.log('----transaction---', res)
       updateTransaction({
         chain: chain.value,
         tx_hash: res.hash,
-        status: 100
+        status: 100,
+        to: res?.to?.toLowerCase?.() || '',
       })
       setTimeout(() => {
         swapStore.getTokenDetails()
