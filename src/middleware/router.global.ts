@@ -1,5 +1,5 @@
 // src/middleware/router.global.ts
-const redirectToOldUrls =['/address']
+// const redirectToOldUrls =['/address']
 export default defineNuxtRouteMiddleware((to) => {
   // console.log('to', from, to)
   if (to.fullPath?.includes('/login')) {
@@ -12,29 +12,29 @@ export default defineNuxtRouteMiddleware((to) => {
       return navigateTo(redirectUrl, { replace: true })
     }
   }
-  const needRedirectToOld =  false //redirectToOldUrls.find((url) => to.fullPath.includes(url))
+  // const needRedirectToOld =  false //redirectToOldUrls.find((url) => to.fullPath.includes(url))
   // const isBtcOrSolana = 1//['bsc', 'solana'].includes(to.params.chain as string)
-  if(needRedirectToOld) {
-    let query = ''
-    const botStore = useBotStore()
-    if (botStore.accessToken &&  botStore.refreshToken) {
-      query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
-    }
-    if (to.params.chain) {
-      navigateTo('https://ave.ai'+ to.path + query,{
-        open:{
-          target:'_blank'
-        }
-      })
-      return abortNavigation()
-    } else {
-      if (botStore.accessToken && botStore.evmAddress) {
-        const path = `/address/${botStore.getWalletAddress('solana')}/solana`
-        return navigateTo(path)
-      }
-    }
+  // if(needRedirectToOld) {
+  //   let query = ''
+  //   const botStore = useBotStore()
+  //   if (botStore.accessToken &&  botStore.refreshToken) {
+  //     query = `?act=${botStore.accessToken}&ret=${botStore.refreshToken}`
+  //   }
+  //   if (to.params.chain) {
+  //     navigateTo('https://ave.ai'+ to.path + query,{
+  //       open:{
+  //         target:'_blank'
+  //       }
+  //     })
+  //     return abortNavigation()
+  //   } else {
+  //     if (botStore.accessToken && botStore.evmAddress) {
+  //       const path = `/address/${botStore.getWalletAddress('solana')}/solana`
+  //       return navigateTo(path)
+  //     }
+  //   }
 
-  }
+  // }
   if (!to.fullPath?.includes('/token')) {
     useHead({ title: 'Ave.ai' })
   } else if (to.fullPath?.includes(NATIVE_TOKEN)) {
