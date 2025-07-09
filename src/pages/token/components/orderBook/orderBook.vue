@@ -155,13 +155,13 @@
                         {{ seconds }}{{ t('ss') }}
                       </template>
                       <template v-else>
-                        {{ dayjs(row.time * 1000).fromNow() }}
+                        {{ formatTimeFromNow(row.time) }}
                       </template>
                     </span>
                   </template>
                 </TimerCount>
                 <span v-else>
-                  {{ dayjs(row.time * 1000).fromNow() }}
+                  {{ formatTimeFromNow(row.time) }}
                 </span>
               </div>
             </div>
