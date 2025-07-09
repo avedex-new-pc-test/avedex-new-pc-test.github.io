@@ -21,5 +21,19 @@
 </template>
 
 <script setup>
-  const botStore = useBotStore()
+const botStore = useBotStore()
+const router = useRouter()
+watch(
+  () => botStore.getWalletAddress('solana'),
+  (address, old) => {
+    if (!old && address) {
+      router.replace('/address/' + address + '/solana')
+    }
+  }
+)
+onMounted(() => {
+  if (botStore.getWalletAddress('solana')) {
+    router.replace('/address/' + botStore.getWalletAddress('solana') + '/solana')
+  }
+})
 </script>
