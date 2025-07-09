@@ -256,6 +256,7 @@ const props = defineProps({
     default: false,
   },
 })
+const emit = defineEmits(['close'])
 const tokens = computed(() => {
   return props.tokens
 })
@@ -273,6 +274,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
   $router.push({
     path: `/address/${row.wallet_address}/${row.chain}`,
   })
+  emit('close')
 }
 
 // const botStore = useBotStore()
@@ -357,7 +359,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     li {
       padding: 0 20px;
       &:hover {
-        background-color: var(--d-333-l-F2F2F2);
+        background-color: var(--d-2A2A2A-l-F2F2F2);
       }
     }
     .token-info {
@@ -414,7 +416,7 @@ function tableRowClick(row: { wallet_address: string; chain: string }) {
     }
     li > a:hover {
       text-decoration: none;
-      background-color: var(--d-333-l-F2F2F2);
+      background-color: var(--d-2A2A2A-l-F2F2F2);
       color: var(--a-text-1-color);
       opacity: 1;
     }

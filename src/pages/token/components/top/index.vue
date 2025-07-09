@@ -52,20 +52,20 @@
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
           <template #placeholder>
             <img
               class="token-icon"
               :src="getChainDefaultIcon(token?.chain, token?.symbol)"
-            />
+            >
           </template>
         </el-image>
         <img
           v-if="token?.chain"
           class="icon-symbol rounded-100%"
           :src="`${token_logo_url}chain/${token?.chain}.png`"
-        />
+        >
       </div>
       <div class="ml-8px">
         <div class="flex items-center">
@@ -94,13 +94,13 @@
                     <img
                       class="token-icon-tag h-16px"
                       src="/icon-default.png"
-                    />
+                    >
                   </template>
                   <template #placeholder>
                     <img
                       class="token-icon-tag h-16px"
                       src="/icon-default.png"
-                    />
+                    >
                   </template>
                 </el-image>
                 <span
@@ -158,9 +158,20 @@
               target="_blank"
             >
               <Icon
-                class="text-[--d-666-l-999] h-16px w-12px"
-                name="ep:search"
+                class="text-[--d-666-l-999] h-16px w-10px"
+                name="custom:search"
               />
+            </a>
+            <a
+              v-if="aiSummary?.headline || aiSummary?.summary"
+              v-tooltip.raw="{
+                content: `<div class='max-w-[400px]'>${aiSummary.headline || aiSummary.summary}</div>`,
+                props:{
+                  placement:'top-start'
+                }
+              }"
+              class="media-item bg-btn clickable">
+              <Icon name="custom:ai" class="text-14px"/>
             </a>
           </div>
           <el-popover
@@ -363,13 +374,13 @@
                   <img
                     class="token-icon-signal-tag h-16px"
                     src="/icon-default.png"
-                  />
+                  >
                 </template>
                 <template #placeholder>
                   <img
                     class="token-icon-signal-tag h-16px"
                     src="/icon-default.png"
-                  />
+                  >
                 </template>
               </el-image>
               <div
@@ -506,7 +517,7 @@
             :src="formatIconSwap(pair?.amm)"
             onerror="this.src='/icon-default.png'"
             height="16"
-          />
+          >
         </a>
       </div>
       <el-progress
@@ -588,13 +599,13 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/risk-gaoliang.svg"
-        />
+        >
         <img
           v-else-if="statistics_warning_store > 0"
           :width="12"
           class="icon-svg1"
           src="@/assets/images/yichang1-gaoliang.svg"
-        />
+        >
         <img
           v-else-if="
             !statistics_risk_store &&
@@ -604,14 +615,14 @@
           :width="12"
           class="icon-svg1"
           src="@/assets/images/安全.svg"
-        />
+        >
 
         <img
           v-else
           class="icon-svg1"
           :width="12"
           src="@/assets/images/zhuyi1.svg"
-        />
+        >
         <span
           v-if="
             statistics_risk_store ||
@@ -724,6 +735,7 @@ const userFavoriteGroups = shallowRef<GetUserFavoriteGroupsResponse[]>([])
 
 const editableRemark = shallowRef(false)
 const remark = shallowRef('')
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const remark2 = shallowRef('')
 const showCheck = shallowRef(false)
 const showRun = shallowRef(false)
@@ -864,12 +876,11 @@ function getTokenFavoriteCheck() {
     })
     .finally(() => {})
 }
-
 function addTokenFavorite() {
   loading.value = true
   addFavorite(id.value, evmAddress.value)
     .then(() => {
-      ElMessage.success('收藏成功！')
+      ElMessage.success(t('collected'))
       collected.value = true
       topEventBus.emit()
     })
@@ -884,7 +895,7 @@ function removeTokenFavorite() {
   loading.value = true
   removeFavorite(id.value, evmAddress.value)
     .then(() => {
-      ElMessage.success('已取消收藏！')
+      ElMessage.success(t('cancelled1'))
       collected.value = false
       topEventBus.emit()
     })
@@ -1041,11 +1052,11 @@ function getTags(i: Pair) {
     signal_arr?.sort((a, b) => b.timestamp - a.timestamp)
     normal_str = tag_arr.filter((i: string) => !i?.startsWith('signal'))
   }
-  if (i?.tag) {
-    const tag = i.tag?.split(',') || []
-    const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
-    normal_str = tag1.concat(normal_str)
-  }
+  // if (i?.tag) {
+  //   const tag = i.tag?.split(',') || []
+  //   const tag1 = tag.filter((i) => i !== 'pump' && i !== 'moonshot') || []
+  //   normal_str = tag1.concat(normal_str)
+  // }
   normal_tag =
     normal_str?.map((i) => ({
       tag: i,

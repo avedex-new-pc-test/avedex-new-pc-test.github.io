@@ -4,7 +4,7 @@
       <el-col :span="24">
         <div class="title text-12px color-[--d-FFF-l-000]">
           {{ $t('holdersDetail') }}
-          <span class="color-[--d-999-l-666]">({{ $t('excludeNullAndPoll') }})</span>
+          <span class="color-[--d-666-l-999]">({{ $t('excludeNullAndPoll') }})</span>
         </div>
         <div class="checkbox-container checkbox-old mt-10px">
           <el-checkbox v-model="checked[0]" class="checkbox-FFCC00">
@@ -270,7 +270,6 @@ function getTop100range() {
   loadingTop100Range.value = true
   _getTop100range(id.value)
     .then((res) => {
-      // console.log('--------------------res-----------------------------', res)
       top100range.value = Array.isArray(res) ? res?.map(i => ({
         ...i,
         date: i?.date?.slice(5)
@@ -290,7 +289,6 @@ function getTop100balance() {
   }
   _getTop100balance(paramas)
     .then((res) => {
-      console.log('--------------------res-----------------------------', res)
       top100balance.value = Array.isArray(res)
         ? res?.map((i) => ({
             ...i,
@@ -342,7 +340,6 @@ function getAllTagsStats() {
   }
   _getAllTagsStats(paramas)
     .then((res) => {
-      console.log('--------------------res-----------------------------', res)
       insidersObj.value = res
     })
     .catch(() => {})

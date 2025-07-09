@@ -1,6 +1,6 @@
 <template>
-  <footer class="h-32px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer fixed bottom-0">
-    <ul class="left gap-12px">
+  <footer class="h-32px bg-[--d-222-l-F2F2F2]  w-full px-12px py-16px footer fixed bottom-0 z-2">
+    <div class="left gap-12px">
       <NuxtLink
         v-for="item in newData" :key="item.symbol || item.logo_url"
         class="color-[--d-999-l-666]  flex items-center gap-5px"
@@ -16,7 +16,28 @@
           <span :class="`color-${item.color}`">{{'$'+formatDec(item?.current_price_usd || 0, 2)}}</span>
         </template>
       </NuxtLink>
-    </ul>
+      <el-badge v-if="!route.path.includes('smart')" :is-dot="isDoted">
+        <div
+          class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
+             @click="signalStore.signalVisible=!signalStore.signalVisible"
+        >
+          <Icon
+            name="ri:signal-tower-fill"
+          />
+          {{ $t('signal') }}
+        </div>
+      </el-badge>
+    </div>
+    <!-- <div
+      id="monitor"
+      class="flex items-center color-[--d-999-l-666] gap-4px cursor-pointer hover:color-inherit"
+      @click="monitorVisible=!monitorVisible"
+    >
+      <Icon
+        name="mingcute:wallet-fill"
+      />
+      {{ $t('walletMonitor') }}
+    </div> -->
     <ul class="right">
       <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
         <a class="border-left" target="_blank" href="https://eco.ave.ai">{{ $t('ecosystem') }}</a>
@@ -26,7 +47,8 @@
       </li>
       <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
-        <a class="border-left" target="_blank" :href="lang?.includes?.('zh')
+        <a
+          class="border-left" target="_blank" :href="lang?.includes?.('zh')
             ? 'https://doc.ave.ai/cn/mian-ze-shen-ming'
             : 'https://doc.ave.ai/disclaimers'
           ">
@@ -49,13 +71,15 @@
       </li>
       <li class="bg-[--d-999-l-666] w-1px h-8px" />
       <li class="color-[--d-999-l-666] hover:color-[--d-FFF-l-000]">
-        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
+        <a
+          target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
           class="flex-center">
           <Icon name="bi:twitter-x" class="text-16px" />
         </a>
       </li>
       <li class="color-[--d-999-l-666] hover:color-#3F80F7">
-        <a target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
+        <a
+          target="_blank" :href="lang?.includes?.('zh') ? 'https://x.com/aveai_info' : 'https://x.com/AveaiGlobal'"
           class="flex-center">
           <Icon name="lineicons:telegram-original" class="text-19px" />
         </a>
@@ -66,6 +90,8 @@
         </a>
       </li>
     </ul>
+    <Monitor/>
+    <Batch @refresh="()=>{}"/>
   </footer>
 </template>
 
@@ -73,6 +99,8 @@
 import { formatDec } from '~/utils/formatNumber'
 import { getTokensPrice } from '@/api/token'
 import { upColor, downColor } from '@/utils/constants'
+const {monitorVisible} = storeToRefs(useFollowStore())
+const signalStore = useSignalStore()
 const globalStore = useGlobalStore()
 const { lang } = storeToRefs(globalStore)
 const { token } = storeToRefs(useTokenStore())
@@ -139,7 +167,6 @@ const newData = computed(() => {
   })
 })
 
-
 watch(()=>globalStore.footerTokensPrice, (newVal) => {
   // console.log('globalStore.footerTokensPrice', newVal)
   if(data.value.length){
@@ -151,6 +178,20 @@ watch(()=>globalStore.footerTokensPrice, (newVal) => {
         item.color = newItem?.price_change>=0?upColor[0]:downColor[0]
       }
     }
+  }
+})
+
+const wsStore = useWSStore()
+const isDoted = shallowRef(!signalStore.signalVisible)
+// 点击信号广场，悬浮窗打开状态，小红点消失
+watch(() => signalStore.signalVisible, val => {
+  if (val) {
+    isDoted.value = false
+  }
+})
+watch(() => wsStore.wsResult[WSEventType.SIGNALSV2_PUBLIC_MONITOR], () => {
+  if (!signalStore.signalVisible) {
+    isDoted.value = true
   }
 })
 </script>

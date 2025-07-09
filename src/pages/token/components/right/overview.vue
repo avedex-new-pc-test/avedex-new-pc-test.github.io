@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-16px py-12px color-#999">{{ $t('tokenInfo') }}</div>
+    <div class="text-16px py-12px color-#999">{{ $t('tokenInfo') }} </div>
     <ul class="text-12px mt-10px">
       <li class="flex justify-between mb-12px">
         <span class="color-[--d-666-l-999]">{{ $t('name') }}</span>
@@ -33,7 +33,6 @@
         <div class="flex items-center justify-end color-[--d-999-l-666]">
           <a class="clickable color-[--d-999-l-666] hover:color-[--d-F5F5F5-l-333] text-decoration-none"  :href="formatExplorerUrl(token?.chain as string, owner, 'address')" target="_blank"> {{ formatAddress(owner) }}</a>
           <Icon v-copy="checkStore?.checkResult?.owner || token?.owner || ''" name="bxs:copy" class="ml-5px clickable" />
-          <Icon style="display: none;" name="custom:checked" />
         </div>
       </li>
       <li v-if="token?.total" class="flex justify-between mb-12px">
@@ -98,6 +97,14 @@
         <button v-if="intro?.length > 250" class="text-12px color-#3F80F7 bg-transparent outline-none border-none clickable" @click.stop="showAll = !showAll" >{{ !showAll ? $t('more') : $t('expand') }}</button>
       </div>
     </div>
+    <div>
+      <div class="text-14px mt-12px mb-2px color-[--d-666-l-999]">
+        <Icon name="custom:ai" class="text-12px"/> {{ $t('aiSummary') }}
+      </div>
+      <div class="text-12px color-[--d-999-l-666] token-description">
+         {{aiSummary?.summary || aiSummary?.headline ? aiSummary.summary || aiSummary.headline: $t('aiIsAnalyzing')}}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -105,15 +112,14 @@
 import { formatDate, formatExplorerUrl, isJSON } from '@/utils/index'
 import { useTokenStore } from '~/stores/token'
 import BigNumber from 'bignumber.js'
+const aiSummary = inject<{summary: string, headline: string }>('aiSummary')
 const tokenStore = useTokenStore()
 const checkStore = useCheckStore()
 const pair = computed(() => tokenStore.pair)
 const token = computed(() => tokenStore.token)
 const localeStore = useLocaleStore()
 // const { t } = useI18n()
-
 const showAll = ref(false)
-
 const owner = computed(() => {
   const owner = checkStore?.checkResult?.owner || token.value?.owner || ''
   return owner

@@ -94,6 +94,9 @@ export default defineNuxtConfig({
     '@/assets/css/element-plus/reset.scss'
   ],
   plugins: [
+    // 添加 gameanalytics
+    '@/plugins/core-js.ts',
+    '@/plugins/gameanalytics.client.ts',
     '@/plugins/directives/index.ts', // 引入自定义指令插件
     '@/plugins/pwa-meta.client.ts', // 引入 pwa-meta 插件
     '@/plugins/i18n-sync.client.ts',
@@ -104,6 +107,7 @@ export default defineNuxtConfig({
     '@/plugins/tradingview.client.ts',
     '@/plugins/tooltip.client.ts',
     '@/plugins/popover.client.ts',
+    '@/plugins/dialog.client.ts',
   ],
   // unocss: {
   //   nuxtLayers: true,
@@ -151,9 +155,9 @@ export default defineNuxtConfig({
         include: ['lodash-unified'],
       }
     },
-    // optimizeDeps: {
-    //   include: ['lodash-unified'],
-    // },
+    optimizeDeps: {
+      include: ['lodash-unified'],
+    },
     build: {
       minify: 'terser',
       sourcemap: !isProd,
@@ -259,6 +263,7 @@ export default defineNuxtConfig({
           pages.splice(i, 1)
         }
       }
+      // console.log('pages', JSON.stringify(pages))
     }
   }
 })
