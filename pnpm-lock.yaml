@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@debox-pro/chat-widget-html':
+        specifier: ^0.0.8
+        version: 0.0.8(react@19.1.0)
       '@element-plus/icons-vue':
         specifier: ^2.3.1
         version: 2.3.1(vue@3.5.13(typescript@5.8.3))
@@ -987,6 +990,15 @@ packages:
   '@dabh/diagnostics@2.0.3':
     resolution: {integrity: sha512-hrlQOIi7hAfzsMqlGSFyVucrx38O+j6wiGOf//H2ecvIEqYN4ADBSS2iLMh5UFyDunCNniUIPk/q3riFv45xRA==}
 
+  '@debox-pro/chat-widget-core@0.0.8':
+    resolution: {integrity: sha512-QRgclwBDmzMZGgRgn0WPJKDUvLu40doMnAkYYIQFhdUoSUriK9Ynbx8JMb1ZFMfQjHPGrQwcS3Og/uKYmZjHLQ==}
+
+  '@debox-pro/chat-widget-html@0.0.8':
+    resolution: {integrity: sha512-Y/4Z963+z/PoPGjHB+Rhqs6gpNDRLTaYd7YzCusqCmRTSi0PQ9hWME456xoJGtOfXZprHdORkxYtLcAMXaMRQw==}
+
+  '@debox-pro/chat-widget-ui@0.0.8':
+    resolution: {integrity: sha512-/1MtKxFs23yXE/ebC0O1b80Lz/OVS6Oc+nr2r4HwBLWStKOs7UtaMWNYdrbekoo4MgFRgcGkXzJPp53rOYmHTA==}
+
   '@dependents/detective-less@4.1.0':
     resolution: {integrity: sha512-KrkT6qO5NxqNfy68sBl6CTSoJ4SNDIS5iQArkibhlbGU4LaDukZ3q2HIkh8aUKDio6o4itU4xDR7t82Y2eP1Bg==}
     engines: {node: '>=14'}
@@ -1531,6 +1543,9 @@ packages:
     resolution: {integrity: sha512-Xq0h6zMrHBbrW8jXJ9fISi+x8oDQllg5hTDkDuxnWiskJ63rpJu9CvJshj8VniHVTbsxCg9fVoPAaNp3RQI5OQ==}
     peerDependencies:
       vue: '>=3'
+
+  '@interactjs/types@1.10.27':
+    resolution: {integrity: sha512-BUdv0cvs4H5ODuwft2Xp4eL8Vmi3LcihK42z0Ft/FbVJZoRioBsxH+LlsBdK4tAie7PqlKGy+1oyOncu1nQ6eA==}
 
   '@intlify/bundle-utils@10.0.1':
     resolution: {integrity: sha512-WkaXfSevtpgtUR4t8K2M6lbR7g03mtOxFeh+vXp5KExvPqS12ppaRj1QxzwRuRI5VUto54A22BjKoBMLyHILWQ==}
@@ -5995,6 +6010,9 @@ packages:
     resolution: {integrity: sha512-QQnnxNyfvmHFIsj7gkPcYymR8Jdw/o7mp5ZFihxn6h8Ci6fh3Dx4E1gPjpQEpIuPo9XVNY/ZUwh4BPMjGyL01g==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
+  interactjs@1.10.27:
+    resolution: {integrity: sha512-y/8RcCftGAF24gSp76X2JS3XpHiUvDQyhF8i7ujemBz77hwiHDuJzftHx7thY8cxGogwGiPJ+o97kWB6eAXnsA==}
+
   internal-ip@4.3.0:
     resolution: {integrity: sha512-S1zBo1D6zcsyuC6PMmY5+55YMILQ9av8lotMx447Bq6SAgo/sDK6y6uUKmuYhW7eacnIhFfsPmCNYdDzsnnDCg==}
     engines: {node: '>=6'}
@@ -6639,6 +6657,9 @@ packages:
 
   lit@2.8.0:
     resolution: {integrity: sha512-4Sc3OFX9QHOJaHbmTMk28SYgVxLN3ePDjg7hofEft2zWlehFL3LiAuapWc4U/kYwMYJSh2hTCPZ6/LIC7ii0MA==}
+
+  lit@3.2.1:
+    resolution: {integrity: sha512-1BBa1E/z0O9ye5fZprPtdqnc0BFzxIxTTOO/tQFmyC/hj1O3jL4TfmLBw0WEwjAokdLwpclkvGgDJwTIh0/22w==}
 
   lit@3.3.0:
     resolution: {integrity: sha512-DGVsqsOIHBww2DqnuZzW7QsuCdahp50ojuDaBPC7jUDRpYoH0z7kHBBYZewRzer75FwtrkmkKk7iOAwSaWdBmw==}
@@ -7886,6 +7907,9 @@ packages:
 
   protocols@2.0.2:
     resolution: {integrity: sha512-hHVTzba3wboROl0/aWRRG9dMytgH6ow//STBZh43l/wQgmMhYhOFi0EHWAPtoCz9IAUymsyP0TSBHkhgMEGNnQ==}
+
+  proxy-compare@2.5.0:
+    resolution: {integrity: sha512-f1us0OsVAJ3tdIMXGQx2lmseYS4YXe4W+sKF5g5ww/jV+5ogMadPt+sIZ+88Ga9kvMJsrRNWzCrKPpr6pMWYbA==}
 
   proxy-compare@2.5.1:
     resolution: {integrity: sha512-oyfc0Tx87Cpwva5ZXezSp5V9vht1c7dZBhvuV/y3ctkgMVUmiAGDVeeB0dKhGSyT0v1ZTEQYpe/RXlBVBNuCLA==}
@@ -9328,6 +9352,15 @@ packages:
   validator@13.12.0:
     resolution: {integrity: sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==}
     engines: {node: '>= 0.10'}
+
+  valtio@1.10.3:
+    resolution: {integrity: sha512-t3Ez/+baJ+Z5tIyeaI6nCAbW/hrmcq2jditwg/X++o5IvCdiGirQKTOv1kJq0glgUo13v5oABCVGcinggBfiKw==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      react: '>=16.8'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   valtio@1.11.2:
     resolution: {integrity: sha512-1XfIxnUXzyswPAPXo1P3Pdx2mq/pIqZICkWN60Hby0d9Iqb+MEIpqgYVlbflvHdrp2YR/q3jyKWRPJJ100yxaw==}
@@ -11103,6 +11136,27 @@ snapshots:
       enabled: 2.0.0
       kuler: 2.0.0
 
+  '@debox-pro/chat-widget-core@0.0.8(react@19.1.0)':
+    dependencies:
+      valtio: 1.10.3(react@19.1.0)
+    transitivePeerDependencies:
+      - react
+
+  '@debox-pro/chat-widget-html@0.0.8(react@19.1.0)':
+    dependencies:
+      '@debox-pro/chat-widget-core': 0.0.8(react@19.1.0)
+      '@debox-pro/chat-widget-ui': 0.0.8(react@19.1.0)
+    transitivePeerDependencies:
+      - react
+
+  '@debox-pro/chat-widget-ui@0.0.8(react@19.1.0)':
+    dependencies:
+      '@debox-pro/chat-widget-core': 0.0.8(react@19.1.0)
+      interactjs: 1.10.27
+      lit: 3.2.1
+    transitivePeerDependencies:
+      - react
+
   '@dependents/detective-less@4.1.0':
     dependencies:
       gonzales-pe: 4.3.0
@@ -11754,6 +11808,8 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
       vue: 3.5.13(typescript@5.8.3)
+
+  '@interactjs/types@1.10.27': {}
 
   '@intlify/bundle-utils@10.0.1(vue-i18n@10.0.7(vue@3.5.13(typescript@5.8.3)))':
     dependencies:
@@ -18801,6 +18857,10 @@ snapshots:
 
   ini@4.1.1: {}
 
+  interactjs@1.10.27:
+    dependencies:
+      '@interactjs/types': 1.10.27
+
   internal-ip@4.3.0:
     dependencies:
       default-gateway: 4.2.0
@@ -19561,6 +19621,12 @@ snapshots:
       '@lit/reactive-element': 1.6.3
       lit-element: 3.3.3
       lit-html: 2.8.0
+
+  lit@3.2.1:
+    dependencies:
+      '@lit/reactive-element': 2.1.0
+      lit-element: 4.2.0
+      lit-html: 3.3.0
 
   lit@3.3.0:
     dependencies:
@@ -21201,6 +21267,8 @@ snapshots:
       sisteransi: 1.0.5
 
   protocols@2.0.2: {}
+
+  proxy-compare@2.5.0: {}
 
   proxy-compare@2.5.1: {}
 
@@ -22952,6 +23020,13 @@ snapshots:
     optional: true
 
   validator@13.12.0: {}
+
+  valtio@1.10.3(react@19.1.0):
+    dependencies:
+      proxy-compare: 2.5.0
+      use-sync-external-store: 1.2.0(react@19.1.0)
+    optionalDependencies:
+      react: 19.1.0
 
   valtio@1.11.2(react@19.1.0):
     dependencies:
