@@ -8,6 +8,7 @@ import { formatNumber } from '@/utils/formatNumber'
 import { useSessionStorage } from '@vueuse/core'
 
 const botStore = useBotStore()
+const walletStore = useWalletStore()
 const { t } = useI18n()
 const tokenStore = useTokenStore()
 const route = useRoute()
@@ -91,7 +92,7 @@ const userAddress = computed(() => {
   if (botStore?.userInfo?.evmAddress) {
     return tabs.value.find(i => i?.chain === activeTab.value)?.address
   } else {
-    return localStorage.getItem('currentAccount')
+    return walletStore.address || ''
   }
 })
 
@@ -174,7 +175,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <div class="px-12px mb-10px flex justify-between">
+    <div v-if="botStore?.userInfo?.evmAddress" class="px-12px mb-10px flex justify-between">
       <div class="flex items-center whitespace-nowrap w-[80%] overflow-x-auto scrollbar-hide">
         <a
           v-for="(item) in tabs" :key="item.chain" href="javascript:;" :class="`decoration-none shrink-0 text-12px lh-16px text-center color-[--d-999-l-666] px-12px py-4px rounded-4px
@@ -246,7 +247,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <unified ref="unifiedRef" :chain="activeTab" :currentToken="botOrderOnlyCurrentToken" :userAddress="userAddress || ''" />
+    <unified v-if="botStore?.userInfo?.evmAddress" ref="unifiedRef" :chain="activeTab" :currentToken="botOrderOnlyCurrentToken" :userAddress="userAddress || ''" />
   </div>
 </template>
 
