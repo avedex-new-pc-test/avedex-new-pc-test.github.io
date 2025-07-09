@@ -237,7 +237,7 @@
                     "
                     :color="theme !== 'dark' ? '#222222' : '#f5f5f5'"
                     @click.stop="
-                      confirmSwitchGroup(id, selectedGroup, evmAddress)
+                      confirmSwitchGroup(id, selectedGroup, walletAddress)
                     "
                   >
                     {{ $t('confirm') }}
@@ -762,6 +762,10 @@ function handleFavDialogEvent({ tokenId, type, groupId }: IFavDialogEventArgs) {
   }
 }
 
+const walletStore = useWalletStore()
+const walletAddress = computed(() => {
+  return evmAddress.value || walletStore.address
+})
 const {
   statistics_risk_store,
   statistics_warning_store,
@@ -822,7 +826,7 @@ const chain = computed(() => {
 // console.log('-------tokenInfo---------', tokenInfo)
 // console.log('-------token---------', token)
 onMounted(() => {
-  if (evmAddress.value) {
+  if (walletAddress.value) {
     getTokenFavoriteCheck()
     getTokenUserFavoriteGroups() //获取分组数组
   }
@@ -831,7 +835,7 @@ onMounted(() => {
     getRugPull()
   }
 })
-watch(evmAddress, (val) => {
+watch(walletAddress, (val) => {
   if (val) {
     getTokenFavoriteCheck()
     getTokenUserFavoriteGroups() //获取分组数组
@@ -846,7 +850,7 @@ watch(evmAddress, (val) => {
 watch(
   () => route.params.id,
   () => {
-    if (evmAddress.value) {
+    if (walletAddress.value) {
       getTokenFavoriteCheck()
       getTokenUserFavoriteGroups() //获取分组数组
     }
@@ -860,7 +864,7 @@ const collected = shallowRef(false)
 const loading = shallowRef(false)
 
 function getTokenFavoriteCheck() {
-  getFavoriteCheck(id.value, evmAddress.value)
+  getFavoriteCheck(id.value, walletAddress.value)
     .then((res) => {
       collected.value = res?.address ? true : false
       remark.value = res?.remark || ''
@@ -875,7 +879,7 @@ function getTokenFavoriteCheck() {
 }
 function addTokenFavorite() {
   loading.value = true
-  addFavorite(id.value, evmAddress.value)
+  addFavorite(id.value, walletAddress.value)
     .then(() => {
       ElMessage.success(t('collected'))
       collected.value = true
@@ -890,7 +894,7 @@ function addTokenFavorite() {
 }
 function removeTokenFavorite() {
   loading.value = true
-  removeFavorite(id.value, evmAddress.value)
+  removeFavorite(id.value, walletAddress.value)
     .then(() => {
       ElMessage.success(t('cancelled1'))
       collected.value = false
@@ -903,8 +907,12 @@ function removeTokenFavorite() {
       loading.value = false
     })
 }
-function collect() {
-  if (evmAddress.value) {
+
+async function collect() {
+  if (walletAddress.value) {
+    if (walletStore.address) {
+      await walletStore.signMessageForFavorite()
+    }
     if (collected.value) {
       removeTokenFavorite()
     } else {
@@ -917,7 +925,7 @@ function collect() {
 async function getTokenUserFavoriteGroups() {
   try {
     loadingGroup.value = true
-    const res = await getUserFavoriteGroups(evmAddress.value)
+    const res = await getUserFavoriteGroups(walletAddress.value)
     userFavoriteGroups.value = (res || []).filter(
       (el) => !!el.name && el.type === 'token'
     )
@@ -964,14 +972,14 @@ function handleReset() {
   }
 }
 function confirmEditRemark(tokenId: string, remark2: string) {
-  if (!evmAddress.value) {
+  if (!walletAddress.value) {
     verifyLogin()
     return
   }
   if (remark2?.length > 50) {
     return ElMessage.error(t('maximum10characters'))
   }
-  editTokenFavRemark(tokenId, remark2, evmAddress.value)
+  editTokenFavRemark(tokenId, remark2, walletAddress.value)
     .then(() => {
       ElMessage.success(t('success'))
       remark.value = remark2
@@ -1172,7 +1180,6 @@ function getRugPull() {
         ...i,
         rate: Number(i.rate?.toFixed(1) || 0),
       }))
-      console.log('-----getRugPull------', rugPull.value)
     })
     .catch((err) => {
       console.log(err)
