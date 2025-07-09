@@ -9,7 +9,7 @@
       color="#3F80F7"
       :is-full-page="false"
     /> -->
-    <el-table :data="currentUserTokenList" w-full @row-click="tableRowClick">
+    <el-table :data="currentUserTokenList" class="w-full !text-[12px]" @row-click="tableRowClick">
       <template #empty>
         <AveEmpty class="pt-40px" />
       </template>

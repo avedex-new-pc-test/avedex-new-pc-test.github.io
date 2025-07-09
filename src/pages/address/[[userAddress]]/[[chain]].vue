@@ -1,81 +1,86 @@
 <template>
   <div
-    v-if="0"
-    className="flex flex-col w-full gap-3 p-[20px] pt-[10px] bg-[var(--d-111-l-FFF)] pb-0"
+    v-if="userAddress && chain "
+    className="w-full h-full bg-[var(--d-111-l-FFF)] pb-0"
   >
-    <div class="flex-between">
-      <el-select
-        :style="{ width: '120px' }"
-        :model-value="chain"
-        @update:model-value="
-          (val) => {
-            navigateTo(`/address/${botStore.getWalletAddress(val)}/${val}`)
-          }
-        "
-      >
-        <template #prefix>
-          <ChainToken :chain="chain" :width="16" />
-        </template>
-        <el-option
-          v-for="{ chain: _chain } in smartChains"
-          :key="_chain"
-          :label="getChainInfo(_chain)?.name"
-          :value="_chain"
+    <div
+      v-if="['bsc', 'solana'].includes(chain)"
+      className="flex flex-col w-full gap-3 p-[20px] pt-[10px] pb-0"
+    >
+      <div class="flex-between">
+        <el-select
+          :style="{ width: '120px' }"
+          :model-value="chain"
+          @update:model-value="
+            (val) => {
+              navigateTo(`/address/${botStore.getWalletAddress(val)}/${val}`)
+            }
+          "
         >
-          <div class="flex-center" style="gap: 4px">
-            <ChainToken :chain="_chain" :width="16" />
-            {{ getChainInfo(_chain)?.name }}
-          </div>
-        </el-option>
-      </el-select>
-      <el-radio-group
-        v-model="interval"
-        class="m-radio-group"
-        size="small"
-        :fill="themeStore.isDark ? '#333' : '#ccc'"
-        :text-color="themeStore.isDark ? '#F5F5F5' : '#FFF'"
-        @change="(v) => console.log('v', v)"
-      >
-        <el-radio-button
-          v-for="option in options"
-          :key="option.id"
+          <template #prefix>
+            <ChainToken :chain="chain" :width="16" />
+          </template>
+          <el-option
+            v-for="{ chain: _chain } in smartChains"
+            :key="_chain"
+            :label="getChainInfo(_chain)?.name"
+            :value="_chain"
+          >
+            <div class="flex-center" style="gap: 4px">
+              <ChainToken :chain="_chain" :width="16" />
+              {{ getChainInfo(_chain)?.name }}
+            </div>
+          </el-option>
+        </el-select>
+        <el-radio-group
           v-model="interval"
-          :label="option.name"
-          :value="option.id"
+          class="m-radio-group"
+          size="small"
+          :fill="themeStore.isDark ? '#333' : '#ccc'"
+          :text-color="themeStore.isDark ? '#F5F5F5' : '#FFF'"
+          @change="(v) => console.log('v', v)"
+        >
+          <el-radio-button
+            v-for="option in options"
+            :key="option.id"
+            v-model="interval"
+            :label="option.name"
+            :value="option.id"
+          />
+        </el-radio-group>
+      </div>
+      <div class="flex align-stretch">
+        <Statistic
+          ref="statisticRef"
+          :isSelfAddress="isSelfAddress"
+          :address="userAddress"
+          :chain="chain"
+          :interval="interval"
+          :intervalText="intervalText"
         />
-      </el-radio-group>
-    </div>
-
-    <div class="flex align-stretch">
-      <Statistic
-        ref="statisticRef"
+        <TradeData
+          :interval="interval"
+          :intervalText="intervalText"
+          :address="userAddress"
+          :chain="chain"
+          @txAnalysisChange="txAnalysisChange"
+        />
+      </div>
+      <ActivityCharts :interval="interval" :address="userAddress" :chain="chain" />
+      <StatisticsTable
+        ref="statisticsTable"
+        :address="userAddress"
+        :chain="chain"
         :isSelfAddress="isSelfAddress"
-        :address="userAddress"
-        :chain="chain"
-        :interval="interval"
-        :intervalText="intervalText"
-      />
-      <TradeData
-        :interval="interval"
-        :intervalText="intervalText"
-        :address="userAddress"
-        :chain="chain"
-        @txAnalysisChange="txAnalysisChange"
       />
     </div>
-    <ActivityCharts :interval="interval" :address="userAddress" :chain="chain" />
-    <StatisticsTable
-      ref="statisticsTable"
+    <PageOther
+      v-else
       :address="userAddress"
       :chain="chain"
-      :isSelfAddress="isSelfAddress"
     />
   </div>
-  <!-- <PageBlank v-else /> -->
-  <PageOther
-    :address="userAddress"
-    :chain="chain"
-  />
+  <PageBlank v-else />
 </template>
 <script setup>
 import Statistic from './components/statistic.vue'
@@ -83,7 +88,7 @@ import TradeData from './components/tradeData.vue'
 import StatisticsTable from './components/statisticsTable.vue'
 import ActivityCharts from './components/activityCharts.vue'
 import PageBlank from './components/pageBlank.vue'
-import PageOther from './components/PageOther.vue'
+import PageOther from './components/pageOther.vue'
 import { getChainInfo } from '@/utils'
 
 const interval = ref('7D')
