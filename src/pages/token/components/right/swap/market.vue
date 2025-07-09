@@ -1148,7 +1148,6 @@ function selectedRouter(_swapPathList = swapPathList.value) {
     const priceI = Number(priceImpact)
     if (customSlippage.value === 'auto') {
       let slippage = tax + priceI + ((tax > 5 || priceI > 5) ? 2.5 : 2)
-      console.log('swapPathList', swapPathList)
       slippage = Math.max(Math.min(slippage, 49.99), 0.5)
       autoSlippageValue.value = String(Number(slippage.toFixed(2)))
     }
@@ -1650,6 +1649,8 @@ async function submitSwap(_swapSubmitInfo = swapSubmitInfo.value) {
         status: 100,
         to: res?.to?.toLowerCase?.() || '',
       })
+      selectedRouterIndex.value = 0
+      swapPathList.value = []
       setTimeout(() => {
         swapStore.getTokenDetails()
         swapStore.getUserTokenList()
@@ -1659,7 +1660,7 @@ async function submitSwap(_swapSubmitInfo = swapSubmitInfo.value) {
             swapStore.getTokenDetails()
           }, 3000)
         }
-      }, 2000)
+      }, 1000)
       if (isSwap) {
         // console.log('this.initTxs', this.initTxs)
         // this.initTxs.forEach(item => {
@@ -2004,12 +2005,16 @@ async function submitSuiSwap() {
 
 watch([() => swapStore.fromToken.address, () => walletStore.address], () => {
   if (swapStore.fromToken.address) {
-    fromAmount.value = ''
-    toAmount.value = ''
     getAllowance()
   }
 })
 
+watch([() => swapStore.fromToken.address, () => swapStore.toToken.address], () => {
+  fromAmount.value = ''
+  toAmount.value = ''
+  selectedRouterIndex.value = 0
+  resetCountdown()
+})
 
 
 </script>

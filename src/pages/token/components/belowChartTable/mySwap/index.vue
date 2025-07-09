@@ -110,7 +110,8 @@ const removeLeadingMinus = (str: string) => str.startsWith('-') ? str.slice(1) :
 
 const getWalletTxData = async () => {
   const supportedChains = ['solana', 'bsc']
-  if (!supportedChains.includes(activeTab.value)) {
+  const chain = walletStore.address ? walletStore.chain : activeTab.value
+  if (!supportedChains.includes(chain)) {
     walletTxData.value = null
     return
   }
@@ -118,9 +119,10 @@ const getWalletTxData = async () => {
   const token = String(route.params.id).split('-')[0]
   if (!userAddress.value || !token) return
 
+
   const params = {
     user_address: userAddress.value,
-    chain: activeTab.value,
+    chain: chain,
     user_token: token
   }
   const txInfo = await bot_getUserWalletTxInfo(params)
@@ -133,7 +135,7 @@ let lastUpdateTime = 0
 const maxUpdateNum = 15
 
 watch([() => tokenStore.placeOrderSuccess], () => {
-  const chain = String(route.params.id).split('-')[1]
+  const chain = getAddressAndChainFromId(String(route.params.id))?.chain
   if (tabs.value.find(i => i?.chain === chain)) {
     activeTab.value = chain
   }
