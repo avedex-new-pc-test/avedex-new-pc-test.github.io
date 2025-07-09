@@ -90,7 +90,7 @@ export const useWalletStore = defineStore('wallet', () => {
     }
   }
 
-  function disconnectEvmWallet() {
+  function disconnectWallet() {
     if (chain.value === 'solana') {
       (provider.value as Wallet)?.features?.['standard:disconnect']?.disconnect?.()
     }
@@ -101,6 +101,21 @@ export const useWalletStore = defineStore('wallet', () => {
     setTimeout(() => {
       provider.value = null
     }, 100)
+  }
+
+  function disconnect() {
+    if (chain.value === 'tron') {
+      (provider.value as TronWalletAdapter)?.disconnect?.()
+    }
+    address.value = ''
+    chain.value = ''
+    walletName.value = ''
+    provider.value?.disconnect?.()
+    setTimeout(() => {
+      provider.value = null
+    }, 100)
+    // 移除 bot 钱包相关
+    useBotStore().logout()
   }
 
   function _getSolanaWallets() {
@@ -215,7 +230,8 @@ export const useWalletStore = defineStore('wallet', () => {
     evmWallets,
     connectEvmWallet,
     initWallet,
-    disconnectEvmWallet,
+    disconnectWallet,
+    disconnect,
     solanaWallets,
     tronWalletAdapters,
     suiWallets,
