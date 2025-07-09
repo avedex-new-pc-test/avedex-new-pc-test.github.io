@@ -1179,7 +1179,25 @@ function getFilterData(list, conditions) {
 //   }
 
 // }
-// ::v-deep(.el-checkbox:hover .el-checkbox__input) {
-//   border-color: #409EFF;
-// }
+::v-deep(.el-checkbox ) {
+  .el-checkbox__label {
+    color: var(--d-666-l-999);
+  }
+  .el-checkbox__inner{
+    // border-color: var(--d-333-l-CCC);
+  }
+  .el-checkbox__input{
+    &.is-checked{
+      .el-checkbox__inner{
+        // background: var(--d-333-l-CCC);
+        // border-color: var(--d-333-l-CCC);
+      }
+      &+ .el-checkbox__label {
+        color: var(--d-F5F5F5-l-333)
+      }
+    }
+  }
+
+  color: var(--d-F5F5F5-l-333);
+}
 </style>

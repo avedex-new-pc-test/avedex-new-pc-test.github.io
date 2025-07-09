@@ -13,7 +13,7 @@
           <Icon
             id="custom-filter"
             name="custom:filter"
-            class="mr-3px text-12px cursor-pointer"
+            class="mr-3px text-10px cursor-pointer"
           />
           <span>{{ $t('filter') }}</span>
           <span v-if="filterNumber > 0" class="filter-number">{{ filterNumber }}</span>
