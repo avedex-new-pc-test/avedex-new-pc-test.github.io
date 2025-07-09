@@ -592,4 +592,8 @@ onMounted(() => {
 :deep(.el-table .caret-wrapper) {
   width: 16px;
 }
+
+:deep(.el-table) {
+  --el-table-row-hover-bg-color: var(--d-1A1A1A-l-fafafa);
+}
 </style>
