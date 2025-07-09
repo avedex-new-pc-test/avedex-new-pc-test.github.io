@@ -3,16 +3,18 @@
     class="w-full bg-[var(--d-111-l-FFF)] flex items-center justify-between p-x-17px h-60px"
   >
     <a :href="homeUrl" target="_blank" class="flex"><img height="26" src="~/assets/images/avedex_mobile_logo.png" ></a>
-    <ul class="menu ml-20px">
+    <!-- <ul class="menu ml-20px">
       <li v-for="(item, $index) in list" :key="$index">
-        <a
-          v-if="item.target==='_blank'" :href="item.src" :target="item.target"
-          :class="{ active: item.id == route?.name }">
+        <a :href="item.src" target="_blank" :class="{ active: item.id == route?.name }">
           {{ item.name }}
         </a>
-        <NuxtLink v-else :to="item.src">
-          {{ item.name }}
-        </NuxtLink>
+      </li>
+    </ul> -->
+     <ul class="menu ml-20px">
+      <li v-for="(item, $index) in list" :key="$index">
+       <NuxtLink :to="item.src" :target="item.target" :class="{ active: String(route?.name)?.indexOf(item.id) > -1 }">
+        {{item.name }}
+      </NuxtLink>
       </li>
     </ul>
     <div class="flex-1" />
@@ -23,7 +25,7 @@
     >
       <Icon
         class="text-16px text-[var(--d-666-l-999)]"
-        name="ep:search"
+        name="custom:search"
       />
       <span class="text-12px ml-4px text-[var(--d-666-l-999)]">
         {{ $t('enterAddress/token') }}
@@ -31,7 +33,7 @@
     </a>
     <div class="flex-1" />
     <el-button
-      v-if="!botStore.evmAddress"
+      v-if="!botStore.evmAddress && !walletStore.address"
       text
       type=""
       bg
@@ -41,6 +43,7 @@
     >
       {{ $t('connectWallet') }}
     </el-button>
+    <ExWalletBtn v-else-if="walletStore.address" />
     <!-- <el-popover v-else placement="bottom" trigger="click">
       <template #reference>
         <el-button class="ml-10px">{{
@@ -97,7 +100,8 @@
       />
     </a>
     <dialog-search v-model="dialogVisible_search" />
-    <component :is="lazyComponent" v-model="botStore.connectVisible"/>
+    <!-- <component :is="connectWalletCom" v-model="botStore.connectVisible" /> -->
+    <ConnectWalletCom />
   </header>
 </template>
 <script lang="ts" setup>
@@ -106,11 +110,13 @@ import wallet from '@/components/header/wallet/index.vue'
 import Notice from '~/components/layouts/components/notice.vue'
 // const connectWallet = shallowRef<Component | null>(null)
 import positions from '@/components/header/positions/index.vue'
+import ExWalletBtn from '../header/connectWallet/exWalletBtn.vue'
 // import connectWallet from '@/components/header/connectWallet/index.vue'
 // const connectWallet = shallowRef<Component | null>(null)
 const { locales } = useI18n()
 const themeStore = useThemeStore()
 const botStore = useBotStore()
+const walletStore = useWalletStore()
 const route = useRoute()
 const langStore = useLocaleStore()
 const {t } = useI18n()
@@ -121,7 +127,7 @@ const list = computed(() => {
   }
   const menues = [
     {id: 'index', name: t('markets'), src: 'https://ave.ai/' + query, target: '_blank'},
-    {id: 'pump', name: t('pump1'), src: 'https://ave.ai/pump' + query, target: '_blank'},
+    { id: 'pump', name: t('pump1'), src: '/pump' },
     {id: 'smart', name: t('smarter2'), src: '/smart', target: '_self'},
     {id: 'assets', name: t('balances'), src: '/address', target: '_self'},
   ]
@@ -138,28 +144,18 @@ const homeUrl = computed(() => {
 
 const dialogVisible_search = shallowRef(false)
 
-const lazyComponent = shallowRef<Component | null>(null)
-const loadComponent = async () => {
-  const component = await import('@/components/header/connectWallet/index.vue')
-  lazyComponent.value = component.default
-}
+// const lazyComponent = shallowRef<Component | null>(null)
+// const loadComponent = async () => {
+//   const component = await import('@/components/header/connectWallet/index.vue')
+//   lazyComponent.value = component.default
+// }
 
-watch(
-  () => botStore.connectVisible,
-  (newVal) => {
-    if (newVal) {
-      loadComponent()
-    }
-  }
-)
+const ConnectWalletCom = defineAsyncComponent(() => import('@/components/header/connectWallet/index.vue'))
+
 const openConnect = () => {
   botStore.changeConnectVisible(true)
 }
-onMounted(() => {
-  setTimeout(() => {
-    loadComponent()
-  }, 3000)
-})
+
 </script>
 <style lang="scss" scoped>
 header {
