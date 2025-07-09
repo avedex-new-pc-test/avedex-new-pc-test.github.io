@@ -1,5 +1,5 @@
 // src/middleware/router.global.ts
-const redirectToOldUrls = ['/address']
+const redirectToOldUrls =['/address']
 export default defineNuxtRouteMiddleware((to) => {
   // console.log('to', from, to)
   if (to.fullPath?.includes('/login')) {
@@ -12,9 +12,9 @@ export default defineNuxtRouteMiddleware((to) => {
       return navigateTo(redirectUrl, { replace: true })
     }
   }
-  const needRedirectToOld = redirectToOldUrls.find((url) => to.fullPath.includes(url))
-  const isBtcOrSolana = 1//['bsc', 'solana'].includes(to.params.chain as string)
-  if(needRedirectToOld && !isBtcOrSolana) {
+  const needRedirectToOld =  false //redirectToOldUrls.find((url) => to.fullPath.includes(url))
+  // const isBtcOrSolana = 1//['bsc', 'solana'].includes(to.params.chain as string)
+  if(needRedirectToOld) {
     let query = ''
     const botStore = useBotStore()
     if (botStore.accessToken &&  botStore.refreshToken) {
