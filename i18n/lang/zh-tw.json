@@ -1009,5 +1009,6 @@
   "expiresInTime": "{t}過期",
   "revoke": "撤銷",
   "expiredTime": "过期時間",
-  "historyLimitOrder": "歷史掛單"
+  "historyLimitOrder": "歷史掛單",
+  "marketCap": "流通市值"
 }
