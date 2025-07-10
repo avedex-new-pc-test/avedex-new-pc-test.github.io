@@ -567,6 +567,8 @@ onMounted(() => {
 
 <style lang="scss">
 .follow-select-popper {
+  background: var(--d-222-l-FFF) !important;
+
   .el-select-dropdown {
     background: var(--d-222-l-FFF);
   }
