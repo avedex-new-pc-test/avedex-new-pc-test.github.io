@@ -785,5 +785,6 @@
   "ranking": "Ranking",
   "FirstAlert": "First Alert",
   "FilterTips": "Filter content to the real-time stream on the left",
-  "searchGroup": "Search Group"
+  "searchGroup": "Search Group",
+  "marketCap": "C.M.Cap"
 }

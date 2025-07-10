@@ -770,5 +770,6 @@
   "SignalTopList": "今日潛力榜單",
   "ranking": "排名",
   "FirstAlert": "首次信號警報",
-  "FilterTips": "篩選內容為左側即時流"
+  "FilterTips": "篩選內容為左側即時流",
+  "marketCap": "流通市值"
 }
