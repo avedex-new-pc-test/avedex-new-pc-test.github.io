@@ -23,7 +23,8 @@
       />
       <el-table-column :label="$t('price')" align="right">
         <template #default="{ row }">
-          <span v-if="row.price > 0" v-html="'$' + formatNumber(row.price || 0, {
+          <span
+            v-if="row.price > 0" v-html="'$' + formatNumber(row.price || 0, {
             decimals:4,
             limit: 20,
           })" />
@@ -47,6 +48,28 @@
 import TokenColumn from '@/components/tokenColumn.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 import { getUserTokenList } from '@/api/wallet'
+// import { getUserSwapTokenList, getBalanceList } from '@/api/swap'
+const route = useRoute()
+const botStore = useBotStore()
+const walletStore = useWalletStore()
+const chain = computed(() => {
+  if (route.params.chain) {
+    return route.params.chain
+  }
+  if (botStore?.userInfo?.evmAddress) {
+    return 'solana'
+  }
+  return walletStore.chain || ''
+})
+const userAddress = computed(() => {
+  if (route.params.userAddress) {
+    return route.params.userAddress
+  }
+  if (botStore?.userInfo?.evmAddress) {
+    return botStore.getWalletAddress('solana')
+  }
+  return walletStore.address || ''
+})
 
 const props = defineProps({
   isHide: {
@@ -90,6 +113,33 @@ const currentUserTokenList = computed(() => {
     return balanceTokens.value
   }
 })
+
+// function _getUserTokenList(address, chain) {
+//   if (!address || !chain) {
+//     return
+//   }
+//   getUserSwapTokenList(address, chain).then(res1 => {
+//     const res = res1.map((i) => ({
+//       ...i,
+//       id: i.token,
+//       quote: i.current_price_usd * i.value || 0,
+//       price: i.current_price_usd,
+//       amount: i.value,
+//       address: i.token,
+//     }))
+//     if (chain === 'solana') {
+//       userTokenList.value = res?.map?.(i => ({...i}))
+//     } else {
+//       userTokenList.value = (res?.map(i => ({...i, id: i.token + '-' + i.chain, address: i.token}))?.filter?.(i => (i.risk_score || 0) < 60 && (i.risk_level || 0) >= 0 && i.flag !== 'blacklist' && i.symbol !== '' && i.flag !== 'lp') || [])?.filter(j => !!Number(j.value))
+//     }
+//     if (userTokenList.value.length > 0 && chain !== 'solana' && chain !== 'sui' && (/^0x[0-9a-zA-Z]{40}$/.test(address) || isValidAddress(address, 'tron'))) {
+//       getBalanceList(userTokenList.value.map(i => i.token || ''), chain).then(res1 => {
+//         userTokenList.value = userTokenList.value?.map?.((i, k) => ({...i, value: formatUnits(res1[k], i?.decimals || 0)}))?.filter(j => !!Number(j.value))
+//       })
+//     }
+//   })
+// }
+
 async function _getUserTokenList(address, chain) {
   const result = await getUserTokenList(address, chain)
   const tokenList = result.map((i) => ({
@@ -102,11 +152,12 @@ async function _getUserTokenList(address, chain) {
   }))
   userTokenList.value = tokenList
 }
+
+function init() {
+  _getUserTokenList(userAddress.value, chain.value)
+}
 onMounted(() => {
-  const route = useRoute()
-  const address = route.params.userAddress
-  const chain = route.params.chain
-  _getUserTokenList(address, chain)
+  init()
 })
 
 const tableRowClick = (row) => {

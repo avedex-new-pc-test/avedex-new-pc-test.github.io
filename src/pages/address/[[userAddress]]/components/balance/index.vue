@@ -37,8 +37,6 @@
     </div>
     <div class="content px-20px">
       <AssetOverview
-      :is="componentActive"
-      :ref="componentActive"
       :isHide="isHide"/>
     </div>
   </div>
