@@ -307,7 +307,7 @@ onMounted(() => {
       </el-table-column>
     </el-table>
 
-    <el-pagination class="mt-15px" hide-on-single-page v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
+    <el-pagination class="mt-15px" v-if="pageData.total > 1" v-model:current-page="pageData.page" v-model:page-size="pageData.pageSize"
       layout="prev, pager, next, ->" :total="pageData.total" :page-sizes="[10, 20, 30, 40, 50, 60]" @change="getList" />
 
     <el-popover :visible="visibleShow" :virtual-ref="virtualRef" virtual-triggering trigger="click" :width="250">
