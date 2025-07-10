@@ -6,6 +6,7 @@
       :wallet_logo="wallet_logo"
       :address="address"
       :chain="chain"
+      :iconSize="iconSize"
     />
     <template v-if="showAddress">
       <span
@@ -33,14 +34,13 @@
 
     <template v-if="canEdit && targetIsVisible">
       <EditRemarkPopover
-        v-if="botStore?.userInfo?.evmAddress"
+        v-if="botStore?.userInfo?.evmAddress || walletStore?.address"
         :address="address"
         :chain="chain"
         :remark="remark"
         @confirm="_updateWhaleRemark"
       />
-      <Icon v-else name="custom:remark" class="text-12px ml-5px clickable icon-remark shrink-0"
-            @click.stop.prevent="verifyLogin"/>
+      <Icon v-else name="custom:remark" class="text-12px ml-5px clickable icon-remark shrink-0" @click.stop.prevent="verifyLogin"/>
     </template>
   </div>
 </template>
@@ -77,6 +77,7 @@ const props = defineProps({
   iconEditColor: { type: String, default: 'var(--d-666-l-999)' },
   showAddressTitle: { type: Boolean, default: false },
   iconEditSize: { type: String, default: '12px' },
+  iconSize: { type: String, default: '16px' },
   showAddress: { type: Boolean, default: true },
   maxRemarkLength: { type: Number, default: 14 },
   // eslint-disable-next-line vue/prop-name-casing
@@ -97,6 +98,7 @@ const { t } = useI18n()
 const botStore = useBotStore()
 
 const remarksStore = useRemarksStore()
+const walletStore = useWalletStore()
 
 // Refs
 const target = useTemplateRef<HTMLElement | null>('target')
@@ -150,7 +152,7 @@ function _updateWhaleRemark(data: { remark: string }) {
 function sendRemarkToServer(remark: string) {
   const form = {
     user_address: props.address as string,
-    self_address: botStore?.userInfo?.evmAddress as string,
+    self_address: (botStore?.userInfo?.evmAddress || walletStore.address) as string,
     remark,
     user_chain: props.chain
   }

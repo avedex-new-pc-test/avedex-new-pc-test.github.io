@@ -12,9 +12,11 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
+import type { PropType } from 'vue'
+
+defineProps({
   options: {
-    type: Array,
+    type: Array as PropType<{ id: string; name: string }[]>,
     default: () => [],
   },
   activeValue: {
@@ -25,7 +27,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:activeValue', 'change'])
 
-const click = (item) => {
+const click = (item: { id: string; name: string }) => {
   emit('update:activeValue', item.id)
   emit('change', item)
 }

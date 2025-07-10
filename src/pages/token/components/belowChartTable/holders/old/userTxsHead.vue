@@ -200,7 +200,6 @@ async function getTokenBalance() {
     if (id) {
       const { chain } = getAddressAndChainFromId(id)
       const res = await getUserBalances(id, [props.userAddress + '-' + chain])
-      console.log('----------res--------', res)
       if (res && res[0]) {
         const { value } = res[0]
         balance.value = value

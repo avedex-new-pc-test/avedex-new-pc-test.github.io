@@ -50,9 +50,8 @@
         </el-radio-group> -->
         <ButtonGroup
           v-model:active-value="interval"
-          class="mt-[-5px]"
+          class="mt--5px"
           :options="options"
-          @change="changeFilter"
         />
       </div>
       <div class="flex align-stretch">
@@ -100,29 +99,46 @@ import { getChainInfo } from '@/utils'
 const interval = ref('7D')
 const route = useRoute()
 const botStore = useBotStore()
-const chain = computed(() => route.params.chain)
-const userAddress = computed(() => route.params.userAddress)
-const $t = getGlobalT()
+const walletStore = useWalletStore()
+const chain = computed(() => {
+  if (route.params.chain) {
+    return route.params.chain
+  }
+  if (botStore?.userInfo?.evmAddress) {
+    return 'solana'
+  }
+  return walletStore.chain || ''
+})
+const userAddress = computed(() => {
+  if (route.params.userAddress) {
+    return route.params.userAddress
+  }
+  if (botStore?.userInfo?.evmAddress) {
+    return botStore.getWalletAddress('solana')
+  }
+  return walletStore.address || ''
+})
+const { t } = useI18n()
 const statisticRef = ref(null)
 const statisticsTable = ref(null)
 
 const options = [
   {
-    name: `24${$t('H')}`,
+    name: `24${t('H')}`,
     id: '24H',
   },
   {
-    name: `7${$t('D')}`,
+    name: `7${t('D')}`,
     id: '7D',
   },
   {
-    name: `30${$t('D')}`,
+    name: `30${t('D')}`,
     id: '30D',
   },
 ]
 
 const isSelfAddress = computed(() => {
-  return userAddress.value === botStore.getWalletAddress(chain.value)
+  return userAddress.value === botStore.getWalletAddress(chain.value) || walletStore.address === userAddress.value
 })
 const intervalText = computed(() => {
   return options.find((item) => interval.value === item.id)?.name
@@ -150,9 +166,7 @@ function txAnalysisChange(data) {
 }
 
 const router = useRouter()
-watch(
-  () => botStore.getWalletAddress('solana'),
-  (address, old) => {
+watch(() => botStore.getWalletAddress('solana'), (address, old) => {
     if (!old && address) {
       router.replace('/address/' + address + '/solana')
     }

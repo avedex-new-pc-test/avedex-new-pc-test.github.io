@@ -8,11 +8,15 @@ import TonWeb from 'tonweb'
 import IconUnknown from '@/assets/images/icon-unknown.png'
 import { useRemarksStore } from '~/stores/remarks'
 import Cookies from 'js-cookie'
-import { JsonRpcProvider, formatUnits, parseUnits, FixedNumber } from 'ethers'
-import type { GetHotTokensResponse } from '~/api/token'
+import { JsonRpcProvider, formatUnits as ethersFormatUnits, parseUnits as ethersParseUnits, FixedNumber, Interface, type JsonFragment } from 'ethers'
+import type {GetHotTokensResponse} from '~/api/token'
 import BigNumber from 'bignumber.js'
-import type { SearchHot } from '~/api/types/search'
+import type {SearchHot} from '~/api/types/search'
 import type { ConfigType } from 'dayjs'
+import { useStorage } from '@vueuse/core'
+import type { Size, SizeObj } from '~/api/types/pump'
+import FingerprintJs from '@fingerprintjs/fingerprintjs'
+export * from './wallet/utils/index'
 
 export function isJSON(str: string) {
   try {
@@ -167,9 +171,9 @@ export function formatUrl(url: string) {
   return 'https://' + url
 }
 
-export function getChainInfo(chain: string) {
+export function getChainInfo(chain: string, isChainId = false) {
   const chainConfig = useConfigStore().chainConfig
-  const chainInfo = chainConfig?.find((item) => item.net_name === chain)
+  const chainInfo = chainConfig?.find((item) => (isChainId ? item.chain_id : item.net_name) === chain)
   if (!chainInfo) {
     return {} as Record<string, any>
   }
@@ -201,6 +205,30 @@ export function getTagTooltip(i: {
   const $t = getGlobalT()
   if (!i.tag) {
     if ((i.smart_money_buy_count_24h ?? 0) > 0 || (i.smart_money_sell_count_24h ?? 0) > 0) {
+      return $t('smart_money_tips', {
+        b: i.smart_money_buy_count_24h,
+        s: i.smart_money_sell_count_24h,
+      })
+    }
+    return ''
+  }
+  const tips: Record<string, string> = {
+    kol_sell: $t('kol_sell_tips'),
+    kol_buy: $t('kol_buy_tips'),
+    smarter_buy: $t('smarter_buy_tips'),
+    smarter_sell: $t('smarter_sell_tips'),
+  }
+  return tips?.[i.tag] || $t(i.tag)
+}
+
+export function getAi(i: {
+  tag?: string
+  smart_money_buy_count_24h?: number
+  smart_money_sell_count_24h?: number
+}) {
+  const $t = getGlobalT()
+  if (!i.tag) {
+    if ((i.smart_money_buy_count_24h??0) > 0 || (i.smart_money_sell_count_24h??0) > 0) {
       return $t('smart_money_tips', {
         b: i.smart_money_buy_count_24h,
         s: i.smart_money_sell_count_24h,
@@ -403,13 +431,21 @@ export function getChainDefaultIconColor(chain?: string) {
   return colors?.[chain] || defaultColor
 }
 
-export function getChainDefaultIcon(chain?: string, text = '') {
+export function getChainDefaultIcon(chain?: string, text = '', type?: string) {
   if (text) {
     const color = getChainDefaultIconColor(chain)
-    const defaultSvg = `<?xml version="1.0" standalone="no"?><svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="50%" cy="50%" r="16" stroke="transparent" fill="${color}" stroke-width="0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#fff">${text
+    const circle = `<?xml version="1.0" standalone="no"?><svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="50%" cy="50%" r="16" stroke="transparent" fill="${color}" stroke-width="0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#fff">${text
       ?.slice(0, 1)
       ?.toUpperCase?.()}</text>
     </svg>`
+    const rect = `<?xml version="1.0" standalone="no"?>
+    <svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" fill="${color}" stroke="transparent" stroke-width="0"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#fff">
+        ${text?.slice(0, 1)?.toUpperCase?.()}
+      </text>
+    </svg>`
+    const defaultSvg = type === 'rect' ? rect : circle
     try {
       return 'data:image/svg+xml;base64,' + window.btoa(unescape(encodeURIComponent(defaultSvg)))
     } catch (err) {
@@ -419,15 +455,11 @@ export function getChainDefaultIcon(chain?: string, text = '') {
   }
   return '/icon-default.png'
 }
-export function getSymbolDefaultIcon(
-  tokenInfo:
-    | {
-        symbol?: string
-        chain: string
-        logo_url?: string
-      }
-    | undefined
-) {
+export function getSymbolDefaultIcon(tokenInfo: {
+  symbol?: string
+  chain: string
+  logo_url?: string
+}| undefined , type= 'circle') {
   const domain = useConfigStore().token_logo_url
   if (tokenInfo && tokenInfo.logo_url !== undefined && tokenInfo.logo_url !== '') {
     if (/^https?:\/\//.test(tokenInfo.logo_url)) {
@@ -435,7 +467,7 @@ export function getSymbolDefaultIcon(
     }
     return domain + tokenInfo.logo_url
   }
-  return getChainDefaultIcon(tokenInfo?.chain || '', tokenInfo?.symbol || '')
+  return getChainDefaultIcon(tokenInfo?.chain || '', tokenInfo?.symbol || '', type || '')
 }
 
 export function formatIconTag(src: string) {
@@ -504,10 +536,11 @@ export function getWSMessage(e: MessageEvent) {
   return null
 }
 
-export function verifyLogin() {
+export function verifyLogin(isBot=false) {
   const bottStore = useBotStore()
+  const walletStore = useWalletStore()
   const userInfo = bottStore.userInfo
-  if (!userInfo?.evmAddress) {
+  if (!userInfo?.evmAddress && (!walletStore.address || isBot)) {
     bottStore.changeConnectVisible(true)
     // 连接钱包
     return false
@@ -587,7 +620,7 @@ export const evm_utils = {
     if (!decimals) {
       return arg?.[0] || 0
     }
-    return formatUnits(...arg)
+    return ethersFormatUnits(...arg)
   },
   parseUnits: (...arg: [value: string | number | bigint, decimals?: string | number]) => {
     const decimals = Number(arg?.[1])
@@ -595,8 +628,8 @@ export const evm_utils = {
       return FixedNumber.fromString(String(arg?.[0] ?? '0')).value
     }
     const valueStr = String(arg?.[0] ?? '')
-    return parseUnits(valueStr, decimals)
-  },
+    return ethersParseUnits(valueStr, decimals)
+  }
 }
 export function filterGas(num: number, chain?: string) {
   if (chain === 'bsc') {
@@ -737,4 +770,143 @@ export function formatCountdown(time: ConfigType) {
     const years = Math.floor(seconds / 31536000)
     return `${years}y`
   }
+}
+
+export function usePumpTableDataFetching(key = '') {
+  return useStorage(
+    key,
+    {
+      q: '',
+      dev_sale_out: 0,
+      platforms: 'pump,moonshot',
+      progress_min: '', //进度
+      progress_max: '',
+
+      lage: '', //代币时长
+      rage: '',
+      dev_balance_ratio_cur_min: '', //dev 持仓%
+      dev_balance_ratio_cur_max: '',
+      holder_min: '', //持有人
+      holder_max: '',
+      holders_top10_ratio_min: '', //top10 持仓%
+      holders_top10_ratio_max: '',
+      lsnip: '', //狙击人数
+      rsnip: '',
+      smart_money_tx_count_24h_min: '', // 聪明钱交易数 （买入数+卖出数）
+      smart_money_tx_count_24h_max: '',
+      lins: '', //老鼠仓
+      rins: '',
+      lkol: '', //KOL交易人数
+      rkol: '',
+      lrug: '', //跑路概率
+      rrug: '',
+
+      market_cap_min: '', // 市值
+      market_cap_max: '',
+      volume_u_24h_min: '', //交易额
+      volume_u_24h_max: '',
+      lbtx: '', //买入交易数
+      rbtx: '',
+      lstx: '', //卖出交易数
+      rstx: '',
+      has_sm: 0,
+      sm_list: []
+    },
+    localStorage,
+    { mergeDefaults: true }
+  )
+}
+
+export function _isString(val: any){
+  return  typeof val === 'string'
+}
+
+export function _isArray(val:any) {
+  return Array.isArray(val)
+}
+
+
+export function getSwapSize(type: Size):SizeObj {
+  const obj:Record<Size, SizeObj> = {
+    small: {
+      flash:'6px',
+      amm: '10px',
+      text: '10px'
+    },
+    medium: {
+      flash:'10px',
+      amm: '12px',
+      text: '12px'
+    },
+    large: {
+      flash:'12px',
+      amm: '16px',
+      text: '16px'
+    }
+  }
+  return obj[type] || ''
+}
+export function sleep(time: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true)
+    }, time)
+  })
+}
+
+export function formatUnits(n: number | string, decimals = 0) {
+  return new BigNumber(n).div(new BigNumber(10).pow(new BigNumber(decimals || 0))).toFixed()
+}
+
+export function parseUnits(n: number | string, decimals = 0) {
+  return new BigNumber(new BigNumber(n).times(new BigNumber(10).pow(new BigNumber(decimals || 0))).toFixed(0))
+}
+
+export function getTronWeb(account: string) {
+  const tronWeb = new TronWeb({
+    fullHost: 'https://api.trongrid.io'
+  })
+  tronWeb.setAddress(account)
+  return tronWeb
+}
+
+export function getWalletTronWeb(): typeof window.tronWeb {
+  const walletStore = useWalletStore()
+  const tronWebObj: Record<string, any> = {
+    'Bitget Wallet': window.bitkeep?.tronWeb,
+    'OKX Wallet': window.okxwallet?.tronLink?.tronWeb
+  }
+  const walletName = walletStore.walletName
+  if (tronWebObj[walletName]) {
+    return tronWebObj[walletName]
+  }
+  return (walletStore.provider as any)?._wallet?.tronWeb || window.tronWeb || window.tronLink?.tronWeb
+}
+
+export function abiToJson(abi: string | string[]): JsonFragment[] {
+  const iface = new Interface(abi)
+  const abiJson = JSON.parse(iface.formatJson())
+  abiJson.forEach((i: any) => {
+    if (i.type === 'function' && !i.stateMutability) {
+      i.stateMutability = 'nonpayable'
+    }
+  })
+  return abiJson // 使用字符串字面量 "json"
+}
+
+export async function getDeviceId() {
+  if (localStorage.getItem('device_id')) {
+    return Promise.resolve(localStorage.getItem('device_id'))
+  }
+  const deviceId = await FingerprintJs.load().then((fp: any) => fp.get()).then(async (data: { visitorId: string }) => data.visitorId)
+  localStorage.setItem('device_id', deviceId)
+  return deviceId
+}
+
+export function getFeeIn(bestRoute: { fee_index?: number; feeIn?: number }, chain: string) {
+  const chains = ['bsc', 'base']
+  if (chains?.includes?.(chain)) {
+    return String(bestRoute.fee_index ?? bestRoute.feeIn ?? '100')
+  }
+  return String(bestRoute.feeIn ?? '2')
 }
