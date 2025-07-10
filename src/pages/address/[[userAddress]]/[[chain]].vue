@@ -121,7 +121,6 @@ const userAddress = computed(() => {
 const { t } = useI18n()
 const statisticRef = ref(null)
 const statisticsTable = ref(null)
-
 const options = [
   {
     name: `24${t('H')}`,
