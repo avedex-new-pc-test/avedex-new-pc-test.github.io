@@ -6,7 +6,7 @@ const interval = 200
 
 export function TronContract(abi1: string[], address: string) {
   const walletStore = useWalletStore()
-  const tronWeb = walletStore.provider ? window.tronWeb : null
+  const tronWeb = walletStore.provider ? getWalletTronWeb() : null
   const abi = abiToJson(abi1)
 
 
@@ -91,9 +91,10 @@ export function TronContract(abi1: string[], address: string) {
 type GetTransactionResponse = Awaited<ReturnType<TronWeb['trx']['getTransaction']>>
 
 export async function confirmTronTx(hash: string): Promise<GetTransactionResponse & { transactionHash: string } | null> {
-  if (!window.tronWeb) return null
+  const tronWeb = getWalletTronWeb()
+  if (!tronWeb) return null
   await sleep(2000)
-  return window.tronWeb.trx.getTransaction(hash).then(async (tx) => {
+  return tronWeb.trx.getTransaction(hash).then(async (tx) => {
     const status = tx?.ret?.[0]?.contractRet
     if (status) {
       if (status === 'SUCCESS') {
@@ -105,7 +106,7 @@ export async function confirmTronTx(hash: string): Promise<GetTransactionRespons
       await sleep(5000)
       return confirmTronTx(hash)
     }
-  }).catch((err) => {
+  }).catch((err: string) => {
     console.log(err)
     if (err === 'OUT_OF_ENERGY') {
       return Promise.reject(err)

@@ -1535,8 +1535,8 @@ export function getNativeTokenPrice(chain = useWalletStore().chain): Promise<num
 // approve
 export async function approve(tokenAddress: string, spender = getSwapContract(useWalletStore().chain), account = useWalletStore().address) {
   if (isValidAddress(tokenAddress, 'tron') && isValidAddress(spender, 'tron') && isValidAddress(account, 'tron')) {
-    if (window.tronWeb) {
-      const tronWeb = window.tronWeb
+    const tronWeb = getWalletTronWeb()
+    if (tronWeb) {
       const abi = abiToJson(ERC20ABI)
       const ERC20 = tronWeb.contract(abi as any, tokenAddress)
       const balance = await ERC20.balanceOf(account).call()

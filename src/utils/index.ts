@@ -870,6 +870,19 @@ export function getTronWeb(account: string) {
   return tronWeb
 }
 
+export function getWalletTronWeb(): typeof window.tronWeb {
+  const walletStore = useWalletStore()
+  const tronWebObj: Record<string, any> = {
+    'Bitget Wallet': window.bitkeep?.tronWeb,
+    'OKX Wallet': window.okxwallet?.tronLink?.tronWeb
+  }
+  const walletName = walletStore.walletName
+  if (tronWebObj[walletName]) {
+    return tronWebObj[walletName]
+  }
+  return (walletStore.provider as any)?._wallet?.tronWeb || window.tronWeb || window.tronLink?.tronWeb
+}
+
 export function abiToJson(abi: string | string[]): JsonFragment[] {
   const iface = new Interface(abi)
   const abiJson = JSON.parse(iface.formatJson())
