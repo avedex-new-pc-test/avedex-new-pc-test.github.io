@@ -23,16 +23,19 @@
       />
       <el-table-column :label="$t('price')" align="right">
         <template #default="{ row }">
-          <span v-if="row.price > 0" v-html="'$' + formatNumber2(row.price || 0)" />
+          <span v-if="row.price > 0" v-html="'$' + formatNumber(row.price || 0, {
+            decimals:4,
+            limit: 20,
+          })" />
           <span v-else>'-.-'</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('amount')" align="right">
-        <template #default="{ row }">{{ formatNumber2(row.amount) }}</template>
+        <template #default="{ row }">{{ formatNumber(row.amount) }}</template>
       </el-table-column>
       <el-table-column prop :label="$t('value')" align="right">
         <template #default="{ row }">
-          <span v-if="row.price">${{ formatNumber2(row.amount * row.price) }}</span>
+          <span v-if="row.price">${{ formatNumber(row.amount * row.price) }}</span>
           <span v-else>-.-</span>
         </template>
       </el-table-column>

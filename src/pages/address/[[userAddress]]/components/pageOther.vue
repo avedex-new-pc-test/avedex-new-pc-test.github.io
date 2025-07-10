@@ -10,22 +10,22 @@
         </svg> -->
         <TokenImg
           :row="{
-            logo_url: '', //row.logo_url ? `${s3BaseUrl}${row.logo_url}`:'',
+            logo_url: `${s3BaseUrl}chain/${chain}.png`,
             chain: chain,
             symbol: chain,
           }"
-          token-class="w-8 h-8"
+          token-class="w-10 h-10"
         />
-        <div class="ml-4px flex flex-col items-center  gap-2">
-          <span class="text-[12px] color-[--d-666-l-959A9F]">{{ $t('address') }}</span>
-          <div v-copy="address" class="statistic-address flex gap-2.5 cursor-pointer">
+        <div class="ml-2 flex flex-col justify-items-start gap-1">
+          <div v-copy="address" class="flex cursor-pointer">
             <div
-              class="statistic-address-copy flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 bg-[--d-222-l-F2F2F2]"
+              class="flex items-center justify-center px-2 py-1.75 h-6 rounded text-3 gap-1 bg-[--d-222-l-F2F2F2]"
             >
               {{ address.slice(0, 6) + '...' + address.slice(-4) }}
               <Icon name="bxs:copy" class="text-2.5 clickable text-[--d-666-l-959A9F]" />
             </div>
           </div>
+          <span class="text-[12px] color-[--d-666-l-959A9F]">{{ $t('address') }}</span>
         </div>
       </div>
       <div class="item flex items-center ml-136px">
@@ -35,13 +35,13 @@
             chain: chain,
             symbol: '$',
           }"
-          token-class="w-8 h-8"
+          token-class="w-10 h-10"
         />
-        <div class="ml-4px flex flex-row items-center gap-2">
-          <span class="text-12px color-[--d-666-l-959A9F]">{{ $t('totalBalance') }}</span>
+        <div class="ml-2 flex flex-col justify-items-start gap-1">
           <span class="text-12px">
-            {{ formatNumberS(userTotalBalance, 3) || '-.-' }}
+            $ {{ formatNumberS(userTotalBalance, 3) || '-.-' }}
           </span>
+          <span class="text-12px color-[--d-666-l-959A9F]">{{ $t('totalBalance') }}</span>
         </div>
       </div>
     </div>
@@ -51,6 +51,9 @@
 
 <script setup>
 import Balance from './balance'
+const configStore = useConfigStore()
+const s3BaseUrl = configStore.token_logo_url
+
 const props = defineProps({
   address: {
     type: String,

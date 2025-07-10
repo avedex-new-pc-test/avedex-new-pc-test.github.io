@@ -16,7 +16,7 @@
             value="true"
             class="vertical-middle mr-3px w-15px h-15px rounded-20px mt-2px relative top--2px cursor-pointer"
           >
-          {{ $t('hideSmallAssets1') }}
+          {{ $t('hideSmallAssets') }}
         </label>
         <label
           v-else

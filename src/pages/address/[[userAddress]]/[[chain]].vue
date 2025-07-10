@@ -32,7 +32,7 @@
             </div>
           </el-option>
         </el-select>
-        <el-radio-group
+        <!-- <el-radio-group
           v-model="interval"
           class="m-radio-group"
           size="small"
@@ -47,7 +47,13 @@
             :label="option.name"
             :value="option.id"
           />
-        </el-radio-group>
+        </el-radio-group> -->
+        <ButtonGroup
+          v-model:active-value="interval"
+          class="mt-[-5px]"
+          :options="options"
+          @change="changeFilter"
+        />
       </div>
       <div class="flex align-stretch">
         <Statistic
@@ -99,7 +105,6 @@ const userAddress = computed(() => route.params.userAddress)
 const $t = getGlobalT()
 const statisticRef = ref(null)
 const statisticsTable = ref(null)
-const themeStore = useThemeStore()
 
 const options = [
   {

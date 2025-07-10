@@ -70,7 +70,7 @@
           {{ uSymbol }}{{ total_balance }} {{ main_token_symbol }}
         </strong>
 
-        <el-switch v-model="currencyStandard" inactive-value="U" :active-value="chain">
+        <el-switch v-model="currencyStandard" class="custom-switch" inactive-value="U" :active-value="chain">
           <template #active-action>
             <ChainToken :chain="chain" :width="16" />
           </template>
@@ -516,3 +516,9 @@ defineExpose({
   mergeStatistics,
 })
 </script>
+<style scoped>
+.custom-switch {
+  --el-switch-off-color: var(--d-333333-l-F2F2F2);
+  --el-switch-on-color: var(--d-666-l-D8D8D8);
+}
+</style>

@@ -67,7 +67,6 @@
 
 <script setup lang="ts">
 import { getTxAnalysis } from '@/api/wallet'
-import ButtonGroup from '@/components/buttonGroup.vue'
 import AveCharts from '@/components/charts/aveCharts.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 
