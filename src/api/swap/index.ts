@@ -1540,7 +1540,7 @@ export async function approve(tokenAddress: string, spender = getSwapContract(us
       const abi = abiToJson(ERC20ABI)
       const ERC20 = tronWeb.contract(abi as any, tokenAddress)
       const balance = await ERC20.balanceOf(account).call()
-      return ERC20.approve(spender, balance).send().then(async (hash: string) => {
+      return ERC20.approve(spender, balance.toString()).send().then(async (hash: string) => {
         console.log('tron ERC20 approve', hash)
         return {
           hash: hash,

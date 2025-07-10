@@ -872,7 +872,13 @@ export function getTronWeb(account: string) {
 
 export function abiToJson(abi: string | string[]): JsonFragment[] {
   const iface = new Interface(abi)
-  return JSON.parse(iface.formatJson()) // 使用字符串字面量 "json"
+  const abiJson = JSON.parse(iface.formatJson())
+  abiJson.forEach((i: any) => {
+    if (i.type === 'function' && !i.stateMutability) {
+      i.stateMutability = 'nonpayable'
+    }
+  })
+  return abiJson // 使用字符串字面量 "json"
 }
 
 export async function getDeviceId() {
