@@ -100,7 +100,7 @@
                   ${{ formatNumber(getAmount(row, true, true), 2) }}
                 </template>
                 <template v-else>
-                  {{ formatNumber(getAmount(row, true, false), 4) }}
+                  {{ formatNumber(getAmount(row, true, false), 2) }}
                   <span class="color-[--d-999-l-666]">
                     {{ getChainInfo(row.chain)?.main_name }}
                   </span>
@@ -124,12 +124,14 @@
                     name="custom:big" class="mr-3px shrink-0"/>
                 </template>
                 <SignalTags
-                    tagClass="mr-3px" 
-                    :tags="(row.newTags||[]).map((el: any)=> tagStore.matchTag(el.type))"
-                    :walletAddress="row.wallet_address" :chain="row.chain"/>
+                  tagClass="mr-3px" 
+                  :tags="(row.newTags||[]).map((el: any)=> tagStore.matchTag(el.type))"
+                  :walletAddress="row.wallet_address" :chain="row.chain"
+                />
                 <UserRemark
                   :remark="row.remark"
                   :address="row.wallet_address"
+                  :show-address="!(row.newTags.length > 1)"
                   :chain="row.chain"
                   :wallet_logo="row.wallet_logo"
                   class="color-[--d-E9E9E9-l-222]"
@@ -255,6 +257,7 @@ const { t } = useI18n()
 const route = useRoute()
 const { totalHolders, pairAddress, pair, token } = storeToRefs(useTokenStore())
 
+const {evmAddress, getWalletAddress} = useBotStore()
 const wsStore = useWSStore()
 const tagStore = useTagStore()
 const tokenDetailSStore = useTokenDetailsStore()
@@ -272,7 +275,7 @@ const tokenTxs = shallowRef<ExtendedTxResponse[]>([])
 const wsPairCache = shallowRef<ExtendedTxResponse[]>([])
 const tableFilter = ref({
   markerAddress: '',
-  tag_type: ''
+  tag_type: 'all'
 })
 const txCount = shallowRef<{ [key: string]: number }>({})
 const makerTooltip = ref()
@@ -585,7 +588,7 @@ function toggleClickMe() {
     tableFilter.value.markerAddress = ''
   } else {
     isMeActive.value = true
-    tableFilter.value.markerAddress = addressAndChain.value.address
+    tableFilter.value.markerAddress = getWalletAddress(addressAndChain.value.chain)!
   }
   _getTokenTxs()
 }
