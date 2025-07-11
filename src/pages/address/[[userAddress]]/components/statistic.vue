@@ -112,17 +112,17 @@
         </a>
         <a
           v-else
-          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
+          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[#3F80F7] text-3 leading-4 cursor-pointer rounded text-[#fff]"
           @click="_addAttention"
         >
           <Icon name="custom:accountplus" class="text-4" />
           {{ $t('follow') }}
         </a>
         <a
-          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[--d-222-l-FFF] text-3 leading-4 cursor-pointer rounded text-[var(--d-fff-l-333)]"
+          class="flex items-center justify-center gap-1 py-2.75 px-4.5 bg-[#3F80F7] text-3 leading-4 cursor-pointer rounded text-[#fff]"
           @click="shareComponent && shareComponent.openDialog()"
         >
-          <Share ref="shareComponent" type="walletDetailTop" :statistics="statistics as any" :address="address" :chain="chain" />
+          <Share ref="shareComponent" type="walletDetailTop" :statistics="statistics" :address="address" :chain="chain" classString="text-[#fff]" />
           {{ $t('share') }}
         </a>
       </div>
@@ -208,7 +208,20 @@ interface Statistics {
   [key: string]: any
 }
 
-const statistics = ref<Statistics>({ wallet_logo: {} })
+// Ensure all required fields from GetTokenStatisticsResponse are present with default values
+// If GetTokenStatisticsResponse is exported from an API types file, import it here:
+
+const statistics = ref<Statistics>({
+  wallet_logo: {},
+  x_logo: '',
+  chain: '',
+  newTags: [],
+  balance_amount: 0,
+  // Add all other required fields from GetTokenStatisticsResponse with sensible defaults
+  // Example:
+  // fieldName: defaultValue,
+  // ...
+})
 
 const remark = ref({
   value: '',
@@ -218,14 +231,6 @@ const remark = ref({
 
 const balanceAnalysis = ref<Awaited<ReturnType<typeof getBalanceAnalysis>>>({ profit: [], total_balance_without_risk: undefined })
 const currencyStandard = ref('U')
-//   ...mapState([
-//     "token_user",
-//     "currentAccount",
-//     "mode",
-//     "globalConfig",
-//     "bot",
-//   ]),
-//   ...mapGetters(["language"]),
 
 const pnl = computed(() => {
   const profit: Array<{

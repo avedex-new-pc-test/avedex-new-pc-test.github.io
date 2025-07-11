@@ -286,7 +286,7 @@ const bestTokenAxisLabel = computed(() => {
     light: '#333',
   }
   return {
-    color: colorMap[mode.value],
+    color: colorMap[mode.value as keyof typeof colorMap],
     formatter: '{value}',
     show: true,
     fontWeight: 'bold',
@@ -406,11 +406,6 @@ watch(chainAddress, onGetTxAnalysis)
 onMounted(() => {
   onGetTxAnalysis()
 })
-
-
-function defineProps(arg0: { interval: { type: StringConstructor; default: string }; address: { type: StringConstructor; default: string }; chain: { type: StringConstructor; default: string }; intervalText: { type: StringConstructor; default: string } }) {
-  throw new Error('Function not implemented.')
-}
 </script>
 
 <style scoped lang="scss">
