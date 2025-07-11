@@ -9,6 +9,7 @@
       <div class="flex-1" />
       <div class="flex items-center gap-8px">
         <button
+          v-if="isLogin"
           class="me-btn flex items-center gap-4px"
           :class="{ 'active': isMeActive }"
           @click="toggleClickMe"
@@ -74,7 +75,7 @@
           :height="`${(klineHeight ?? 200) - 120}px`"
         >
           <div
-            v-for="(row, index) in filterTableList.slice(0, 50)"
+            v-for="(row, index) in filterTableList"
             :key="index"
             class="grid grid-cols-4 gap-8px py-2 hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
             @mouseenter="isPausedTxs = true"
@@ -271,6 +272,7 @@ const isMeActive = ref(false)
 const listStatus = ref({
   loadingTxs: false
 })
+const isLogin = verifyLogin()
 const tokenTxs = shallowRef<ExtendedTxResponse[]>([])
 const wsPairCache = shallowRef<ExtendedTxResponse[]>([])
 const tableFilter = ref({
