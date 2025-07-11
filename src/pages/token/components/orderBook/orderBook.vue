@@ -231,7 +231,7 @@ import MarkerTooltip from '../belowChartTable/transactions/markerTooltip.vue'
 import TimerCount from '~/components/timerCount.vue'
 import { ElScrollbar, type RowEventHandlerParams } from 'element-plus'
 
-// const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
+const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 
 // 扩展的交易数据类型
 type ExtendedTxResponse = IGetTokenTxsResponse & {
@@ -629,7 +629,7 @@ function updateRemark() {
 }
 
 function openMarkerTooltip(row: ExtendedTxResponse, e: MouseEvent) {
-  if (row) {
+  if (row && MAKER_SUPPORT_CHAINS.includes(row.chain)) {
     makerTooltip.value = e.currentTarget
     console.log(row)
     if (currentRow.value?.wallet_address === row.wallet_address) {
