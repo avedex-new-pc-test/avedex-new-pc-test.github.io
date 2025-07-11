@@ -67,7 +67,6 @@
 
 <script setup lang="ts">
 import { getTxAnalysis } from '@/api/wallet'
-import ButtonGroup from '@/components/buttonGroup.vue'
 import AveCharts from '@/components/charts/aveCharts.vue'
 import AveEmpty from '@/components/aveEmpty.vue'
 
@@ -205,7 +204,7 @@ const winProfit = ref({
   ],
 })
 
-const txAnalysis = ref({})
+const txAnalysis = ref<Awaited<ReturnType<typeof getTxAnalysis>>>({})
 const winProfitChart = ref(null)
 
 // 计算属性
@@ -289,18 +288,19 @@ const changeFilter = () => {
 }
 
 const formatBestTokenData = () => {
-  const { best_token = [] } = txAnalysis.value
-  bestToken.value.yAxis.data = best_token.map((el) => el.symbol)
-  bestToken.value.series.data = best_token.map((el) => Math.max(el[bestToken.value.filter], 0.1))
-  bestToken.value.xAxis.max = Math.max(...bestToken.value.series.data) * 1.3
+  const _best_token = txAnalysis.value?.best_token || []
+  const filter: any = bestToken.value.filter
+  bestToken.value.yAxis.data = _best_token.map((el) => el.symbol)
+  bestToken.value.series.data = _best_token.map((el) => Math.max(Number(el[filter]), 0.1))
+  bestToken.value.xAxis.max = Math.max(...best_token.value.series.data) * 1.3
 }
 
 const formatWinProfit = () => {
   const sum = txAnalysis.value.profit_range?.total_count
-  let firstNonEmptyIndex, lastNonEmptyIndex
+  let firstNonEmptyIndex: number, lastNonEmptyIndex
   const series = winProfit.value.series.map((el, idx) => {
     const num = txAnalysis.value.profit_range?.[el.key]
-    const data = parseInt((num / sum) * 100)
+    const data = Math.floor((num / sum) * 100)
     if (data > 0) {
       lastNonEmptyIndex = idx
       if (typeof firstNonEmptyIndex === 'undefined') {
@@ -328,7 +328,7 @@ const formatWinProfit = () => {
   winProfit.value.series = series
 }
 
-const getProfitRatio = (key) => {
+const getProfitRatio = (key: string | number) => {
   const num = txAnalysis.value.profit_range?.[key]
   const sum = txAnalysis.value.profit_range?.total_count
   return formatNumber(num*100 / sum, 2) + '%'
