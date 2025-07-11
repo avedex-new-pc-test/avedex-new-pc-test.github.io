@@ -9,7 +9,7 @@
       <div class="flex-1" />
       <div class="flex items-center gap-8px">
         <button
-          v-if="isLogin"
+          v-if="botStore?.userInfo?.name"
           class="me-btn flex items-center gap-4px"
           :class="{ 'active': isMeActive }"
           @click="toggleClickMe"
@@ -258,7 +258,7 @@ const { t } = useI18n()
 const route = useRoute()
 const { totalHolders, pairAddress, pair, token } = storeToRefs(useTokenStore())
 
-const {evmAddress, getWalletAddress} = useBotStore()
+const botStore = useBotStore()
 const wsStore = useWSStore()
 const tagStore = useTagStore()
 const tokenDetailSStore = useTokenDetailsStore()
@@ -272,7 +272,7 @@ const isMeActive = ref(false)
 const listStatus = ref({
   loadingTxs: false
 })
-const isLogin = verifyLogin()
+
 const tokenTxs = shallowRef<ExtendedTxResponse[]>([])
 const wsPairCache = shallowRef<ExtendedTxResponse[]>([])
 const tableFilter = ref({
@@ -590,7 +590,7 @@ function toggleClickMe() {
     tableFilter.value.markerAddress = ''
   } else {
     isMeActive.value = true
-    tableFilter.value.markerAddress = getWalletAddress(addressAndChain.value.chain)!
+    tableFilter.value.markerAddress = botStore.getWalletAddress(addressAndChain.value.chain)!
   }
   _getTokenTxs()
 }
