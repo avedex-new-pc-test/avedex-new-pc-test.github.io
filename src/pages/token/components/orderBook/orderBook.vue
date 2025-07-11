@@ -132,7 +132,7 @@
                 <UserRemark
                   :remark="row.remark"
                   :address="row.wallet_address"
-                  :show-address="!(row.newTags.length > 1)"
+                  :show-address="!(row?.newTags?.length > 1)"
                   :chain="row.chain"
                   :wallet_logo="row.wallet_logo"
                   class="color-[--d-E9E9E9-l-222]"
