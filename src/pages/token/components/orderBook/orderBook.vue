@@ -229,7 +229,6 @@ import { useThrottleFn } from '@vueuse/core'
 import UserRemark from '~/components/userRemark.vue'
 import MarkerTooltip from '../belowChartTable/transactions/markerTooltip.vue'
 import TimerCount from '~/components/timerCount.vue'
-import dayjs from 'dayjs'
 import { ElScrollbar, type RowEventHandlerParams } from 'element-plus'
 
 // const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
@@ -340,7 +339,6 @@ const filterTableListMap = {
 
 const filterTableList = computed(() => {
   let tableList = [...tokenTxs.value]
-  
   if (activeTab.value in filterTableListMap) {
     tableList = filterTableListMap[activeTab.value as keyof typeof filterTableListMap]()
   } else {
@@ -457,6 +455,7 @@ async function _getTokenTxs() {
       }
     }).reverse()
   } catch (e) {
+    tokenTxs.value = []
     console.log('Error fetching pair txs:', e)
   } finally {
     listStatus.value.loadingTxs = false
