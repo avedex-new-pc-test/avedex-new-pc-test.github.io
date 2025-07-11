@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 flex justify-between mr-5 flex-1 rounded-2 bg-[--d-15171C-l-F8F8F8]">
+  <div class="p-5 flex justify-between mr-5 flex-1 rounded-2 bg-[--d-111-l-F8F8F8]">
     <div>
       <div class="flex gap-6 mb-5">
         <UserAvatar
