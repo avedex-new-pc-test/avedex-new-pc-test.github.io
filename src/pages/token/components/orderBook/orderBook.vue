@@ -382,30 +382,10 @@ watch(() => props.modelValue, (isOpen) => {
   }
 })
 
-watch(() => wsStore.wsResult[WSEventType.TX], data => {
-  if (!data || listStatus.value.loadingTxs) {
-    return
-  }
-  const {wallet_address, from_address, to_address} = data.tx
-  // 不是当前币种的数据
-  if (from_address !== realAddress.value && to_address !== realAddress.value) {
-    return
-  }
-  txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
-  const { topN, wallet_tag } = getWalletTag(data.tx)
-  const item = {
-    ...data.tx,
-    topN, wallet_tag,
-    senderProfile: JSON.parse(data.tx.profile || '{}'),
-    count: txCount.value[wallet_address],
-    time: Math.min(Math.floor(Date.now() / 1000), data.tx.time),
-    uuid: uuid()
-  }
-  wsPairCache.value.unshift(item)
-  if (!isPausedTxs.value) {
-    updatetokenTxs()
-  }
-})
+// 移除重复的WebSocket监听器，统一使用onTxsLiqMessage处理
+// watch(() => wsStore.wsResult[WSEventType.TX], data => {
+//   // 这个监听器与onTxsLiqMessage重复，已移除
+// })
 
 // WebSocket 订阅
 function subscribeToTxs() {
@@ -447,6 +427,11 @@ async function _getTokenTxs() {
       maker: tableFilter.value.markerAddress
     }
     const res = await getTokenTxs(getTokenTxsParams)
+
+    // 更新realAddress，确保后续计算使用正确的地址
+    realAddress.value = getAddressAndChainFromId(getTokenTxsParams.token_id).address
+    console.log('📊 获取订单薄数据成功:', res?.length || 0, '条记录, realAddress:', realAddress.value)
+
     tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
       const { wallet_tag, topN } = getWalletTag(val)
@@ -460,8 +445,11 @@ async function _getTokenTxs() {
       }
     }).reverse()
   } catch (e) {
-    tokenTxs.value = []
-    console.log('Error fetching pair txs:', e)
+    // 只有在没有现有数据时才清空，避免网络错误导致数据丢失
+    if (tokenTxs.value.length === 0) {
+      tokenTxs.value = []
+    }
+    console.log('🚨 订单薄数据获取失败:', e)
   } finally {
     listStatus.value.loadingTxs = false
   }
@@ -488,13 +476,21 @@ function getWalletTag(val: IGetTokenTxsResponse) {
 }
 
 function isBuy(row: IGetTokenTxsResponse) {
-  if (row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
+  // 使用realAddress确保准确性，添加数据验证
+  const tokenAddress = realAddress.value || addressAndChain.value.address
+
+  if (!tokenAddress || !row) {
+    console.warn('🚨 isBuy: 缺少必要参数', { tokenAddress, row })
     return false
   }
+
+  if (row.from_address &&
+      tokenAddress.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
+    return false  // 卖出
+  }
   if (row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address.toLowerCase?.()) {
-    return true
+      tokenAddress.toLowerCase?.() === row.to_address?.toLowerCase?.()) {
+    return true   // 买入
   }
   return false
 }
@@ -505,14 +501,22 @@ function getRowColor(row: IGetTokenTxsResponse) {
 
 
 function getPrice(row: IGetTokenTxsResponse, isShowToken = false) {
-  // route.params。id 同步更改，而接口异步请求，此时更新该值变成了 0
-  const tokenAddress = addressAndChain.value.address
+  // 使用 realAddress 而不是 addressAndChain.value.address，避免路由变化导致的计算错误
+  const tokenAddress = realAddress.value || addressAndChain.value.address
+
+  // 添加数据有效性检查
+  if (!tokenAddress || !row) {
+    console.warn('🚨 getPrice: 缺少必要参数', { tokenAddress, row })
+    return 0
+  }
+
   if ('from_address' in row) {
     if (
       row.from_address &&
       tokenAddress.toLowerCase?.() === row.from_address?.toLowerCase?.()
     ) {
-      return isShowToken ? row.from_price_eth : row.from_price_usd
+      const price = isShowToken ? row.from_price_eth : row.from_price_usd
+      return Number(price) || 0
     }
   }
 
@@ -521,32 +525,46 @@ function getPrice(row: IGetTokenTxsResponse, isShowToken = false) {
       row.to_address &&
       tokenAddress.toLowerCase?.() === row.to_address?.toLowerCase?.()
     ) {
-      return isShowToken ? row.to_price_eth : row.to_price_usd
+      const price = isShowToken ? row.to_price_eth : row.to_price_usd
+      return Number(price) || 0
     }
   }
 
   return 0
 }
 function getAmount(row: IGetTokenTxsResponse, needPrice = false, isVolUSDT = false) {
+  // 使用 realAddress 确保地址匹配的准确性
+  const tokenAddress = realAddress.value || addressAndChain.value.address
+
+  // 添加数据有效性检查
+  if (!tokenAddress || !row) {
+    console.warn('🚨 getAmount: 缺少必要参数', { tokenAddress, row })
+    return 0
+  }
+
   if (row.from_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
-    return row.from_amount * (
-      needPrice ? Number(isVolUSDT ? row.from_price_usd : row.from_price_eth) : 1
-    )
+      tokenAddress.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
+    const amount = Number(row.from_amount) || 0
+    const price = needPrice ? Number(isVolUSDT ? row.from_price_usd : row.from_price_eth) || 0 : 1
+    return amount * price
   }
+
   if (row.to_address &&
-      addressAndChain.value.address.toLowerCase?.() === row.to_address?.toLowerCase?.()) {
-    return row.to_amount * (
-      needPrice ? Number(isVolUSDT ? row.to_price_usd : row.to_price_eth) : 1
-    )
+      tokenAddress.toLowerCase?.() === row.to_address?.toLowerCase?.()) {
+    const amount = Number(row.to_amount) || 0
+    const price = needPrice ? Number(isVolUSDT ? row.to_price_usd : row.to_price_eth) || 0 : 1
+    return amount * price
   }
+
   return 0
 }
 
 
 function setActiveTab(val: string, index: number) {
+  console.log('🔄 切换订单薄标签:', val)
   activeTab.value = val
   txCount.value = {}
+  wsPairCache.value.length = 0  // 清空缓存
   tableFilter.value.tag_type = val
   _getTokenTxs()
 
@@ -585,6 +603,7 @@ function setActiveTab(val: string, index: number) {
 }
 
 function toggleClickMe() {
+  console.log('🔄 切换"我的交易"筛选')
   if (isMeActive.value) {
     isMeActive.value = false
     tableFilter.value.markerAddress = ''
@@ -592,6 +611,7 @@ function toggleClickMe() {
     isMeActive.value = true
     tableFilter.value.markerAddress = botStore.getWalletAddress(addressAndChain.value.chain)!
   }
+  wsPairCache.value.length = 0  // 清空缓存
   _getTokenTxs()
 }
 
@@ -706,15 +726,35 @@ function onTxsLiqMessage() {
 
     const {event, data} = msg
     if (event == WSEventType.TX && !listStatus.value.loadingTxs) {
-      const {wallet_address} = data.tx
+      const {wallet_address, from_address, to_address} = data.tx
+
+      // 检查是否是当前币种的数据
+      if (from_address !== realAddress.value && to_address !== realAddress.value) {
+        return
+      }
+
+      // 检查是否已存在相同的交易（防重复）
+      const existingTx = wsPairCache.value.find(tx =>
+        tx.transaction === data.tx.transaction &&
+        tx.wallet_address === wallet_address
+      )
+      if (existingTx) {
+        console.log('🔄 跳过重复交易:', data.tx.transaction)
+        return
+      }
+
       txCount.value[wallet_address] = (txCount.value[wallet_address] || 0) + 1
       const {topN, wallet_tag} = getWalletTag(data.tx)
       const item = {
         ...data.tx,
         topN, wallet_tag,
         senderProfile: JSON.parse(data.tx.profile || '{}'),
-        count: txCount.value[wallet_address]
+        count: txCount.value[wallet_address],
+        time: Math.min(Math.floor(Date.now() / 1000), data.tx.time),
+        uuid: uuid()
       }
+
+      console.log('📊 新增订单薄交易:', item.transaction)
       wsPairCache.value.unshift(item)
 
       if (!isPausedTxs.value) {
@@ -725,7 +765,26 @@ function onTxsLiqMessage() {
 }
 
 const updatetokenTxs = useThrottleFn(() => {
-  tokenTxs.value.unshift(...wsPairCache.value)
+  if (wsPairCache.value.length === 0) return
+
+  // 去重处理：检查新数据是否已存在于tokenTxs中
+  const newTxs = wsPairCache.value.filter(newTx =>
+    !tokenTxs.value.some(existingTx =>
+      existingTx.transaction === newTx.transaction &&
+      existingTx.wallet_address === newTx.wallet_address
+    )
+  )
+
+  if (newTxs.length > 0) {
+    console.log('📊 更新订单薄数据:', newTxs.length, '条新记录')
+    tokenTxs.value.unshift(...newTxs)
+
+    // 限制数据量，保持性能
+    if (tokenTxs.value.length > 1000) {
+      tokenTxs.value = tokenTxs.value.slice(0, 1000)
+    }
+  }
+
   wsPairCache.value.length = 0
   triggerRef(tokenTxs)
 }, 500)
