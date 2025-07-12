@@ -1,5 +1,5 @@
 <template>
-  <div class="trade flex w-[40vw] rounded-2 bg-[--d-15171C-l-F8F8F8]">
+  <div class="trade flex w-[40vw] rounded-2 bg-[--d-111-l-F8F8F8]">
     <div class="trade-pnl min-w-0 flex-1 p-5">
       <div class="flex justify-between mb-5">
         <span class="trade-pnl-title text-3.5 leading-4.25 text-center text-[var(--d-666-l-959A9F)]">
@@ -67,8 +67,8 @@
 
 <script setup lang="ts">
 import { getTxAnalysis } from '@/api/wallet'
-import AveCharts from '@/components/charts/aveCharts.vue'
-import AveEmpty from '@/components/aveEmpty.vue'
+// import AveCharts from '@/components/charts/aveCharts.vue'
+// import AveEmpty from '@/components/aveEmpty.vue'
 
 const BestTokenEnum = {
   TOTAL_RATIO: 'total_profit_ratio',
@@ -98,7 +98,45 @@ const emit = defineEmits(['txAnalysisChange'])
 const $t = getGlobalT()
 
 // 响应式数据
-const bestToken = ref({
+// 提取 bestToken 的类型，避免循环引用
+type BestTokenType = {
+  filter: string
+  yAxis: {
+    data: string[]
+  }
+  grid: {
+    left: string
+    right: string
+    top: string
+  }
+  series: {
+    type: string
+    data: number[]
+    itemStyle: {
+      color: string
+    }
+    barWidth: number
+    label: {
+      show: boolean
+      position: string
+      color: string
+      fontWeight: string
+      offset: [number, number]
+      formatter: (params: { value: string | number }) => string
+    }
+  }
+  xAxis: Record<string, any>
+}
+
+// Move formatter outside to avoid referencing bestToken during initialization
+function bestTokenLabelFormatter(params: { value: string | number }) {
+  const isRatio = bestToken.value.filter === BestTokenEnum.TOTAL_RATIO
+  const sign = isRatio ? '' : '$'
+  const x = isRatio ? 'X' : ''
+  return `${sign}${formatNumber(params.value, 1)}${x}`
+}
+
+const bestToken = ref<BestTokenType>({
   filter: BestTokenEnum.TOTAL_PROFIT,
   yAxis: {
     data: [],
@@ -121,12 +159,7 @@ const bestToken = ref({
       color: '#12B886',
       fontWeight: 'bold',
       offset: [-3, 0],
-      formatter: (params) => {
-        const isRatio = bestToken.value.filter === BestTokenEnum.TOTAL_RATIO
-        const sign = isRatio ? '' : '$'
-        const x = isRatio ? 'X' : ''
-        return `${sign}${formatNumber(params.value, 1)}${x}`
-      },
+      formatter: bestTokenLabelFormatter,
     },
   },
   xAxis: {},
@@ -204,13 +237,37 @@ const winProfit = ref({
   ],
 })
 
-const txAnalysis = ref<Awaited<ReturnType<typeof getTxAnalysis>>>({})
+type ProfitRange = {
+  profit_above_500_percent?: number
+  profit_200_500_percent?: number
+  profit_0_200_percent?: number
+  profit_neg50_0_percent?: number
+  profit_neg100_neg50_percent?: number
+  total_count?: number
+  [key: string]: number | undefined
+}
+
+type BestTokenItem = {
+  chain: string
+  logo_url: string
+  symbol: string
+  token: string
+  total_profit: string
+  total_profit_ratio: string
+}
+
+type TxAnalysisType = {
+  best_token?: BestTokenItem[]
+  profit_range?: ProfitRange
+}
+
+const txAnalysis = ref<TxAnalysisType>({})
 const winProfitChart = ref(null)
 
 // 计算属性
 // const mode = computed(() => store.state.mode)
 const themeStore = useThemeStore()
-const mode = computed(() => {
+const mode = computed<'dark' | 'light'>(() => {
   return themeStore.isDark ? 'dark' : 'light'
 })
 const bestTokenOptions = computed(() => [
@@ -229,7 +286,7 @@ const bestTokenAxisLabel = computed(() => {
     light: '#333',
   }
   return {
-    color: colorMap[mode.value],
+    color: colorMap[mode.value as keyof typeof colorMap],
     formatter: '{value}',
     show: true,
     fontWeight: 'bold',
@@ -290,17 +347,21 @@ const changeFilter = () => {
 const formatBestTokenData = () => {
   const _best_token = txAnalysis.value?.best_token || []
   const filter: any = bestToken.value.filter
-  bestToken.value.yAxis.data = _best_token.map((el) => el.symbol)
-  bestToken.value.series.data = _best_token.map((el) => Math.max(Number(el[filter]), 0.1))
-  bestToken.value.xAxis.max = Math.max(...best_token.value.series.data) * 1.3
+  bestToken.value.yAxis.data = _best_token.map((el: { symbol: any }) => el.symbol)
+  bestToken.value.series.data = _best_token.map((el: { [x: string]: any }) => Math.max(Number(el[filter]), 0.1))
+  bestToken.value.xAxis.max = Math.max(...bestToken.value.series.data) * 1.3
 }
 
 const formatWinProfit = () => {
   const sum = txAnalysis.value.profit_range?.total_count
-  let firstNonEmptyIndex: number, lastNonEmptyIndex
-  const series = winProfit.value.series.map((el, idx) => {
+  let firstNonEmptyIndex: number | undefined = undefined
+  let lastNonEmptyIndex: number | undefined = undefined
+  const series = winProfit.value.series.map((el: any, idx: number) => {
     const num = txAnalysis.value.profit_range?.[el.key]
-    const data = Math.floor((num / sum) * 100)
+    let data = 0
+    if (typeof sum === 'number' && sum > 0 && typeof num === 'number') {
+      data = Math.floor((num / sum) * 100)
+    }
     if (data > 0) {
       lastNonEmptyIndex = idx
       if (typeof firstNonEmptyIndex === 'undefined') {
@@ -311,7 +372,7 @@ const formatWinProfit = () => {
       ...el,
       data: [data],
       itemStyle: {
-        color: el.itemStyle.color,
+        ...el.itemStyle,
         borderRadius: [0, 0, 0, 0],
       },
     }
@@ -331,7 +392,10 @@ const formatWinProfit = () => {
 const getProfitRatio = (key: string | number) => {
   const num = txAnalysis.value.profit_range?.[key]
   const sum = txAnalysis.value.profit_range?.total_count
-  return formatNumber(num*100 / sum, 2) + '%'
+  if (typeof num !== 'number' || typeof sum !== 'number' || sum === 0) {
+    return '--'
+  }
+  return formatNumber((num * 100) / sum, 2) + '%'
 }
 
 // 监听器

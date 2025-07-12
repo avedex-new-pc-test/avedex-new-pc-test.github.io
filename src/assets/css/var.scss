@@ -79,6 +79,10 @@
     --d-17191C-l-FFF: #17191C;
     --d-1A1A1A-l-fafafa:#1A1A1A;
     --d-333-l-f5f7fa: #333;
+    --d-111-l-F8F8F8: #111111;
+    --d-000-l-fff: #000;
+    //switch on color
+    --d-1F3156-l-D2E0F7:#1F3156;
   }
 
   &.light {
@@ -156,6 +160,9 @@
     --d-17191C-l-FFF: #FFF;
     --d-1A1A1A-l-fafafa:#fafafa;
     --d-333-l-f5f7fa: #f5f7fa;
+    --d-111-l-F8F8F8: #F8F8F8;
+    --d-000-l-fff: #fff;
+    --d-1F3156-l-D2E0F7:#D2E0F7;
   }
 }
 

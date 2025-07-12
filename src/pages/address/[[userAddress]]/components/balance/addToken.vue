@@ -8,7 +8,7 @@
       :backgroundColor="$store.state.mode==='light'? '#F5F5F5':'#131722'"
       color="#3F80F7"
       :is-full-page="false"
-    ></loading>
+    />
     <el-table :data="userTokenListInit" style="width: 100%" @row-click="tableRowClick">
       <template #empty>
         <div class="table-empty">
@@ -55,7 +55,7 @@
                 alt=""
                 srcset=""
                 onerror="this.src='/icon-default.png'"
-              />
+              >
             </div>
             <span class="token-symbol">{{ row.symbol }}</span>
             <span class="risk-status hight" v-if="row.risk_score > 55 || row.risk_level < 0">
@@ -84,11 +84,11 @@
       <el-table-column :label="$t('operate')" width="120">
         <template #default="{ row }">
           <a
+            v-if="!row.is_hidden"
             type="primary"
             plain
-            @click.stop="deleteCoin(row)"
-            v-if="!row.is_hidden"
             style="color: #465273"
+            @click.stop="deleteCoin(row)"
           >
             {{ $t('remove') }}
           </a>

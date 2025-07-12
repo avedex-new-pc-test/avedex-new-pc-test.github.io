@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[--d-15171C-l-F8F8F8] h-full w-full flex flex-col min-h-90vh">
+  <div class="h-full w-full flex flex-col min-h-90vh">
     <div
       v-if="address"
       class="top1 bg-custom-primary-lighter-0 px-15px pt-20px pb-10px flex items-center justify-start text-custom-font-1"
