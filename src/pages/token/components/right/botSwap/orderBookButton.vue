@@ -1,11 +1,11 @@
 <template>
-  <button 
-    class="order-book-btn ml-auto clickable" 
-    :class="{ 'active': modelValue }" 
-    @click.stop="$emit('update:modelValue', !modelValue)"
+  <button
+    class="order-book-btn ml-auto clickable"
+    :class="{ 'active': modelValue }"
+    @click.stop="handleClick"
   >
-    <Icon 
-      name="i-codicon:layout-sidebar-left"       
+    <Icon
+      name="i-codicon:layout-sidebar-left"
       :class="{ 'rotate-90': !modelValue }"
     />
     <span class="ml-5px">{{ $t('orderBook') }}</span>
@@ -13,13 +13,19 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   modelValue: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
+
+function handleClick() {
+  const newValue = !props.modelValue
+  console.log('🔄 订单薄按钮点击:', newValue ? '打开' : '关闭')
+  emit('update:modelValue', newValue)
+}
 </script>
 
 <style scoped>

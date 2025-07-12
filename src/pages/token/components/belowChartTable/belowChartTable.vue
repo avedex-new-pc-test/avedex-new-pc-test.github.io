@@ -54,15 +54,27 @@ watch(
   }
 )
 
+// 保存订单薄打开前的标签状态
+const previousTab = ref<keyof typeof components>('Transactions')
+
 // 监听 orderBook 显示状态变化
 watch(
   () => orderBookVisible.value,
   (isVisible) => {
+    console.log('🔄 订单薄状态变化:', isVisible ? '打开' : '关闭')
     if (isVisible) {
-      // 当 orderBook 打开时，如果当前是 Orders 或 Transactions tab，切换到 Holders
-      if (activeTab.value === 'Orders' || activeTab.value === 'Transactions') {
+      // 当 orderBook 打开时，保存当前标签并切换到其他标签
+      if (activeTab.value === 'Transactions') {
+        previousTab.value = 'Transactions'
+        activeTab.value = 'Holders'
+      } else if (activeTab.value === 'Orders') {
+        previousTab.value = 'Orders'
         activeTab.value = 'Holders'
       }
+    } else {
+      // 当 orderBook 关闭时，恢复到之前的标签（默认为 Transactions）
+      activeTab.value = previousTab.value || 'Transactions'
+      console.log('🔄 恢复到标签:', activeTab.value)
     }
   },
   { immediate: true }

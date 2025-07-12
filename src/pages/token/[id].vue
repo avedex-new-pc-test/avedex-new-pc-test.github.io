@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang='ts'>
-import { useElementSize } from '@vueuse/core'
+import { useElementSize, useStorage } from '@vueuse/core'
 import { getTokenInfo, getTokenInfoExtra } from '~/api/token'
 import { useTokenStore } from '~/stores/token'
 import Top from './components/top/index.vue'
@@ -53,8 +53,8 @@ const addresses = computed(() => {
 })
 const wsStore = useWSStore()
 
-// 订单簿显示状态
-const orderBookVisible = ref(false)
+// 订单簿显示状态 - 使用本地存储保持状态
+const orderBookVisible = useStorage('orderBookVisible', false)
 provide('orderBookVisible', orderBookVisible)
 
 // KLine 高度监听

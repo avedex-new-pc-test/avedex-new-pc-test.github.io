@@ -360,10 +360,19 @@ const filterTableList = computed(() => {
   return tableList
 })
 
-// 监听 pairAddress 变化
+// 监听 pairAddress 变化（token切换）
 watch(() => pairAddress.value, () => {
   if (pairAddress.value && props.modelValue) {
+    console.log('🔄 Token切换，清空订单薄数据')
+    // 立即清空旧数据，避免显示错误的数据
+    tokenTxs.value = []
+    wsPairCache.value = []
     txCount.value = {}
+    activeTab.value = 'all'
+    tableFilter.value.markerAddress = ''
+    tableFilter.value.tag_type = 'all'
+
+    // 重新获取数据
     _getTokenTxs()
     subscribeToTxs()
   }
@@ -371,14 +380,20 @@ watch(() => pairAddress.value, () => {
 
 // 监听 modelValue 变化（orderBook 打开/关闭）
 watch(() => props.modelValue, (isOpen) => {
+  console.log('🔄 订单薄状态变化:', isOpen ? '打开' : '关闭')
   if (isOpen && pairAddress.value) {
-    // orderBook 打开时，获取数据并订阅
+    // orderBook 打开时，清空旧数据并获取新数据
+    tokenTxs.value = []
+    wsPairCache.value = []
     txCount.value = {}
     _getTokenTxs()
     subscribeToTxs()
   } else if (!isOpen) {
-    // orderBook 关闭时，取消订阅
+    // orderBook 关闭时，取消订阅并清空数据
     unsubscribeFromTxs()
+    tokenTxs.value = []
+    wsPairCache.value = []
+    txCount.value = {}
   }
 })
 
