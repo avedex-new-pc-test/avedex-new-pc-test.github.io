@@ -1,27 +1,7 @@
 <template>
   <div v-if="modelValue" class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex flex-col overflow-hidden" :style="{ height: `${klineHeight || 200}px` }">
-    <!-- 标题栏 -->
-    <div class="flex items-center px-12px gap-20px mb-12px">
-      <div class="flex items-center gap-4px">
-        <span class="text-lg color-[--d-E9E9E9-l-222]">{{ t('trades') }}</span>
-        <Icon v-show="isPausedTxs" name="custom:stop" class="text-lg" />
-      </div>
-      <div class="flex-1" />
-      <div class="flex items-center gap-8px">
-        <button
-          v-if="botStore?.userInfo?.name"
-          class="me-btn flex items-center gap-4px"
-          :class="{ 'active': isMeActive }"
-          @click="toggleClickMe"
-        >
-          <Icon name="i-tdesign:user-filled" class="text-md" />
-          <span>{{ t('me') }}</span>
-        </button>
-      </div>
-    </div>
-
     <!-- 筛选标签 -->
-    <div class="px-12px mb-10px">
+    <div class="px-12px mb-10px flex">
       <div
         ref="tabsContainer"
         class="flex items-center gap-8px whitespace-nowrap overflow-x-auto scrollbar-hide"
@@ -40,6 +20,15 @@
           {{ tab.label }}
         </button>
       </div>
+      <button
+        v-if="botStore?.userInfo?.name"
+        class="me-btn shrink-0 flex items-center gap-4px sticky right-0 "
+        :class="{ 'active': isMeActive }"
+        @click="toggleClickMe"
+      >
+        <Icon name="i-tdesign:user-filled" class="text-md" />
+        <span>{{ t('me') }}</span>
+      </button>
     </div>
 
     <!-- 表格 -->
@@ -51,13 +40,13 @@
             {{ tableView.isAmount ? t('amountB') : t('swapPrice') }}
             <Icon
               name="i-f7:money-dollar-circle-fill"
-              :class="`${tableView.isAmount ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'} text-md cursor-pointer`"
+              :class="`${tableView.isAmount ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'} text-md cursor-ointer`"
               @click="tableView.isAmount = !tableView.isAmount"
             />
           </div>
           <div class="text-center">
             <div class="flex items-center justify-center gap-2px">
-              <span>{{ t('amountU') }}</span>
+              <span>{{ t('amountU').slice(0,3) }}</span>
               <Icon
                 name="i-f7:money-dollar-circle-fill"
                 :class="`${tableView.isVolUSDT ? 'color-[--d-666-l-999]' : 'color-[--d-999-l-666]'} cursor-pointer text-md`"
@@ -72,7 +61,7 @@
         <!-- 表格内容 -->
         <el-scrollbar
           style="margin-right: -12px;padding-right: 12px;"
-          :height="`${(klineHeight ?? 200) - 120}px`"
+          :height="`${(klineHeight ?? 200) - 105}px`"
         >
           <div
             v-for="(row, index) in filterTableList"
@@ -172,7 +161,7 @@
           <template v-if="filterTableList.length === 0 && !listStatus.loadingTxs">
             <div
               class="h-full flex flex-col items-center justify-center "
-              :style="{ height: `${(klineHeight ?? 200) - 120}px` }"
+              :style="{ height: `${(klineHeight ?? 200) - 105}px` }"
             >
               <img src="@/assets/images/empty-black.svg" alt="">
             </div>
@@ -180,7 +169,19 @@
         </el-scrollbar>
       </div>
     </div>
-
+    <!-- status -->
+    <div 
+      class="flex–1 flex justify-content color-[#f9a622]  py–6"
+      :class="isPausedTxs? 'bg-[#2c1e06]': ''"
+    >
+      <div 
+        v-show="isPausedTxs"
+        class="flex items-center gap-4px"
+      >
+        <Icon name="custom:stop" class="text-lg" />
+        <span class="text-md">{{ t('paused') }}</span>
+      </div>
+    </div>
     <!-- MarkerTooltip -->
     <MarkerTooltip
       :virtual-ref="makerTooltip"
@@ -808,18 +809,17 @@ const updatetokenTxs = useThrottleFn(() => {
 
 <style lang="scss" scoped>
 .me-btn {
-  color: var(--primary-color);
-  background: rgba($color: #3F80F7, $alpha: 0.1);
+  background: transparent;
+  color: var(--d-999-l-666);
   display: flex;
   align-items: center;
   border: none;
   font-size: 12px;
   padding: 6px 8px;
   border-radius: 4px;
-
+  
   &.active {
-    background: var(--primary-color);
-    color: #fff;
+    color: var(--primary-color);
   }
 }
 </style>
