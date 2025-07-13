@@ -96,7 +96,7 @@
           >
             <!-- Amount -->
             <div class="text-left">
-              <div class="color-[--d-E9E9E9-l-222]">
+              <div class="color-[#999999]">
                 <template v-if="tableView.isAmount">
                   {{ formatNumber(getAmount(row), 2) }}
                 </template>
