@@ -101,7 +101,7 @@
                   {{ formatNumber(getAmount(row), 2) }}
                 </template>
                 <template v-else>
-                  {{ formatNumber(getMcPrice(row), 2) }}
+                  ${{ formatNumber(getMcPrice(row), 2) }}
                 </template>
               </div>
             </div>
@@ -110,10 +110,10 @@
             <div class="text-center">
               <div :class="getRowColor(row)" class="font-medium">
                 <template v-if="tableView.isVolUSDT">
-                  ${{ formatNumber(getAmount(row, true, true), 2) }}
+                  ${{ formatNumber(getAmount(row, true, true), 3) }}
                 </template>
                 <template v-else>
-                  {{ formatNumber(getAmount(row, true, false), 2) }}
+                  {{ formatNumber(getAmount(row, true, false), 3) }}
                   <span class="color-[--d-999-l-666]">
                     {{ getChainInfo(row.chain)?.main_name }}
                   </span>
@@ -282,7 +282,7 @@ defineEmits<{
 
 const { t } = useI18n()
 const route = useRoute()
-const { totalHolders, pairAddress, pair, token } = storeToRefs(useTokenStore())
+const { totalHolders, pairAddress, pair, token, price, circulation } = storeToRefs(useTokenStore())
 
 const botStore = useBotStore()
 const wsStore = useWSStore()
@@ -542,8 +542,18 @@ function getRowColor(row: IGetTokenTxsResponse) {
 
 
 function getMcPrice(row: IGetTokenTxsResponse) {
-// 显示 Market Cap=流通量x当前价格
-  return row.from_amount * row.from_price_usd
+  // 市值计算：参照顶部市值计算逻辑 = 流通量 × 当前价格
+  // 使用当前token的价格和流通量，而不是交易中的数量
+  const currentPrice = price.value || 0
+  const currentCirculation = circulation.value || 0
+
+  // 如果没有价格或流通量数据，返回0
+  if (!currentPrice || !currentCirculation) {
+    return 0
+  }
+
+  // 计算市值 = 流通量 × 当前价格
+  return Number(currentCirculation) * Number(currentPrice)
 }
 function getAmount(row: IGetTokenTxsResponse, needPrice = false, isVolUSDT = false) {
   // 使用 realAddress 确保地址匹配的准确性
