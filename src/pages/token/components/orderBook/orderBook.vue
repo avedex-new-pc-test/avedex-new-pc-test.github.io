@@ -1,10 +1,10 @@
 <template>
   <div v-if="modelValue" class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex flex-col overflow-hidden" :style="{ height: `${klineHeight || 200}px` }">
     <!-- 筛选标签 -->
-    <div class="px-12px mb-10px flex">
+    <div class="mx-12px pb-8px mb-10px flex border-b-1px border-b-solid border-b-[#1A1A1A]">
       <div
         ref="tabsContainer"
-        class="flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide"
+        class="flex-1 flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide"
       >
         <button
           v-for="(tab, index) in tabs"
@@ -35,7 +35,7 @@
     <div class="px-12px">
       <div v-loading="listStatus.loadingTxs" class="text-12px">
         <!-- 表格头部 -->
-        <div class="grid grid-cols-4 gap-8px py-8px border-b-1px border-b-solid border-b-[rgba(255,255,255,.03)] text-12px color-[--d-999-l-666]">
+        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-30px pt-8px pb-12px text-12px color-[--d-999-l-666]">
           <div class="text-left flex items-center gap-2px">
             {{ tableView.isAmount ? t('amountB') : t('MC') }}
             
@@ -57,7 +57,7 @@
             /> -->
           </div>
           <div class="text-center">
-            <div class="flex items-center justify-center gap-2px">
+            <div class="flex items-center justify-end gap-2px">
               <span>{{ t('amountU').slice(0,3) }}</span>
               <el-button 
                 class="p-0 px-2px border-none hover:bg-[transparent] h-auto"
@@ -77,19 +77,19 @@
               /> -->
             </div>
           </div>
-          <div class="text-center">{{ t('makers') }}</div>
+          <div class="text-right">{{ t('makers') }}</div>
           <div class="text-right">{{ t('time') }}</div>
         </div>
 
         <!-- 表格内容 -->
         <el-scrollbar
           style="margin-right: -12px;padding-right: 12px;"
-          :height="`${(klineHeight ?? 200) - 105}px`"
+          :height="`${(klineHeight ?? 200) - 115}px`"
         >
           <div
             v-for="(row, index) in filterTableList"
             :key="index"
-            class="grid grid-cols-4 gap-8px py-2 hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
+            class="grid grid-cols-[1fr_1fr_62px_30px] gap-30px py-2 hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
             @mouseenter="isPausedTxs = true"
             @mouseleave="isPausedTxs = false"
             @click="onRowClick({ rowData: row} as any)"
@@ -122,8 +122,8 @@
             </div>
 
             <!-- Trader -->
-            <div class="text-center">
-              <div class="flex items-center justify-center gap-4px">
+            <div class="text-right">
+              <div class="flex items-center justify-end gap-4px">
                 <template v-if="['solana', 'bsc'].includes(row.chain) && row.senderProfile">
                   <Icon
                     v-if="hasNewAccount(row)"
@@ -196,7 +196,7 @@
     </div>
     <!-- status -->
     <div 
-      class="flex-1 flex justify-center color-[#FFA622]"
+      class="h-24px flex-1 flex justify-center color-[#FFA622]"
       :class="isPausedTxs? 'bg-[#1A1A1A]': ''"
     >
       <div 
