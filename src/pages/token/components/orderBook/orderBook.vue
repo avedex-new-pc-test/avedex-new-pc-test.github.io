@@ -107,7 +107,7 @@
             </div>
 
             <!-- Price -->
-            <div class="text-center">
+            <div class="text-center text-nowrap">
               <div :class="getRowColor(row)" class="font-medium">
                 <template v-if="tableView.isVolUSDT">
                   ${{ formatNumber(getAmount(row, true, true), 3) }}
