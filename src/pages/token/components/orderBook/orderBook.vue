@@ -542,18 +542,41 @@ function getRowColor(row: IGetTokenTxsResponse) {
 
 
 function getMcPrice(row: IGetTokenTxsResponse) {
-  // 市值计算：参照顶部市值计算逻辑 = 流通量 × 当前价格
-  // 使用当前token的价格和流通量，而不是交易中的数量
-  const currentPrice = price.value || 0
-  const currentCirculation = circulation.value || 0
+  // 新的MC计算方式：current_price_usd * (total - burn_amount - lock_amount - other_amount)
+  // 根据买/卖方向获取不同的USD价格
 
-  // 如果没有价格或流通量数据，返回0
-  if (!currentPrice || !currentCirculation) {
+  // 获取流通量：total - burn_amount - lock_amount - other_amount
+  const total = Number(row.total) || 0
+  const burnAmount = Number(row.burn_amount) || 0
+  const lockAmount = Number(row.lock_amount) || 0
+  const otherAmount = Number(row.other_amount) || 0
+
+  const circulation = total - burnAmount - lockAmount - otherAmount
+
+  // 如果流通量为0或负数，返回0
+  if (circulation <= 0) {
     return 0
   }
 
-  // 计算市值 = 流通量 × 当前价格
-  return Number(currentCirculation) * Number(currentPrice)
+  // 根据买/卖方向获取对应的USD价格
+  let currentPriceUsd = 0
+  const tokenAddress = realAddress.value || addressAndChain.value.address
+
+  if (row.from_address && tokenAddress.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
+    // 卖出：使用 from_price_usd
+    currentPriceUsd = Number(row.from_price_usd) || 0
+  } else if (row.to_address && tokenAddress.toLowerCase?.() === row.to_address?.toLowerCase?.()) {
+    // 买入：使用 to_price_usd
+    currentPriceUsd = Number(row.to_price_usd) || 0
+  } else {
+    // 如果无法判断方向，使用默认价格（可以是from或to的平均值，或者使用全局价格）
+    currentPriceUsd = Number(row.to_price_usd) || Number(row.from_price_usd) || 0
+  }
+
+  // 计算市值 = 当前价格USD × 流通量
+  const marketCap = currentPriceUsd * circulation
+
+  return marketCap
 }
 function getAmount(row: IGetTokenTxsResponse, needPrice = false, isVolUSDT = false) {
   // 使用 realAddress 确保地址匹配的准确性
