@@ -39,7 +39,7 @@
           <div class="text-left flex items-center gap-2px text-nowrap">
             {{ tableView.isAmount ? t('amountB') : t('MC') }}
             
-            <el-button 
+            <!-- <el-button 
               class="p-0 px-2px border-none hover:bg-[transparent] h-auto"
               @click="tableView.isAmount = !tableView.isAmount"
             >
@@ -49,7 +49,8 @@
               <svg v-else width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9.02589 2.99465C9.33125 3.60428 9.5 4.2861 9.5 5.00802C9.5 7.48663 7.48304 9.5 5 9.5C2.51696 9.5 0.5 7.48663 0.5 5.00802C0.5 2.52941 2.50893 0.516043 5 0.516043V5.31283L9.02589 2.99465ZM5.64286 0.5V4.14171L8.69643 2.38503C7.99732 1.39037 6.90446 0.684492 5.64286 0.5Z" fill="#666666"/>
               </svg>
-            </el-button>
+            </el-button> -->
+            
             <!-- <Icon
               :name="tableView.isAmount ? 'i-f7:money-dollar-circle-fill' : 'f7:chart-pie-fill'"
               :class="`text-md cursor-pointer color-[#666666]`"
@@ -123,7 +124,7 @@
 
             <!-- Trader -->
             <div class="text-right">
-              <div class="flex items-center justify-end gap-4px">
+              <div class="flex items-center justify-end" :class="getTraderContainerClass(row)">
                 <template v-if="['solana', 'bsc'].includes(row.chain) && row.senderProfile">
                   <Icon
                     v-if="hasNewAccount(row)"
@@ -546,15 +547,46 @@ function getMcPrice(row: IGetTokenTxsResponse) {
   // 根据买/卖方向获取不同的USD价格
 
   // 获取流通量：total - burn_amount - lock_amount - other_amount
-  const total = Number(row.total) || 0
-  const burnAmount = Number(row.burn_amount) || 0
-  const lockAmount = Number(row.lock_amount) || 0
-  const otherAmount = Number(row.other_amount) || 0
+  // 优先使用交易数据中的字段，如果不存在则使用token store中的数据
+  let total = 0
+  let burnAmount = 0
+  let lockAmount = 0
+  let otherAmount = 0
+
+  if (row.total !== undefined) {
+    total = Number(row.total) || 0
+    burnAmount = Number(row.burn_amount) || 0
+    lockAmount = Number(row.lock_amount) || 0
+    otherAmount = Number(row.other_amount) || 0
+  } else {
+    // 如果交易数据中没有这些字段，使用token store中的数据
+    total = Number(token.value?.total) || 0
+    burnAmount = Number(token.value?.burn_amount) || 0
+    lockAmount = Number(token.value?.lock_amount) || 0
+    otherAmount = Number(token.value?.other_amount) || 0
+
+    console.log('📊 使用token store数据计算MC:', {
+      total: token.value?.total,
+      burn_amount: token.value?.burn_amount,
+      lock_amount: token.value?.lock_amount,
+      other_amount: token.value?.other_amount,
+      transaction: row.transaction
+    })
+  }
 
   const circulation = total - burnAmount - lockAmount - otherAmount
 
   // 如果流通量为0或负数，返回0
   if (circulation <= 0) {
+    console.warn('⚠️ MC计算失败 - 流通量为0或负数:', {
+      total,
+      burnAmount,
+      lockAmount,
+      otherAmount,
+      circulation,
+      transaction: row.transaction,
+      dataSource: row.total !== undefined ? 'transaction' : 'token_store'
+    })
     return 0
   }
 
@@ -571,6 +603,19 @@ function getMcPrice(row: IGetTokenTxsResponse) {
   } else {
     // 如果无法判断方向，使用默认价格（可以是from或to的平均值，或者使用全局价格）
     currentPriceUsd = Number(row.to_price_usd) || Number(row.from_price_usd) || 0
+  }
+
+  // 如果价格为0，记录警告
+  if (currentPriceUsd === 0) {
+    console.warn('⚠️ MC计算失败 - 价格为0:', {
+      from_price_usd: row.from_price_usd,
+      to_price_usd: row.to_price_usd,
+      from_address: row.from_address,
+      to_address: row.to_address,
+      tokenAddress,
+      isBuy: isBuy(row),
+      transaction: row.transaction
+    })
   }
 
   // 计算市值 = 当前价格USD × 流通量
@@ -745,6 +790,46 @@ function bigWallet(row: ExtendedTxResponse) {
   return Number(row.senderProfile?.solTotalHolding) > 50
 }
 
+// 判断交易者容器是否只有图标，如果只有图标则不使用gap
+function getTraderContainerClass(row: ExtendedTxResponse) {
+  // 检查是否有Icon组件（新账户、清空账户、大钱包）
+  const hasIcons = (['solana', 'bsc'].includes(row.chain) && row.senderProfile) &&
+    (hasNewAccount(row) || hasClearedAccount(row) || bigWallet(row))
+
+  // 检查是否有SignalTags（图标标签）
+  const hasSignalTags = (row.newTags || []).length > 0
+
+  // 检查UserRemark是否会显示文本内容（地址或备注）
+  // 当newTags长度 > 1时，不显示地址；当有备注时显示备注
+  const hasRemark = !!row.remark
+  const showsAddress = !(row?.newTags?.length > 1)
+  const userRemarkHasContent = hasRemark || showsAddress
+
+  // 计算总的可见元素数量
+  const visibleElementsCount = (hasIcons ? 1 : 0) + (hasSignalTags ? 1 : 0) + (userRemarkHasContent ? 1 : 0)
+
+  // 只有当仅有SignalTags图标且没有其他内容时，才不使用gap
+  const onlyHasSignalTags = !hasIcons && hasSignalTags && !userRemarkHasContent
+
+  // 调试信息
+  console.log('🎨 交易者容器样式判断:', {
+    transaction: row.transaction,
+    hasIcons,
+    hasSignalTags,
+    hasRemark,
+    showsAddress,
+    userRemarkHasContent,
+    visibleElementsCount,
+    onlyHasSignalTags,
+    finalClass: onlyHasSignalTags ? '' : 'gap-4px',
+    newTagsLength: (row.newTags || []).length,
+    chain: row.chain,
+    hasSenderProfile: !!row.senderProfile
+  })
+
+  return ''
+}
+
 // WebSocket 相关功能
 onMounted(() => {
   onTxsLiqMessage()
@@ -770,12 +855,48 @@ function onTxsLiqMessage() {
       return  // 只有当 orderBook 打开时才处理消息
     }
 
+    console.log('🌐 WebSocket消息接收:', {
+      rawEvent: e,
+      parsedMessage: msg,
+      orderBookOpen: props.modelValue,
+      currentTime: new Date().toISOString()
+    })
+
     const {event, data} = msg
     if (event == WSEventType.TX && !listStatus.value.loadingTxs) {
+      console.log('🔍 WebSocket原始消息:', {
+        event,
+        data,
+        fullMessage: msg
+      })
+
       const {wallet_address, from_address, to_address} = data.tx
+
+      console.log('🔍 WebSocket交易数据详情:', {
+        wallet_address,
+        from_address,
+        to_address,
+        realAddress: realAddress.value,
+        txData: data.tx,
+        hasTotal: 'total' in data.tx,
+        hasBurnAmount: 'burn_amount' in data.tx,
+        hasLockAmount: 'lock_amount' in data.tx,
+        hasOtherAmount: 'other_amount' in data.tx,
+        total: data.tx.total,
+        burn_amount: data.tx.burn_amount,
+        lock_amount: data.tx.lock_amount,
+        other_amount: data.tx.other_amount,
+        from_price_usd: data.tx.from_price_usd,
+        to_price_usd: data.tx.to_price_usd
+      })
 
       // 检查是否是当前币种的数据
       if (from_address !== realAddress.value && to_address !== realAddress.value) {
+        console.log('🚫 跳过非当前币种的交易:', {
+          from_address,
+          to_address,
+          realAddress: realAddress.value
+        })
         return
       }
 
@@ -801,6 +922,36 @@ function onTxsLiqMessage() {
       }
 
       console.log('📊 新增订单薄交易:', item.transaction)
+
+      // 调试WebSocket数据结构，检查MC计算所需字段
+      console.log('🔍 处理后的WebSocket交易数据:', {
+        transaction: item.transaction,
+        total: item.total,
+        burn_amount: item.burn_amount,
+        lock_amount: item.lock_amount,
+        other_amount: item.other_amount,
+        from_price_usd: item.from_price_usd,
+        to_price_usd: item.to_price_usd,
+        from_address: item.from_address,
+        to_address: item.to_address,
+        profile: item.profile,
+        senderProfile: item.senderProfile,
+        isBuy: isBuy(item),
+        mcPrice: getMcPrice(item),
+        // 完整的item对象
+        fullItem: item
+      })
+
+      // 对比token store中的数据
+      console.log('🔍 Token Store数据对比:', {
+        tokenStoreTotal: token.value?.total,
+        tokenStoreBurnAmount: token.value?.burn_amount,
+        tokenStoreLockAmount: token.value?.lock_amount,
+        tokenStoreOtherAmount: token.value?.other_amount,
+        tokenStorePrice: price.value,
+        tokenStoreCirculation: circulation.value
+      })
+
       wsPairCache.value.unshift(item)
 
       if (!isPausedTxs.value) {
