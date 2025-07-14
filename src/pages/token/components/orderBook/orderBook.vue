@@ -66,11 +66,6 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M5 0C7.757 0 10 2.243 10 5C10 7.757 7.757 10 5 10C2.243 10 0 7.757 0 5C0 2.243 2.243 0 5 0ZM5.1 3C4.78 3 4.484 3.114 4.256 3.342L3.342 4.256C3.114 4.484 3 4.78 3 5.1C2.9953 5.41628 3.11864 5.72103 3.342 5.945L4.256 6.858C4.484 7.087 4.78 7.2 5.1 7.2C5.41434 7.19485 5.71531 7.07268 5.945 6.858L6.858 5.945C7.087 5.717 7.201 5.42 7.201 5.1C7.201 4.781 7.087 4.484 6.858 4.256L5.945 3.342C5.717 3.114 5.42 3 5.1 3ZM5.1 3.64C5.23799 3.64449 5.369 3.70176 5.466 3.8L6.379 4.712C6.48602 4.80272 6.54509 4.93783 6.539 5.078C6.53426 5.21564 6.477 5.34624 6.379 5.443L5.465 6.356C5.26 6.539 4.918 6.539 4.735 6.356L3.822 5.443C3.708 5.352 3.662 5.215 3.662 5.078C3.66649 4.94001 3.72376 4.80901 3.822 4.712L4.735 3.8C4.82551 3.69326 4.96018 3.63423 5.1 3.64Z" fill="#666666"/>
                 </svg>
               </el-button>
-              <!-- <Icon
-                :name="tableView.isVolUSDT ?'i-f7:money-dollar-circle-fill' : ''"
-                :class="`text-md cursor-pointer color-[#666666]`"
-                @click="tableView.isVolUSDT = !tableView.isVolUSDT"
-              /> -->
             </div>
           </div>
           <div class="text-right">{{ t('makers') }}</div>
@@ -122,13 +117,16 @@
                 <template v-if="['solana', 'bsc'].includes(row.chain) && row.senderProfile">
                   <Icon
                     v-if="hasNewAccount(row)"
-                    v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`" name="custom:new-account"
+                    v-tooltip="{ content: `<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
+                    name="custom:new-account"
                     class="mr-3px shrink-0 icon-hover"/>
                   <Icon
-                    v-if="hasClearedAccount(row)" v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
+                    v-if="hasClearedAccount(row)"
+                    v-tooltip="{ content: `<span style='color: #EB2B4B'>${$t('sellAl')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
                     name="custom:cleared-account" class="mr-3px shrink-0 icon-hover"/>
                   <Icon
-                    v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #ccc'>${$t('whales')}</span>`"
+                    v-if="bigWallet(row)"
+                    v-tooltip="{ content: `<span style='color: #ccc'>${$t('whales')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
                     name="custom:big" class="mr-3px shrink-0 icon-hover"/>
                 </template>
                 <SignalTags
@@ -155,26 +153,6 @@
             <div class="text-right">
               <div class="color-[--d-999-l-666]">
                 {{ formatTimeFromNow(row.time) }}
-                <!-- <TimerCount
-                  v-if="row.time && Number(formatTimeFromNow(row.time, true)) < 60"
-                  :key="row.time"
-                  :timestamp="row.time"
-                  :end-time="60"
-                >
-                  <template #default="{seconds}">
-                    <span>
-                      <template v-if="seconds < 60">
-                        {{ seconds }}{{ t('ss') }}
-                      </template>
-                      <template v-else>
-                        {{ formatTimeFromNow(row.time) }}
-                      </template>
-                    </span>
-                  </template>
-                </TimerCount>
-                <span v-else>
-                  {{ formatTimeFromNow(row.time) }}
-                </span> -->
               </div>
             </div>
           </div>
@@ -212,19 +190,19 @@
       <template v-if="currentRow.senderProfile">
         <Icon
           v-if="hasNewAccount(currentRow)"
-          v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`"
+          v-tooltip="{ content: `<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
           name="custom:new-account"
           class="mr-3px icon-hover"
         />
         <Icon
           v-if="hasClearedAccount(currentRow)"
-          v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
+          v-tooltip="{ content: `<span style='color: #EB2B4B'>${$t('sellAl')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
           name="custom:cleared-account"
           class="mr-3px icon-hover"
         />
         <Icon
           v-if="bigWallet(currentRow)"
-          v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
+          v-tooltip="{ content: `<span style='color: #C5842B'>${$t('whales')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
           name="custom:big"
           class="mr-3px icon-hover"
         />
@@ -252,7 +230,6 @@ import { WSEventType } from '~/utils/constants'
 import { useThrottleFn } from '@vueuse/core'
 import UserRemark from '~/components/userRemark.vue'
 import MarkerTooltip from '../belowChartTable/transactions/markerTooltip.vue'
-// import TimerCount from '~/components/timerCount.vue'
 import { ElScrollbar, type RowEventHandlerParams } from 'element-plus'
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
@@ -277,7 +254,7 @@ defineEmits<{
 
 const { t } = useI18n()
 const route = useRoute()
-const { totalHolders, pairAddress, pair, token, price, circulation } = storeToRefs(useTokenStore())
+const { totalHolders, pairAddress, pair, token, } = storeToRefs(useTokenStore())
 
 const botStore = useBotStore()
 const wsStore = useWSStore()
@@ -418,11 +395,6 @@ watch(() => props.modelValue, (isOpen) => {
   }
 })
 
-// 移除重复的WebSocket监听器，统一使用onTxsLiqMessage处理
-// watch(() => wsStore.wsResult[WSEventType.TX], data => {
-//   // 这个监听器与onTxsLiqMessage重复，已移除
-// })
-
 // WebSocket 订阅
 function subscribeToTxs() {
   const liqParams = {
@@ -464,9 +436,7 @@ async function _getTokenTxs() {
     }
     const res = await getTokenTxs(getTokenTxsParams)
 
-    // 更新realAddress，确保后续计算使用正确的地址
     realAddress.value = getAddressAndChainFromId(getTokenTxsParams.token_id).address
-    console.log('📊 获取订单薄数据成功:', res?.length || 0, '条记录, realAddress:', realAddress.value)
 
     tokenTxs.value = (res || []).reverse().map(val => {
       txCount.value[val.wallet_address] = (txCount.value[val.wallet_address] || 0) + 1
@@ -512,7 +482,6 @@ function getWalletTag(val: IGetTokenTxsResponse) {
 }
 
 function isBuy(row: IGetTokenTxsResponse) {
-  // 使用realAddress确保准确性，添加数据验证
   const tokenAddress = realAddress.value || addressAndChain.value.address
 
   if (!tokenAddress || !row) {
@@ -537,7 +506,6 @@ function getRowColor(row: IGetTokenTxsResponse) {
 
 
 function getMcPrice(row: IGetTokenTxsResponse) {
-  // 简化的MC计算方式：成交价 * total总数
 
   // 获取total总数
   // 优先使用交易数据中的字段，如果不存在则使用token store中的数据
@@ -811,48 +779,12 @@ function onTxsLiqMessage() {
       return  // 只有当 orderBook 打开时才处理消息
     }
 
-    // console.log('🌐 WebSocket消息接收:', {
-    //   rawEvent: e,
-    //   parsedMessage: msg,
-    //   orderBookOpen: props.modelValue,
-    //   currentTime: new Date().toISOString()
-    // })
-
     const {event, data} = msg
     if (event == WSEventType.TX && !listStatus.value.loadingTxs) {
-      // console.log('🔍 WebSocket原始消息:', {
-      //   event,
-      //   data,
-      //   fullMessage: msg
-      // })
-
       const {wallet_address, from_address, to_address} = data.tx
-
-      // console.log('🔍 WebSocket交易数据详情:', {
-      //   wallet_address,
-      //   from_address,
-      //   to_address,
-      //   realAddress: realAddress.value,
-      //   txData: data.tx,
-      //   hasTotal: 'total' in data.tx,
-      //   hasBurnAmount: 'burn_amount' in data.tx,
-      //   hasLockAmount: 'lock_amount' in data.tx,
-      //   hasOtherAmount: 'other_amount' in data.tx,
-      //   total: data.tx.total,
-      //   burn_amount: data.tx.burn_amount,
-      //   lock_amount: data.tx.lock_amount,
-      //   other_amount: data.tx.other_amount,
-      //   from_price_usd: data.tx.from_price_usd,
-      //   to_price_usd: data.tx.to_price_usd
-      // })
 
       // 检查是否是当前币种的数据
       if (from_address !== realAddress.value && to_address !== realAddress.value) {
-        // console.log('🚫 跳过非当前币种的交易:', {
-        //   from_address,
-        //   to_address,
-        //   realAddress: realAddress.value
-        // })
         return
       }
 
@@ -876,38 +808,6 @@ function onTxsLiqMessage() {
         time: Math.min(Math.floor(Date.now() / 1000), data.tx.time),
         uuid: uuid()
       }
-
-      console.log('📊 新增订单薄交易:', item.transaction)
-
-      // 调试WebSocket数据结构，检查MC计算所需字段
-      // console.log('🔍 处理后的WebSocket交易数据:', {
-      //   transaction: item.transaction,
-      //   total: item.total,
-      //   burn_amount: item.burn_amount,
-      //   lock_amount: item.lock_amount,
-      //   other_amount: item.other_amount,
-      //   from_price_usd: item.from_price_usd,
-      //   to_price_usd: item.to_price_usd,
-      //   from_address: item.from_address,
-      //   to_address: item.to_address,
-      //   profile: item.profile,
-      //   senderProfile: item.senderProfile,
-      //   isBuy: isBuy(item),
-      //   mcPrice: getMcPrice(item),
-      //   // 完整的item对象
-      //   fullItem: item
-      // })
-
-      // 对比token store中的数据
-      // console.log('🔍 Token Store数据对比:', {
-      //   tokenStoreTotal: token.value?.total,
-      //   tokenStoreBurnAmount: token.value?.burn_amount,
-      //   tokenStoreLockAmount: token.value?.lock_amount,
-      //   tokenStoreOtherAmount: token.value?.other_amount,
-      //   tokenStorePrice: price.value,
-      //   tokenStoreCirculation: circulation.value
-      // })
-
       wsPairCache.value.unshift(item)
 
       if (!isPausedTxs.value) {
@@ -962,7 +862,7 @@ const updatetokenTxs = useThrottleFn(() => {
 </style>
 
 <style lang="scss">
-.el-popper[role="tooltip"] {
+.orderbook-icon-tooltip.el-popper {
   --el-bg-color: #333 !important;
   --el-text-color-primary: #ccc !important;
   background-color: #333 !important;
@@ -970,7 +870,7 @@ const updatetokenTxs = useThrottleFn(() => {
   border: none !important;
 
   span {
-    color: #ccc !important;
+    color: inherit !important;
   }
 }
 </style>

@@ -254,7 +254,7 @@ async function _getTxsUserBrief() {
             </NuxtLink>
           </div>
         </div>
-        <div class="flex justify-center mt-10px">
+        <div class="flex justify-center my-12px">
           <img v-if="themeStore.isDark" src="@/assets/images/aveai.svg" alt="" class="h-14px">
           <img v-else src="@/assets/images/aveai-b.svg" alt="" class="h-14px">
         </div>
