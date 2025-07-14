@@ -12,7 +12,7 @@
           :class="[
             'shrink-0 text-12px px-12px py-4px rounded-4px border-none cursor-pointer',
             activeTab === tab.value
-              ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333]'
+              ? 'bg-[--d-222-l-F2F2F2] color-[--d-ccc-l-333]'
               : 'bg-transparent color-[--d-999-l-666]'
           ]"
           @click="setActiveTab(tab.value, index)"
@@ -35,11 +35,11 @@
     <div class="px-12px">
       <div v-loading="listStatus.loadingTxs" class="text-12px">
         <!-- 表格头部 -->
-        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px pt-8px pb-12px text-12px color-[--d-999-l-666]">
+        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-10px text-12px color-[--d-999-l-666] border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2]">
           <div class="text-left flex items-center gap-2px text-nowrap">
-            {{ tableView.isAmount ? t('amountB') : t('MC') }}
+            {{ tableView.isAmount ? t('swapPrice') : t('MC') }}
             
-            <!-- <el-button 
+            <el-button 
               class="p-0 px-2px border-none hover:bg-[transparent] h-auto"
               @click="tableView.isAmount = !tableView.isAmount"
             >
@@ -49,13 +49,8 @@
               <svg v-else width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9.02589 2.99465C9.33125 3.60428 9.5 4.2861 9.5 5.00802C9.5 7.48663 7.48304 9.5 5 9.5C2.51696 9.5 0.5 7.48663 0.5 5.00802C0.5 2.52941 2.50893 0.516043 5 0.516043V5.31283L9.02589 2.99465ZM5.64286 0.5V4.14171L8.69643 2.38503C7.99732 1.39037 6.90446 0.684492 5.64286 0.5Z" fill="#666666"/>
               </svg>
-            </el-button> -->
+            </el-button>
             
-            <!-- <Icon
-              :name="tableView.isAmount ? 'i-f7:money-dollar-circle-fill' : 'f7:chart-pie-fill'"
-              :class="`text-md cursor-pointer color-[#666666]`"
-              @click="tableView.isAmount = !tableView.isAmount"
-            /> -->
           </div>
           <div class="text-right text-nowrap">
             <div class="flex items-center justify-end gap-2px">
@@ -90,7 +85,7 @@
           <div
             v-for="(row, index) in filterTableList"
             :key="index"
-            class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-2 hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
+            class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-10px hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
             @mouseenter="isPausedTxs = true"
             @mouseleave="isPausedTxs = false"
             @click="onRowClick({ rowData: row} as any)"
@@ -99,7 +94,7 @@
             <div class="text-left text-nowrap">
               <div class="color-[#999999]">
                 <template v-if="tableView.isAmount">
-                  {{ formatNumber(getAmount(row), { decimals:2 }) }}
+                  ${{ formatNumber(getTransactionPrice(row, true), { decimals: 3 }) }}
                 </template>
                 <template v-else>
                   ${{ formatNumber(getMcPrice(row), { decimals:2 }) }}
@@ -109,8 +104,7 @@
 
             <!-- Price -->
             <div class="text-right text-nowrap">
-              <div :class="getRowColor(row)" class="font-medium">
-                <template v-if="tableView.isVolUSDT">
+              <div :class="getRowColor(row)" class="font-medium">    <template v-if="tableView.isVolUSDT">
                   ${{ formatNumber(getAmount(row, true, true), { decimals: 3 }) }}
                 </template>
                 <template v-else>
@@ -118,7 +112,7 @@
                   <span class="color-[--d-999-l-666]">
                     {{ getChainInfo(row.chain)?.main_name }}
                   </span>
-                </template>
+                </template>              
               </div>
             </div>
 
@@ -129,13 +123,13 @@
                   <Icon
                     v-if="hasNewAccount(row)"
                     v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`" name="custom:new-account"
-                    class="mr-3px shrink-0"/>
+                    class="mr-3px shrink-0 icon-hover"/>
                   <Icon
                     v-if="hasClearedAccount(row)" v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
-                    name="custom:cleared-account" class="mr-3px shrink-0"/>
+                    name="custom:cleared-account" class="mr-3px shrink-0 icon-hover"/>
                   <Icon
-                    v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
-                    name="custom:big" class="mr-3px shrink-0"/>
+                    v-if="bigWallet(row)" v-tooltip.raw="`<span style='color: #ccc'>${$t('whales')}</span>`"
+                    name="custom:big" class="mr-3px shrink-0 icon-hover"/>
                 </template>
                 <SignalTags
                   tagClass="mr-3px"
@@ -220,19 +214,19 @@
           v-if="hasNewAccount(currentRow)"
           v-tooltip.raw="`<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`"
           name="custom:new-account"
-          class="mr-3px"
+          class="mr-3px icon-hover"
         />
         <Icon
           v-if="hasClearedAccount(currentRow)"
           v-tooltip.raw="`<span style='color: #EB2B4B'>${$t('sellAl')}</span>`"
           name="custom:cleared-account"
-          class="mr-3px"
+          class="mr-3px icon-hover"
         />
         <Icon
           v-if="bigWallet(currentRow)"
           v-tooltip.raw="`<span style='color: #C5842B'>${$t('whales')}</span>`"
           name="custom:big"
-          class="mr-3px"
+          class="mr-3px icon-hover"
         />
       </template>
       <SignalTags
@@ -543,54 +537,30 @@ function getRowColor(row: IGetTokenTxsResponse) {
 
 
 function getMcPrice(row: IGetTokenTxsResponse) {
-  // 新的MC计算方式：current_price_usd * (total - burn_amount - lock_amount - other_amount)
-  // 根据买/卖方向获取不同的USD价格
+  // 简化的MC计算方式：成交价 * total总数
 
-  // 获取流通量：total - burn_amount - lock_amount - other_amount
+  // 获取total总数
   // 优先使用交易数据中的字段，如果不存在则使用token store中的数据
   let total = 0
-  let burnAmount = 0
-  let lockAmount = 0
-  let otherAmount = 0
 
   if (row.total !== undefined) {
     total = Number(row.total) || 0
-    burnAmount = Number(row.burn_amount) || 0
-    lockAmount = Number(row.lock_amount) || 0
-    otherAmount = Number(row.other_amount) || 0
   } else {
     // 如果交易数据中没有这些字段，使用token store中的数据
     total = Number(token.value?.total) || 0
-    burnAmount = Number(token.value?.burn_amount) || 0
-    lockAmount = Number(token.value?.lock_amount) || 0
-    otherAmount = Number(token.value?.other_amount) || 0
-
-    console.log('📊 使用token store数据计算MC:', {
-      total: token.value?.total,
-      burn_amount: token.value?.burn_amount,
-      lock_amount: token.value?.lock_amount,
-      other_amount: token.value?.other_amount,
-      transaction: row.transaction
-    })
   }
 
-  const circulation = total - burnAmount - lockAmount - otherAmount
-
-  // 如果流通量为0或负数，返回0
-  if (circulation <= 0) {
-    console.warn('⚠️ MC计算失败 - 流通量为0或负数:', {
+  // 如果总数为0或负数，返回0
+  if (total <= 0) {
+    console.warn('⚠️ MC计算失败 - 总数为0或负数:', {
       total,
-      burnAmount,
-      lockAmount,
-      otherAmount,
-      circulation,
       transaction: row.transaction,
       dataSource: row.total !== undefined ? 'transaction' : 'token_store'
     })
     return 0
   }
 
-  // 根据买/卖方向获取对应的USD价格
+  // 根据买/卖方向获取对应的USD价格（成交价）
   let currentPriceUsd = 0
   const tokenAddress = realAddress.value || addressAndChain.value.address
 
@@ -601,7 +571,7 @@ function getMcPrice(row: IGetTokenTxsResponse) {
     // 买入：使用 to_price_usd
     currentPriceUsd = Number(row.to_price_usd) || 0
   } else {
-    // 如果无法判断方向，使用默认价格（可以是from或to的平均值，或者使用全局价格）
+    // 如果无法判断方向，使用默认价格
     currentPriceUsd = Number(row.to_price_usd) || Number(row.from_price_usd) || 0
   }
 
@@ -618,8 +588,8 @@ function getMcPrice(row: IGetTokenTxsResponse) {
     })
   }
 
-  // 计算市值 = 当前价格USD × 流通量
-  const marketCap = currentPriceUsd * circulation
+  // 计算市值 = 成交价USD × 总数
+  const marketCap = currentPriceUsd * total
 
   return marketCap
 }
@@ -645,6 +615,32 @@ function getAmount(row: IGetTokenTxsResponse, needPrice = false, isVolUSDT = fal
     const amount = Number(row.to_amount) || 0
     const price = needPrice ? Number(isVolUSDT ? row.to_price_usd : row.to_price_eth) || 0 : 1
     return amount * price
+  }
+
+  return 0
+}
+
+// 新增函数：获取成交价格
+function getTransactionPrice(row: IGetTokenTxsResponse, isVolUSDT = false) {
+  // 使用 realAddress 确保地址匹配的准确性
+  const tokenAddress = realAddress.value || addressAndChain.value.address
+
+  // 添加数据有效性检查
+  if (!tokenAddress || !row) {
+    console.warn('🚨 getTransactionPrice: 缺少必要参数', { tokenAddress, row })
+    return 0
+  }
+
+  if (row.from_address &&
+      tokenAddress.toLowerCase?.() === row.from_address?.toLowerCase?.()) {
+    // 卖出：使用 from_price_usd 或 from_price_eth
+    return Number(isVolUSDT ? row.from_price_usd : row.from_price_eth) || 0
+  }
+
+  if (row.to_address &&
+      tokenAddress.toLowerCase?.() === row.to_address?.toLowerCase?.()) {
+    // 买入：使用 to_price_usd 或 to_price_eth
+    return Number(isVolUSDT ? row.to_price_usd : row.to_price_eth) || 0
   }
 
   return 0
@@ -958,9 +954,23 @@ const updatetokenTxs = useThrottleFn(() => {
   font-size: 12px;
   padding: 6px 8px;
   border-radius: 4px;
-  
+
   &.active {
     color: #3F80F7;
+  }
+}
+</style>
+
+<style lang="scss">
+.el-popper[role="tooltip"] {
+  --el-bg-color: #333 !important;
+  --el-text-color-primary: #ccc !important;
+  background-color: #333 !important;
+  color: #ccc !important;
+  border: none !important;
+
+  span {
+    color: #ccc !important;
   }
 }
 </style>

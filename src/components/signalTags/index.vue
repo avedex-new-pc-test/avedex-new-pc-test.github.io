@@ -8,7 +8,7 @@
       <img
         v-if="i.type?.includes('TOP') && i.type?.slice(3) <25 || Number(i.type)"
         style="pointer-events: none;"
-        :class="getTagClass(index)" :src="formatNewTags(i.icon)" alt=""
+        :class="getTagClass(index) + ' signal-tag-hover'" :src="formatNewTags(i.icon)" alt=""
         height="15">
     </template>
   </div>
@@ -84,6 +84,7 @@ function onEnter(e: { target: any }) {
     target: e.target,
     props: {
       placement: 'top',
+      'popper-class': 'signal-tags-tooltip'
     }
   })
 }
@@ -92,3 +93,29 @@ function onLeave() {
   $tooltip.hide()
 }
 </script>
+
+<style lang="scss" scoped>
+.signal-tag-hover {
+  padding: 2px;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #333 !important;
+    filter: brightness(0.8);
+  }
+}
+</style>
+
+<style lang="scss">
+.signal-tags-tooltip.el-popper {
+  --el-bg-color: #333 !important;
+  --el-text-color-primary: #ccc !important;
+  background-color: #333 !important;
+  color: #ccc !important;
+  border: none !important;
+  div > span {
+    color: #ccc !important;
+  }
+}
+</style>
