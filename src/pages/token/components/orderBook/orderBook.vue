@@ -35,7 +35,7 @@
     <div class="px-12px">
       <div v-loading="listStatus.loadingTxs" class="text-12px">
         <!-- 表格头部 -->
-        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-10px text-12px color-[--d-999-l-666] border-b-1px border-b-solid border-b-[--d-1A1A1A-l-F2F2F2]">
+        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-10px text-12px color-[--d-999-l-666]">
           <div class="text-left flex items-center gap-2px text-nowrap">
             {{ tableView.isAmount ? t('swapPrice') : t('MC') }}
             
