@@ -35,8 +35,8 @@
     <div class="px-12px">
       <div v-loading="listStatus.loadingTxs" class="text-12px">
         <!-- 表格头部 -->
-        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-30px pt-8px pb-12px text-12px color-[--d-999-l-666]">
-          <div class="text-left flex items-center gap-2px">
+        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px pt-8px pb-12px text-12px color-[--d-999-l-666]">
+          <div class="text-left flex items-center gap-2px text-nowrap">
             {{ tableView.isAmount ? t('amountB') : t('MC') }}
             
             <el-button 
@@ -56,7 +56,7 @@
               @click="tableView.isAmount = !tableView.isAmount"
             /> -->
           </div>
-          <div class="text-center">
+          <div class="text-right text-nowrap">
             <div class="flex items-center justify-end gap-2px">
               <span>{{ t('amountU').slice(0,3) }}</span>
               <el-button 
@@ -89,31 +89,31 @@
           <div
             v-for="(row, index) in filterTableList"
             :key="index"
-            class="grid grid-cols-[1fr_1fr_62px_30px] gap-30px py-2 hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
+            class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-2 hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
             @mouseenter="isPausedTxs = true"
             @mouseleave="isPausedTxs = false"
             @click="onRowClick({ rowData: row} as any)"
           >
             <!-- Amount -->
-            <div class="text-left">
+            <div class="text-left text-nowrap">
               <div class="color-[#999999]">
                 <template v-if="tableView.isAmount">
-                  {{ formatNumber(getAmount(row), 2) }}
+                  {{ formatNumber(getAmount(row), { decimals:2 }) }}
                 </template>
                 <template v-else>
-                  ${{ formatNumber(getMcPrice(row), 2) }}
+                  ${{ formatNumber(getMcPrice(row), { decimals:2 }) }}
                 </template>
               </div>
             </div>
 
             <!-- Price -->
-            <div class="text-center text-nowrap">
+            <div class="text-right text-nowrap">
               <div :class="getRowColor(row)" class="font-medium">
                 <template v-if="tableView.isVolUSDT">
-                  ${{ formatNumber(getAmount(row, true, true), 3) }}
+                  ${{ formatNumber(getAmount(row, true, true), { decimals: 3 }) }}
                 </template>
                 <template v-else>
-                  {{ formatNumber(getAmount(row, true, false), 3) }}
+                  {{ formatNumber(getAmount(row, true, false), { decimals: 3 }) }}
                   <span class="color-[--d-999-l-666]">
                     {{ getChainInfo(row.chain)?.main_name }}
                   </span>
