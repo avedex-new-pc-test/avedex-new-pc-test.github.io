@@ -102,11 +102,11 @@
               <div :class="getRowColor(row)" class="font-medium">    
                 <template v-if="tableView.isVolUSDT">
                   <!-- USDT 2位小数 -->
-                  ${{ +getAmount(row, true, false).toFixed(2) }}
+                  ${{ formatFixedDecimals(getAmount(row, true, true), 2) }}
                 </template>
                 <template v-else>
                   <!-- 纯纯的保留 3 位小数 -->
-                  {{ +getAmount(row, true, false).toFixed(3) }}
+                  ${{ formatFixedDecimals(getAmount(row, true, false), 3) }}
                   <span class="color-[--d-999-l-666]">
                     {{ getChainInfo(row.chain)?.main_name }}
                   </span>
@@ -155,7 +155,26 @@
             <!-- Time -->
             <div class="text-right">
               <div class="color-[--d-999-l-666]">
-                {{ formatTimeFromNow(row.time) }}
+                <TimerCount
+                  v-if="row.time && Number(formatTimeFromNow(row.time, true)) < 60"
+                  :key="`${row.time}${index}`" 
+                  :timestamp="row.time" 
+                  :end-time="60"
+                >
+                  <template #default="{ seconds }">
+                    <span class="color-[--d-999-l-666]">
+                      <template v-if="seconds < 60">
+                        {{ seconds }}s
+                      </template>
+                      <template v-else>
+                        {{ formatTimeFromNow(row.time) }}
+                      </template>
+                    </span>
+                  </template>
+                </TimerCount>
+                <span v-else class="color-[--d-999-l-666]">
+                  {{ formatTimeFromNow(row.time) }}
+                </span>
               </div>
             </div>
           </div>
@@ -321,8 +340,8 @@ const tabs = computed(() => {
     value: 'sell'
   },
   {
-    label: 'Smarter',
-    value: 'smarter'
+    label: t('liquidity2'),
+    value: 'liquidity'
   },
   ...arr]
 })
@@ -572,6 +591,24 @@ function getAmount(row: IGetTokenTxsResponse, needPrice = false, isVolUSDT = fal
   }
 
   return 0
+}
+
+// 新增：固定小数位格式化方法
+function formatFixedDecimals(value: number, decimals: number): string {
+  if (isNaN(value) || value === 0) return '0.00'
+  
+  // 使用 toFixed 确保固定小数位数
+  const fixed = value.toFixed(decimals)
+  
+  // 移除末尾的零（但保留至少一位小数）
+  const trimmed = fixed.replace(/\.?0+$/, '')
+  
+  // 如果没有小数点，根据需要添加
+  if (decimals > 0 && !trimmed.includes('.')) {
+    return trimmed + '.00'
+  }
+  
+  return trimmed
 }
 
 // 新增函数：获取成交价格
