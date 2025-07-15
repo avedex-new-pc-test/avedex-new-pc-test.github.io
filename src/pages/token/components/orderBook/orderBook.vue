@@ -185,10 +185,10 @@
     </div>
     <!-- MarkerTooltip -->
     <MarkerTooltip
+      v-model="markerTooltipVisible"
       :virtual-ref="makerTooltip"
       :currentRow="currentRow"
       :addressAndChain="addressAndChain"
-      v-model="markerTooltipVisible"
     >
       <template v-if="currentRow.senderProfile">
         <Icon
@@ -234,6 +234,7 @@ import { useThrottleFn } from '@vueuse/core'
 import UserRemark from '~/components/userRemark.vue'
 import MarkerTooltip from '../belowChartTable/transactions/markerTooltip.vue'
 import { ElScrollbar, type RowEventHandlerParams } from 'element-plus'
+const tokenStore = useTokenStore()
 
 const MAKER_SUPPORT_CHAINS = ['solana', 'bsc']
 
@@ -511,25 +512,7 @@ function getRowColor(row: IGetTokenTxsResponse) {
 function getMcPrice(row: IGetTokenTxsResponse) {
 
   // 获取total总数
-  // 优先使用交易数据中的字段，如果不存在则使用token store中的数据
-  let total = 0
-
-  if (row.total !== undefined) {
-    total = Number(row.total) || 0
-  } else {
-    // 如果交易数据中没有这些字段，使用token store中的数据
-    total = Number(token.value?.total) || 0
-  }
-
-  // 如果总数为0或负数，返回0
-  if (total <= 0) {
-    console.warn('⚠️ MC计算失败 - 总数为0或负数:', {
-      total,
-      transaction: row.transaction,
-      dataSource: row.total !== undefined ? 'transaction' : 'token_store'
-    })
-    return 0
-  }
+  const total = tokenStore.circulation
 
   // 根据买/卖方向获取对应的USD价格（成交价）
   let currentPriceUsd = 0
