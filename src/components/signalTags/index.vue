@@ -93,29 +93,3 @@ function onLeave() {
   $tooltip.hide()
 }
 </script>
-
-<style lang="scss" scoped>
-.signal-tag-hover {
-  padding: 2px;
-  border-radius: 2px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: #333 !important;
-    filter: brightness(0.8);
-  }
-}
-</style>
-
-<style lang="scss">
-.signal-tags-tooltip.el-popper {
-  --el-bg-color: #333 !important;
-  --el-text-color-primary: #ccc !important;
-  background-color: #333 !important;
-  color: #ccc !important;
-  border: none !important;
-  div > span {
-    color: #ccc !important;
-  }
-}
-</style>

@@ -80,7 +80,7 @@
           <div
             v-for="(row, index) in filterTableList"
             :key="index"
-            class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-8px hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
+            class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-4px hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
             @mouseenter="isPausedTxs = true"
             @mouseleave="isPausedTxs = false"
             @click="onRowClick({ rowData: row} as any)"
@@ -101,10 +101,11 @@
             <div class="text-right text-nowrap">
               <div :class="getRowColor(row)" class="font-medium">    
                 <template v-if="tableView.isVolUSDT">
-                  <!-- 纯纯的保留 3 位小数 -->
-                  ${{ +getAmount(row, true, false).toFixed(3) }}
+                  <!-- USDT 2位小数 -->
+                  ${{ +getAmount(row, true, false).toFixed(2) }}
                 </template>
                 <template v-else>
+                  <!-- 纯纯的保留 3 位小数 -->
                   {{ +getAmount(row, true, false).toFixed(3) }}
                   <span class="color-[--d-999-l-666]">
                     {{ getChainInfo(row.chain)?.main_name }}
@@ -119,17 +120,17 @@
                 <template v-if="['solana', 'bsc'].includes(row.chain) && row.senderProfile">
                   <Icon
                     v-if="hasNewAccount(row)"
-                    v-tooltip="{ content: `<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
+                    v-tooltip="{ content: `<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`, props: { 'raw-content': true, 'popper-class': 'signal-tags-tooltip' } }"
                     name="custom:new-account"
-                    class="mr-3px shrink-0 icon-hover p-1.5px"/>
+                    class="w-12px h-12px mr-2px  shrink-0 icon-hover"/>
                   <Icon
                     v-if="hasClearedAccount(row)"
-                    v-tooltip="{ content: `<span style='color: #EB2B4B'>${$t('sellAl')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
-                    name="custom:cleared-account" class="mr-3px shrink-0 icon-hover p-1.5px"/>
+                    v-tooltip="{ content: `<span style='color: #EB2B4B'>${$t('sellAl')}</span>`, props: { 'raw-content': true, 'popper-class': 'signal-tags-tooltip' } }"
+                    name="custom:cleared-account" class="w-12px h-12px mr-2px  shrink-0 icon-hover"/>
                   <Icon
                     v-if="bigWallet(row)"
-                    v-tooltip="{ content: `<span style='color: #ccc'>${$t('whales')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
-                    name="custom:big" class="mr-3px shrink-0 icon-hover p-1.5px"/>
+                    v-tooltip="{ content: `<span style='color: #ccc'>${$t('whales')}</span>`, props: { 'raw-content': true, 'popper-class': 'signal-tags-tooltip' } }"
+                    name="custom:big" class="w-12px h-12px mr-2px  shrink-0 icon-hover"/>
                 </template>
                 <SignalTags
                   tagClass="mr-3px"
@@ -194,19 +195,19 @@
           v-if="hasNewAccount(currentRow)"
           v-tooltip="{ content: `<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
           name="custom:new-account"
-          class="mr-3px icon-hover"
+          class="icon-hover"
         />
         <Icon
           v-if="hasClearedAccount(currentRow)"
           v-tooltip="{ content: `<span style='color: #EB2B4B'>${$t('sellAl')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
           name="custom:cleared-account"
-          class="mr-3px icon-hover"
+          class="icon-hover"
         />
         <Icon
           v-if="bigWallet(currentRow)"
           v-tooltip="{ content: `<span style='color: #C5842B'>${$t('whales')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
           name="custom:big"
-          class="mr-3px icon-hover"
+          class="icon-hover"
         />
       </template>
       <SignalTags
@@ -859,20 +860,6 @@ const updatetokenTxs = useThrottleFn(() => {
 
   &.active {
     color: #3F80F7;
-  }
-}
-</style>
-
-<style lang="scss">
-.orderbook-icon-tooltip.el-popper {
-  --el-bg-color: #333 !important;
-  --el-text-color-primary: #ccc !important;
-  background-color: #333 !important;
-  color: #ccc !important;
-  border: none !important;
-
-  span {
-    color: inherit !important;
   }
 }
 </style>
