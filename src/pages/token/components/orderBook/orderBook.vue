@@ -1,7 +1,7 @@
 <template>
   <div v-if="modelValue" class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex flex-col overflow-hidden" :style="{ height: `${klineHeight || 200}px` }">
     <!-- 筛选标签 -->
-    <div class="mx-12px pb-8px mb-10px flex border-b-1px border-b-solid border-b-[#1A1A1A]">
+    <div class="mx-12px pb-8px flex border-b-1px border-b-solid border-b-[#f2f2f2] dark:border-b-[#222]">
       <div
         ref="tabsContainer"
         class="flex-1 flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide"
@@ -12,8 +12,8 @@
           :class="[
             'shrink-0 text-12px px-12px py-4px rounded-4px border-none cursor-pointer',
             activeTab === tab.value
-              ? 'bg-[--d-222-l-F2F2F2] color-[--d-ccc-l-333]'
-              : 'bg-transparent color-[--d-999-l-666]'
+              ? 'bg-[--d-222-l-F2F2F2] color-#333 dark:color-#ccc'
+              : 'bg-transparent color-#999'
           ]"
           @click="setActiveTab(tab.value, index)"
         >
@@ -35,7 +35,7 @@
     <div class="px-12px">
       <div v-loading="listStatus.loadingTxs" class="text-12px">
         <!-- 表格头部 -->
-        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-10px text-12px color-[--d-999-l-666]">
+        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px mt-8px mb-4px text-12px color-[--d-999-l-666]">
           <div class="text-left flex items-center gap-2px text-nowrap">
             {{ tableView.isAmount ? t('swapPrice') : t('MC') }}
             
@@ -75,12 +75,12 @@
         <!-- 表格内容 -->
         <el-scrollbar
           style="margin-right: -12px;padding-right: 12px;"
-          :height="`${(klineHeight ?? 200) - 115}px`"
+          :height="`${(klineHeight ?? 200) - 93}px`"
         >
           <div
             v-for="(row, index) in filterTableList"
             :key="index"
-            class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-10px hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
+            class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px py-8px hover:bg-[rgba(255,255,255,.02)] cursor-pointer"
             @mouseenter="isPausedTxs = true"
             @mouseleave="isPausedTxs = false"
             @click="onRowClick({ rowData: row} as any)"
@@ -99,11 +99,13 @@
 
             <!-- Price -->
             <div class="text-right text-nowrap">
-              <div :class="getRowColor(row)" class="font-medium">    <template v-if="tableView.isVolUSDT">
-                  ${{ formatNumber(getAmount(row, true, true), { decimals: 3 }) }}
+              <div :class="getRowColor(row)" class="font-medium">    
+                <template v-if="tableView.isVolUSDT">
+                  <!-- 纯纯的保留 3 位小数 -->
+                  ${{ +getAmount(row, true, false).toFixed(3) }}
                 </template>
                 <template v-else>
-                  {{ formatNumber(getAmount(row, true, false), { decimals: 3 }) }}
+                  {{ +getAmount(row, true, false).toFixed(3) }}
                   <span class="color-[--d-999-l-666]">
                     {{ getChainInfo(row.chain)?.main_name }}
                   </span>
@@ -119,15 +121,15 @@
                     v-if="hasNewAccount(row)"
                     v-tooltip="{ content: `<span style='color: #85E12F'>${$t('newTokenAccount')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
                     name="custom:new-account"
-                    class="mr-3px shrink-0 icon-hover"/>
+                    class="mr-3px shrink-0 icon-hover p-1.5px"/>
                   <Icon
                     v-if="hasClearedAccount(row)"
                     v-tooltip="{ content: `<span style='color: #EB2B4B'>${$t('sellAl')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
-                    name="custom:cleared-account" class="mr-3px shrink-0 icon-hover"/>
+                    name="custom:cleared-account" class="mr-3px shrink-0 icon-hover p-1.5px"/>
                   <Icon
                     v-if="bigWallet(row)"
                     v-tooltip="{ content: `<span style='color: #ccc'>${$t('whales')}</span>`, props: { 'raw-content': true, 'popper-class': 'orderbook-icon-tooltip' } }"
-                    name="custom:big" class="mr-3px shrink-0 icon-hover"/>
+                    name="custom:big" class="mr-3px shrink-0 icon-hover p-1.5px"/>
                 </template>
                 <SignalTags
                   tagClass="mr-3px"
@@ -169,7 +171,7 @@
     </div>
     <!-- status -->
     <div 
-      class="h-24px flex-1 flex justify-center color-[#FFA622]"
+      class="h-24px  flex justify-center color-[#FFA622]"
       :class="isPausedTxs? 'bg-[#1A1A1A]': ''"
     >
       <div 
