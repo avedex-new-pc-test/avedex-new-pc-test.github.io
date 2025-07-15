@@ -173,7 +173,7 @@
     <!-- status -->
     <div 
       class="h-24px  flex justify-center color-[#FFA622]"
-      :class="isPausedTxs? 'bg-[#1A1A1A]': ''"
+      :class="isPausedTxs? 'bg-[#F2F2F2] dark:bg-[#1A1A1A]': ''"
     >
       <div 
         v-show="isPausedTxs"
