@@ -1,5 +1,5 @@
 <template>
-  <div v-if="modelValue" class="bg-[--d-111-l-FFF] relative rounded-2px text-14px py-12px flex flex-col overflow-hidden" :style="{ height: `${klineHeight || 200}px` }">
+  <div v-if="modelValue" class="bg-[--d-111-l-FFF] relative rounded-2px text-14px pt-12px flex flex-col overflow-hidden" :style="{ height: `${klineHeight || 200}px` }">
     <!-- 筛选标签 -->
     <div class="mx-12px pb-8px flex border-b-1px border-b-solid border-b-[#f2f2f2] dark:border-b-[#222]">
       <div
@@ -75,7 +75,7 @@
         <!-- 表格内容 -->
         <el-scrollbar
           style="margin-right: -12px;padding-right: 12px;"
-          :height="`${(klineHeight ?? 200) - 88}px`"
+          :height="`${(klineHeight ?? 200) - 75}px`"
         >
           <div
             v-for="(row, index) in filterTableList"
