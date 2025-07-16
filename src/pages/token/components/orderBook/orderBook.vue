@@ -1,5 +1,5 @@
 <template>
-  <div v-if="modelValue" class="bg-[--d-111-l-FFF] rounded-2px text-14px pt-12px flex flex-col overflow-hidden" :style="{ height: `${klineHeight || 200}px` }">
+  <div v-if="modelValue" class="bg-[--d-111-l-FFF] relative rounded-2px text-14px py-12px flex flex-col overflow-hidden" :style="{ height: `${klineHeight || 200}px` }">
     <!-- 筛选标签 -->
     <div class="mx-12px pb-8px flex border-b-1px border-b-solid border-b-[#f2f2f2] dark:border-b-[#222]">
       <div
@@ -12,8 +12,8 @@
           :class="[
             'shrink-0 text-12px px-12px py-4px rounded-4px border-none cursor-pointer',
             activeTab === tab.value
-              ? 'bg-[--d-222-l-F2F2F2] color-#333 dark:color-#ccc'
-              : 'bg-transparent color-#999'
+              ? 'bg-[--d-222-l-F2F2F2] color-[--d-F5F5F5-l-333] dark:color-#ccc'
+              : 'bg-transparent color-[--d-666-l-999]'
           ]"
           @click="setActiveTab(tab.value, index)"
         >
@@ -35,7 +35,7 @@
     <div class="px-12px">
       <div v-loading="listStatus.loadingTxs" class="text-12px">
         <!-- 表格头部 -->
-        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px mt-8px mb-4px text-12px color-[--d-999-l-666]">
+        <div class="grid grid-cols-[1fr_1fr_62px_30px] gap-20px mt-8px mb-4px text-12px color-[--d-666-l-999]">
           <div class="text-left flex items-center gap-2px text-nowrap">
             {{ tableView.isAmount ? t('swapPrice') : t('MC') }}
             
@@ -75,7 +75,7 @@
         <!-- 表格内容 -->
         <el-scrollbar
           style="margin-right: -12px;padding-right: 12px;"
-          :height="`${(klineHeight ?? 200) - 93}px`"
+          :height="`${(klineHeight ?? 200) - 88}px`"
         >
           <div
             v-for="(row, index) in filterTableList"
@@ -190,10 +190,12 @@
       </div>
     </div>
     <!-- status -->
-    <div 
-      class="h-24px  flex justify-center color-[#FFA622]"
+    <div
+      class="absolute bottom-0 h-24px w-100% flex justify-center color-[#FFA622]"
       :class="isPausedTxs? 'bg-[#F2F2F2] dark:bg-[#1A1A1A]': ''"
     >
+        
+
       <div 
         v-show="isPausedTxs"
         class="flex items-center gap-4px"
