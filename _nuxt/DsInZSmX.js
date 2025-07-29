@@ -1,0 +1,1 @@
+import{f5 as t,ai as e}from"./DLfDL8QL.js";const o={install(o){t._context=o._context,e._context=o._context,o.directive("loading",e),o.config.globalProperties.$loading=t},directive:e,service:t};export{o as E};
