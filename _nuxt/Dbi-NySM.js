@@ -1,0 +1,1 @@
+import{hn as o}from"./B3zuudvq.js";function i(i,n,r){return void 0===r&&(r=n,n=void 0),void 0!==r&&(r=(r=o(r))==r?r:0),void 0!==n&&(n=(n=o(n))==n?n:0),function(o,i,n){return o==o&&(void 0!==n&&(o=o<=n?o:n),void 0!==i&&(o=o>=i?o:i)),o}(o(i),n,r)}export{i as c};
